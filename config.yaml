@@ -25,3 +25,75 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: pe
+      description: 航天器位姿估计
+      enabled: true
+      paper_sources:
+        - arxiv
+        - biorxiv
+      keywords:
+        - keyword: spacecraft pose estimation
+          keyword_cn: 航天器位姿估计
+          query: methods for determining the position and orientation of a spacecraft relative to a target
+        - keyword: spacecraft attitude estimation
+          keyword_cn: 航天器姿态估计
+          query: estimation of spacecraft orientation from sensor measurements
+        - keyword: relative pose determination
+          keyword_cn: 相对位姿确定
+          query: determination of relative position and orientation between two spacecraft or a spacecraft and target
+        - keyword: monocular pose estimation
+          keyword_cn: 单目位姿估计
+          query: pose estimation using a single camera image for space applications
+        - keyword: pose estimation dataset
+          keyword_cn: 位姿估计数据集
+          query: datasets used for training and evaluating spacecraft pose estimation algorithms
+      intent_queries:
+        - query: How to perform spacecraft pose estimation from monocular imagery?
+          query_cn: 如何利用单目图像进行航天器位姿估计？
+          enabled: true
+          source: manual
+          note: ''
+        - query: What methods are used for robust pose estimation of uncooperative spacecraft?
+          query_cn: 针对非合作航天器的鲁棒位姿估计有哪些方法？
+          enabled: true
+          source: manual
+          note: ''
+        - query: How to combine lidar and camera data for spacecraft relative pose estimation?
+          query_cn: 如何融合激光雷达和相机数据进行航天器相对位姿估计？
+          enabled: true
+          source: manual
+          note: ''
+        - query: How to evaluate deep learning based spacecraft pose estimation accuracy?
+          query_cn: 如何评估基于深度学习的航天器位姿估计精度？
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-09-07T11:37:13.684Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
+  biorxiv:
+    papers_table: biorxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_biorxiv_papers_exact
+    vector_rpc_exact: match_biorxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_biorxiv_papers_bm25
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
