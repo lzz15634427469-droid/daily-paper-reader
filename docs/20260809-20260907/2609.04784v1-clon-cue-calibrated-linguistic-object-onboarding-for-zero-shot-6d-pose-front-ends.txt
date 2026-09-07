@@ -1,0 +1,491 @@
+Title: CLON: Cue-Calibrated Linguistic Object Onboarding for Zero-Shot 6D Pose Front-Ends
+
+URL Source: https://arxiv.org/pdf/2609.04784v1
+
+Published Time: Mon, 07 Sep 2026 00:34:50 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+# CLON: Cue-Calibrated Linguistic Object Onboarding for Zero-Shot 6D Pose Front-Ends 
+
+Seojin Ji Yoojin Kwon Hyung-Sin Kim 
+
+Seoul National University 
+
+{seojinji23, ideastraw, hyungkim }@snu.ac.kr 
+
+Abstract: Zero-shot 6D pose estimation pipelines increasingly rely on strong downstream pose solvers, but their performance is often limited by the front-end: object proposals must preserve partially visible true positives while rejecting se-mantically plausible distractors. We introduce Cue-Calibrated Linguistic Object Onboarding ( CLON ), a front-end requiring no task-specific training for new ob-jects. Given rendered templates of the onboarded object set, CLON constructs a linguistic semantic memory for top-down proposal generation and object-set cue weights for calibrated proposal scoring. The linguistic memory guides SAM 3 to-ward high-recall proposals for onboarded objects, while cue weights are computed once from the onboarded object set before scene inference and kept fixed during online scoring. On seven BOP-Classic-Core datasets, CLON improves detection AP by 8.1 percentage points (pp), segmentation AP by 6.2 pp, and downstream 6D pose AR by up to 4.1 pp over CNOS and SAM-6D front-ends. 
+
+Keywords: Object Detection, 6D Pose Estimation, Prompt-based Segmentation 
+
+## 1 Introduction 
+
+6D object pose estimation is a core capability for robots that grasp, manipulate, inspect, or assemble objects in cluttered physical environments. Recent render-and-compare and foundation model-based methods have made substantial progress on novel object pose estimation by requiring only CAD models [1, 2, 3] or a small set of reference views [4, 5, 6] at test time. Without object-specific training, novel-object deployment becomes an object-onboarding problem : a robot must rapidly construct usable knowledge for a new object and localize it under occlusion, clutter, viewpoint change, and visually similar distractors. Most modern novel object pose pipelines decompose this problem into a proposal-and-matching front-end and a pose estimation back-end [1, 2, 3, 5, 7]. The front-end generates 2D candidate boxes or masks and matches each proposal to rendered templates or reference views of onboarded objects; the back-end estimates 6D pose only for the matched candidates. This decomposition is modular but brittle: if the target object is missed, fragmented, or assigned to the wrong identity, the subsequent pose solver has little opportunity to correct the failure. As downstream pose solvers become stronger [3, 5, 6, 8], benchmark reports increasingly identify the upstream proposal-and-matching stage as a primary bottleneck for unseen object 6D localization and detection [9]. This motivates a renewed focus on the front-end itself. In cluttered robot manipulation scenes, the front-end must preserve partially visible true positives while avoiding semantically plausible but instance-wrong candidates. A target object may be par-tially hidden by neighboring objects, workspace fixtures, or the robot arm, leaving only incomplete visible support. Generic object prompts can preserve recall, but often produce redundant masks or distractor proposals. Aggressive pruning can remove the only valid candidate for an occluded ob-arXiv:2609.04784v1 [cs.CV] 4 Sep 2026 ject. The front-end therefore needs target-aware proposal generation and object-set-aware proposal scoring before downstream pose estimation. Recent visual foundation models provide powerful tools for this front-end. Promptable segmentation models can segment object regions from spatial prompts [10, 11], and recent concept-segmentation models extend this ability to noun phrases or image exemplars [12]. Self-supervised visual en-coders provide transferable features for matching rendered templates to observed regions [13, 14], and vision-language models (VLMs) can generate compact semantic descriptions from object views [15]. However, simply composing these models is not sufficient. Language-guided seg-mentation can expand recall, but category-level phrases may retrieve plausible distractors. Template matching can validate proposals, but fixed score weighting does not account for whether the current object set is best separated by semantic, appearance, or geometric evidence. Some object sets con-tain enough visual variation for global semantic matching, whereas visually uniform or low-texture sets require additional appearance and geometric evidence. We introduce Cue-Calibrated Linguistic Object Onboarding ( CLON ), a proposal-and-matching front-end that requires no task-specific training for new objects. Unlike conventional onboarding, which mainly renders templates or extracts reference descriptors for later matching, CLON treats onboarding as construction of a front-end object-set memory. Given rendered templates of each onboarded object, it builds: (i) linguistic object memories containing compact, view-consistent noun phrases for target-aware proposal generation; and (ii) object-set cue weights that calibrate the relative importance of semantic, appearance, and geometric scores from template-derived statistics before scene inference. The linguistic memory acts as a top-down semantic search prior : instead of relying only on generic objectness, it guides SAM 3 [12] toward regions likely to correspond to the onboarded object set. During online inference, linguistic memories and generic object prompts jointly prompt SAM 3 to produce high-recall candidate regions. The resulting proposals remain identity-agnostic: every proposal is scored against the onboarded objects using semantic, appearance, and geometric cues. Rather than imposing a post-hoc top-K cap, the method improves the proposal distribution itself by using onboarding-derived language to focus proposal generation on target-relevant regions. Object identity is then assigned by calibrated proposal-object scoring using the derived cue weights. Our contributions are threefold. • We introduce linguistic object onboarding for zero-shot 6D pose front-ends, converting rendered templates into compact semantic memories that guide promptable segmentation. • We propose onboarding-time object-set cue calibration, which computes fixed semantic, appear-ance, and geometric score weights from template statistics before scene inference. • We demonstrate the resulting front-end across proposal quality, downstream pose estimation, and real robot-observation scenes, showing that target-aware linguistic proposals and cue calibration improve zero-shot 6D pose pipelines under clutter and occlusion. 
+
+## 2 Related Work 
+
+2.1 Promptable Segmentation for Semantic Object Search 
+
+Promptable segmentation has become a useful primitive for open-world perception. The Segment Anything Model (SAM) [10] introduced class-agnostic segmentation from spatial prompts such as points and boxes, and SAM 2 [11] extended this paradigm to images and videos. Since spatial prompts alone do not provide semantic object search, later systems combine SAM-style mask pre-diction with language-grounded detection or semantic segmentation modules, including Grounded-SAM [16], Semantic-SAM [17], and OpenWorldSAM [18]. SAM 3 [12] further introduces prompt-able concept segmentation, allowing noun phrases, image exemplars, or their combination to retrieve all instances matching a concept. This is attractive for robot object search because language can recover semantically related regions even when visible support is fragmented. However, concept 2segmentation is not onboarded-instance recognition: a phrase such as “yellow duck” or “handheld drill” may retrieve plausible distractors that do not correspond to the onboarded object model or reference instance. CLON therefore uses SAM 3 only as a high-recall proposal generator; object identity is resolved by calibrated template-based proposal scoring. 
+
+2.2 Template-Based Front-Ends for Pose Estimation 
+
+Novel-object pose estimation pipelines require a front-end that detects, segments, and identifies un-seen object instances from CAD models or reference views. CNOS [7] established a strong training-free baseline by generating SAM proposals and matching them against rendered CAD templates with DINOv2 descriptors [13]. SAM-6D [2] extends this idea to zero-shot 6D pose estimation by combining semantic, appearance, and geometric evidence. NIDS-Net [19] adapts pretrained vi-sion models for novel instance detection and segmentation from a few examples, using Grounding DINO [20] and SAM for proposals and DINOv2 foreground features for matching. MUSE [21] further improves model-based proposal scoring with rendered multi-view templates, class and patch embeddings, relative similarity, and an uncertainty-aware object prior. These methods show that foundation-model proposals and template matching are effective for un-seen objects. However, many proposal-first front-ends use onboarding mainly to prepare visual templates or descriptors for later matching. CLON instead treats onboarding as front-end object-set memory construction: it converts object templates into linguistic memories for target-aware proposal generation and computes cue weights for semantic, appearance, and geometric proposal scoring be-fore scene inference. This design addresses two front-end limitations: generic proposal generation can produce many distractors, while fixed score usage does not adapt to whether the current object set is best separated by semantic, appearance, or geometric evidence. 
+
+2.3 Novel-Object 6D Pose Estimation 
+
+Recent pose estimators have made substantial progress on novel-object generalization. Mega-Pose [1] estimates object pose through render-and-compare refinement from CAD models; Giga-Pose [3] accelerates pose recovery with template retrieval and local correspondences; Foundation-Pose [5] unifies pose estimation and tracking for model-based and model-free settings; and Found-Pose [8] and FreeZe [22] exploit foundation features or geometric foundation models for training-free pose estimation. Although these methods build powerful object representations for pose re-covery, they primarily address pose estimation once sufficient object evidence has been localized or provided as a crop, mask, or correspondence set. In cluttered robotic scenes, the upstream candidate set can dominate performance: if the front-end misses, fragments, or misidentifies the object, even a strong pose solver may receive no valid hypothesis. CLON is a modular front-end that improves proposal quality and identity assignment before downstream pose inference. 
+
+## 3 Method 
+
+Given an onboarded object set C, Cue-Calibrated Linguistic Object Onboarding ( CLON ) separates 
+
+offline object onboarding from online scene inference . Each object instance c ∈ C is represented by rendered templates Tc = {(Ivc , D vc )}NT
+
+> v=1
+
+, where v indexes a template view and Ivc , D vc de-note its RGB image and depth map. During onboarding, CLON constructs an object-set memory 
+
+MC =  {Lc}c∈C , w C
+
+ entirely from the templates. Here, Lc is a linguistic object memory for target-aware proposal generation, and wC = ( wsem , w app , w geo ) are cue weights computed before scene inference. During online inference, Lc guides SAM 3 proposal generation, while wC calibrates semantic, appearance, and geometric proposal-object scoring before downstream pose estimation. 
+
+3.1 Object-Set Onboarding Linguistic semantic memory. For each object c, we subsample N ′ 
+
+> T
+
+template views ( N ′ 
+
+> T
+
+< N T )from Tc at regular angular intervals to capture comprehensive visual characteristics of the object 3… 
+
+> Rendering
+> …
+> CAD models Templates
+> VLM
+> Object1: ["Pink toy cat", "Standing pink figurine", "pink toy or figurine"],
+> Proposal Generator Feature Extractor Depth CAD models RGB
+
+𝑆 !"# 
+
+𝑆 $%% 
+
+𝑆 &"'  
+
+> Proposals 3D Object Projection
+> Linguistic Semantic Memory
+> Object-set Onboarding (Offline) Semantic Proposal Generation (Online)
+> Object ID
+> Object-set Cue Weights
+> Proposal-Object Scoring (Online)
+> Feature Extractor
+> Cls tokens Hue, Saturation 3D BBox
+
+𝑊 !"# 
+
+𝑊 $%% 
+
+𝑊 &"'  
+
+> …
+> v=1 v=2
+> Object2: ["Yellow rubber duck", "Duck toy figurine", "Rubber duck object"] Object3: ["Cordless drill", "Handheld power tool", "Portable power drill"]
+> cls
+
+Figure 1: Method Overview. Offline onboarding builds linguistic object memories for target-aware proposal generation and object-set cue weights for calibrated proposal-object scoring. from various views. Then we query a VLM (Qwen-2.5-VL [15]) with deterministic decoding using a fixed prompt template. The template contains an optional high-level metadata field, such as “indus-trial object” or “household object,” when such metadata is available during onboarding; otherwise the field is left empty. The same prompting rule is used before scene inference and is never adjusted using test scenes. The VLM is asked to generate up to M short noun phrases describing persistent object properties, including color, shape, material, and distinctive parts. We use the parsed phrases directly as the linguistic semantic memory Lc, without human filtering. During inference, Lc serves only as top-down semantic anchors for SAM 3 proposal generation; final identity is determined by calibrated proposal-object scoring. Detailed prompt configurations are provided in the appendix. 
+
+Object-set cue weights. The proposal verifier later in Sec. 3.2 combines semantic, appearance, and geometric scores. Although these scores are evaluated online, their relative weights are part of the onboarding memory and are computed before scene inference. The key observation is that cue reliability depends on the onboarded object set: some sets contain distinctive global visual patterns that are well captured by semantic descriptors, whereas visually uniform or low-texture sets require additional appearance and geometric evidence. Let P vc (h, s ) denote the empirical joint distribution over Hue and Saturation bins of the masked template image Ivc after conversion to HSV. We define the object-set texture score 
+
+eapp = 1
+
+|C| NT
+
+X
+
+> c∈C
+> NT
+
+X
+
+> v=1
+
+H(Ivc ), where H(Ivc ) = − 1log 2 NB
+
+X
+
+> h
+
+X
+
+> s
+
+P vc (h, s ) log 2 P vc (h, s ), (1) where H(Ivc ) is the normalized template entropy, NB is the number of bins in the joint (h, s ) his-togram, and zero-probability terms are omitted. If eapp > τ app , the object set contains sufficient global visual variation for semantic matching, and CLON uses (wsem , w app , w geo ) = (1 , 0, 0) . This avoids redundant local appearance matching, which can over-score accidental partial texture matches under occlusion. Otherwise, CLON activates appearance and geometry as compensatory cues: 
+
+(wsem , w app , w geo ) = ( α(1 − eapp ), e app , (1 − α)(1 − eapp )) 
+
+In the low-entropy branch ( eapp ≤ τapp ), wapp = eapp allows local appearance to contribute only when residual texture remains; as the templates become nearly textureless, the residual se-mantic/geometric terms dominate. 4The semantic–geometry split α is computed from template-derived inter-object discriminability. Semantic discriminability sdis is 
+
+sdis = 1 − 1
+
+C
+
+> C
+
+X
+
+> c=1
+
+max  
+
+> k̸=c
+
+ g′ 
+
+> c
+
+· g′
+
+> k
+
+∥g′
+
+> c
+
+∥∥ g′
+
+> k
+
+∥
+
+
+
+, where g′ 
+
+> c
+
+= 1
+
+NTNTX
+
+> v=1
+
+gvc
+
+where g′ 
+
+> c
+
+is the canonical DINOv3 class-token prototype for object c. Geometric discriminability 
+
+gdis is computed from 3D bounding-box overlap: 
+
+gdis = 1 − 1
+
+C
+
+> C
+
+X
+
+> c=1
+
+max   
+
+> k̸=c
+
+IoU 3D (Bc, B k)
+
+We then set 
+
+α = λsem sdis 
+
+λsem sdis + gdis + ϵ ,
+
+where λsem is a fixed global semantic-priority constant and ϵ prevents division by zero. All cue weights are computed from the onboarded templates only and are kept fixed during online proposal scoring. Hyperparameters are fixed globally and reported in the appendix. 
+
+3.2 Online Scene Inference Semantic Proposal Generation. Given an observed RGB image I, CLON uses the linguistic memories to guide SAM 3 [12] toward regions likely to contain onboarded objects, while preserving recall with generic object prompts under unusual viewpoints, weak linguistic evidence, or severe occlusion. We form the prompt set Q = Tgen ∪ S 
+
+> c∈C
+
+Lc where Tgen contains generic prompts such as “object”. SAM 3 is run with all prompts in Q, and the resulting masks are pooled and consolidated using IoU-based non-maximum suppression: 
+
+P = NMS τiou 
+
+ [
+
+> q∈Q
+
+SAM3( I, q )
+
+ .
+
+Each retained proposal p ∈ P is represented by a mask mp and bounding box Bp. Proposals are not assigned object identities at this stage. Prompt provenance is used only as weak metadata; every proposal is scored against every onboarded object. Thus, linguistic object memory acts before matching: it biases SAM 3 toward target-relevant regions and improves the proposal distribution without post-hoc truncating matched hypotheses. 
+
+Calibrated Proposal-Object Scoring. For each proposal p ∈ P and object c ∈ C , CLON com-putes a proposal-object score. We reuse the semantic, appearance, and geometric score definitions from SAM-6D [2], but apply them in a joint proposal-object scoring policy with onboarding-time cue weights. The semantic score Ssem (p, c ) measures global compatibility between proposal p and rendered templates of object c. The appearance score Sapp (p, c ) measures visual compatibility be-tween the proposal crop and the object templates. The geometric score Sgeo (p, c ) provides coarse spatial consistency when depth is available; if depth is unavailable or insufficient, the geometric term is omitted and the remaining cue weights are renormalized. The final proposal-object score is 
+
+Sfinal (p, c ) = ¯ wsem Ssem (p, c ) + ¯ wapp Sapp (p, c ) + ¯ wgeo Sgeo (p, c ) (2) where ¯wj are the onboarding-time cue weights renormalized over the available cues. Each proposal is assigned to the object with the highest final score, 
+
+c∗(p) = arg max  
+
+> c∈C
+
+Sfinal (p, c ).
+
+All matched hypotheses satisfying Sfinal 
+
+ p, c ∗(p) > τ match are forwarded to the downstream 6D pose estimator. CLON does not impose an additional top-K cap after matching; its compactness comes from semantic-memory-guided proposal generation. 5Table 1: 2D detection and segmentation results on the seven core BOP datasets.                                                                                               
+
+> Method LM-O [23] T-LESS [24] TUD-L [25] IC-BIN [26] ITODD [27] HB [28] YCB-V [29] AP mean
+> Detection Results
+> CNOS (SAM) [7] 0.392 0.329 0.376 0.204 0.314 0.424 0.495 0.362 CNOS (FastSAM) [7] 0.430 0.397 0.540 0.225 0.322 0.518 0.573 0.429 SAM-6D (SAM) [2] 0.465 0.437 0.536 0.261 0.393 0.530 0.517 0.448 SAM-6D (FastSAM) [2] 0.464 0.458 0.573 0.245 0.419 0.551 0.589 0.471
+> CLON 0.529 0.552 0.664 0.358 0.460 0.628 0.669 0.551
+> Segmentation Results
+> CNOS (SAM) [7] 0.393 0.396 0.399 0.282 0.284 0.478 0.597 0.404 CNOS (FastSAM) [7] 0.395 0.376 0.486 0.267 0.251 0.514 0.602 0.413 SAM-6D (SAM) [2] 0.460 0.451 0.568 0.358 0.331 0.593 0.605 0.481 SAM-6D (FastSAM) [2] 0.423 0.420 0.517 0.294 0.319 0.548 0.621 0.449
+> CLON 0.488 0.535 0.619 0.465 0.363 0.640 0.692 0.543 (a) LM-O (b) T-LESS (c) TUD-L (d) IC-BIN (e) ITODD (f) HB (g) YCB-V RGB Templates Detection
+
+Figure 2: 2D Object detection qualitative results of CLON on the seven core BOP datasets. 
+
+## 4 Experiments 
+
+4.1 Implementation Detail Datasets & Metrics. We evaluate CLON on the seven core BOP challenge datasets (LM-O [23], T-LESS [24], TUD-L [25], IC-BIN [26], ITODD [27], HB [28], YCB-V [29]). These datasets comprise 132 unique household and industrial object instances under occlusion, textureless surfaces, illumination changes, and visually similar instances. Following the standard BOP protocol [30], we report Average Precision ( AP ) at IoU ∈ [0 .50 : 0 .05 : 0 .95] for detection/segmentation, and Average Recall ( AR ) for downstream 6D pose estimation. 
+
+Baselines. We compare CLON with CNOS [7] and SAM-6D [2] front-ends, including their SAM/FastSAM proposal variants when available. MUSE [21] is not included because public code was unavailable at submission; we include it in related work because it is a close training-free proposal-scoring method. To evaluate whether front-end improvements transfer to pose estimation, we pair each front-end with three downstream pose solvers: GigaPose [3], SAM-6D [2], and Foun-dationPose [5]. All baselines are reproduced and evaluated under the same environment, with fixed global hyperparameters and no per-scene/dataset tuning. Additional details are in the Appendix. 
+
+4.2 Main Evaluation on BOP Benchmarks 2D Object Detection and Segmentation. Table 1 compares front-end detection and segmenta-tion quality. CLON achieves the highest AP mean on both tasks, reaching AP det of 0.551 and AP seg 
+
+of 0.543. This improves over the strongest baseline by +8.1 pp for detection and +6.2 pp for seg-mentation. These results show that linguistic object memories provide effective top-down anchors for SAM 3, producing target-relevant proposals while suppressing many semantically plausible dis-tractors. Fig. 2 shows examples of RGB scenes, object templates, and CLON detection results. 
+
+6D Pose Estimation Results. Table 2 evaluates the effect of front-end quality on three pose solvers. CLON obtains the highest AR mean with all downstream solvers: 0.634 with GigaPose, 
+
+0.726 with SAM-6D, and 0.748 with FoundationPose. Relative to the strongest non-CLON front-end for each solver, this corresponds to gains of +4 .1, +3 .0, and +1 .4 pp, respectively. The gains 6Table 2: 6D pose estimation results using different detection/segmentation and pose estimation methods on the seven core BOP datasets. ( † refers that refine method from [1] are used.)                                                                                   
+
+> Method Detection/ Segmentation LM-O T-LESS TUD-L IC-BIN ITODD HB YCB-V AR mean
+> GigaPose †[3] CNOS [7] 0.524 0.547 0.472 0.456 0.373 0.600 0.640 0.516 SAM-6D [2] 0.607 0.578 0.651 0.521 0.409 0.728 0.656 0.593
+> CLON 0.620 0.673 0.685 0.567 0.414 0.778 0.699 0.634
+> SAM-6D [2] CNOS [7] 0.607 0.475 0.650 0.498 0.505 0.619 0.788 0.592 SAM-6D [2] 0.700 0.514 0.892 0.585 0.582 0.766 0.835 0.696
+> CLON 0.705 0.583 0.894 0.656 0.583 0.79 0.868 0.726
+> FoundationPose CNOS [7] 0.633 0.485 0.691 0.567 0.585 0.677 0.851 0.641 SAM-6D [2] 0.727 0.485 0.898 0.636 0.667 0.825 0.867 0.734
+> CLON 0.728 0.586 0.878 0.691 0.644 0.811 0.896 0.748
+
+Table 3: Ablation study of individual components across BOP datasets. LM is linguistic memory and wC is cue weights.                                                     
+
+> Baseline Combination Dataset AP mean
+> DINOv3 LM wCLM-O T-LESS TUD-L IC-BIN ITODD HB YCB-V SAM-6D 0.465 0.437 0.536 0.261 0.393 0.530 0.517 0.448
+> ✓0.463 0.451 0.493 0.259 0.428 0.532 0.537 0.452
+> CLON
+> ✓✓0.528 0.549 0.661 0.347 0.456 0.618 0.620 0.540
+> ✓✓(1,0,0) 0.514 0.485 0.65 0.358 0.429 0.622 0.669 0.532
+> ✓✓Ours 0.529 0.552 0.664 0.358 0.460 0.628 0.669 0.551
+
+Table 4: Ablation on lin-guistic prompts of CLON .       
+
+> Linguistic Prompt AP mean
+> only object 0.410 object + color 0.488 object + top 1 0.525 object + top 1 + color 0.544
+> CLON (full) 0.551
+
+are not uniform for every dataset, especially for FoundationPose, whose internal matching can some-times recover from redundant or loose proposals. Nevertheless, the consistent AR mean improvement indicates that CLON ’s target-aware proposal generation and calibrated proposal-object scoring im-prove the hypotheses provided to downstream pose estimation. 
+
+4.3 Ablation Study Linguistic memory and cue calibration. Table 3 isolates the main components of CLON . The first two rows share the same SAM-6D detection and differ only in the visual descriptor, showing that improvements do not simply come from a stronger feature backbone. Introducing linguistic memory changes the proposal generation itself from generic to target-aware, providing the dominant improvement to 0.540 AP mean even under same cue weighting with SAM-6D. Row 3–5 share the same SAM 3 proposals prompted by linguistic memory and differ only in their scoring weights. Cue calibration further improves AP mean to 0.551, while the semantic-only variant ( wC = (1 , 0, 0) )drops to 0.532, indicating that appearance and geometry remain useful when weighted according to the onboarded object set. This supports the two core contributions of CLON : linguistic object onboarding for proposal generation and object-set cue calibration for proposal-object scoring. 
+
+Prompt Granularity. Table 4 analyzes how the linguistic memory should be used as SAM 3 prompts. A generic object prompt alone performs poorly (0.410 AP mean ), worse than the SAM-6D baseline (0.448 AP mean ), confirming that concept segmentation without object-specific semantic an-chors is insufficient for onboarded-instance proposal generation. Adding color or a single structural descriptor improves performance, and combining the top structural descriptor with color reaches 0.544 AP mean . The full CLON prompt set performs best (0.551 AP mean ), showing that multiple compact, view-consistent phrases are more effective than a single concatenated descriptor. Further details are provided in the Appendix. 
+
+4.4 Real-World Robot Evaluation 
+
+We further evaluate whether front-end proposal quality transfers to a real robot observation setting. We use 100 cluttered bird’s-eye-view RGB scenes where the robot arm can cause occlusion (Fig. 3). The scenes contain five household objects in SenseShift6D [31]—sandwich, tin case, Pringles can, duck, and mustard bottle—and we conduct 20 trials per object for robot grasping. Detailed exper-7(a) Robot deployment setting (b) Test image of deployment Figure 3: Experimental setup for real-world robot de-ployment (cluttered scenes with robot arm occlusion). 
+
+Method AP mean AR mean Grasp(%) CNOS [7] 0.514 0.611 12.0 SAM-6D [2] 0.284 0.481 18.0 
+
+CLON (Ours) 0.811 0.849 36.0 
+
+Table 5: Quantitative result for robot de-ployment. Test Images Target Object Detection Results Grasp 
+
+Figure 4: Qualitative results of robot evaluation. From left to right: test images, target objects, our detection re-sults, and the corresponding robotic grasping results. (a) Test image (c) Detection results of CNOS, SAM-6D, and CLON, respectively (d) Resulting 6D pose estimation from the detections in (c) 
+
+> Miss
+> (b) Target Image
+> Miss False False True True
+
+Figure 5: Comparison of CNOS, SAM-6D, and CLON for detection and their corresponding 6D pose estimation. imental settings are provided in the Appendix. Each method localizes the target object from RGB, and the detected 2D box center is passed to an inverse-kinematics controller for grasping. For SAM-6D, which requires depth, we use Depth Anything 3 [32] to estimate depth from the same RGB input. As shown in Table 5, CLON achieves the highest AP mean and AR mean (0.811 and 0.849) and the highest grasp rate (36.0%, 2.0 × the strongest baseline). Fig. 4 shows the qualitative results of robot grasping based on CLON . These results suggest that CLON ’s target-aware proposal generation improves real-world object localization in cluttered robot observations. We view this as a front-end transfer evaluation rather than a complete manipulation system. As shown in Fig. 5, localization errors propagate to downstream 6D pose estimation, and we expect the performance advantage of 
+
+CLON to become more pronounced when extended to end-to-end robot manipulation through 6D pose estimation. 
+
+## 5 Conclusion 
+
+We presented CLON , a cue-calibrated linguistic object-onboarding front-end for zero-shot 6D pose estimation. CLON converts rendered templates into linguistic object memories for target-aware proposal generation and computes object-set cue weights before scene inference to calibrate se-mantic, appearance, and geometric proposal-object scoring. Across BOP-Classic-Core datasets and three downstream pose solvers, CLON improves front-end proposal quality and downstream pose 
+
+AR . Real-world robot observations further suggest that the resulting proposals are useful for clut-tered manipulation settings. 
+
+5.1 Limitations 
+
+CLON uses linguistic memories although SAM 3 also supports image-exemplar prompts. A CAD model is naturally represented by many rendered views, and selecting a compact visual-exemplar set that covers viewpoint and render-to-real variation introduces an additional onboarding problem. 
+
+CLON instead compresses multi-view templates into persistent object descriptions, yielding view-abstracted semantic anchors that are reused across scenes. Hybrid linguistic–visual memories can be a promising future direction. CLON still has limitations. Linguistic prompts can remain ambiguous for visually similar objects or poorly named industrial parts. The entropy-based cue calibration may miss ambiguities caused by shape similarity, symmetry, or visually similar industrial parts. Finally, CLON is not optimized for worst-case runtime: SAM 3 must process multiple prompts, and proposal-object scoring scales with the number of onboarded objects. Future work will explore prompt-efficient proposal generation and stronger object-set reliability estimation. 8References 
+
+[1] Y. Labb´ e, L. Manuelli, A. Mousavian, S. Tyree, S. Birchfield, J. Tremblay, J. Carpentier, M. Aubry, D. Fox, and J. Sivic. Megapose: 6d pose estimation of novel objects via render & compare. arXiv preprint arXiv:2212.06870 , 2022. [2] J. Lin, L. Liu, D. Lu, and K. Jia. Sam-6d: Segment anything model meets zero-shot 6d object pose estimation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 27906–27916, 2024. [3] V. N. Nguyen, T. Groueix, M. Salzmann, and V. Lepetit. Gigapose: Fast and robust novel object pose estimation via one correspondence. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 9903–9913, 2024. [4] Y. Liu, Y. Wen, S. Peng, C. Lin, X. Long, T. Komura, and W. Wang. Gen6d: Generalizable model-free 6-dof object pose estimation from rgb images. In ECCV , 2022. [5] B. Wen, W. Yang, J. Kautz, and S. Birchfield. Foundationpose: Unified 6d pose estimation and tracking of novel objects. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 17868–17879, 2024. [6] T. Lee, B. Wen, M. Kang, G. Kang, I. S. Kweon, and K.-J. Yoon. Any6D: Model-free 6d pose estimation of novel objects. In Proceedings of the Computer Vision and Pattern Recognition Conference (CVPR) , 2025. [7] V. N. Nguyen, T. Groueix, G. Ponimatkin, V. Lepetit, and T. Hodan. Cnos: A strong base-line for cad-based novel object segmentation. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 2134–2140, 2023. [8] E. P. ¨ Ornek, Y. Labb´ e, B. Tekin, L. Ma, C. Keskin, C. Forster, and T. Hodan. Foundpose: Unseen object pose estimation with foundation features. In European Conference on Computer Vision , pages 163–182. Springer, 2024. [9] V. N. Nguyen, S. Tyree, A. Guo, M. Fourmy, A. Gouda, T. Lee, S. Moon, H. Son, L. Ran-ftl, J. Tremblay, et al. Bop challenge 2024 on model-based and model-free 6d object pose estimation. arXiv preprint arXiv:2504.02812 , 2025. [10] A. Kirillov, E. Mintun, N. Ravi, H. Mao, C. Rolland, L. Gustafson, T. Xiao, S. Whitehead, A. C. Berg, W.-Y. Lo, et al. Segment anything. In Proceedings of the IEEE/CVF international conference on computer vision , pages 4015–4026, 2023. [11] N. Ravi, V. Gabeur, Y.-T. Hu, R. Hu, C. Ryali, T. Ma, H. Khedr, R. R¨ adle, C. Rolland, L. Gustafson, et al. Sam 2: Segment anything in images and videos. In International Confer-ence on Learning Representations , volume 2025, pages 28085–28128, 2025. [12] N. Carion, L. Gustafson, Y.-T. Hu, S. Debnath, R. Hu, D. Suris, C. Ryali, K. V. Alwala, H. Khedr, A. Huang, et al. Sam 3: Segment anything with concepts. arXiv preprint arXiv:2511.16719 , 2025. [13] M. Oquab, T. Darcet, T. Moutakanni, H. Vo, M. Szafraniec, V. Khalidov, P. Fernandez, D. Haz-iza, F. Massa, A. El-Nouby, et al. Dinov2: Learning robust visual features without supervision. 
+
+arXiv preprint arXiv:2304.07193 , 2023. [14] O. Sim´ eoni, H. V. Vo, M. Seitzer, F. Baldassarre, M. Oquab, C. Jose, V. Khalidov, M. Szafraniec, S. Yi, M. Ramamonjisoa, et al. Dinov3. arXiv preprint arXiv:2508.10104 ,2025. [15] S. Bai, K. Chen, X. Liu, J. Wang, W. Ge, S. Song, K. Dang, P. Wang, S. Wang, J. Tang, H. Zhong, Y. Zhu, M. Yang, Z. Li, J. Wan, P. Wang, W. Ding, Z. Fu, Y. Xu, J. Ye, X. Zhang, T. Xie, Z. Cheng, H. Zhang, Z. Yang, H. Xu, and J. Lin. Qwen2.5-vl technical report, 2025. URL https://arxiv.org/abs/2502.13923 .9[16] T. Ren, S. Liu, A. Zeng, J. Lin, K. Li, H. Cao, J. Chen, X. Huang, Y. Chen, F. Yan, Z. Zeng, H. Zhang, F. Li, J. Yang, H. Li, Q. Jiang, and L. Zhang. Grounded sam: Assembling open-world models for diverse visual tasks, 2024. [17] F. Li, H. Zhang, P. Sun, X. Zou, S. Liu, C. Li, J. Yang, L. Zhang, and J. Gao. Segment and recognize anything at any granularity. In European Conference on Computer Vision , pages 467–484. Springer, 2024. [18] S. G. Xiao, R. Kabra, Y. Li, D. Lee, J. Carreira, and P. Panda. Openworldsam: Extending sam2 for universal image segmentation with language prompts. Advances in Neural Information Processing Systems , 38:35507–35532, 2026. [19] Y. Lu, Y. Guo, N. Ruozzi, Y. Xiang, et al. Adapting pre-trained vision models for novel instance detection and segmentation. In 2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , pages 13341–13348. IEEE, 2025. [20] S. Liu, Z. Zeng, T. Ren, F. Li, H. Zhang, J. Yang, Q. Jiang, C. Li, J. Yang, H. Su, et al. Grounding dino: Marrying dino with grounded pre-training for open-set object detection. In 
+
+European conference on computer vision , pages 38–55. Springer, 2024. [21] S. Cho, S. Park, and I. Oh. Muse: Model-based uncertainty-aware similarity estimation for zero-shot 2d object detection and segmentation. In Proceedings of the IEEE/CVF Winter Con-ference on Applications of Computer Vision , pages 6090–6100, 2026. [22] A. Caraffa, D. Boscaini, A. Hamza, and F. Poiesi. Freeze: Training-free zero-shot 6d pose es-timation with geometric and vision foundation models. In European Conference on Computer Vision , pages 414–431. Springer, 2024. [23] E. Brachmann, A. Krull, F. Michel, S. Gumhold, J. Shotton, and C. Rother. Learning 6d object pose estimation using 3d object coordinates. In European conference on computer vision ,pages 536–551. Springer, 2014. [24] T. Hodan, P. Haluza, ˇ S. Obdrˇ z´ alek, J. Matas, M. Lourakis, and X. Zabulis. T-less: An rgb-d dataset for 6d pose estimation of texture-less objects. In 2017 IEEE winter conference on applications of computer vision (WACV) , pages 880–888. IEEE, 2017. [25] T. Hodan, F. Michel, E. Brachmann, W. Kehl, A. GlentBuch, D. Kraft, B. Drost, J. Vidal, S. Ihrke, X. Zabulis, et al. Bop: Benchmark for 6d object pose estimation. In Proceedings of the European conference on computer vision (ECCV) , pages 19–34, 2018. [26] A. Doumanoglou, R. Kouskouridas, S. Malassiotis, and T.-K. Kim. Recovering 6d object pose and predicting next-best-view in the crowd. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 3583–3592, 2016. [27] B. Drost, M. Ulrich, P. Bergmann, P. Hartinger, and C. Steger. Introducing mvtec itodd-a dataset for 3d object recognition in industry. In Proceedings of the IEEE international confer-ence on computer vision workshops , pages 2200–2208, 2017. [28] R. Kaskman, S. Zakharov, I. Shugurov, and S. Ilic. Homebreweddb: Rgb-d dataset for 6d pose estimation of 3d objects. In Proceedings of the IEEE/CVF International Conference on Computer Vision Workshops , pages 0–0, 2019. [29] Y. Xiang, T. Schmidt, V. Narayanan, and D. Fox. Posecnn: A convolutional neural network for 6d object pose estimation in cluttered scenes. arXiv preprint arXiv:1711.00199 , 2017. [30] M. Sundermeyer, T. Hodaˇ n, Y. Labbe, G. Wang, E. Brachmann, B. Drost, C. Rother, and J. Matas. Bop challenge 2022 on detection, segmentation and pose estimation of specific rigid objects. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 2785–2794, 2023. 10 [31] Y. Han, T. Yoon, D. Woo, S. Kim, and H.-S. Kim. Senseshift6d: Multimodal rgb-d bench-marking for robust 6d pose estimation across environment and sensor variations, 2026. URL 
+
+https://arxiv.org/abs/2507.05751 .[32] H. Lin, S. Chen, J. H. Liew, D. Y. Chen, Z. Li, G. Shi, J. Feng, and B. Kang. Depth anything 3: Recovering the visual space from any views. arXiv preprint arXiv:2511.10647 , 2025. 11 A Details of Linguistic Semantic Memory 
+
+A.1 Prompt Configurations on Qwen-2.5-VL 
+
+Prompt Configuration [Task] Identify the 3D object in the images. Provide candidates that define the object’s full physical boundary and its most specific everyday name. [Rules] 1. List exactly 4 identity candidates. 2. **Specific Inference**: Use the most concrete everyday name. Avoid vague words like ”structure”, ”shape”, or ”item”. 3. **Spatial Awareness**: If the object is behind others or partially hidden, you MUST include spatial keywords (e.g., ”Rear”, ”Hidden”, ”Tucked”). 4. **Boundary Definition**: Use words that help define the object’s volume and parts (e.g., ”Entire body”, ”Extended part”, ”Vertical frame”). 5. Color can be included to help distinguish the object, but it is NOT mandatory for every candidate. 6. Each candidate must be a short phrase (Max 4 words). 7. The last candidate must be ”[Dominant Color] object”. 8. Provide ONLY the list starting with ”- ”. [Example] - Rear wooden bookshelf - Entire brown storage-unit - Vertical side-panel - Brown object [Output] -Figure 6: Prompt configuration for generating linguistic object memories via Qwen-2.5-VL. As discussed in Sec. 3.1 of the main paper, we query Qwen-2.5-VL [15] to construct linguistic semantic memory. Fig. 6 details the exact prompt configuration used in this stage. To ensure that the generated noun-phrase descriptors remain effective even when objects are heavily occluded, we impose several explicit constraints during prompt design. Importantly, we use a single, unified prompt template across all objects and scenes. As introduced in the main text, Rule 2 accommodates an optional high-level metadata field provided during on-boarding. When such broad categorical context is available—such as for industrial datasets like T-LESS [24] and ITODD [27]—Rule 2 seamlessly integrates the “industrial object” tag (e.g., Note that this object is an industry-relevant object. Use this to infer a professional name. ). This naturally encourages the model to produce precise technical terminology rather than everyday expressions, entirely avoiding dataset-specific prompt tuning. Additionally, Rule 3 enforces the inclusion of spatial keywords (e.g., “Rear,” “Hidden”) to account for partial visibility, while Rule 4 requires explicit physical boundary descriptions to capture the ob-ject’s volumetric extent. Finally, by strictly restricting the output to exactly four concise and stable attributes (Rules 1 and 6), we prevent the generation of vague or redundant descriptors. These struc-tured rules ensure the synthesis of reliable instance-conditioned semantic priors, which subsequently guide the text-prompted segmentation using SAM 3 [12]. 12 Linguistic Semantic Memories on LM-O ”-1”: [ ”object”, ”small object” ], ”0”: [ ”Red abstract sculpture”, ”Curved red art piece”, ”Sculpted red form”, ”Red object” ], ”1”: [ ”White watering can”, ”En-tire white container”, ”Handle on top”, ”White object” ], ”2”: [ ”Pink toy cat”, ”Standing pink fig-urine”, ”pink toy or figurine”, ”Pink ob-ject” ], ”3”: [ ”Cordless drill”, ”Handheld power tool”, ”Green electric drill”, ”Green ob-ject” ], Linguistic Semantic Memories on LM-O(Con.) ”4”: [ ”Yellow rubber duck”, ”Duck toy figurine”, ”Rubber duck object”, ”Yel-low object” ], ”5”: [ ”Egg carton top”, ”White egg container lid”, ”Rectangular plastic tray”, ”White object” ], ”6”: [ ”White spray bottle”, ”Gray nozzle container”, ”Clear plastic dis-penser”, ”Black label marker” ], ”7”: [ ”Blue plastic buckle”, ”Entire blue belt-buckle”, ”Extended part of buckle”, ”Blue object” ] Figure 7: Examples of generated Linguistic Semantic Memories for the LM-O dataset 
+
+A.1.1 Examples of Linguistic Semantic Memory 
+
+To provide a concrete illustration of the generated semantic priors, we present the complete set of the linguistic semantic memories for the LM-O [23] dataset in Fig. 7. As shown, each target object (IDs 0 to 7) is associated with exactly four descriptive noun phrases generated by Qwen-2.5-VL [15], strictly following our prompt guidelines. These descriptors successfully capture representative at-tributes of the objects, ranging from specific identities (e.g., Cordless drill , Yellow rubber duck ) to dominant visual characteristics (e.g., Green object , Blue object ). Additionally, the ID “-1” corresponds to generic noun phrases (e.g., object , small object ). As dis-cussed in the main paper, these generic anchors play a pivotal role in ensuring high detection recall under extreme conditions, such as unusual viewpoints or severe occlusion, where instance-specific visual cues may become mostly invisible. 
+
+## B Implementation Details of Object-Set Cues 
+
+This section provides the hyperparameter settings and specific implementation details for the seman-tic ( sdis ), appearance ( eapp ), and geometric ( gdis ) cues, as well as the weight distribution mechanism omitted from the main text. 
+
+B.1 Detailed Computation of Discriminability Metrics 
+
+First, to evaluate the semantic discriminability sdis , we utilize the DINOv3 class tokens. DINOv3 effectively captures robust global semantic concepts. By averaging the class tokens gvc across all NT
+
+template views, we construct a canonical semantic prototype g′
+
+> c
+
+. The separation margin between a given object and its nearest semantic neighbor object establishes a strict boundary of how distinct each global concept is from the rest of the dataset. Second, the appearance cue eapp assesses the richness of an object’s surface patterns. To isolate the object pixels, we background-mask all template images Ivc . The joint entropy is then computed over the Hue ( H) and Saturation ( S) channels in the HSV color space. In our implementation, the joint 
+
+(h, s ) histogram is constructed with 180 bins for Hue and 256 bins for Saturation, yielding a total of 
+
+NB = 46 , 080 bins. Third, the geometric discriminability gdis evaluates spatial distinctiveness. We align the centers of the 3D bounding boxes Bc of all objects in the dataset and calculate the maximum 3D Intersection-over-Union (IoU). This directly reflects whether structural scales and aspect ratios alone provide sufficient discriminative cues without relying on visual features. 13 Table 6: Object-set cues and relative weights across the seven BOP datasets. 
+
+Dataset sdis eapp gdis wsem wapp wgeo AP LM-O [23] 0.553 0.220 0.505 0.598 0.220 0.182 0.529 T-LESS [24] 0.098 0.093 0.182 0.560 0.093 0.347 0.552 TUD-L [25] 0.588 0.190 0.758 0.567 0.190 0.244 0.664 IC-BIN [26] 0.766 0.262 0.523 1.000 0.000 0.000 0.358 ITODD [27] 0.240 0.092 0.438 0.565 0.092 0.343 0.460 HB [28] 0.385 0.212 0.359 0.601 0.212 0.187 0.628 YCB-V [29] 0.391 0.227 0.408 0.573 0.227 0.200 0.543 
+
+B.2 Relative Cue Weights and Hyperparameters 
+
+In the main text, we introduced the relative cue weights (wsem , w app , w geo ). Here, we detail the exact hyperparameter configurations used to handle textureless items and physical occlusions. 
+
+Texture Gating Threshold: Rather than applying an artificial scaling or mapping function, we directly utilize the normalized Shannon entropy. As defined in the main text, if the object set exhibits sufficient texture variation ( eapp > τ app ), we strictly assign (wsem , w app , w geo ) = (1 , 0, 0) . In the low-entropy branch ( eapp ≤ τapp ), which is characteristic of textureless industrial parts, wapp 
+
+directly takes the value of eapp . We empirically set this gating threshold to τapp = 0 .25 .
+
+Semantic-Geometry Split under Occlusion: Under heavy physical occlusion, their apparent 3D bounding profiles distort drastically. To compensate, our framework operates under a core domain prior: semantic features are significantly more robust than geometric constraints under such condi-tions. Consequently, we explicitly set the global semantic-priority constant λsem = 3 . This non-uniform scaling ensures that the semantic cue is weighted three times as heavily as the geometric cue when splitting the residual confidence (1 − eapp ), effectively preventing geometric errors from dominating the verification stage. Finally, we set ϵ = 10 −6 for numerical stability. Table 6 details the computed discriminability metrics and the resulting relative cue weights across the seven BOP datasets. Based on these metrics and our strategy, the final weights 
+
+(wsem , w app , w geo ) are effectively determined. Notably, for the ICBIN dataset, the normalized ap-pearance entropy eapp exceeds the gating threshold ( τapp ), strictly assigning the weights to (1 , 0, 0) 
+
+exactly as our framework designed. Table 7: Quantitative Comparison of the Generated Segmentation Proposals LM-O [23] T-LESS [24] TUD-L [25] IC-BIN [26] ITODD [27] HB [28] YCB-V [29] SAM-6D (SAM) [2] 174 107 95 108 36 89 80 Ours (SAM3) 23 14 5 16 21 14 9
+
+## C Analysis of Object Onboarding 
+
+C.1 Impact of Linguistic Semantic Memory for Proposal Anchoring Quantitative Results. To quantitatively support these qualitative observations, Table 7 presents the average number of segmentation masks generated per image across the seven BOP datasets, measured immediately after the proposal generation stage. The results highlight the remarkable efficiency of our conditioned proposal generation. While the SAM-6D pipeline adopts a dense grid-based prompting strategy that segments an excessive number of regions (e.g., an average of 
+
+174 on LM-O and 108 on ICBIN), CLON leverages the linguistic semantic memories to focus the segmenter strictly on target categories. Consequently, our method produces only 23 proposals on LM-O and 16 on ICBIN, achieving an approximate 85% reduction in the initial proposal pool. By 14 Table 8: Detailed ablation study on linguistic prompts for CLON                                                  
+
+> Linguistic Prompt LM-O [23] T-LESS [24] TUD-L [25] IC-BIN [26] ITODD [27] HB [28] YCB-V [29] AP mean
+> only object 0.497 0.523 0.301 0.130 0.341 0.592 0.488 0.410 object + color 0.519 0.532 0.615 0.130 0.407 0.616 0.594 0.488 object + top1 0.530 0.536 0.542 0.358 0.442 0.603 0.663 0.525 object + top1 + color 0.530 0.537 0.633 0.358 0.453 0.624 0.670 0.544
+> CLON (full) 0.529 0.552 0.664 0.358 0.460 0.628 0.669 0.551
+
+Table 9: Ablation of CLON on prompt set and proposal generator ( AP mean ). Proposal Generators Prompt: Generic “Object” Prompt: LM LM gain Grounding DINO + SAM 0.310 0.446 +13.6 pp SAM 3 0.410 0.551 (full CLON ) +14.1 pp filtering out background clutter and fragmented regions at this early stage, fewer noisy candidates are propagated to the subsequent visual part verification. This drastically reduces computational overhead and mitigates the risk of false positives before reaching the pose estimator. Table 8 further reports the prompt ablation for each dataset. Different datasets benefit from differ-ent linguistic cues, while the full LM of CLON provides the best overall performance with 0.551 
+
+AP mean . Notably, the performance improves substantially on texture-less datasets such as T-LESS and ITODD, demonstrating that linguistic semantic memory remain effective even when visual ap-pearance provides limited discriminative information. Tab. 9 further disentangles the effects of the linguistic memory and proposal generator. LM improves Grounding DINO + SAM from 0.310 to 0.446 AP mean (+13.6 pp), demonstrating that the benefit of linguistic memory transfers beyond SAM 3. A similar gain is observed with SAM 3, from 0.410 
+
+to 0.551 (+14.1 pp), while SAM 3 remains the strongest tested proposal generator. 
+
+Qualitative Observations. The impact of the linguistic semantic memory anchoring is directly reflected in the high recall and reduced redundancy of the generated proposal pool. Fig. 8 qualita-tively validates the enhanced signal-to-noise ratio of our SAM 3 [12]-based object proposals over the standard SAM used in SAM-6D [2]. Throughout Fig. 8(b)-(c), the baseline SAM-6D [2] generates a dense and noisy set of bounding boxes that frequently overlap or target irrelevant background clutter. In contrast, LM-guided CLON produces a compact yet highly precise set of proposals, successfully isolating target instances with minimal redundancy. This refinement is even more evident in the seg-mentation masks; while the proposals of SAM-6D [2] are often fragmented or contain non-object regions (Fig. 8(d)), the masks generated by our method exhibit high-fidelity alignment with actual object geometries—such as the bowl, car, and drill (Fig. 8(e)). Such linguistic semantic memory anchoring remains effective even on texture-less datasets. Fig. 9 shows examples on two objects of T-LESS, where LM’s linguistic prompts provide distinctive semantic cues that enable SAM 3 to capture heavily occluded targets missed by generic or color-augmented prompts. 
+
+C.2 Instance-Adaptive Cue Weighting Calibration 
+
+To provide a clear empirical justification for our dynamic calibration approach, we perform an ex-tensive grid search by explicitly varying the weight values assigned to the semantic, appearance, and geometric scores. As detailed in Table 10, we systematically alter the ratio of these three weight components to evaluate how each dataset responds to different prioritization strategies. The result-ing quantitative trends reveal that the optimal weight combination shifts drastically depending on the unique visual and geometric characteristics of each dataset. A weight configuration that yields peak performance on one dataset often leads to a noticeable drop in accuracy on another, demonstrat-ing that no single, rigid weight assignment can universally accommodate the diverse environmental conditions of all benchmarks. 15 (a) RGB scene (b) SAM6D detection (c) Ours detection (d) SAM6D segmentation (e) Ours segmentation Figure 8: Qualitative results of detection and segmentation proposals. (a) shows the RGB test scene, while (b) and (c) show object proposals from SAM6D and CLON with LM-guided proposal selection, respectively. (d) and (e) show the corresponding segmentation examples. "Plug adapter", "Electrical socket cover", "Outlet extender", "White object" "Industry box container", "Storage utility case", "Electronic equipment enclosure", "White object" (a) Object (b) Corresponding LM (c) Generic Prompt “Object” (d) “Object” + Color Prompt (e) Ours (LM) 
+
+Figure 9: Qualitative results of LM on T-LESS. (a) The template image of target object (b) The LM generated for each object (c)-(e) SAM3 segmentation with only object prompt, the object + color prompts and our LM, respectively. This clear variation in optimal weight values across different domains firmly supports our motivation for not relying on fixed, hand-tuned hyperparameters. Because each dataset possesses unique visual and structural characteristics, enforcing a static set of weights inherently limits the model’s adapt-ability and creates a strict performance ceiling. By demonstrating that the ideal balance of weights is inherently dataset-dependent, these experiments validate our design choice to calibrate the cue weights dynamically at the dataset level. This adaptive calibration allows the framework to auto-matically find the most effective weight distribution for each target scene, bypassing the limitations of fixed weight values and ensuring robust inputs for downstream 6D pose estimation. (a) HB (Full visibility) (b) T-LESS (Partial occlusion) (c) LM-O (Severe occlusion) 
+
+Figure 10: Comparison of appearance scoring robustness on various level of occlusion. CLON assigns higher scores to small, occluded proposals compared to SAM-6D [2]. 0-10% 10-20% 20-30% 30-40% 40-50% 50-60% 60-70% 70-80% 80-90% 90-100% 
+
+> Visible Fraction (%)
+> 020 40 60 80 100
+> Accuracy (%)
+> Datasets
+> Ours SAM6D CNOS
+
+Figure 11: Comparison on accuracy per visible frac-tion. 16 Table 10: Evaluation of different weight configurations across BOP benchmarks                                                                                                                                                                                                                                                                                                 
+
+> semantic appe geometric LM-O [23] T-LESS [24] TUD-L [25] IC-BIN [26] ITODD [27] HB [28] YCB-V [29] 1000.514 0.485 0.650 0.358 0.429 0.622 0.669 0.9 0.1 0.0 0.515 0.492 0.652 0.359 0.433 0.621 0.673
+> 0.8 0.2 0.0 0.516 0.499 0.652 0.359 0.434 0.620 0.673
+> 0.7 0.3 0.0 0.515 0.501 0.652 0.360 0.435 0.620 0.672 0.6 0.4 0.0 0.516 0.505 0.651 0.360 0.436 0.619 0.672 0.5 0.5 0.0 0.516 0.506 0.649 0.359 0.436 0.619 0.67 0.4 0.6 0.0 0.516 0.507 0.647 0.359 0.437 0.616 0.671 0.3 0.7 0.0 0.517 0.506 0.645 0.359 0.437 0.612 0.671 0.2 0.8 0.0 0.516 0.504 0.642 0.359 0.438 0.610 0.664 0.1 0.9 0.0 0.516 0.503 0.639 0.358 0.436 0.604 0.654 0.0 1.0 0.0 0.514 0.496 0.632 0.357 0.428 0.601 0.645 0.9 0.0 0.1 0.524 0.541 0.661 0.357 0.461 0.628 0.667 0.8 0.0 0.2 0.529 0.558 0.664 0.351 0.478 0.627 0.656 0.7 0.0 0.3 0.529 0.557 0.663 0.348 0.465 0.630 0.634 0.6 0.0 0.4 0.528 0.543 0.661 0.343 0.446 0.616 0.608 0.5 0.0 0.5 0.521 0.520 0.654 0.335 0.424 0.596 0.578 0.4 0.0 0.6 0.504 0.486 0.641 0.322 0.393 0.563 0.553 0.3 0.0 0.7 0.475 0.434 0.619 0.308 0.349 0.508 0.526 0.2 0.0 0.8 0.405 0.352 0.549 0.288 0.287 0.412 0.462 0.1 0.0 0.9 0.241 0.223 0.392 0.258 0.199 0.224 0.333 0.0 0.0 1.0 0.082 0.076 0.227 0.209 0.100 0.028 0.088 0.6 0.2 0.2 0.529 0.567 0.663 0.351 0.480 0.628 0.657 0.7 0.1 0.2 0.529 0.563 0.663 0.351 0.479 0.629 0.656 0.75 0.05 0.2 0.530 0.561 0.663 0.351 0.479 0.628 0.656 0.5 0.2 0.3 0.530 0.558 0.662 0.349 0.469 0.625 0.633 0.6 0.1 0.3 0.529 0.560 0.663 0.348 0.467 0.629 0.632 0.65 0.05 0.3 0.529 0.556 0.664 0.348 0.465 0.629 0.630 0.1 0.7 0.2 0.526 0.557 0.656 0.353 0.474 0.621 0.647 0.2 0.7 0.1 0.523 0.557 0.655 0.353 0.466 0.624 0.647 0.25 0.7 0.05 0.521 0.538 0.652 0.356 0.453 0.619 0.647 0.33 0.33 0.33 0.528 0.549 0.661 0.347 0.462 0.618 0.620
+
+## D Analysis of CLON 
+
+D.1 Robustness across Visible Fractions 
+
+To further evaluate the robustness of CLON against varying levels of object visibility, we report the correctness ratio of object proposals across various ranges of visible fractions in Fig. 11. The accuracy is averaged over the five core BOP datasets, excluding HB [28] and ITODD [27] for which ground-truth visibility annotations are not available. Our method consistently outperforms existing baselines across the entire range of visible fractions, proving its efficacy for both severely occluded and largely visible objects. Specifically, in the visible range of 0% to 33% , our method yields at least a twofold increase in accuracy over baseline methods, which fail to surpass 5% accuracy. Furthermore, when the visible fraction is over half of the object, our method maintains a considerable performance margin, outstripping other approaches by 16 .0% to 47 .7% .Table 11 provides a detailed per-dataset breakdown of proposal correctness across different visible fractions for the five core BOP datasets (LM-O [23], T-LESS [24], TUD-L [25], IC-BIN [26], and YCB-V [29]). Proposal correctness is measured as the accuracy of detections with an IoU greater than 0.5 against the ground-truth bounding boxes. For each dataset, we report the overall accuracy together with the raw counts of successfully recalled instances out of the total ground-truth instances. We additionally report the accuracy within each 10% visibility bin. Hyphens in the TUD-L dataset indicate that no ground-truth instances fall within the corresponding visibility ranges in the test set. Our method demonstrates strong robustness across all individual datasets. The detailed statistics in Table 11 highlight two key advantages of our approach: • Robustness under Severe Occlusion : In challenging scenarios where only 10% –40% of the object is visible, purely visual or global-context methods experience catastrophic per-formance drops. For instance, on the ICBIN dataset within the 10% –30% visibility range, baseline accuracies plummet below 10% , whereas our method maintains robust recall rates of 25 .3% to 39 .3% . More strikingly, on the YCB-V dataset at 30% –40% visibility, our 17 Table 11: Comparison of methods for visible fractions                                                                                                                                                                           
+
+> Fraction LM-O [23] T-LESS [24] TUD-L [25] CNOS [7] SAM-6D [2] CLON CNOS [7] SAM-6D [2] CLON CNOS [7] SAM-6D [2] CLON
+> Total 56.4% (856/1517) 65.0% (986/1517)
+> 82.1% (1246/1517)
+> 46.3% (3197/6900) 52.4% (3614/6900)
+> 71.9% (4961/6900)
+> 56.7% (340/600) 77.3% (464/600)
+> 94.2% (565/600)
+> 0-10% 0% 0% 2.3% 0.4% 0.4% 3.4% ---10-20% 4.3% 4.3% 6.4% 0.6% 1.3% 7.1% ---20-30% 0% 2.6% 13.2% 3.2% 5.3% 19.6% ---30-40% 10.3% 17.2% 25.9% 8.8% 9.7% 33.2% ---40-50% 15.3% 29.4% 49.4% 12.7% 16.3% 48.2% ---50-60% 23.8% 32.1% 69.0% 23.3% 26.0% 55.0% ---60-70% 27.5% 39.4% 82.6% 40.0% 43.3% 73.2% 0% 0% 100%
+> 70-80% 40.0% 65.2% 94.2% 40.2% 47.9% 73.3% 55.6% 55.6% 100%
+> 80-90% 62.2% 77.6% 98.0% 52.8% 58.2% 76.6% 54.7% 69.3% 94.7%
+> 90-100% 85.8% 89.1% 98.9% 58.8% 66.5% 84.5% 57.1% 79.0% 94.0% Fraction IC-BIN [26] YCB-V [29] CNOS [7] SAM-6D [2] CLON CNOS [7] SAM-6D [2] CLON
+> Total 36.4% (819/2250) 42.8% (963/2250)
+> 68.3% (1537/2250)
+> 70.2% (2897/4125) 75.0% (3093/4125)
+> 95.7% (3948/4125)
+> 0-10% 0% 0% 3.0% 0% 0% 0% 10-20% 0.5% 0.5% 25.3% 0% 0% 0% 20-30% 5.5% 9.0% 39.3% 0% 0% 0% 30-40% 9.8% 11.6% 52.7% 4.8% 4.8% 90.5%
+> 40-50% 17.5% 25.4% 81.6% 64.9% 60.8% 87.8%
+> 50-60% 29.9% 39.1% 91.8% 66.4% 68.9% 84.9%
+> 60-70% 43.7% 58.7% 95.8% 50.9% 59.9% 88.4%
+> 70-80% 59.8% 68.3% 99.4% 53.4% 57.3% 91.6%
+> 80-90% 65.6% 76.9% 97.7% 68.0% 81.3% 94.0%
+> 90-100% 72.1% 80.4% 99.3% 76.7% 80.7% 98.8%
+
+method achieves an extraordinary 90 .5% accuracy compared to a mere 4.8% by CNOS [7] and SAM-6D [2]. This dramatic improvement reflects the effectiveness of our dynamic rel-ative cue weights. By dynamically balancing semantic, appearance, and geometric scores conditioned on the dataset characteristics, our framework successfully mitigates verifica-tion errors under severe occlusion. • Near-Perfect Recall at High Visibility : In highly visible scenarios (e.g., 80% –100% visi-bility), baseline methods surprisingly remains bounded between 60% and 80% (e.g., on T-LESS and ICBIN) due to unsuppressed false positives. In contrast, our method consistently achieves near-perfect accuracy across all core datasets. Specifically, in the 90% –100% vis-ibility bin, our pipeline reaches 98 .9% on LM-O, 99 .3% on ICBIN, and 98 .8% on YCB-V. This demonstrates that our framework not only retrieves heavily occluded instances but also possesses an exceptional filtering capability when objects are clearly visible. Table 12: Pose estimation on proposals ( AR ) (GT/ CLON )
+
+Pose Solver LM-O T-LESS TUD-L IC-BIN YCB-V AR ′
+
+> mean
+
+GigaPose 0.679 / 0.620 0.839 / 0.673 0.741 / 0.685 0.603 / 0.567 0.728 / 0.699 0.718 / 0.649 SAM-6D 0.789 / 0.705 0.783 / 0.583 0.969 / 0.894 0.745 / 0.656 0.895 / 0.868 0.836 / 0.741 FoundationPose 0.816 / 0.728 0.916 / 0.586 0.945 / 0.878 0.723 / 0.691 0.915 / 0.896 0.863 / 0.756 
+
+D.2 Upper Bound Analysis with Ground Truth 
+
+Table 12 compares pose estimation performance using ground truth and CLON proposals on the five datasets with available ground truth proposals. Across the three pose solvers, ground truth proposals improve AR ′ 
+
+> mean
+
+by 6.9–10 .7 pp over CLON , with the largest residual gap on T-LESS ( 16 .6–33 .0
+
+pp), where texture-less and highly similar objects make accurate instance localization challenging. This confirms that front-end localization remains an important bottleneck even after CLON .18 Table 13: Results of latency and memory consumption (per image) Dataset (# targets) Detection #Proposal Det Memory (GB) Det Time (s) Pose Est Time (s) Total Time (s) LM-O (8 targets) CNOS 73 5.20 3.31 1.07 4.38 SAM6D 112 6.55 3.26 1.75 5.01 Ours 22 5.86 3.83 0.44 4.27                                                                                           
+
+> T-LESS (30 targets) CNOS 62 5.20 2.98 0.80 3.78
+> SAM6D 79 6.74 4.08 1.18 5.27 Ours 12 6.37 12.67 0.24 12.91 TUD-L (3 targets) CNOS 35 5.20 2.13 0.39 2.53 SAM6D 62 5.32 2.32 0.76 3.08 Ours 55.02 1.26 0.14 1.40
+> ICBIN (2 targets) CNOS 45 5.20 2.67 0.62 3.30 SAM6D 63 5.28 2.97 0.97 3.94 Ours 15 5.61 0.79 0.31 1.10
+> ITODD (28 targets) CNOS 18 5.21 1.99 0.30 2.29
+> SAM6D 27 6.82 3.11 0.44 3.55 Ours 20 6.15 26.36 0.39 26.75 HB (33 targets) CNOS 46 5.20 2.43 0.72 3.15
+> SAM6D 70 6.53 3.20 1.08 4.29 Ours 13 6.45 12.46 0.62 13.08 YCBV (21 targets) CNOS 37 5.20 2.49 0.58 3.07
+> SAM6D 58 6.06 2.87 0.89 3.76 Ours 85.79 4.74 0.28 5.02
+
+D.3 Computational Overhead 
+
+Table 13 reports the per-image latency and memory consumption across all seven BOP datasets. 
+
+CLON substantially reduces the number of proposals compared with SAM-6D, from 67 .3 to 13 .6
+
+proposals per image on average, which decreases the subsequent pose estimation time. This re-duction compensates for the additional cost of SAM 3 detection on smaller object sets, yielding lower total latency on LM-O, TUD-L and IC-BIN. However, on datasets with many target objects, such as T-LESS, ITODD and HB, iterating SAM 3 over multiple target-prompt pairs increases de-tection latency and becomes the dominant computational bottleneck. Despite this, online memory consumption remains comparable to SAM-6D across datasets. The linguistic memory itself is constructed only once during offline onboarding. Our onboarding takes 73 .7 s on average across datasets, compared to 34 .9 s for the baseline, while Qwen-2.5-VL [15] reaches approximately 21 GB peak memory during this one-time process. Once constructed, the stored linguistic memory has negligible memory and computational overhead during online infer-ence. 
+
+D.4 Details on Robot Deployment Hardware Configuration and Control Pipeline. To validate the real-world applicability of 
+
+CLON in physical AI scenarios, we construct a compact robot manipulation setup utilizing an SO-101 robot arm equipped with a standard gripper. For visual observation, a Logitech C920E webcam is mounted directly above the workspace in a fixed, top-down configuration to capture raw RGB bird’s-eye view images without depth inputs. The end-to-end manipulation pipeline operates through a server-client architecture. When the web-cam captures a bird’s-eye view image of the cluttered workspace, the raw RGB frame is transmitted to a remote GPU server, where CLON or the baseline models are executed to generate 2D object proposals. Once the target instance is detected, the framework computes the 2D pixel coordinates of 19 (a) Test Image (b) CNOS result (c) SAM-6D result (d) ours( CLON ) result (e) Robot manipulation by using ours(CLON) result Figure 12: Real-world robotic manipulation based on zero-shot pose estimation. Given the test image (a), standard baselines (b, c) fail to detect the target object. Our method (d) robustly localizes the target, which subsequently enables accurate and successful downstream robotic manipulation, as shown in the execution sequence (e). the bounding box’s center. This localized spatial cue is then translated into the robot’s physical coor-dinate system, where an inverse kinematics (IK) solver computes the precise motor angles required to execute an open-loop, down-to-surface trajectory for the pick-and-place task. 
+
+Quantitative Evaluation and Qualitative Results. As discussed in 4.4, our quantitative evalua-tion is rigorously conducted on a diverse subset of five objects from the SenseShift6D [31] dataset. Specifically, we conduct 20 trials for each object, resulting in a total of 100 robot grasping trials. To ensure a fair and precise benchmark for the front-end proposal quality, we manually annotated the ground-truth bounding boxes for these evaluated RGB frames. Under this standardized evalua-tion, CLON achieves the highest AP mean of 0.811 and a grasp success rate of 36.0%, significantly outperforming all baselines. Fig. 12 provides a comprehensive qualitative comparison of this real-world deployment. As ob-served in Fig. 12(b) and (c), the baseline models (CNOS [7] and SAM-6D [2]) frequently suffer from severe false positives, incorrectly localizing background structures (e.g., the camera tripod legs) due to environmental noise and identity dilution. In contrast, CLON (Fig. 12(d)) success-fully suppresses these misleading cues, cleanly isolating the target instance (i.e., the sandwich) with high fidelity. As shown in the sequential photos of the execution (Fig. 12(e)), this robust front-end proposal quality directly translates into precise physical interaction. By providing highly reliable bounding box centroids, CLON allows the budget-friendly SO-101 manipulator to execute accurate grasping trajectories without spatial drift or target misidentification. 
+
+## E Hyperparameters 
+
+We extract features using a frozen DINOv3 [14] (ViT-L) backbone at a 224 × 224 resolution. For the linguistic semantic memory, we select a subset of N ′ 
+
+> T
+
+= 10 template views from the available 
+
+NT = 42 templates per object. As detailed in Sec. A.1, the VLM generates exactly M = 4 short noun phrases per object. 20

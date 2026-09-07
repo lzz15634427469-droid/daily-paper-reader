@@ -1,9 +1,9 @@
 {
   "date": "20260809-20260907",
   "date_label": "2026-08-09 ~ 2026-09-07",
-  "generated_at": "2026-09-07 06:52:47 UTC",
+  "generated_at": "2026-09-07 07:10:49 UTC",
   "recommend_exists": true,
-  "run_count": 1,
+  "run_count": 2,
   "papers": [
     {
       "paper_id": "2608.16165v1",
@@ -17,9 +17,57 @@
         }
       ],
       "score": 9.0,
-      "evidence": "直接以光变曲线光度测量估计空间物体姿态，属于由传感器测量估计航天器姿态方向的问题",
+      "evidence": "利用光变曲线通过高斯过程回归估计空间目标姿态，与从传感器测量估计航天器方向直接相关",
       "first_seen_at": "2026-09-07 06:52:47 UTC",
-      "updated_at": "2026-09-07 06:52:47 UTC"
+      "updated_at": "2026-09-07 07:10:49 UTC"
+    },
+    {
+      "paper_id": "2608.10938v2",
+      "route": "20260809-20260907/2608.10938v2-gs-cpe-unified-6-degree-of-freedom-camera-pose-estimation-via-3d-gaussian-splatting",
+      "title": "GS-CPE: Unified 6-Degree-of-Freedom Camera Pose Estimation via 3D Gaussian Splatting",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "通用单目相机六自由度位姿估计，基于三维高斯泼溅，可直接迁移用于航天器图像位姿",
+      "first_seen_at": "2026-09-07 07:10:49 UTC",
+      "updated_at": "2026-09-07 07:10:49 UTC"
+    },
+    {
+      "paper_id": "2608.21926v1",
+      "route": "20260809-20260907/2608.21926v1-airalign-geometry-aware-relative-pose-alignment-for-uav-last-meter-navigation",
+      "title": "AirAlign: Geometry-Aware Relative Pose Alignment for UAV Last-Meter Navigation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "利用RGB图像估计逼近阶段的相对位姿对齐，与航天器交会对接单目位姿估计高度相似",
+      "first_seen_at": "2026-09-07 07:10:49 UTC",
+      "updated_at": "2026-09-07 07:10:49 UTC"
+    },
+    {
+      "paper_id": "2609.04784v1",
+      "route": "20260809-20260907/2609.04784v1-clon-cue-calibrated-linguistic-object-onboarding-for-zero-shot-6d-pose-front-ends",
+      "title": "CLON: Cue-Calibrated Linguistic Object Onboarding for Zero-Shot 6D Pose Front-Ends",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "基于渲染模板和语言记忆的零样本6D位姿目标提议前端，能处理部分可见的全新目标并抑制干扰，适用于非合作航天器位姿估计",
+      "first_seen_at": "2026-09-07 07:10:49 UTC",
+      "updated_at": "2026-09-07 07:10:49 UTC"
     },
     {
       "paper_id": "2608.29183v1",

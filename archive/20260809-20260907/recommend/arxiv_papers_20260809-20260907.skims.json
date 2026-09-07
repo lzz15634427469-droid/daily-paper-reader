@@ -1,16 +1,16 @@
 {
   "mode": "skims",
-  "generated_at": "2026-09-07T06:50:21.092583+00:00",
+  "generated_at": "2026-09-07T07:09:57.065749+00:00",
   "stats": {
     "mode": "skims",
     "forced_all_quick": true,
     "min_score": 8.0,
-    "deep_divecandidates": 2,
+    "deep_divecandidates": 4,
     "deep_cap": null,
     "deep_selected": 0,
-    "quick_candidates": 2,
+    "quick_candidates": 4,
     "quick_skim_target": null,
-    "quick_selected": 2
+    "quick_selected": 4
   },
   "deep_dive": [],
   "quick_skim": [
@@ -35,13 +35,13 @@
         "query:pe"
       ],
       "llm_score": 9.0,
-      "llm_evidence_en": "Directly estimates space-object attitude from light-curve photometric sensor measurements using Gaussian Process Regression for space situational awareness",
-      "llm_evidence_cn": "直接以光变曲线光度测量估计空间物体姿态，属于由传感器测量估计航天器姿态方向的问题",
-      "llm_evidence": "直接以光变曲线光度测量估计空间物体姿态，属于由传感器测量估计航天器姿态方向的问题",
-      "canonical_evidence": "直接以光变曲线光度测量估计空间物体姿态，属于由传感器测量估计航天器姿态方向的问题",
-      "llm_tldr_en": "Uses Gaussian Process Regression to estimate resident space object attitude from light-curve photometry, tackling non-convex shapes and specular reflections for space domain awareness.",
-      "llm_tldr_cn": "在轨目标数量快速增长要求更好估计空间物体的姿态，因为姿态影响太阳光压等非引力受力与轨道演化。该文用高斯过程回归方法从光变曲线反演空间目标姿态，规避传统反演在非凸形状和镜面反射建模上的困难。研究面向卫星和空间碎片，证明了光度数据可用于估计目标姿态并支持空间态势感知。这为航天器姿态测量提供了仅依赖光度信号的补充途径，改善空间对象状态预报所需的姿态信息。",
-      "llm_tldr": "在轨目标数量快速增长要求更好估计空间物体的姿态，因为姿态影响太阳光压等非引力受力与轨道演化。该文用高斯过程回归方法从光变曲线反演空间目标姿态，规避传统反演在非凸形状和镜面反射建模上的困难。研究面向卫星和空间碎片，证明了光度数据可用于估计目标姿态并支持空间态势感知。这为航天器姿态测量提供了仅依赖光度信号的补充途径，改善空间对象状态预报所需的姿态信息。",
+      "llm_evidence_en": "Space object attitude estimation from photometric light curves via Gaussian process regression; direct match to orientation from sensor measurements",
+      "llm_evidence_cn": "利用光变曲线通过高斯过程回归估计空间目标姿态，与从传感器测量估计航天器方向直接相关",
+      "llm_evidence": "利用光变曲线通过高斯过程回归估计空间目标姿态，与从传感器测量估计航天器方向直接相关",
+      "canonical_evidence": "利用光变曲线通过高斯过程回归估计空间目标姿态，与从传感器测量估计航天器方向直接相关",
+      "llm_tldr_en": "This paper estimates the attitude of unresolved resident space objects using light curves and Gaussian process regression, treating light curve inversion as a supervised learning problem to avoid heavy shape/surface assumptions, supporting space situational awareness.",
+      "llm_tldr_cn": "空间目标姿态对轨道预报至关重要，但光变曲线反演的经典方法受非凸形状和镜面反射制约。本文将姿态估计看作回归问题，用高斯过程回归从空间目标的光变曲线数据中直接预测姿态，以规避复杂形状与表面假设，并在仿真数据上验证了可行性。结果显示该方法能提供姿态估计的置信度，为空间态势感知中的姿态确定提供了新的统计学习途径。",
+      "llm_tldr": "空间目标姿态对轨道预报至关重要，但光变曲线反演的经典方法受非凸形状和镜面反射制约。本文将姿态估计看作回归问题，用高斯过程回归从空间目标的光变曲线数据中直接预测姿态，以规避复杂形状与表面假设，并在仿真数据上验证了可行性。结果显示该方法能提供姿态估计的置信度，为空间态势感知中的姿态确定提供了新的统计学习途径。",
       "llm_tags": [
         "query:pe"
       ],
@@ -51,39 +51,112 @@
       "selection_source": "fresh_fetch"
     },
     {
-      "id": "2608.29183v1",
+      "id": "2608.10938v2",
       "source": "arxiv",
-      "title": "Foundational feature fusion for conditional flow matching in 6D pose estimation",
-      "abstract": "Conditional flow matching has enabled a step forward in object 6D pose estimation, achieving state-of-the-art performance by progressively denoising and registering object representations to observed scenes. Existing methods require training task-specific encoders supervised on object-scene overlap and rely on trivial feature fusion strategies to resolve pose ambiguities. We present FunFlow6D, a novel flow matching-based formulation that leverages features from geometric and appearance foundation models for pose estimation, eliminating the need for task-specific encoder training. We also introduce a cross attention-based fusion mechanism that dynamically combines geometric and appearance features to provide richer conditioning for the flow matching module. Experiments on four datasets from the BOP benchmark show that FunFlow6D outperforms the previous state of the art while reducing supervision requirements and memory overhead. Extensive ablations validate the contribution of each proposed component. Project website: https://tev-fbk.github.io/FunFlow6D/.",
+      "title": "GS-CPE: Unified 6-Degree-of-Freedom Camera Pose Estimation via 3D Gaussian Splatting",
+      "abstract": "Despite substantial progress in visual localization, from scene coordinate regression to direct camera pose regression, achieving both robust generalization and high accuracy remain challenging. This study introduces GS-CPE (Gaussian Splatting based Camera Pose Estimation), a coarse-to-fine framework for 6-DoF camera pose estimation that unifies geometry-based coarse pose estimation with robust 3D Gaussian Splatting (3DGS) warping based pose refinement. GS-CPE first estimates a coarse pose via retrieval-guided geometric pose estimation on a 3DGS scene representation, then refines it by minimizing a visibility aware masked RGB warping objective in a multi-scale optimization framework, with adaptive re-rendering. Extensive experiments on indoor and outdoor benchmarks including 7Scenes, Cambridge Landmarks, FAST-LIVO2 datasets, and a custom dataset demonstrate state-of-the-art performance, consistently outperforming in both accuracy and generalization.",
       "authors": [
-        "Amir Hamza",
-        "Davide Boscaini",
-        "Fabio Poiesi"
+        "Huaiyuan Weng",
+        "Chul Min Yeum",
+        "Su-Min Kang"
       ],
       "primary_category": "cs.CV",
       "categories": [
         "cs.CV"
       ],
-      "published": "2026-08-29T10:20:17+00:00",
-      "link": "https://arxiv.org/pdf/2608.29183v1",
+      "published": "2026-08-11T14:06:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.10938v2",
       "tags": [
         "keyword:pe",
         "query:pe"
       ],
       "llm_score": 8.0,
-      "llm_evidence_en": "6D object pose estimation from visual observations using foundation feature fusion; transferable to monocular spacecraft pose estimation",
-      "llm_evidence_cn": "面向视觉物体的6D位姿估计方法，可迁移至航天器单目位姿估计",
-      "llm_evidence": "面向视觉物体的6D位姿估计方法，可迁移至航天器单目位姿估计",
-      "canonical_evidence": "面向视觉物体的6D位姿估计方法，可迁移至航天器单目位姿估计",
-      "llm_tldr_en": "FunFlow6D uses cross-attention to fuse geometric and appearance foundation features for 6D object pose estimation via flow matching, eliminating task-specific encoders and improving pose accuracy; transferable to monocular spacecraft pose estimation.",
-      "llm_tldr_cn": "本文针对6D目标位姿估计中现有方法依赖任务专用编码器监督、特征融合方式简单而难以解决位姿歧义的问题，提出FunFlow6D。方法将几何与外观基础模型特征经由交叉注意力机制动态融合，为条件流匹配提供更丰富的条件信息，从而省去任务专用编码器训练。在基准实验上，该方法获得优于对照方法的姿态估计精度。此项工作表明通用基础模型特征融合可直接支持单目/图像物体6D位姿估计，可为航天器单目位姿估计等下游任务提供可迁移技术。",
-      "llm_tldr": "本文针对6D目标位姿估计中现有方法依赖任务专用编码器监督、特征融合方式简单而难以解决位姿歧义的问题，提出FunFlow6D。方法将几何与外观基础模型特征经由交叉注意力机制动态融合，为条件流匹配提供更丰富的条件信息，从而省去任务专用编码器训练。在基准实验上，该方法获得优于对照方法的姿态估计精度。此项工作表明通用基础模型特征融合可直接支持单目/图像物体6D位姿估计，可为航天器单目位姿估计等下游任务提供可迁移技术。",
+      "llm_evidence_en": "Generic monocular camera 6-DoF pose estimation via 3D Gaussian Splatting; a strong transferable method for spacecraft pose from imagery",
+      "llm_evidence_cn": "通用单目相机六自由度位姿估计，基于三维高斯泼溅，可直接迁移用于航天器图像位姿",
+      "llm_evidence": "通用单目相机六自由度位姿估计，基于三维高斯泼溅，可直接迁移用于航天器图像位姿",
+      "canonical_evidence": "通用单目相机六自由度位姿估计，基于三维高斯泼溅，可直接迁移用于航天器图像位姿",
+      "llm_tldr_en": "GS-CPE is a coarse-to-fine 6-DoF camera pose estimation method built on 3D Gaussian Splatting, unifying retrieval-based coarse pose with visibility-aware masked RGB warping refinement, achieving good accuracy and generalization across visual localization scenes.",
+      "llm_tldr_cn": "纯图像相机位姿估计仍需兼顾泛化与精度。本文提出GS-CPE粗到精框架，先用检索引导的几何估计得到粗位姿，再通过三维高斯泼溅渲染与遮挡感知的掩膜RGB重投影优化进行精化，并采用自适应重渲染。大量视觉定位实验表明其精度和鲁棒性优于多种基线，展示了该框架可用于依赖单目图像恢复目标物体六自由度位姿的应用，如航天器相对位姿估计。",
+      "llm_tldr": "纯图像相机位姿估计仍需兼顾泛化与精度。本文提出GS-CPE粗到精框架，先用检索引导的几何估计得到粗位姿，再通过三维高斯泼溅渲染与遮挡感知的掩膜RGB重投影优化进行精化，并采用自适应重渲染。大量视觉定位实验表明其精度和鲁棒性优于多种基线，展示了该框架可用于依赖单目图像恢复目标物体六自由度位姿的应用，如航天器相对位姿估计。",
       "llm_tags": [
         "query:pe"
       ],
       "matched_query_tag": "query:pe",
       "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?",
       "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.21926v1",
+      "source": "arxiv",
+      "title": "AirAlign: Geometry-Aware Relative Pose Alignment for UAV Last-Meter Navigation",
+      "abstract": "Unmanned aerial vehicle (UAV) navigation in modern low-altitude environments requires more accurate pose alignment in the final approach stage for target information acquisition or manipulation, making \"last-meter\" navigation increasingly important. However, severe viewpoint and appearance variations make this task challenging. To tackle this problem, we propose AirAlign, a framework for RGB-only image-pair relative pose alignment for UAVs. AirAlign uses a pretrained visual geometry reconstruction model as the backbone to extract geometry-aware features from source-target image pairs. In addition, to better utilize the limited training data, we split the training set into multiple scene-disjoint folds for unseen cross-validation and model selection. During inference, the predictions of the selected models are averaged to form the ensemble output of the overall framework. Experiments on the PairUAV challenge at the ACMMM 2026 Workshop on UAVs in Multimedia demonstrate the effectiveness and robustness of our method, while comprehensive ablation studies validate the contribution of each component.",
+      "authors": [
+        "Jinyi Zhou",
+        "Shuo Feng",
+        "Yufei Wu",
+        "Piji Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-22T11:32:41+00:00",
+      "link": "https://arxiv.org/pdf/2608.21926v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "RGB-only relative pose alignment for final-approach navigation under viewpoint variation",
+      "llm_evidence_cn": "利用RGB图像估计逼近阶段的相对位姿对齐，与航天器交会对接单目位姿估计高度相似",
+      "llm_evidence": "利用RGB图像估计逼近阶段的相对位姿对齐，与航天器交会对接单目位姿估计高度相似",
+      "canonical_evidence": "利用RGB图像估计逼近阶段的相对位姿对齐，与航天器交会对接单目位姿估计高度相似",
+      "llm_tldr_en": "Presents AirAlign, a geometry-aware framework for RGB-only image-pair relative pose alignment in UAV final-approach navigation, addressing severe viewpoint and appearance variation with pretrained visual geometry features.",
+      "llm_tldr_cn": "无人机低空末端导航需要高精度相对位姿对齐，以完成目标获取或操作，但视角和外观变化大。该文提出AirAlign，使用预训练的视觉几何重建模型作为骨干提取几何感知特征，并由源-目标图像对估计相对位姿；同时用场景不重叠交叉验证缓解有限数据的训练和选择问题。该方法可为航天器在轨服务、交会对接中的单目相对位姿估计提供可借鉴的几何特征与验证策略。",
+      "llm_tldr": "无人机低空末端导航需要高精度相对位姿对齐，以完成目标获取或操作，但视角和外观变化大。该文提出AirAlign，使用预训练的视觉几何重建模型作为骨干提取几何感知特征，并由源-目标图像对估计相对位姿；同时用场景不重叠交叉验证缓解有限数据的训练和选择问题。该方法可为航天器在轨服务、交会对接中的单目相对位姿估计提供可借鉴的几何特征与验证策略。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.04784v1",
+      "source": "arxiv",
+      "title": "CLON: Cue-Calibrated Linguistic Object Onboarding for Zero-Shot 6D Pose Front-Ends",
+      "abstract": "Zero-shot 6D pose estimation pipelines increasingly rely on strong downstream pose solvers, but their performance is often limited by the front-end: object proposals must preserve partially visible true positives while rejecting semantically plausible distractors. We introduce Cue-Calibrated Linguistic Object Onboarding (CLON), a front-end requiring no task-specific training for new objects. Given rendered templates of the onboarded object set, CLON constructs a linguistic semantic memory for top-down proposal generation and object-set cue weights for calibrated proposal scoring. The linguistic memory guides SAM 3 toward high-recall proposals for onboarded objects, while cue weights are computed once from the onboarded object set before scene inference and kept fixed during online scoring. On seven BOP-Classic-Core datasets, CLON improves detection AP by 8.1 percentage points (pp), segmentation AP by 6.2 pp, and downstream 6D pose AR by up to 4.1 pp over CNOS and SAM-6D front-ends.",
+      "authors": [
+        "Seojin Ji",
+        "Yoojin Kwon",
+        "Hyung-Sin Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-04T06:20:53+00:00",
+      "link": "https://arxiv.org/pdf/2609.04784v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Zero-shot 6D pose object-proposal front-end using rendered templates and linguistic memory; robust to partially visible new objects and distractors, highly relevant to uncooperative spacecraft pose estimation",
+      "llm_evidence_cn": "基于渲染模板和语言记忆的零样本6D位姿目标提议前端，能处理部分可见的全新目标并抑制干扰，适用于非合作航天器位姿估计",
+      "llm_evidence": "基于渲染模板和语言记忆的零样本6D位姿目标提议前端，能处理部分可见的全新目标并抑制干扰，适用于非合作航天器位姿估计",
+      "canonical_evidence": "基于渲染模板和语言记忆的零样本6D位姿目标提议前端，能处理部分可见的全新目标并抑制干扰，适用于非合作航天器位姿估计",
+      "llm_tldr_en": "Proposes CLON, a zero-shot 6D pose front-end requiring no task-specific training for new objects. Rendered templates are converted into linguistic memory to guide SAM proposals and to calibrate object-cue scores, preserving partially visible targets. This directly supports robust detection of unseen uncooperative spacecraft before pose solving.",
+      "llm_tldr_cn": "零样本6D位姿估计流程的性能很大程度上受制于前端目标提议模块，它既要保留被部分遮挡的真实目标，又要剔除语义上相似的干扰物。CLON利用新目标的渲染模板构建语言语义记忆，在不进行任务特定训练的情况下引导SAM 3生成高召回目标提议，并计算对象集合的提示权重来校准得分。实验表明该方法在多个对象上显著改善了提议召回与最终位姿估计结果。对没有训练数据、外形各异的非合作航天器而言，这种零样本前端能够提升其位姿估计的鲁棒性与实用性。",
+      "llm_tldr": "零样本6D位姿估计流程的性能很大程度上受制于前端目标提议模块，它既要保留被部分遮挡的真实目标，又要剔除语义上相似的干扰物。CLON利用新目标的渲染模板构建语言语义记忆，在不进行任务特定训练的情况下引导SAM 3生成高召回目标提议，并计算对象集合的提示权重来校准得分。实验表明该方法在多个对象上显著改善了提议召回与最终位姿估计结果。对没有训练数据、外形各异的非合作航天器而言，这种零样本前端能够提升其位姿估计的鲁棒性与实用性。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?",
+      "matched_requirement_id": "req-7",
       "selection_source": "fresh_fetch"
     }
   ]

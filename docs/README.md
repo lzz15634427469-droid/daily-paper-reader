@@ -51,14 +51,14 @@
       <span class="dpr-home-dashboard-kicker">2026-08-09 ~ 2026-09-07</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 2 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 5 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
-    <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>2 次</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>0</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>2</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>5</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-09-07 06:52:47 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-09-07 07:10:49 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,7 +69,9 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>本期共速读2篇论文，无精读，重点关注视觉位姿估计与光度数据处理方向。最值得关注的是《Attitude Estimation from Photometric Data using Gaussian Process Regression》（9.0分），将高斯过程回归用于光度数据姿态估计，方法新颖；另一篇《Foundational feature fusion for conditional flow matching in 6D pose estimation》（8.0分）则探索特征融合与条件流匹配。建议从高分论文入手，先理解高斯过程回归在光度姿态问题中的建模思路，再对比6D位姿估计的融合策略，适合入门视觉几何与学习类方法。</p>
+<p>今日推荐5篇论文，均为速读，无精读，其中3篇明确给出评分。</p>
+<p>最值得关注的是9.0分的《Attitude Estimation from Photometric Data using Gaussian Process Regression》，以及两篇8.0分的相机位姿估计与无人机导航相关工作。</p>
+<p>建议优先精读最高分论文，并延伸关注3D高斯泼溅在位姿估计中的应用。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -91,12 +93,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">2 篇</strong>
+    <strong class="dpr-home-dashboard-count">5 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Attitude Estimation from Photometric Data using Gaussian Process Regression">Attitude Estimation from Photometric Data using Gaussian Process Regression</span></li><li><span class="dpr-home-dashboard-paper-title" title="Foundational feature fusion for conditional flow matching in 6D pose estimation">Foundational feature fusion for conditional flow matching in 6D pose estimation</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Attitude Estimation from Photometric Data using Gaussian Process Regression">Attitude Estimation from Photometric Data using Gaussian Process Regression</span></li><li><span class="dpr-home-dashboard-paper-title" title="GS-CPE: Unified 6-Degree-of-Freedom Camera Pose Estimation via 3D Gaussian Splatting">GS-CPE: Unified 6-Degree-of-Freedom Camera Pose Estimation via 3D Gaussian Splatting</span></li><li><span class="dpr-home-dashboard-paper-title" title="AirAlign: Geometry-Aware Relative Pose Alignment for UAV Last-Meter Navigation">AirAlign: Geometry-Aware Relative Pose Alignment for UAV Last-Meter Navigation</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>2</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>5</strong></span></div>
 </section>
 </div>
 
