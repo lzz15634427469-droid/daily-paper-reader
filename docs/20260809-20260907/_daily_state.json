@@ -1,0 +1,41 @@
+{
+  "date": "20260809-20260907",
+  "date_label": "2026-08-09 ~ 2026-09-07",
+  "generated_at": "2026-09-07 06:52:47 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2608.16165v1",
+      "route": "20260809-20260907/2608.16165v1-attitude-estimation-from-photometric-data-using-gaussian-process-regression",
+      "title": "Attitude Estimation from Photometric Data using Gaussian Process Regression",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "直接以光变曲线光度测量估计空间物体姿态，属于由传感器测量估计航天器姿态方向的问题",
+      "first_seen_at": "2026-09-07 06:52:47 UTC",
+      "updated_at": "2026-09-07 06:52:47 UTC"
+    },
+    {
+      "paper_id": "2608.29183v1",
+      "route": "20260809-20260907/2608.29183v1-foundational-feature-fusion-for-conditional-flow-matching-in-6d-pose-estimation",
+      "title": "Foundational feature fusion for conditional flow matching in 6D pose estimation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "面向视觉物体的6D位姿估计方法，可迁移至航天器单目位姿估计",
+      "first_seen_at": "2026-09-07 06:52:47 UTC",
+      "updated_at": "2026-09-07 06:52:47 UTC"
+    }
+  ]
+}
