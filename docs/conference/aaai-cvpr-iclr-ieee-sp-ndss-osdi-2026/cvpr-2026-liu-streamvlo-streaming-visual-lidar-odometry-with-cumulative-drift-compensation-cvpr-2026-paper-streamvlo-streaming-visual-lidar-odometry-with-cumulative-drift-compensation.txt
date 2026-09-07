@@ -1,0 +1,441 @@
+Title: StreamVLO: Streaming Visual-LiDAR Odometry with Cumulative Drift Compensation
+
+URL Source: https://openaccess.thecvf.com/content/CVPR2026/papers/Liu_StreamVLO_Streaming_Visual-LiDAR_Odometry_with_Cumulative_Drift_Compensation_CVPR_2026_paper.pdf
+
+Published Time: Sat, 16 May 2026 16:53:42 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# StreamVLO: Streaming Visual-LiDAR Odometry with Cumulative Drift Compensation 
+
+## Mengmeng Liu 1 Jiuming Liu 2 Michael Ying Yang 3 Chaokang Jiang 4 Jiangtao Li 4
+
+## Yunpeng Zhang 4 Hesheng Wang 2 Francesco Nex 1 Hao Cheng 1*
+
+> 1
+
+## University of Twente 2Shanghai Jiao Tong University 3University of Bath 4Phigent Robotics 
+
+{m.liu-1, h.cheng-2 }@utwente.nl 
+
+## Abstract 
+
+We propose StreamVLO, a streaming visual–LiDAR odome-try framework that performs unified spatio-temporal corre-lation with Mamba models and tackles the long-standing cumulative drift problem via an online Cumulative Drift Compensation scheme for localization in 4D dynamic en-vironments. Specifically, StreamVLO introduces a uni-fied spatio-temporal correlation module built on Mamba to fuse heterogeneous visual and LiDAR cues across multi-frame clips, overcoming the limited temporal exploration of prior pairwise methods. Furthermore, a Cumulative Drift Compensation module minimizes cumulative drift by iteratively learning residual corrections from multiple his-torical frames in a causal manner. To strengthen spa-tial feature representation on salient regions, we adopt a Keypoint-Aware Auxiliary Loss with a winner-takes-all strategy. StreamVLO achieves state-of-the-art performance on two commonly used autonomous driving datasets, re-ducing errors by 19% ( trel ) and 22% ( rrel ) on KITTI, and by 18% ATE and 16% RPE on Argoverse, while remaining suitable for real-time deployment. 
+
+## 1. Introduction 
+
+The odometry task aims to estimate relative pose transfor-mations between consecutive frames in autonomous sys-tems, which has various downstream applications, such as self-driving vehicles [73, 92] and SLAM systems [42, 70, 96]. Recently, multi-modal approaches [48, 76] have gained significant attention for improving odometry estimation with complementary data, combining visual [16, 78, 97] and LiDAR [9, 15, 74, 79, 91] data to address issues like structure misalignment [48], single sensor degradation [16], and poor robustness in dynamic environments [54, 76]. However, most existing odometry frameworks primarily         
+
+> *Corresponding author. Pairwise Correlation
+> pose 1pose 2pose t
+> Deformable Mamba
+> T1T2Tt
+> Long-Term Temporal Mamba
+> pose 1pose 2pose t
+> Cumulative Drift Compensation
+> T1T2TtT3
+
+(a) Previous odometry methods 
+
+(b) Ours         
+
+> Unified Spatio-Temporal Correlation
+> Deformable Mamba
+> Deformable Mamba
+> Pairwise Correlation
+> Pairwise Correlation
+> Pairwise Correlation
+> pose 1pose 2pose t
+> Deformable Mamba
+> T1T2Tt
+> Long-Term Temporal Mamba
+> pose 1pose 2pose t
+> Cumulative Drift Compensation
+> T1T2TtT3
+
+(a) Previous odometry methods 
+
+(b) Ours 
+
+> Unified Spatio-Temporal Correlation
+> Deformable Mamba
+> Deformable Mamba
+> Pairwise Correlation
+> Pairwise Correlation
+
+Figure 1. Comparison with previous odometry methods. Pre-vious methods typically encode spatial and temporal features separately, relying on pairwise correlations between consecutive frames. In contrast, we propose a unified module that jointly ex-tracts spatial and temporal features and performs differentiable on-line cumulative drift compensation to mitigate long-horizon errors in a causal and differentiable manner. 
+
+rely on pairwise frame inputs [36, 44, 48, 80], neglecting es-sential temporal information within multi-frame sequences. In this paper, we present StreamVLO , which effi-ciently and effectively fuses multi-modal data from both images and LiDAR in a streaming, causal fashion. Cru-cially, rather than limiting the estimation process to isolated source–target frame pairs while discarding previously ob-served frames, we propose a method that not only estimates relative motion from consecutive frames but also utilizes motion priors from history frames. We introduce a differen-tiable online residual update that enables end-to-end learn-ing and supports cumulative drift compensation , allowing This CVPR paper is the Open Access version, provided by the Computer Vision Foundation. Except for this watermark, it is identical to the accepted version; the final published version of the proceedings is available on IEEE Xplore. 39086 the model to retrieve and incorporate long-term temporal cues from the entire LiDAR sequences in a causal manner. StreamVLO seamlessly integrates heterogeneous multi-modal fusion and temporal modeling through a unified 
+
+MMG (MaxPooling, Mamba [23], gMLP [43]) architecture, inspired by sparse deformable query fusion [98]. As shown in Fig. 1, StreamVLO captures spatial and temporal depen-dencies by adaptively fusing heterogeneous inputs, creat-ing a cohesive representation that enables precise pose esti-mation over extended sequences. Unlike existing pairwise methods, StreamVLO operates on streaming sequences, ag-gregating history poses and features with MMG to model long-term dependencies effectively. To further reduce long-horizon errors, StreamVLO employs a differentiable Cumu-lative Drift Compensation (CDC) technique, which mini-mizes cumulative drift iteratively by directly learning resid-ual error reductions over certain frame intervals. Addition-ally, to achieve robust spatial understanding and be less sus-ceptible to noise in sequential data, StreamVLO incorpo-rates a Keypoint-Aware Auxiliary Loss , which refines high-salience feature regions by selectively optimizing the top-k
+
+queries with the smallest error relative to the ground truth pose, using a winner-takes-all loss strategy [58]. Based on these proposed components, StreamVLO serves as a systematical and scalable solution for low-drift odometry across dynamic environments. Overall, our key contributions are as follows: • We propose a novel visual–LiDAR odometry network named StreamVLO. A modality-agnostic MMG architec-ture captures unified spatial information in visual and Li-DAR data and long-term temporal dependencies across multiple frames for accurate pose estimation in streaming scenarios. • We introduce differentiable Cumulative Drift Compensa-tion (CDC) , which predicts cumulative pose errors over a sequence of frames and compensates pairwise motion estimates to address drift in multi-frame temporal inputs. • We design a Keypoint-Aware Auxiliary Loss to selectively optimize high-salient features focusing on regions associ-ated with static objects for stable reference, refining 3D spatial representations for accurate pose estimation. • Extensive experiments on the KITTI odometry [20] and Argoverse dataset [8] show that our method sur-passes recent deep learning-based LiDAR, visual, and vi-sual–LiDAR fusion odometry approaches across most se-quences. 
+
+## 2. Related Work 
+
+2.1. Visual-LiDAR Odometry 
+
+Visual-LiDAR odometry combines the strengths of visual and LiDAR sensors, leveraging 2D texture [6, 32] and 3D geometric [35, 46, 50, 61, 62] information to improve pose estimation. Previous approaches are broadly classified into loosely and tightly integrated methods. Loosely integrated methods [22, 30, 64, 90] use LiDAR data to enhance depth estimation and visual data for pose tracking. However, these approaches rely on interpolation between 3D points and 2D pixels, which introduces potential errors due to the inac-curate point-to-pixel correspondences. Tightly integrated methods [2, 66, 89, 93] aim for a seamless fusion of visual and LiDAR data to enhance consistency. For the learning-based methods, MVL-SLAM [2] fuses RGB images and Li-DAR using RCNNs. LIP-Loc [66] applies contrastive learn-ing for cross-modal localization. Nevertheless, they strug-gle with the structural differences between point clouds and images. Recent works [34, 48] introduce descriptor fusion or clustering techniques to further improve the structural alignment. However, these approaches often suffer from increasing computational costs due to the additional feature processing, limiting their real-time applicability in practi-cal scenarios. Moreover, previous methods are commonly constrained by pairwise inputs, which, however, lack multi-frame temporal information. To our knowledge, our work is the first visual–LiDAR odometry method designing De-formable Mamba and Temporal Mamba for efficient query-based fusion across multiple frames, thereby enabling a uni-fied multi-modal representation. 
+
+2.2. Memory Designs for Autonomous Driving 
+
+Memory-based temporal modeling has become essen-tial for handling occlusions, sensor failures, and complex scenes in single-frame autonomous driving models [11, 26, 29, 40, 41, 52, 53, 82, 83]. Recent architectures fo-cus on feature retention [39] and pose estimation [28, 33], both crucial for autonomous driving applications. In the feature domain, for example, BEVDet4D [29] and BEV-Formerv2 [82] integrate features from multiple frames with inefficient long-term modeling. VideoBEV [26] improves upon this by recurrently propagating BEV raster queries across time, enabling progressive accumulation of tempo-ral information. In the vectorized domain, Sparse4Dv2 [40] utilizes an RNN-based structure for object-level queries, while Sparse4Dv3 [41] introduces temporal denoising to improve consistency across frames. These memory mecha-nisms have also influenced high-definition vectorized map-ping approaches [83]. Inspired by these prior advancements, our framework incorporates both an implicit feature embedding memory bank and an explicit vector pose memory bank to effec-tively capture and store temporal cues from history frames. This temporal modeling distinguishes our approach from most learning-based odometry methods that only rely on two consecutive frames and mapping methods with global optimization for cumulative error reduction. 39087 �� ��+� …��+�      
+
+> �퐟퐮�  
+> Cost Volume Memory Bank
+> Point Projection
+> ����
+> MMG
+> �퐟퐮�   Deformable Mamba
+> MMG
+> Temporal Mamba
+> ���
+> (�) ���
+> (�)
+> Point Projection
+> MMG
+> �퐟퐮�  
+> Point Projection
+> ����
+> MMG
+> Cost Volume
+> MMG
+> Temporal Mamba
+> ���−� �
+> (�) , � ��−� �
+> (�)
+
+… Drift Compensation    
+
+> Memory Update
+> ���+�
+> (�) ���+�
+> (�)
+> cumulative errors
+> Deformable Mamba
+> ���+�
+> (�) ���+�
+> (�)
+> ����
+> Memory Bank
+> �퐟퐮�  
+> Unified Spatio-Temporal Correlation Unified Spatio-Temporal Correlation Warping
+
+Figure 2. Overview of the StreamVLO framework. The unified MMG (MaxPooling, Mamba, gMLP) module fuses visual and LiDAR features with Deformable Mamba, while Temporal Mamba leverages memory banks for long-term modeling. The predicted pose is iteratively refined and further corrected through Cumulative Drift Compensation. 
+
+2.3. Temporal Modeling with Mamba 
+
+Sequential modeling is central to trajectory forecasting and end-to-end autonomous driving. In time, encoders/decoders often adopt recurrent architectures [71] or Transformer-based frameworks [10, 51, 60, 72] to capture temporal pat-terns. Recently, state space models (SSMs) [24, 25] have emerged as a strong alternative [27]. Mamba [23] intro-duces selective SSMs with time-varying parameters for ef-ficient training/inference. Extensions include 2D SSMs [4] within Transformer blocks [17], VMamba [56] that se-quences image patches for global receptive fields with near-linear complexity. Subsequent works [38, 47, 49] also gen-eralize it to higher-dimensional data. SSMs have also been integrated into diffusion models to replace Transformer-based UNets, e.g., DiffuSSM [81] retains high-resolution features without coarse compression. Drawing on these developments, we employ Mamba to manage both explicit vector pose memory and implicit fea-ture memory, enabling robust temporal modeling. 
+
+## 3. Method 
+
+The architecture of StreamVLO is shown in Fig. 2. StreamVLO begins with the Unified Spatio-Temporal Cor-relation (Sec. 3.1) with deformable spatial Mamba and tem-poral Mamba for streaming sequences, which integrates vi-sual and LiDAR features across frames into a unified repre-sentation. This unified representation is utilized to predict the pose estimates. In addition, the predicted pose is com-pensated with long-term temporal information using differ-entiable Cumulative Drift Compensation (Sec. 3.2) to mit-igate error accumulation in an online, causal fashion, re-fining the final pose. The loss functions, including our de-signed Keypoint-Aware Auxiliary Loss with a winner-takes-all strategy, are specified in Sec. 3.3. Before we delve into the detailed model design, we fol-low [44, 48, 74] for point encoding and [31] for image encoding to extract hierarchical features for both modali-ties. 3D points are first projected onto a cylindrical sur-face [74] to organize the originally irregular points, where the original 3D coordinates are further filled in correspond-ing projected 2D positions to preserve raw point geome-try, converting the point cloud into pseudo-images of size 
+
+HP × WP × 3. Then these pseudo-images are passed to a point encoder [74], producing multi-scale point features represented as FP ∈ RHP ×WP ×D , where D is the fea-ture dimension. The 2D input images I ∈ RH×W ×3 are processed through a convolutional feature pyramid network [48], generating multi-level image features represented as 
+
+FI ∈ RH×W ×C , where H, W , and C correspond to the height, width, and channels, respectively. 
+
+3.1. Unified Spatio-Temporal Correlation 
+
+We design a Unified Spatio-Temporal Correlation block consisting of MaxPooling, Mamba [23], and gMLP [43] (MMG ) to extract spatial and temporal representations of point and image features causally across incoming frames. Fig. 3 shows the detailed network structure of MMG . It harmonizes diverse input representations across different modalities and temporal dimensions: The gMLP encodes sequential information into a unified feature space, pro-viding a foundation for learning from varied data sources. Mamba then establishes temporal interactions within the se-quences, capturing long-term dependencies across frames. We extend the Mamba structure into a Deformable Mamba 
+
+for spatial modeling and a Temporal Mamba for tempo-ral modeling, in order to achieve effective and efficient modality-agnostic modeling by harnessing diverse input representations across modalities and temporal dimensions, which are detailed below. Finally, MaxPooling condenses the sequence into a single, unified representation, preserv-ing essential information in a compact form. 39088 Sequential Inputs  �   
+
+> Conv1d SSM ��
+> Pool gMLP Mamba Maxpooling
+> �
+> Activation SiLU
+> Linear
+> Concat
+> Linear Linear Linear  Linear Linear
+
+Figure 3. The detailed network structure of the MMG module. 
+
+Deformable Mamba. We propose a deformable Mamba-based feature fusion module by extending the concept of deformable attention proposed in Deformable DETR [98]. As shown in Fig. 2, LiDAR features  FP , which encode 3D spatial information, serve as queries to efficiently combine LiDAR and camera data. Specifically, we first project the LiDAR point onto the image plane using the camera intrin-sic and extrinsic parameters, obtaining the reference point. Then, we sample the visual features Fsample using a bilinear interpolation from the image features  FI around the refer-ence point with adaptive offsets. Consequently, the sampled visual features Fsample are fused with the LiDAR features 
+
+FP using MMG as: 
+
+Ffused = MaxPool (Mamba (Gf (Fsample ⊕ FP ))) , (1) where  ⊕ denotes concatenation,  Gf is the gMLP layer, and Mamba refers to the standard Mamba block in [23]. This multi-modal fusion enriches the LiDAR feature space with visual context while maintaining efficiency by focusing on adaptive local receptive fields. Finally, the fused multi-modal features Ffused from in-coming streaming frames are correlated by the cost volume module [73, 74], producing a cross-frame motion feature 
+
+Eego ∈ RN ×D , where N is the number of downsampled points in the coarsest layer. 
+
+Temporal Mamba. To model temporal information in streaming sequences, we leverage Mamba-based Memory Feature Bank (MFB) and Memory Pose Bank (MPB) to store historical feature representations and pose states. In the MFB, we maintain historical ego-motion features from the Deformable Mamba, namely 
+
+[Eego , t −Th+1 , . . . , Eego , t −1], which integrate se-mantic and geometric contexts over a memory hori-zon  Th. An MMG with another gMLP  Ge enables temporal interactions by first appending the current frame’s ego-motion feature  Eego ,t  to the bank, forming 
+
+F = [ Eego , t −Th+1 , . . . , Eego , t ] ∈ RN ×Th×D , and then computing an updated ego-motion embedding: 
+
+ˆEego = MaxPool  Mamba  Ge(F) . (2) In the MPB, we store historical quaternions 
+
+Q = [qt−Th+1 , . . . , qt−1] and translations  P =[pt−Th+1 , . . . , pt−1]. Another pair of MMG s with 
+
+Gq and  Gp encodes these pose trajectories, yielding temporal embeddings  Qenc  and  Penc :
+
+Qenc = MaxPool  Mamba  Gq (Q) ,
+
+Penc = MaxPool  Mamba  Gp(P) . (3) �� − � � �� − 1 ��       
+
+> …
+> ��− � �+ 1
+> Backtrack across multiple frames Frame ��− � �Frame ��
+> Before compensation After compensation
+> Pairwis eEstimated pose GT pose Compensated pose
+> Cumulative Drift Compensation
+> Reduced drift Accumulated drift
+> …
+
+Figure 4. Illustration of the Cumulative Drift Compensation. 
+
+Both MFB and MPB are initialized with zeros and up-dated online at each incoming frame, as shown in Fig. 2. The embeddings  ˆEego , Qenc , Penc  subsequently condition the differentiable Cumulative Drift Compensation module to improve long-horizon stability. Finally, we construct a unified scene representation 
+
+{Eego , ˆEego , Qenc , Penc } by unifying the multi-modal and long-term temporal information across these MMG s. The initial quaternion  q(1) = Φq ( ˆEego ⊕Qenc )  
+
+> ∥Φq( ˆEego ⊕Qenc )∥
+
+is calculated as the normalized output of the MLP  Φq, while the initial translation  p(1) = Φ p( ˆEego ⊕ Penc ) is predicted using the MLP  Φp. We then refine these through an iterative refine-ment module in multiple upper layers [73], obtaining the refined pose  q(2) , p(2)  at each time step. 
+
+3.2. Cumulative Drift Compensation 
+
+After obtaining finer frame-to-frame poses  p(2)  and  q(2) ,StreamVLO incorporates a differentiable Cumulative Drift Compensation module to reduce cumulative errors and achieve low-drift, precise long-range odometry, as shown in Fig. 4. Specifically, we accumulate multiple pose esti-mates through the cumulative multiplication of poses from the nearest historical  Tg frames: 
+
+(qcumul  
+
+> t
+
+, pcumul  
+
+> t
+
+) = ( q(2)  
+
+> t
+
+, p(2)  
+
+> t
+
+) ◦ (q(2) 
+
+> t−1
+
+, p(2) 
+
+> t−1
+
+)◦· · · ◦ (q(2)  
+
+> t−Tg+1
+
+, p(2)  
+
+> t−Tg+1
+
+). (4) where the operation  ◦ is calculated as  qa◦b = qa ∗ qb
+
+and  [0 , pa◦b] = qa [0 , pb] q−1 
+
+> a
+
++ [0 , pa], with  ∗ denoting the quaternion product. Given the source LiDAR data  PC Tt−Tg ∈ RN ×3 back to the time step  Tt − Tg, we then use the cumulative pose estimates above to warp it to the current frame  Tt as follows: 
+
+[0 , cPC Tt ] = qcumul  
+
+> t
+
+[0 , PC Tt−Tg ] ( qcumul  
+
+> t
+
+)−1 + [0 , pcumul  
+
+> t
+
+].
+
+(5) Subsequently, at the current step, the residual pose er-ror  (∆ q(2) , ∆p(2) ) between the warped source point cloud 
+
+cPC Tt and the target point cloud  PC Tt+1  is calculated by the Pyramid, Warping, Cost volume (PWC) structure [73]. 39089 Table 1. Comparison with different odometry methods on the KITTI odometry [21]. trel and rrel represent the average sequence translational RMSE (%) and sequence rotational RMSE (°/100m) respectively in the length of 100, 200, ..., 800m. The best results are 
+
+bold , and the second best results are underlined. * represents the models trained on the 00-08 sequences.                                                                                                                                                                                                                                                                                                                                                                                                                                          
+
+> Method 00 01 02 03 04 05 06 07 08 09 10 mean (07-10)
+> trel rrel trel rrel trel rrel trel rrel trel rrel trel rrel trel rrel trel rrel trel rrel trel rrel trel rrel trel rrel
+> Visual Odometry Methods SfMLearner *[95] 21.32 6.19 22.41 2.79 24.10 4.18 12.56 4.52 4.32 3.28 12.59 4.66 15.55 5.58 12.61 6.31 10.66 3.75 11.32 4.07 15.25 4.06 12.46 4.55 DFVO *[86] 2.01 0.79 61.17 18.96 2.46 0.79 3.27 0.89 0.79 0.56 1.50 0.74 1.95 0.76 2.28 1.16 2.11 0.74 3.21 0.59 2.89 0.97 2.62 0.87 Cho et al. *[12] 1.77 0.79 64.38 16.87 2.62 0.74 3.06 0.89 0.65 0.55 1.31 0.74 1.60 0.56 1.06 0.67 2.28 0.76 2.66 0.53 2.95 0.95 2.24 0.73 LiDAR Odometry Methods LO-Net [37] 1.47 0.72 1.36 0.47 1.52 0.71 1.03 0.66 0.51 0.65 1.04 0.69 0.71 0.50 1.70 0.89 2.12 0.77 1.37 0.58 1.80 0.93 1.75 0.79 PWCLO [73] 0.89 0.43 1.11 0.42 1.87 0.76 1.42 0.92 1.15 0.94 1.34 0.71 0.60 0.38 1.16 1.00 1.68 0.72 0.88 0.46 2.14 0.71 1.47 0.72 DELO [1] 1.43 0.81 2.19 0.57 1.48 0.52 1.38 1.10 2.45 1.70 1.27 0.64 0.83 0.35 0.58 0.41 1.36 0.64 1.23 0.57 1.53 0.90 1.18 0.63 TransLO [44] 0.85 0.38 1.16 0.45 0.88 0.34 1.00 0.71 0.34 0.18 0.63 0.41 0.73 0.31 0.55 0.43 1.29 0.50 0.95 0.46 1.18 0.61 0.99 0.50 EfficientLO [74] 0.80 0.37 0.91 0.40 0.94 0.32 0.51 0.43 0.38 0.30 0.57 0.33 0.36 0.23 0.37 0.26 1.22 0.48 0.87 0.38 0.91 0.50 0.86 0.41 DSLO [87] 0.78 0.40 0.66 0.23 0.77 0.34 0.67 0.37 0.31 0.47 0.50 0.30 0.57 0.38 0.58 0.41 1.16 0.51 0.72 0.33 1.29 0.49 0.94 0.44 Zhou et al. [94] ——————————————0.50 0.40 1.30 0.60 1.16 0.61 1.21 0.68 1.04 0.57 LAGLO *[68] 1.21 0.27 1.92 0.37 1.99 0.36 1.16 0.45 0.63 0.38 0.93 0.21 1.26 0.38 1.02 0.30 1.48 0.29 2.29 0.55 2.00 0.61 2.15 0.56 Multi-modal Odometry Methods An et al. *[2] 2.53 0.79 3.76 0.80 3.95 1.05 2.75 1.39 1.81 1.48 3.49 0.79 1.84 0.83 3.27 1.51 2.75 1.61 3.70 1.83 4.65 0.51 3.59 1.37 H-VLO *[3] 1.75 0.62 4.32 0.46 2.32 0.60 2.52 0.47 0.73 0.36 0.85 0.35 0.75 0.30 0.79 0.48 1.35 0.38 1.89 0.34 1.39 0.52 1.36 0.43 DVLO [48] 0.80 0.35 0.85 0.33 0.81 0.29 0.59 0.36 0.26 0.13 0.41 0.23 0.33 0.17 0.46 0.33 1.09 0.44 0.85 0.36 0.88 0.46 0.82 0.41 DVLO4D [55] 0.68 0.33 0.77 0.23 0.76 0.31 0.49 0.33 0.22 0.13 0.39 0.21 0.32 0.21 0.43 0.32 0.95 0.36 0.77 0.33 0.76 0.46 0.73 0.37
+> StreamVLO (Ours) 0.59 0.27 0.73 0.21 0.65 0.23 0.47 0.31 0.21 0.12 0.33 0.15 0.31 0.19 0.26 0.23 0.79 0.28 0.63 0.28 0.65 0.39 0.59 0.29
+
+Finally, as shown in the lower part of Fig. 2, the resid-ual pose error is incorporated into the current pose at  Tt to iteratively refine the final pose as follows (the time step is omitted below for simplicity): 
+
+q(3) = ∆ q(2) ∗ q(2) ,
+
+[0 , p(3) ] = ∆ q(2) [0 , p(2) ] (∆ q(2) )−1 + [0 , ∆p(2) ]. (6) Compared to pairwise estimated pose errors, point cloud warping allows backtracking to earlier observations. This enables the compensation mechanism to amplify pose er-rors across a sequence of accumulated frames, which pe-nalizes cumulative drift and in turn enhances alignment ac-curacy over multiple frames. During training, to fully op-timize model parameters, we compute the compensation loss for cumulative pose error whenever the history of pose frames exceeds  Tg. During inference, this is applied to cu-mulative poses every  Tg frames to maintain efficiency. This compensation loss is embedded into the regression loss for pose estimation, as specified in (7). 
+
+3.3. Loss Function 
+
+The overall loss function mainly consists of three parts. 
+
+Regression Loss. We predict poses at three stages: ini-tial  (q(1) , p(1) ), refined  (q(2) , p(2) ), and drift-compensated 
+
+(q(3) , p(3) ). For each stage, the loss follows [48, 74]: 
+
+L = ∥ˆp−p∥ exp( −kt)+ kt +∥ˆq−q∥2 exp( −kq )+ kq , (7) where  kt, k q are learnable scalars for translation ( L1) and rotation ( L2);  ˆp, ˆq denote ground truth and  p, q predic-tions. For the residual pose output from the Cumulative Drift Compensation module, we narrow differences be-tween the ground-truth cumulative pose  (ˆ qcumul , ˆpcumul ) and the predicted cumulative pose  (qcumul , pcumul ). The total re-gression loss is a weighted sum over stages, i.e.,  Lreg =
+
+α1L(1) + α2L(2) + α3L(3) , where  (L(1) , L(2) , L(3) ) are computed from  (q(1) , p(1) ), (q(2) , p(2) ), and  (q(3) , p(3) ),respectively. 
+
+Keypoint-Aware Auxiliary Loss. Learning discrimina-tive features with strong robustness to noise is crucial for our odometry accuracy, as StreamVLO relies on feature-based pose regression. To strengthen feature learning, we introduce an auxiliary loss focusing on critical areas in the feature space. Specifically, we leverage the cost vol-ume  E = {ei | ei ∈ Rc}Ni=1  to predict pose  (qkey ∈
+
+RN ×4, pkey ∈ RN ×3) for each query in the feature map. We apply a winner-takes-all loss [58] to optimize only the top-k queries  (qkey ∈ RK×4, pkey ∈ RK×3) with the small-est error relative to the ground-truth pose. As demonstrated in Fig. 7, this selective loss function helps the model fo-cus on static regions, with the auxiliary loss defined as 
+
+Laux = 1
+
+K
+
+PKk=1 L(k), where  L(k) indicates the regression losses between the poses of the top selected  k queries and the ground-truth pose as calculated in (7). 
+
+Collective Average Loss. We employ the Collective Aver-age Loss (CAL) inspired by MOTR [85], which aggregates losses across multiple frames. Specifically, the total loss of StreamVLO  Ltotal  is computed as the average loss over frames within each sub-clip  Ts, i.e.,  Ltotal = 1
+
+Ts
+
+PTs
+
+t=1 Lt,where  Lt = Lreg 
+
+t + α4Laux 
+
+t .
+
+## 4. Experiment 
+
+4.1. Datasets and Metrics 
+
+KITTI Odometry Dataset [21] has 22 sequences from a Velodyne LiDAR and stereo cameras. Following prior work [48, 73], we use the left monocular camera and Li-DAR, with 00–06 for training and 07–10 for testing. 
+
+Argoverse Dataset [8] provides 113 sequences with Li-DAR and stereo images, split into 65/24/24 for training, 39090 Table 2. Comparison with traditional visual SLAM (with loop closure) on KITTI 00-10 sequences in ATE[m] ↓.                                                                                                                       
+
+> Method 00 01 02 03 04 05 06 07 08 09 10 Mean(00-10)
+> ATE ATE ATE ATE ATE ATE ATE ATE ATE ATE ATE ATE
+> ORB-SLAM2 [59] 8.27 ✗26.86 1.21 0.77 7.91 12.54 3.44 46.81 76.50 6.61 -ORB-SLAM3 [7] 6.77 ✗30.50 1.04 0.93 5.54 16.61 9.70 60.69 7.89 8.65 -LDSO[19] 9.32 11.68 31.98 2.85 1.22 5.10 13.55 2.96 129.02 21.64 17.36 22.42 DROID-SLAM[69] 92.11 344.62 ✗2.38 1.00 118.51 62.47 21.78 161.60 ✗118.70 -DPV-SLAM[42] 112.80 11.50 123.53 2.50 0.81 57.80 54.86 18.77 110.49 76.66 13.65 53.03 DPV-SLAM++[42] 8.30 11.86 39.64 2.50 0.78 5.74 11.60 1.52 110.9 76.70 13.70 25.76 MambaVO++[75] 6.19 8.04 27.73 1.94 0.59 3.05 11.79 1.7 105.42 63.24 10.51 21.84 Ours 9.28 19.72 15.23 3.51 0.76 4.90 3.61 1.00 7.74 7.27 2.73 6.91
+
+Table 3. Comparison with traditional visual–LiDAR SLAM on KITTI 00-10 sequences.                                                                                    
+
+> Method 00 01 02 03 04 05 06 07 08 09 10 Mean(00-10)
+> trel trel trel trel trel trel trel trel trel trel trel trel
+> DVL-SLAM [64] 0.93 1.47 1.11 0.92 0.67 0.82 0.92 1.26 1.32 0.66 0.70 0.98 TVL-SLAM [13] 0.59 ✗0.74 ✗✗0.32 0.32 0.36 0.88 0.64 ✗-HVL-SLAM [77] 0.75 1.86 0.81 0.87 1.09 0.57 0.70 0.80 1.08 0.71 0.81 0.91 SDV-LOAM [84] 0.67 0.96 0.75 0.86 0.77 0.66 0.44 0.74 1.07 0.53 0.51 0.72 Ours 0.59 0.73 0.65 0.47 0.21 0.33 0.31 0.26 0.79 0.63 0.51 0.50
+
+validation, and testing. 
+
+Evaluation Metrics. We report (1) average translational RMSE (%) and (2) average rotational RMSE ( ◦/100m) as in PWCLO [73], and also Absolute Trajectory Error (ATE) [67] for SLAM comparison [7, 18, 69]. 
+
+4.2. Implementation Details 
+
+Data Pre-processing. Following the sparse sampling ap-proach for LiDAR points from [74], we also design a fusion mask that flags LiDAR queries that can interact with image features, given the substantial difference in spatial range be-tween the LiDAR and camera data. 
+
+Hyper-parameters. We use the Adam optimizer with β1 =0.9 and β2 = 0.999 . The initial learning rate is 0.001 and decays exponentially every 13 epochs until reaching 0.00001. We use a batch size of 8. The values for αi across different module outputs are set to 1.6, 0.8, 1.6, and 1.6, respectively. The learnable parameters kt and kq are initial-ized to 0.0 and -2.5, respectively. For each feature level, the number of LiDAR queries is set to 116, 228, 904, and 3600. During training, the KITTI sequences 00-06 are divided into video clips with a duration of  TC = 60  frames (6s), with further segmentation into sub-clips of  Ts = 3  frames (0.3s) for the collective average loss calculation. The maximum history length  Th and the compensation interval  Tg are set as 30 and 20 respectively. The value of top-k is set as 100 for the winner-takes-all loss. 
+
+4.3. Quantitative Results 
+
+Comparison with Deep Odometry Methods on KITTI. 
+
+We compare our model with recent learning-based visual odometry (VO), LiDAR odometry (LO), and multi-modal methods. Following [73], our model is trained on sequences 00–06. The main results on the KITTI dataset are presented in Table 1, demonstrating that StreamVLO surpasses these methods on most sequences. Specifically, compared to deep visual odometry methods [12, 86], our method achieves 
+
+75% trel and 60% rrel reductions on sequences 07–10. It is worth mentioning that while these VO methods are generally trained on a larger dataset (00–08), StreamVLO still achieves significantly better results. Compared to re-cent state-of-the-art LO methods, StreamVLO exceeds Ef-ficientLO [74], DSLO [87], and LAGLO [68] on most se-quences. Compared to multi-modal odometry methods, StreamVLO reduces average translation error by 19% and average rotation error by 22% compared to the state-of-the-art visual–LiDAR odometry method DVLO [48], highlight-ing StreamVLO’s capabilities in effective spatio-temporal modeling under streaming conditions. 
+
+Comparison with Traditional SLAMs on KITTI. To further validate the efficacy of our method in long-term temporal modeling for drift mitigation, we compare StreamVLO with traditional visual SLAM systems (Ta-ble 2) and traditional visual–LiDAR SLAM systems (Ta-ble 3). StreamVLO outperforms these methods on most se-quences in terms of Absolute Trajectory Error (ATE) and relative translation errors, demonstrating its effectiveness in mitigating drift. Notably, these SLAM systems rely on global optimization and loop closure across a sequence of frames to reduce cumulative errors, whereas our method leverages Cumulative Drift Compensation to backtrack pre-viously observed frames and compensate for cumulative er-rors, without requiring explicit mapping or loop closure. This property makes StreamVLO more adaptable to se-quences of arbitrary lengths in driving scenes. 
+
+Comparison Results on Argoverse. To evaluate our method’s generalization capability, we perform experiments on the Argoverse dataset [8]. Following the protocol in [87], 39091 Table 4. Experiments on the Argoverse dataset [8] in ATE.                 
+
+> Method Mean on 00-23 ATE RPE
+> LeGO-LOAM [63] w/o mapping 4.537 0.110 SUMA [5] w/o mapping 3.663 0.039 PyLiDAR [14] w/o mapping 6.900 0.109 DSLO [87] 0.111 0.027 DVLO [48] 0.103 0.026 DVLO4D [55] 0.089 0.025 StreamVLO (Ours) 0.073 0.021
+
+we employ Absolute Trajectory Error (ATE) and Relative Pose Error (RPE) as evaluation metrics. StreamVLO is trained and evaluated using the official Argoverse train-ing/testing split. As shown in Table 4, StreamVLO sur-passes four traditional geometry-based odometry meth-ods [5, 14, 63] without mapping for a fair comparison and also the recent state-of-the-art learning-based method DSLO [87] by 18% in ATE and 16% in RPE. 
+
+4.4. Qualitative results 
+
+We provide 3D trajectory visualizations from our estimated poses in Fig. 5, showing close alignment with the ground-truth trajectory. We also compare trajectory accuracy and estimation errors with the classical LOAM [88] in Fig. 6. Although StreamVLO runs as a streaming front-end with-out mapping or loop closure, it achieves higher localization accuracy, attributable to unified spatio-temporal modeling and cumulative drift compensation. We further plot the top-k query points in Fig. 7 to reveal high-salience regions selected by the Keypoint-Aware Aux-iliary Loss. Most points lie on static structures (e.g., build-ings, parked vehicles, poles), with fewer on dynamic agents (moving cars, pedestrians). This selection suppresses mo-tion inconsistency that degrades localization [45], improv-ing pose stability over long horizons. 
+
+4.5. Latency Analysis 
+
+As presented in Table 5, we compare StreamVLO la-tency with other multi-modal odometry methods on a sin-gle NVIDIA 4090 GPU. Efficiency is critical for real-time SLAM, as KITTI LiDAR is sampled at 10 Hz. Many exist-ing multi-modal approaches [48, 65, 76] struggle to meet the 100 ms real-time threshold. In contrast, our method achieves an inference latency of 74 ms, showcasing its po-tential for real-time applications. 
+
+4.6. Ablation Studies 
+
+We conduct various ablation studies to demonstrate the ef-fectiveness of each component in our proposed StreamVLO network on the KITTI dataset. They are a) the unified MMG 
+
+spatio-temporal correlation, b) the differentiable Cumula-tive Drift Compensation , c) the Keypoint-Aware Auxiliary Loss , and d) integrating all components. As shown in Ta-Ground Truth Ours Start Point a) 3D trajectory of seq.02 b) 3D trajectory of seq.08  
+
+> c) 3D trajectory of seq.09 d) 3D trajectory of seq.10
+
+Figure 5. Trajectory of our estimated pose on KITTI. Ground Truth LOAM LOAM w/o mapping Ours 
+
+Figure 6. Trajectory comparison on KITTI (seq. 07). 
+
+ble 6, overall, removing any of the proposed components leads to inferior performance in mean translation and ro-tation errors, highlighting the significance of each design choice in our architecture. This is most profound for the unified MMG, which enhances performance by creating a unified feature space for harnessing spatial and temporal in-formation from the visual–LiDAR data. Second, Cumula-tive Drift Compensation improves results by correcting cu-mulative errors over the  Tg horizon, which is also evidently visible as shown in Fig 8. Last, the Keypoint-Aware Auxil-iary Loss strengthens the learning of robust feature regions, which contributes to an overall better performance by 12%. We also ablate fusion strategies: deformable Mamba yields the best accuracy and second-lowest latency (74 ms), surpassing attention-based [57], cluster-based [48], and deformable-attention baselines [98] (Table 7). 39092 Figure 7. Visualization of the Keypoint-Aware Auxiliary Loss. 
+
+Green points indicate the top-k queries with minimal errors rela-tive to the ground truth pose, which are primarily located in static regions (green boxes), while less in dynamic objects (red boxes). HM-VLO w/o Composation 
+
+> GT StreamVLO StreamVLO w/o Compensation large cumulative drift drift after compensation
+
+Figure 8. Comparison of with vs. without the Cumulative Drift Compensation. 
+
+Table 5. Average inference time of different multi-modal odometry methods on the sequence 07-10 of KITTI dataset.                
+
+> Method DV-LOAM PL-LOAM Shu et al. DVLO StreamVLO [76] [30] [65] [48] (Ours)
+> Time (ms) 167 200 100 99 74
+
+Additional ablation studies on query numbers in the top-k winner-takes-all loss, frame lengths Th and Tg , and extra visualizations are provided in the supplementary materials. 
+
+4.7. Generalization Ability 
+
+We also evaluate the cross-dataset generalization ability of our proposed StreamVLO in Table 8. When trained on KITTI and tested on Argoverse, both methods degrade, but StreamVLO rises by only +32.9% ATE and +19.0% RPE, compared with DVLO’s +81.6% ATE and +34.6% RPE. Under this cross-dataset setting, StreamVLO remains bet-ter, yielding lower ATE and RPE than DVLO. 
+
+4.8. Performance on Complex Motions 
+
+We evaluate two challenging KITTI regimes, high dynamics and high rotation, where pairwise or short-horizon models 
+
+Table 6. Ablation study of related design choices in StreamVLO on KITTI sequences 07-10. 
+
+Method 07 08 09 10 Mean (07-10) 
+
+trel rrel trel rrel trel rrel trel rrel trel rrel 
+
+(a) w/o Unified MMG 0.33 0.35 0.91 0.44 0.69 0.34 0.87 0.38 0.70 0.38 (b) w/o Compensation 0.35 0.32 0.83 0.39 0.74 0.33 0.88 0.40 0.70 0.36 (c) w/o Auxiliary Loss 0.31 0.29 0.87 0.43 0.71 0.34 0.79 0.44 0.67 0.38 (d) StreamVLO 0.27 0.21 0.79 0.28 0.63 0.28 0.65 0.39 0.59 0.29 
+
+Table 7. Ablation study of multi-modal fusion strategies.                          
+
+> Method 07 08 09 10 Mean Latency
+> trel rrel trel rrel trel rrel trel rrel trel rrel (ms) CNN [31] 0.39 0.34 1.11 0.49 0.81 0.44 0.91 0.52 0.81 0.45 71
+> Clustering [48] 0.34 0.37 0.93 0.41 0.78 0.43 0.92 0.43 0.74 0.41 87 Attention [57] 0.36 0.28 0.97 0.41 1.01 0.49 0.85 0.48 0.80 0.42 171 Deform DETR [98] 0.32 0.35 0.87 0.37 0.71 0.32 0.69 0.34 0.65 0.35 76 Deform Mamba 0.27 0.21 0.79 0.28 0.63 0.28 0.65 0.39 0.59 0.29 74
+
+Table 8. Cross-dataset generalization from KITTI to Argov-erse. We report ATE and RPE on Argoverse; percentages in red denote the relative increase against each method’s in-domain re-sult (trained and tested on Argoverse). Lower is better.                     
+
+> Method Training Testing ATE (m) RPE (m) DVLO [48] Argoverse Argoverse 0.103 0.026 StreamVLO Argoverse Argoverse 0.073 0.021 DVLO [48] KITTI Argoverse 0.187 (+81.6%) 0.035 (+34.6%) StreamVLO KITTI Argoverse 0.097 (+32.9%) 0.025 (+19.0%)
+
+Table 9. Performance on high-dynamics and high-rotation sce-narios of KITTI. 
+
+Method High Dynamics High Rotation Rate 
+
+trel rrel trel rrel 
+
+DVLO [48] 1.47 0.65 1.73 0.69 StreamVLO 0.77 0.41 0.79 0.38 
+
+falter. In these scenarios, the performance gap relative to DVLO becomes more pronounced (in Table 9). Gains in-dicate stronger robustness under rapid motion and heading changes, as long-range temporal modeling and drift rectifi-cation stabilize pose estimates. 
+
+## 5. Conclusion 
+
+In this work, we introduced StreamVLO, a visual–LiDAR odometry framework designed to address the challenges like accumulative drifts. By integrating a unified MMG architecture, StreamVLO combines visual and LiDAR data, enabling robust feature fusion while capturing essential spatiotemporal dependencies. Our model leverages a Cumulative Drift Compensation module to minimize cumulative drifts. Moreover, a Keypoint-Aware Auxiliary Loss is proposed to enhance spatial feature representations in high-salience regions. Exten-sive experiments demonstrate that StreamVLO achieves state-of-the-art performance in both KITTI and Argov-erse datasets, while maintaining real-time inference latency. 39093 References 
+
+[1] Sk Aziz Ali, Djamila Aouada, Gerd Reis, and Didier Stricker. Delo: Deep evidential lidar odometry using partial optimal transport. In Proceedings of the IEEE/CVF Inter-national Conference on Computer Vision , pages 4517–4526, 2023. 5 [2] Yi An, Jin Shi, Dongbing Gu, and Qiang Liu. Visual-lidar slam based on unsupervised multi-channel deep neural net-works. Cognitive Computation , 14(4):1496–1508, 2022. 2, 5[3] Eren Aydemir, Naida Fetic, and Mustafa Unel. H-vlo: hy-brid lidar-camera fusion for self-supervised odometry. In 
+
+IEEE/RSJ International Conference on Intelligent Robots and Systems , pages 3302–3307, 2022. 5 [4] Ethan Baron, Itamar Zimerman, and Lior Wolf. 2-d ssm: A general spatial layer for visual transformers. arXiv preprint arXiv:2306.06635 , 2023. 3 [5] Jens Behley and Cyrill Stachniss. Efficient surfel-based slam using 3d laser range data in urban environments. In Robotics: Science and Systems , page 59, 2018. 7 [6] Lin Bie, Shouan Pan, Siqi Li, Yining Zhao, and Yue Gao. Graphi2p: Image-to-point cloud registration with exploring pattern of correspondence via graph learning. In Proceedings of the Computer Vision and Pattern Recognition Conference ,pages 22161–22171, 2025. 2 [7] Carlos Campos, Richard Elvira, Juan J G´ omez Rodr´ ıguez, Jos´ e MM Montiel, and Juan D Tard´ os. Orb-slam3: An accurate open-source library for visual, visual–inertial, and multimap slam. IEEE transactions on robotics , 37(6):1874– 1890, 2021. 6 [8] Ming-Fang Chang, John Lambert, Patsorn Sangkloy, Jag-jeet Singh, Slawomir Bak, Andrew Hartnett, De Wang, Peter Carr, Simon Lucey, Deva Ramanan, et al. Argoverse: 3d tracking and forecasting with rich maps. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 8748–8757, 2019. 2, 5, 6, 7 [9] Suyi Chen, Hao Xu, Ru Li, Guanghui Liu, Chi-Wing Fu, and Shuaicheng Liu. Sira-pcr: Sim-to-real adaptation for 3d point cloud registration. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 14394– 14405, 2023. 1 [10] Hao Cheng, Mengmeng Liu, and Lin Chen. An end-to-end framework of road user detection, tracking, and prediction from monocular images. In 2023 IEEE 26th International Conference on Intelligent Transportation Systems (ITSC) ,pages 2178–2185. IEEE, 2023. 3 [11] Hao Cheng, Mengmeng Liu, Lin Chen, Hellward Broszio, Monika Sester, and Michael Ying Yang. Gatraj: A graph-and attention-based multi-agent trajectory prediction model. IS-PRS Journal of Photogrammetry and Remote Sensing , 205: 163–175, 2023. 2 [12] Hae Min Cho and Euntai Kim. Dynamic object-aware visual odometry (vo) estimation based on optical flow matching. 
+
+IEEE Access , 11:11642–11651, 2023. 5, 6 [13] Chih-Chung Chou and Cheng-Fu Chou. Efficient and ac-curate tightly-coupled visual-lidar slam. IEEE Transactions on Intelligent Transportation Systems , 23(9):14509–14523, 2021. 6 [14] Pierre Dellenbach, Jean-Emmanuel Deschaud, Bastien Jacquet, and Franc ¸ois Goulette. What’s in my lidar odometry toolbox? In IEEE/RSJ International Conference on Intelli-gent Robots and Systems , pages 4429–4436, 2021. 7 [15] Junyuan Deng, Qi Wu, Xieyuanli Chen, Songpengcheng Xia, Zhen Sun, Guoqing Liu, Wenxian Yu, and Ling Pei. Nerf-loam: Neural implicit representation for large-scale incre-mental lidar odometry and mapping. In Proceedings of the IEEE/CVF International Conference on Computer Vision ,pages 8218–8227, 2023. 1 [16] Tianchen Deng, Yaohui Chen, Jianfei Yang, Shenghai Yuan, Jiuming Liu, Danwei Wang, and Weidong Chen. Cgs-slam: Compact 3d gaussian splatting for dense visual slam. In 2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , pages 1606–1613. IEEE, 2025. 1 [17] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Syl-vain Gelly, Jakob Uszkoreit, and Neil Houlsby. An image is worth 16x16 words: Transformers for image recognition at scale. In ICLR , 2021. 3 [18] Jakob Engel, Vladlen Koltun, and Daniel Cremers. Direct sparse odometry. IEEE transactions on pattern analysis and machine intelligence , 40(3):611–625, 2017. 6 [19] Xiang Gao, Rui Wang, Nikolaus Demmel, and Daniel Cre-mers. Ldso: Direct sparse odometry with loop closure. In IEEE/RSJ International Conference on Intelligent Robots and Systems , pages 2198–2204, 2018. 6 [20] Andreas Geiger, Philip Lenz, and Raquel Urtasun. Are we ready for autonomous driving? the kitti vision benchmark suite. In 2012 IEEE conference on computer vision and pat-tern recognition , pages 3354–3361. IEEE, 2012. 2 [21] Andreas Geiger, Philip Lenz, Christoph Stiller, and Raquel Urtasun. Vision meets robotics: The kitti dataset. The Inter-national Journal of Robotics Research , 32(11):1231–1237, 2013. 5 [22] Johannes Graeter, Alexander Wilczynski, and Martin Lauer. Limo: Lidar-monocular visual odometry. In 2018 IEEE/RSJ international conference on intelligent robots and systems (IROS) , pages 7872–7879. IEEE, 2018. 2 [23] Albert Gu and Tri Dao. Mamba: Linear-time sequence mod-eling with selective state spaces. In First Conference on Lan-guage Modeling , 2024. 2, 3, 4 [24] Albert Gu, Karan Goel, and Christopher R´ e. Efficiently modeling long sequences with structured state spaces. arXiv preprint arXiv:2111.00396 , 2021. 3 [25] Albert Gu, Isys Johnson, Karan Goel, Khaled Saab, Tri Dao, Atri Rudra, and Christopher R´ e. Combining recurrent, convolutional, and continuous-time models with linear state space layers. Advances in neural information processing sys-tems , 34:572–585, 2021. 3 [26] Chunrui Han, Jinrong Yang, Jianjian Sun, Zheng Ge, Run-pei Dong, Hongyu Zhou, Weixin Mao, Yuang Peng, and Xi-angyu Zhang. Exploring recurrent long-term temporal fusion for multi-view 3d perception. IEEE Robotics and Automa-tion Letters , 9(7):6544–6551, 2024. 2 39094 [27] Vincent Tao Hu, Stefan Andreas Baumann, Ming Gui, Olga Grebenkova, Pingchuan Ma, Johannes Fischer, and Bj¨ orn Ommer. Zigma: A dit-style zigzag mamba diffusion model. In European conference on computer vision , pages 148–166. Springer, 2024. 3 [28] Yihan Hu, Jiazhi Yang, Li Chen, Keyu Li, Chonghao Sima, Xizhou Zhu, Siqi Chai, Senyao Du, Tianwei Lin, Wenhai Wang, et al. Planning-oriented autonomous driving. In Pro-ceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 17853–17862, 2023. 2 [29] Junjie Huang and Guan Huang. Bevdet4d: Exploit tempo-ral cues in multi-camera 3d object detection. arXiv preprint arXiv:2203.17054 , 2022. 2 [30] Shi-Sheng Huang, Ze-Yu Ma, Tai-Jiang Mu, Hongbo Fu, and Shi-Min Hu. Lidar-monocular visual odometry using point and line features. In IEEE International Conference on Robotics and Automation , pages 1091–1097, 2020. 2, 8 [31] Tengteng Huang, Zhe Liu, Xiwu Chen, and Xiang Bai. Ep-net: Enhancing point features with image semantics for 3d object detection. In European Conference on Computer Vi-sion , pages 35–52. Springer, 2020. 3, 8 [32] Yongshu Huang, Chen Liu, Minghang Zhu, Sheng Ao, Chenglu Wen, and Cheng Wang. Difflo: Semantic-aware lidar odometry with diffusion-based refinement. In Proceed-ings of the Computer Vision and Pattern Recognition Con-ference , pages 17050–17059, 2025. 2 [33] Bo Jiang, Shaoyu Chen, Qing Xu, Bencheng Liao, Jiajie Chen, Helong Zhou, Qian Zhang, Wenyu Liu, Chang Huang, and Xinggang Wang. Vad: Vectorized scene representa-tion for efficient autonomous driving. In Proceedings of the IEEE/CVF International Conference on Computer Vision ,pages 8340–8350, 2023. 2 [34] Haowen Lai, Peng Yin, and Sebastian Scherer. Adafusion: Visual-lidar fusion with adaptive weights for place recogni-tion. IEEE Robotics and Automation Letters , 7(4):12038– 12045, 2022. 2 [35] Lei Lai, Zekai Yin, and Eshed Ohn-Bar. Zerovo: Visual odometry with minimal assumptions. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 17092–17102, 2025. 2 [36] Bin Li, Shuling Wang, Haifeng Ye, Xiaojin Gong, and Zhiyu Xiang. Cross-modal knowledge distillation for depth privi-leged monocular visual odometry. IEEE Robotics and Au-tomation Letters , 7(3):6171–6178, 2022. 1 [37] Qing Li, Shaoyang Chen, Cheng Wang, Xin Li, Chenglu Wen, Ming Cheng, and Jonathan Li. Lo-net: Deep real-time lidar odometry. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 8473– 8482, 2019. 5 [38] Shufan Li, Harkanwar Singh, and Aditya Grover. Mamba-nd: Selective state space modeling for multi-dimensional data. In European Conference on Computer Vision , pages 75–92. Springer, 2024. 3 [39] Zhiqi Li, Wenhai Wang, Hongyang Li, Enze Xie, Chong-hao Sima, Tong Lu, Yu Qiao, and Jifeng Dai. Bevformer: Learning bird’s-eye-view representation from multi-camera images via spatiotemporal transformers. In European con-ference on computer vision , pages 1–18. Springer, 2022. 2 [40] Xuewu Lin, Tianwei Lin, Zixiang Pei, Lichao Huang, and Zhizhong Su. Sparse4d v2: Recurrent temporal fusion with sparse model. arXiv preprint arXiv:2305.14018 , 2023. 2 [41] Xuewu Lin, Zixiang Pei, Tianwei Lin, Lichao Huang, and Zhizhong Su. Sparse4d v3: Advancing end-to-end 3d detec-tion and tracking. arXiv preprint arXiv:2311.11722 , 2023. 2[42] Lahav Lipson, Zachary Teed, and Jia Deng. Deep patch visual slam. In European Conference on Computer Vision ,pages 424–440. Springer, 2024. 1, 6 [43] Hanxiao Liu, Zihang Dai, David So, and Quoc V Le. Pay at-tention to mlps. Advances in Neural Information Processing Systems , 34:9204–9215, 2021. 2, 3 [44] Jiuming Liu, Guangming Wang, Chaokang Jiang, Zhe Liu, and Hesheng Wang. Translo: A window-based masked point transformer framework for large-scale lidar odometry. In 
+
+Proceedings of the AAAI Conference on Artificial Intelli-gence , pages 1683–1691, 2023. 1, 3, 5 [45] Jiuming Liu, Guangming Wang, Zhe Liu, Chaokang Jiang, Marc Pollefeys, and Hesheng Wang. Regformer: An effi-cient projection-aware transformer network for large-scale point cloud registration. In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , pages 8451–8460, 2023. 7 [46] Jiuming Liu, Guangming Wang, Weicai Ye, Chaokang Jiang, Jinru Han, Zhe Liu, Guofeng Zhang, Dalong Du, and Hes-heng Wang. Difflow3d: Toward robust uncertainty-aware scene flow estimation with iterative diffusion-based refine-ment. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pages 15109–15119, 2024. 2 [47] Jiuming Liu, Ruiji Yu, Yian Wang, Yu Zheng, Tianchen Deng, Weicai Ye, and Hesheng Wang. Point mamba: A novel point cloud backbone based on state space model with octree-based ordering strategy. arXiv preprint arXiv:2403.06467 , 2024. 3 [48] Jiuming Liu, Dong Zhuo, Zhiheng Feng, Siting Zhu, Chen-sheng Peng, Zhe Liu, and Hesheng Wang. Dvlo: Deep visual-lidar odometry with local-to-global feature fusion and bi-directional structure alignment. In European Conference on Computer Vision , 2024. 1, 2, 3, 5, 6, 7, 8 [49] Jiuming Liu, Jinru Han, Lihao Liu, Angelica I Aviles-Rivero, Chaokang Jiang, Zhe Liu, and Hesheng Wang. Mamba4d: Efficient 4d point cloud video understanding with disentan-gled spatial-temporal state space models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 17626–17636, 2025. 3 [50] Jiuming Liu, Weicai Ye, Guangming Wang, Chaokang Jiang, Lei Pan, Jinru Han, Zhe Liu, Guofeng Zhang, and Hesh-eng Wang. Difflow3d: Hierarchical diffusion models for uncertainty-aware 3d scene flow estimation. IEEE transac-tions on pattern analysis and machine intelligence , 2025. 2 [51] Jiuming Liu, Mengmeng Liu, Siting Zhu, Yunpeng Zhang, Jiangtao Li, Michael Ying Yang, Francesco Nex, Hao Cheng, and Hesheng Wang. Arflow: Auto-regressive optical flow estimation for arbitrary-length videos via progressive next-frame forecasting. In The Fourteenth International Confer-ence on Learning Representations , 2026. 3 39095 [52] Mengmeng Liu, Hao Cheng, and Michael Ying Yang. Trac-ing the influence of predecessors on trajectory prediction. In 
+
+Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 3253–3263, 2023. 2 [53] Mengmeng Liu, Hao Cheng, Lin Chen, Hellward Broszio, Jiangtao Li, Runjiang Zhao, Monika Sester, and Michael Ying Yang. Laformer: Trajectory prediction for autonomous driving with lane-aware scene constraints. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 2039–2049, 2024. 2 [54] Mengmeng Liu, Jiuming Liu, Yunpeng Zhang, Jiangtao Li, Michael Ying Yang, Francesco Nex, and Hao Cheng. 4dstr: Advancing generative 4d gaussians with spatial-temporal rectification for high-quality and consistent 4d generation. 
+
+arXiv preprint arXiv:2511.07241 , 2025. 1 [55] Mengmeng Liu, Michael Ying Yang, Jiuming Liu, Yunpeng Zhang, Jiangtao Li, Sander Oude Elberink, George Vossel-man, and Hao Cheng. Dvlo4d: Deep visual-lidar odome-try with sparse spatial-temporal fusion. In 2025 IEEE In-ternational Conference on Robotics and Automation (ICRA) ,pages 9740–9747. IEEE, 2025. 5, 7 [56] Yue Liu, Yunjie Tian, Yuzhong Zhao, Hongtian Yu, Lingxi Xie, Yaowei Wang, Qixiang Ye, Jianbin Jiao, and Yunfan Liu. Vmamba: Visual state space model. Advances in neural information processing systems , 37:103031–103063, 2024. 3 [57] Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, and Baining Guo. Swin transformer: Hierarchical vision transformer using shifted windows. In 
+
+ICCV , 2021. 7, 8 [58] Osama Makansi, Eddy Ilg, Ozgun Cicek, and Thomas Brox. Overcoming limitations of mixture density networks: A sam-pling and fitting framework for multimodal future prediction. In CVPR , 2019. 2, 5 [59] Raul Mur-Artal and Juan D Tard´ os. Orb-slam2: An open-source slam system for monocular, stereo, and rgb-d cam-eras. IEEE transactions on robotics , 33(5):1255–1262, 2017. 6[60] Jiquan Ngiam, Benjamin Caine, Vijay Vasudevan, Zheng-dong Zhang, Hao-Tien Lewis Chiang, Jeffrey Ling, Rebecca Roelofs, Alex Bewley, Chenxi Liu, Ashish Venugopal, David Weiss, Ben Sapp, Zhifeng Chen, and Jonathon Shlens. Scene transformer: A unified architecture for predicting multiple agent trajectories. In ICLR , 2022. 3 [61] Wentao Qu, Yuantian Shao, Lingwu Meng, Xiaoshui Huang, and Liang Xiao. A conditional denoising diffusion proba-bilistic model for point cloud upsampling. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 20786–20795, 2024. 2 [62] Wentao Qu, Jing Wang, YongShun Gong, Xiaoshui Huang, and Liang Xiao. An end-to-end robust point cloud semantic segmentation network with single-step conditional diffusion models. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 27325–27335, 2025. 2 [63] Tixiao Shan and Brendan Englot. Lego-loam: Lightweight and ground-optimized lidar odometry and mapping on vari-able terrain. In IEEE/RSJ International Conference on Intel-ligent Robots and Systems , pages 4758–4765, 2018. 7 [64] Young-Sik Shin, Yeong Sang Park, and Ayoung Kim. Dvl-slam: Sparse depth enhanced direct visual-lidar slam. Au-tonomous Robots , 44(2):115–130, 2020. 2, 6 [65] Chengfu Shu and Yutao Luo. Multi-modal feature constraint based tightly coupled monocular visual-lidar odometry and mapping. IEEE Transactions on Intelligent Vehicles , 8(5): 3384–3393, 2022. 7, 8 [66] Sai Shubodh, Mohammad Omama, Husain Zaidi, Udit Singh Parihar, and Madhava Krishna. Lip-loc: Lidar image pre-training for cross-modal localization. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pages 948–957, 2024. 2 [67] J¨ urgen Sturm, Nikolas Engelhard, Felix Endres, Wolfram Burgard, and Daniel Cremers. A benchmark for the evalua-tion of rgb-d slam systems. In 2012 IEEE/RSJ international conference on intelligent robots and systems , pages 573–580. IEEE, 2012. 6 [68] Fangzhou Tang, Shuting Zhang, Bocheng Zhu, and Junren Sun. Enhanced lidar odometry for autonomous vehicular po-sitioning system using local feature enhancement and global motion constraint. IEEE Transactions on Vehicular Technol-ogy , 2025. 5, 6 [69] Zachary Teed and Jia Deng. Droid-slam: Deep visual slam for monocular, stereo, and rgb-d cameras. Advances in Neu-ral Information Processing Systems , 34:16558–16569, 2021. 6[70] Zachary Teed, Lahav Lipson, and Jia Deng. Deep patch vi-sual odometry. Advances in Neural Information Processing Systems , 36:39033–39051, 2023. 1 [71] Balakrishnan Varadarajan, Ahmed Hefny, Avikalp Srivas-tava, Khaled S Refaat, Nigamaa Nayakanti, Andre Cornman, Kan Chen, Bertrand Douillard, Chi Pang Lam, Dragomir Anguelov, and Benjamin Sapp. Multipath++: Efficient in-formation fusion and trajectory aggregation for behavior pre-diction. In ICRA , 2022. 3 [72] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszko-reit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. Advances in neural information processing systems , 30, 2017. 3 [73] Guangming Wang, Xinrui Wu, Zhe Liu, and Hesheng Wang. Pwclo-net: Deep lidar odometry in 3d point clouds using hierarchical embedding mask optimization. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 15910–15919, 2021. 1, 4, 5, 6 [74] Guangming Wang, Xinrui Wu, Shuyang Jiang, Zhe Liu, and Hesheng Wang. Efficient 3d deep lidar odometry. IEEE Transactions on Pattern Analysis and Machine Intelligence ,45(5):5749–5765, 2022. 1, 3, 4, 5, 6 [75] Shuo Wang, Wanting Li, Yongcai Wang, Zhaoxin Fan, Zhe Huang, Xudong Cai, Jian Zhao, and Deying Li. Mam-bavo: Deep visual odometry based on sequential matching refinement and training smoothing. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 1252–1262, 2025. 6 [76] Wei Wang, Jun Liu, Chenjie Wang, Bin Luo, and Cheng Zhang. Dv-loam: Direct visual lidar odometry and mapping. 
+
+Remote Sensing , 13(16):3340, 2021. 1, 7, 8 39096 [77] Wei Wang, Chenjie Wang, Jun Liu, Xin Su, Bin Luo, and Cheng Zhang. Hvl-slam: Hybrid vision and lidar fusion for slam. IEEE Transactions on Geoscience and Remote Sens-ing , 2024. 6 [78] Yikai Wang, Xinzhou Wang, Zilong Chen, Zhengyi Wang, Fuchun Sun, and Jun Zhu. Vidu4d: Single generated video to high-fidelity 4d reconstruction with dynamic gaussian sur-fels. arXiv preprint arXiv:2405.16822 , 2024. 1 [79] Zhong Wang, Lin Zhang, Ying Shen, and Yicong Zhou. D-liom: Tightly-coupled direct lidar-inertial odometry and mapping. IEEE Transactions on Multimedia , 2022. 1 [80] Wei Xu, Yixi Cai, Dongjiao He, Jiarong Lin, and Fu Zhang. Fast-lio2: Fast direct lidar-inertial odometry. IEEE Transac-tions on Robotics , pages 1–21, 2022. 1 [81] Jing Nathan Yan, Jiatao Gu, and Alexander M Rush. Diffusion models without attention. arXiv preprint arXiv:2311.18257 , 2023. 3 [82] Chenyu Yang, Yuntao Chen, Hao Tian, Chenxin Tao, Xizhou Zhu, Zhaoxiang Zhang, Gao Huang, Hongyang Li, Yu Qiao, Lewei Lu, et al. Bevformer v2: Adapting modern image backbones to bird’s-eye-view recognition via perspective su-pervision. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 17830– 17839, 2023. 2 [83] Tianyuan Yuan, Yicheng Liu, Yue Wang, Yilun Wang, and Hang Zhao. Streammapnet: Streaming mapping network for vectorized online hd map construction. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pages 7356–7365, 2024. 2 [84] Zikang Yuan, Qingjie Wang, Ken Cheng, Tianyu Hao, and Xin Yang. Sdv-loam: Semi-direct visual–lidar odometry and mapping. IEEE Transactions on Pattern Analysis and Ma-chine Intelligence , 45(9):11203–11220, 2023. 6 [85] Fangao Zeng, Bin Dong, Yuang Zhang, Tiancai Wang, Xi-angyu Zhang, and Yichen Wei. Motr: End-to-end multiple-object tracking with transformer. In European Conference on Computer Vision , pages 659–675. Springer, 2022. 5 [86] Huangying Zhan, Chamara Saroj Weerasekera, Jia-Wang Bian, Ravi Garg, and Ian Reid. Df-vo: What should be learnt for visual odometry? arXiv preprint arXiv:2103.00933 ,2021. 5, 6 [87] Huixin Zhang, Guangming Wang, Xinrui Wu, Chenfeng Xu, Mingyu Ding, Masayoshi Tomizuka, Wei Zhan, and Hesh-eng Wang. Dslo: Deep sequence lidar odometry based on inconsistent spatio-temporal propagation. In IEEE/RSJ In-ternational Conference on Intelligent Robots and Systems ,2024. 5, 6, 7 [88] Ji Zhang and Sanjiv Singh. Loam: Lidar odometry and map-ping in real-time. In Robotics: Science and Systems , 2014. 7[89] Ji Zhang and Sanjiv Singh. Visual-lidar odometry and map-ping: Low-drift, robust, and fast. In 2015 IEEE Inter-national Conference on Robotics and Automation (ICRA) ,pages 2174–2181. IEEE, 2015. 2 [90] Ji Zhang, Michael Kaess, and Sanjiv Singh. A real-time method for depth enhanced visual odometry. Autonomous Robots , 41:31–43, 2017. 2 [91] Yu-Xin Zhang, Jie Gui, Xiaofeng Cong, Xin Gong, and Wen-bing Tao. A comprehensive survey and taxonomy on point cloud registration based on deep learning. In IJCAI , pages 8344–8353, 2024. 1 [92] Shibo Zhao, Sifan Zhou, Raphael Blanchard, Yuheng Qiu, Wenshan Wang, and Sebastian Scherer. Tartan imu: A light foundation model for inertial positioning in robotics. In Pro-ceedings of the Computer Vision and Pattern Recognition Conference , pages 22520–22529, 2025. 1 [93] Shibo Zhao, Sifan Zhou, Yuchen Zhang, Ji Zhang, Chen Wang, Wenshan Wang, and Sebastian Scherer. Resilient odometry via hierarchical adaptation. Science Robotics , 10 (109):eadv1818, 2025. 2 [94] Beibei Zhou, Zhiyuan Zhang, Zhenbo Song, Jianhui Guo, and Hui Kong. Generalizing unsupervised lidar odometry model from normal to snowy weather conditions. arXiv preprint arXiv:2509.02011 , 2025. 5 [95] Tinghui Zhou, Matthew Brown, Noah Snavely, and David G Lowe. Unsupervised learning of depth and ego-motion from video. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 1851–1858, 2017. 5 [96] Siting Zhu, Guangming Wang, Hermann Blum, Jiuming Liu, Liang Song, Marc Pollefeys, and Hesheng Wang. Sni-slam: Semantic neural implicit slam. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 21167–21177, 2024. 1 [97] Siting Zhu, Renjie Qin, Guangming Wang, Jiuming Liu, and Hesheng Wang. Semgauss-slam: Dense semantic gaussian splatting slam. In 2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , pages 21174– 21181. IEEE, 2025. 1 [98] Xizhou Zhu, Weijie Su, Lewei Lu, Bin Li, Xiaogang Wang, and Jifeng Dai. Deformable detr: Deformable transformers for end-to-end object detection. In ICLR , 2021. 2, 4, 7, 8 39097

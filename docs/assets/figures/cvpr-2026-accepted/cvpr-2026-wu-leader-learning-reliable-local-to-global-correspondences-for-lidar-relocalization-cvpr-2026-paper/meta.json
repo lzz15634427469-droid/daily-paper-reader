@@ -1,0 +1,87 @@
+{
+  "version": 2,
+  "extractor": "papercropper",
+  "figures": [
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-001.webp",
+      "caption": "",
+      "page": 0,
+      "index": 1,
+      "width": 793,
+      "height": 522,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-002.webp",
+      "caption": "",
+      "page": 0,
+      "index": 2,
+      "width": 1632,
+      "height": 805,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-003.webp",
+      "caption": "",
+      "page": 0,
+      "index": 3,
+      "width": 795,
+      "height": 370,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-004.webp",
+      "caption": "",
+      "page": 0,
+      "index": 4,
+      "width": 1804,
+      "height": 381,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-005.webp",
+      "caption": "",
+      "page": 0,
+      "index": 5,
+      "width": 1794,
+      "height": 384,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-006.webp",
+      "caption": "",
+      "page": 0,
+      "index": 6,
+      "width": 621,
+      "height": 384,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-007.webp",
+      "caption": "",
+      "page": 0,
+      "index": 7,
+      "width": 827,
+      "height": 423,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-008.webp",
+      "caption": "",
+      "page": 0,
+      "index": 8,
+      "width": 829,
+      "height": 417,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper/fig-009.webp",
+      "caption": "",
+      "page": 0,
+      "index": 9,
+      "width": 837,
+      "height": 419,
+      "label": "Figure"
+    }
+  ]
+}

@@ -1,0 +1,395 @@
+Title: Cov2Pose: Leveraging Spatial Covariance for Direct Manifold-aware 6-DoF Object Pose Estimation
+
+URL Source: https://openaccess.thecvf.com/content/CVPR2026/papers/Ousalah_Cov2Pose_Leveraging_Spatial_Covariance_for_Direct_Manifold-aware_6-DoF_Object_Pose_CVPR_2026_paper.pdf
+
+Published Time: Sat, 16 May 2026 16:54:05 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# Cov2Pose : Leveraging Spatial Covariance for Direct Manifold-aware 6-DoF Object Pose Estimation 
+
+# Nassim Ali Ousalah ⋆, Peyman Rostami ⋆, Vincent Gaudilli` ere †
+
+# Emmanuel Koumandakis ⋊, Anis Kacem ⋆, Enjie Ghorbel ⋆‡ and Djamila Aouada ⋆
+
+# CVI 2, Interdisciplinary Centre for Security, Reliability and Trust (SnT), University of Luxembourg ⋆
+
+# Universit´ e de Lorraine, CNRS, Inria, LORIA, F-54000 Nancy, France †, Infinite Orbits ⋊
+
+# Cristal Laboratory, ENSI, University of Manouba ‡
+
+{nassim.aliousalah,peyman.rostami,anis.kacem,djamila.aouada }@uni.lu enjie.ghorbel@isamm.uma.tn, manos@infiniteorbits.io, vincent.gaudilliere@loria.fr 
+
+# Abstract 
+
+In this paper, we address the problem of 6-DoF object pose estimation from a single RGB image. Indirect methods that typically predict intermediate 2D keypoints, followed by a Perspective-n-Point solver, have shown great performance. Direct approaches, which regress the pose in an end-to-end manner, are usually computationally more efficient but less accurate. However, direct pose regression heads rely on globally pooled features, ignoring spatial second-order statistics despite their informativeness in pose prediction. They also predict, in most cases, discontinuous pose repre-sentations that lack robustness. Herein, we therefore pro-pose a covariance-pooled representation that encodes con-volutional feature distributions as a symmetric positive def-inite (SPD) matrix. Moreover, we propose a novel pose en-coding in the form of an SPD matrix via its Cholesky de-composition. Pose is then regressed in an end-to-end man-ner with a manifold-aware network head, taking into ac-count the Riemannian geometry of SPD matrices. Experi-ments and ablations consistently demonstrate the relevance of second-order pooling and continuous representations for direct pose regression, including under partial occlusion. 
+
+# 1. Introduction 
+
+Estimating the six-degree-of-freedom (6-DoF) pose of an object from an RGB image is a core challenge in computer vision [3, 4, 30, 37, 38, 43, 45, 64] due to its wide range of applications in robotic manipulation [28, 59], augmented and virtual reality [74], autonomous navigation [9, 55], and industrial inspection [21, 34, 47]. Given an image, the goal is to predict the pose P ∈ SE(3) of the object of interest relative to the camera that captured the image, where SE(3) 
+
+denotes the Special Euclidean Group of R3.
+
+Figure 1. Pose–representation alignment . Pairs of images 1
+
+are sorted according to the geodesic distances in SE(3) between their corresponding ground-truth poses (x-axis). The x-axis is then partitioned into bins. For each bin, we plot: (i) the aver-age Log–Euclidean distance between spatial covariances of image pairs within this bin (red) and (ii) the average Cosine distance be-tween flattened features of image pairs within the bin (blue). Co-variance distances increase with pose distance, whereas flattened feature distances remain nearly constant, indicating that spatial co-variance is more correlated with the pose. 
+
+Thanks to the tremendous developments made in deep learning, numerous approaches have leveraged Deep Neu-ral Networks (DNNs) [33, 44, 74, 77] either directly or indi-rectly to estimate the 6-DoF object pose. Indirect methods mainly predict intermediate representations such as key-points [43, 57, 75, 77] or dense object coordinates [70, 78] that are used to solve a Perspective-n-Point (P nP) prob-lem or adopt a render-and-compare approach that opti-mizes photometric, silhouette, or differentiable rendering losses to align a rendered model view with the input im-   
+
+> 1Training images from the 002 master chef can class of the YCB-V [76] dataset. We use an EfficientNet-B6 [63] pretrained on Im-ageNet [13] with no prior training on pose estimation.
+
+This CVPR paper is the Open Access version, provided by the Computer Vision Foundation. Except for this watermark, it is identical to the accepted version; the final published version of the proceedings is available on IEEE Xplore. 40727 age [36, 39, 40, 48]. Direct methods, on the other hand, regress rotation and translation in an end-to-end manner us-ing a neural architecture [11, 14, 41, 46, 67, 69, 76]. While indirect methods have been demonstrated to be more ac-curate, they suffer from a high calculation cost induced by the iterative computation they incur [39]. In contrast, di-rect methods are usually more efficient despite being less precise [10, 11, 69], thereby suggesting their practical rele-vance in real-time applications. In this paper, we argue that we can improve the accuracy of direct methods by incorporating the spatial second-order statistics of the input image within the DNN-based pose es-timator. In fact, deep pose regressors typically rely solely on first-order statistics of feature activations. Nonetheless, second-order moments such as covariance matrices can cap-ture pairwise co-activations that average or max pooling op-erations discard, thereby providing information about the spatial variability within an image. We hypothesize that such information is highly relevant for inferring the pose. This hypothesis is confirmed by the experiment reported in Figure 1. This figure shows that pairwise distances between spatial covariances of DNN features increase with ground-truth SE(3) pose distance, whereas distances between flat-tened features remain nearly constant. This suggests that spatial covariance is strongly correlated with pose and pro-vides, as a result, a more suitable representation for direct pose regression. Concretely, we propose to make use of second-order pooling, which has shown its utility in several deep learning-based computer vision tasks such as classification, facial expression recognition, object detection, and action recognition [2, 8, 17, 19, 22, 31, 71, 72]. This pooling strat-egy returns feature covariance matrices that are known to be symmetric positive-definite (SPD), ensuring the exploita-tion of statistical information beyond first-order within a DNN, while preserving spatial awareness. To the best of our knowledge, we are the first to explore spatial covariance representations for end-to-end pose regression. Our framework, termed Cov2Pose , is an end-to-end trainable pipeline that respects the geometry of the SPD manifold where covariance matrices reside. Moreover, we introduce within Cov2Pose a one-to-one continuous map-ping from the SPD space to SE(3) via a differentiable Cholesky-based encoding without breaking the chain rule, allowing the direct prediction of a continuous 6-DoF pose representation. In particular, the pose is predicted under the shape of a continuous 6D rotation parametrization cou-pled with a 3D translation. This chosen rotation representa-tion has been shown to be more suitable for rotation learn-ing [79]. Experiments performed on several object pose benchmarks show the superiority of Cov2Pose compared to previous direct methods, demonstrating the relevance of the proposed principled framework. In summary, our main contributions can be summarized as follows, • The first covariance-based deep learning framework for RGB-based end-to-end 6-DoF object pose regression, which leverages the spatial covariance of backbone fea-tures to encode higher-order statistics. • A manifold-aware training pipeline that applies geometry-preserving dimensionality reduction through Bilinear Mapping layers (BiMap) [29] to a compact SPD representation. • A fully differentiable, CAD-free, one-to-one, and contin-uous pose regressor that maps the latent SPD matrix to a continuous 6D rotation representation and translation via a differentiable Cholesky decomposition. • Extensive experiments on three object pose benchmarks, namely, LineMOD [23], Occ-LineMOD [6] and YCB-Video [76], showing that Cov2Pose achieves state-of-the-art results as compared to direct regression methods. The remainder of the paper is organized as follows: Sec-tion 2 presents the related work on 6-DoF object pose esti-mation and the background. Section 3 formulates the prob-lem of direct pose regression. Section 4 describes the pro-posed framework entitled Cov2Pose . Section 5 reports the conducted experiments and discusses the obtained re-sults. Finally, Section 6 concludes this work, highlighting potential future directions. 
+
+# 2. Related Work and Background 
+
+In this section, we first review recent literature on RGB-based 6-DoF object pose estimation, then discuss the use of covariance representations in vision tasks. We also provide preliminaries on the SPD manifold, where such represen-tations naturally reside, and review deep learning methods operating on these manifolds. 
+
+RGB-based 6-DoF Object Pose Estimation. The field has progressed along three complementary paradigms. 
+
+PnP-based methods first establish 2D–3D correspondences and then solve a P nP problem [16]. Early keypoint-based works [56, 58, 65] introduced a learnable regressor for pre-defined sparse object landmarks coordinates or heatmaps. PV-Net [57] proposed to leverage all pixels through a vot-ing system for more robust regression. More recent ap-proaches proposed to learn the keypoints [75], or to refine keypoint prediction with a diffusion-driven framework [77]. A visibility-aware mechanism has also been proposed to handle occlusions in [43]. Dense-correspondence vari-ants aim to improve pose accuracy by predicting per-pixel matches across the whole object surface. Early examples are DPoD [78] and the normalized object coordinate space method [70]. More recently, ZebraPose [62] introduced a coarse-to-fine surface encoding and CheckerPose [42] adopted progressive dense keypoint localisation. However, 40728 these methods generally suffer from a costly iterative out-lier rejection process. Render-and-compare methods it-eratively render the object under a hypothesised pose and refine it against the observed image. The earliest con-tribution, DeepIM [39], introduced an iterative refinement scheme that directly optimises the pose by minimising pho-tometric error. Manhardt et al. extended this idea to a model-based RGB refinement pipeline [48]. RePose [32] later demonstrated fast pose refinement via deep texture rendering. Subsequently, CosyPose added multi-view con-sistency to improve robustness [36], and MRC-Net further enhanced the matching-refinement cycle with multiscale residual correlation [40]. However, these methods require a 3D object model to render and rely on an expensive it-erative optimization loop. Direct pose-regression methods 
+
+aim to predict the 6-DoF object pose in a single forward pass. Early end-to-end regressors such as PoseCNN [76] and Deep-6DPose [14] demonstrated that a CNN can output pose parameters directly from RGB cues. Subsequent work introduced more structured regressors: CDPN employed a coordinates-based disentangled network [41], DenseFusion fused RGB and depth features before regression [67], and GDR-Net presented a geometry-guided direct regression ar-chitecture [69], extended in [46]. Probabilistic P nP layers were incorporated in EPro-PnP to model uncertainty and enable end-to-end training through intermediate 2D-3D cor-respondence predictions [11]. Most prior methods overlook higher-order statistics such as covariance matrices, which, as shown in Figure 1, carry valuable information for pose regression. These neglected statistics are correlated with object poses and thus offer potential for improving direct pose estimation. Furthermore, existing approaches often rely on non-continuous rotation representations, which, as demonstrated in prior studies [79], hinder stable and effec-tive pose learning. 
+
+Covariances and Deep Learning on the SPD Manifold. 
+
+Covariance descriptors have long been employed to encode visual information across a wide range of computer vision tasks [5, 52, 66]. By aggregating second-order statistics of local features, covariance matrices capture complementary texture, shape, and color cues while remaining compact and robust to noise. Because these descriptors are symmetric positive-definite, they reside on the Riemannian manifold of SPD matrices. Formally, this manifold is defined as, 
+
+Sn 
+
+> ++
+
+=  M ∈ Rn×n : M = M⊤,
+
+x⊤Mx > 0 ∀x ∈ Rn \ { 0} , (1) where ⊤ denotes matrix transpose. This space lacks the lin-ear structure of a vector space. Consequently, standard op-erations such as linear combinations are not directly appli-cable, as they do not necessarily preserve SPD nature. As such, algorithms should be tailored to respect the intrinsic non-linear geometry of the manifold. Since standard convo-lutional or fully-connected layers presume a Euclidean fea-ture space, researchers have introduced SPD-aware build-ing blocks to embed the geometry into end-to-end trainable pipelines [7, 18, 29, 73]. These SPD deep networks have demonstrated state-of-the-art performance in tasks ranging from face [15] and action recognition [51] to medical im-age analysis [49]. Nevertheless, most of them have targeted classification tasks, while regression problems, such as pose estimation, have been overlooked. In this paper, we are the first to exploit SPD-aware deep learning for pose esti-mation. We briefly recall below the core contributions that have led to the development of SPD Deep Learning frame-works: • BiMap (Bilinear Mapping). Similar to projection lay-ers in Euclidean nets, a BiMap layer compresses the rep-resentation to generate more compact and discriminative outputs. With a column-orthonormal weight matrix 
+
+W ∈ V n(Rm) = {W ∈ Rn×m | W⊤W = Im} (Im
+
+being the identity matrix of size m, and Vn(Rm) denotes the Stiefel manifold), it transports the input covariance by congruence, 
+
+Y = WX W ⊤, X ∈ S n
+
+> ++
+
+, Y ∈ S m 
+
+> ++
+
+, (2) This contracts n → m (m < n ) while preserving the SPD structure. During training, W is kept on the Stiefel man-ifold [29] via a QR retraction at each update. • ReEig (Eigenvalue Rectification). As for ReLU in Con-vNets, ReEig introduces nonlinearity while preserving the SPD structure by lifting small eigenvalues to a spec-tral floor. Let the k-th layer input be X ∈ S n 
+
+> ++
+
+with eigendecomposition X = UΣU ⊤. This operation is de-fined such that 
+
+ReEig ε(X) = U max( Σ, ε I) U⊤, ε > 0 , (3) where max acts element-wise on the diagonal, ε sets the floor, and I is the identity matrix. This keeps the output in Sn 
+
+> ++
+
+and prevents the collapse of small modes. 
+
+# 3. Problem Statement 
+
+Estimating the 6-DoF pose of a given object from a sample 
+
+I ∈ I  belonging to the space of RGB images I involves finding a mapping  Φ such that, 
+
+Φ : I −→ P
+
+I 7 −→ Φ(I) = P , (4) where P ∈ P is the pose of the object with respect to the camera coordinate system and P is the pose representation space. Given a set of training samples D = {Ii, Pi}Di=1 ,where Ii ∈ I represents an image sample and Pi ∈ P 
+
+its associated pose, direct methods typically train a neural 40729 Figure 2. Overview of the proposed pose estimation framework (best viewed in color). (A) General overview. A CNN backbone extracts feature maps F ∈ RC×H×W . Spatial covariance pooling over the H×W grid gives ˆΣ ∈ S H×W                      
+
+> ++ which is fed to the pose head. (B) Learning the pose. After Lgeometry-aware layers, the compact SPD matrix ΣL∈ S 4++ is decoded by a differentiable Cholesky layer into
+> (u,v;t);(u,v)are mapped to SO (3) and the loss is computed on SO (3) ×R3.(C) SPD learning layers. Each layer applies a BiMap followed by eigenvalue rectification ReEig ε[29] preserving strict positive definiteness.
+
+network Φθ parameterized by weights θ to minimize a pose loss denoted as Lpose ,
+
+θ⋆ = arg min 
+
+> θD
+
+X
+
+> i=1
+
+Lpose (Φθ (Ii), Pi) . (5) In turn, the learned neural network Φθ can be seen as the composition of two functions Φθ = Ψθ2 ◦ Γθ1 where 
+
+Γθ1 : I 7 −→ F is the feature extractor that maps an in-put image into the feature space F and Ψθ2 : F 7 −→ P 
+
+that maps extracted features to the object pose. End-to-end methods mainly use: ( i) standard features that are ex-tracted by DNNs using Γθ1 , ignoring second-order statis-tics that can be highly correlated with the pose, as sug-gested by the experiment presented in Figure 1; and ( ii ) a non-continuous representation space P, as regressing con-tinuous representations using Ψθ2 necessitates a manifold-aware learning strategy that is not straightforward to im-plement. In fact, most direct approaches regress the rota-tion either using quaternions or Euler angles that are non-continuous [79], inducing the non-continuity of the pose. Nevertheless, as demonstrated in [20], the use of continu-ous representations via Gram-Schmidt orthonormalization or Singular Value Decomposition (SVD) is more suitable for learning rotations. This paper aims at addressing the two aforementioned issues by imposing the extraction of second-order statistics using Γθ1 and constraining that Ψθ2
+
+maps to continuous pose representations in an end-to-end way. 
+
+# 4. Proposed Approach 
+
+To address the problem outlined in Section 3, we introduce 
+
+Cov2Pose , the first covariance-based framework for end-to-end 6-DoF object pose regression that directly outputs a continuous pose representation, namely, 6D representation for rotation coupled with a translation vector. In particu-lar, the initial feature maps extracted from the input im-age using a CNN backbone are first encoded in a covari-ance matrix using a second-order pooling. Since covariance matrices are SPD, trainable BiMap layers are employed to progressively reduce their dimensionality while taking into account the geometry of the SPD manifold. As such, the succession of these two steps forms a feature extraction 
+
+Γ : I 7 −→ S n 
+
+> ++
+
+based on second-order statistics. Finally, a differentiable Cholesky layer is added to decompose the re-duced covariance matrix into two triangular matrices. The obtained matrices encode, in their non-zero elements, the 6D representation of the rotation, as well as the transla-tion vector, allowing a continuous and injective mapping 
+
+Ψ : Sn 
+
+> ++
+
+7 −→ P . The full pipeline of our solution is illus-trated in Figure 2. In the following, we start by describing the covariance-based feature extractor Γ (Section 4.1). We then depict the proposed differentiable mapping Ψ from the resulting SPD matrix to the pose using Cholesky decompo-sition (Section 4.2). Finally, the training strategy is pre-sented in (Section 4.3). 
+
+## 4.1. Covariance-based Feature Extraction 
+
+We first extract from an input image I of the scene, containing the target object, a set of feature maps 
+
+Γ1(I) = F ∈ RC×H×W using a CNN-based feature extrac-40730 tor Γ1 : I 7 −→ RC×H×W , where C, H, and W are the number of channels, height, and width, respectively. To in-clude the second-order statistics in our framework, we pro-pose incorporating a second-order pooling layer that com-putes a spatial covariance matrix Γ2 : RC×H×W 7 −→ S N
+
+> ++
+
+of the extracted features F, with N = H ×W . In particular, the covariance matrix ˆΣ is estimated as follows, 
+
+ˆΣ = Γ2(F) = CovPool( X)= 1
+
+C − 1
+
+> C
+
+X
+
+> i=1
+
+(Xi − μX)⊤(Xi − μX) , (6) where X = vec (F) ∈ RC×N corresponds to the flattened feature maps over the spatial dimensions and 
+
+μX = 1
+
+> C
+
+PCi=1 Xi such that Xi ∈ RN is the flattened fea-ture map resulting from the ith channel. Figure 3 illustrates the spatial covariance pooling. This covariance-based rep-resentation offers a key advantage in the context of 6-DoF pose estimation. It models how spatial locations “co-vary” across the feature maps, a statistic that changes systemat-ically according to the image viewpoint. As discussed in Figure 1, a clear correlation between the spatial covariance and the pose exists as compared to standard feature maps, making them highly informative for direct pose regression. To regress the pose, it is necessary to reduce beforehand the dimensionality of the resulting high-dimensional covari-ance matrix. Nonetheless, covariance matrices in (6) lie on the Riemannian manifold of SPD matrices, SN
+
+> ++
+
+. Hence, applying standard deep learning reduction layers is not ad-equate, as it does not account for their non-linear struc-ture, resulting in non-SPD outputs. In fact, standard DNNs assume that the nature of the feature space is Euclidean. Consequently, considering deep dimensionality reduction layers specifically tailored to the SPD manifold is essen-tial. For that reason, we propose to employ L BiMap lay-ers [29], which allow for reducing the dimension of the co-variance matrix while maintaining its geometric structure, as presented in (2). Moreover, a ReEig [29] operation dis-cussed in (3) is also applied to avoid singularities, resulting in symmetric positive semi-definite matrices. Mathemati-cally, the final covariance-based features ΣL = Γ3(Σ) with 
+
+Γ3 : SN 
+
+> ++
+
+7 −→ S n 
+
+> ++
+
+and n << N are obtained as follows, 
+
+Σl+1 = ReEig ε
+
+ W⊤ 
+
+> l
+
+XlWl
+
+ ,
+
+Σ0 = ˆΣ , (7) for l ∈ { 0, . . . , L − 1}. In summary, the covariance-based feature extractor can be written as Γ = Γ3 ◦ Γ2 ◦ Γ1. In our experiments, we set ε of the ReEig layer to 10 −4.
+
+## 4.2. From SPD to Pose Parametrization 
+
+Given a reduced covariance based descriptor 
+
+ΣL = Γ(I) ∈ S n 
+
+> ++
+
+extracted from an image I, the     
+
+> Figure 3. Spatial Covariance Pooling. Extracted features are flat-tened and centered and 2nd order statistics are constructed pixel-wise. Every entry of the covariance matrix describes how two spa-tial locations of the given input co-variate.
+
+goal is to seek a mapping 
+
+Ψ : Sn 
+
+> ++
+
+−→ P
+
+ΣL 7 −→ Ψ(ΣL) = P , (8) with P being the pose associated with I.
+
+Continuity of P. As discussed in Section 3, we favor pick-ing P as a continuous space, which will define the nature of the used pose representation. The pose space P = R × T 
+
+can be seen as the direct product of the rotation space de-noted as R, and the position space T . While the use of a simple vector in R3 for translation guarantees the continuity of T , the continuity of rotation representations is not always ensured, as for Euler angles and quaternions [79]. To ensure continuity, two common alternatives from the literature may be considered, namely the 6D representation with Gram-Schmidt orthonormalization and the 9D Special Orthogonal representation. In the following, we choose to employ the 6D representation with Gram-Schmidt orthonormalization given its relative simplicity. In fact, when learning the 6D representation, only two orthonormal vectors are learned. As such, the rotation representation space R is defined as the Stiefel manifold [1, 12] denoted as V2(R3) and therefore the pose space as P = V2(R3)×R3.
+
+Properties of Ψ. The mapping Ψ defined in (8) should be: 1. Injective , providing a unique pose for a given SPD ma-trix input; 2. Continuous , ensuring that two close SPD matrices re-sult in close poses; 3. Differentiable , enabling its incorporation within an end-to-end deep learning framework. The Cholesky decomposition is known to be unique, con-tinuous [60] and differentiable [50, 61], making it an ideal candidate for defining Ψ. Specifically, it decomposes any SPD matrix into the product of a lower triangular matrix and its conjugate transpose. As a result, the obtained tri-angular matrix can be used for encoding the selected 6D rotation representation (6-dimensional) as well as the trans-lation vector (3-dimensional). For that purpose, a matrix with more than 9 non-zero elements is needed, necessitat-ing fixing n to 4. This can be defined as Ψ(ΣL) = L, such 40731 that ΣL = LL ⊤ ∈ S 4++ and, 
+
+L =
+
+
+
+etx 0 0 0
+
+u1 ety 0 0
+
+u2 v1 etz 0
+
+u3 v2 v3 e−(tx+ty +tz )
+
+ , (9) where u = (u1, u 2, u 3)⊤ and v = (v1, v 2, v 3)⊤, with 
+
+(u, v) ∈ R3×2, are the two 3D vectors that parameter-ize the 6D rotation representation and t = ( tx, t y , t z ) is the translation vector. Following [12, 79], we first map 
+
+(u, v) onto the Stiefel manifold V2(R3) using a differen-tiable Gram-Schmidt process, then construct the rotation matrix R ∈ SO (3) by completing the basis with the cross product of the two orthonormalized vectors. Here, SO (3) 
+
+denotes the Special Orthogonal group of R3. This map is continuous except on the set where u and v are collinear. Note that the exponential on the diagonal of L guaran-tees positivity, hence LL ⊤ ∈ S 4++ . Furthermore, denot-ing L = ( Lij )i,j ∈{ 1,2,3,4}, L44 = e−(tx+ty +tz ) ensures Q 
+
+> i
+
+Lii = 1 , so det( ΣL) = det( L)2 = 1 . This normalizes the geometric mean of the SPD eigenvalues to 1 without reducing the expressivity of the pose. 
+
+## 4.3. Training Strategy 
+
+From L, we decode ˆt =   log L11 , log L22 , log L33 
+
+⊤,
+
+ˆu = (L21 , L 31 , L 41 )⊤, and ˆv = (L32 , L 42 , L 43 )⊤
+
+and map (ˆ u, ˆv) to ˆR ∈ SO (3) with the differentiable Gram–Schmidt procedure [79] and supervise the training with the geodesic distance on SO (3) and ℓ2 on R3 for trans-lation. In addition, we add two regularizers, (i) an orthog-onality penalty that keeps ⟨ˆu, ˆv⟩ → 0 and (ii) a unit-norm penalty that prevents collapse of the two vectors. The to-tal training loss Lpose for regressing the pose of the object ground truth pose represented by the rotation matrix Rgt 
+
+and the translation vector tgt can be expressed by,                
+
+> Lpose ( ˆR,ˆt,ˆu,ˆv) = arccos
+> tr( ˆR⊤Rgt )−12
+> 
+> +∥ˆt−tgt ∥2
+> +λ
+> h
+> ⟨ˆu,ˆv⟩2+ ∥ˆu∥ − 12+ ∥ˆv∥ − 12i
+> ,
+> (10)
+
+where λ is a factor that controls the orthonormality regular-ization term and tr indicates the trace. In our experiments, the parameter λ is set to 10 −3, which stabilizes the training without dominating the main pose loss. For a comprehensive comparison, we also evaluate a second variant of the proposed framework with n = 3 in which the Cholesky layer outputs a 3×3 lower–triangular matrix with 3(3+1) 2 = 6 free entries. In this case, the rotation is parameterized by Euler angles, which are non-continuous. Further details are provided in the Supplementary. 
+
+# 5. Experiments 
+
+In this section, we first discuss our experimental setup. Then, we report the performances of Cov2Pose on three widely-used benchmarks for object pose estimation, namely, LM [23], LM-O [6] and YCB-V [76]. We follow with a series of ablation experiments that further justify the technical choices of our solution. 
+
+## 5.1. Datasets 
+
+LineMod (LM) [23] is a well-known general pose estima-tion benchmark. It contains 16 k images belonging to 13 
+
+different object categories in heavily cluttered scenes. We train and test following the default BOP split and standard procedure [26, 69] and thus employ 85% of the RGB im-ages for testing. LineMod Occlusion (LM-O) [6] has been introduced as a more challenging version of LM. It contains 
+
+1214 additional annotated images and 8 object categories under heavy occlusion. Following [69], we use the publicly available physically-based rendering (pbr) images [25] as training images for LM-O. Finally, the YCB-V dataset [76] is a large-scale dataset of 21 object categories and approxi-mately 100 k real images. We follow the training strategies of [69] and use both the training images of YCB-V, but also the publicly available pbr images [25]. 
+
+## 5.2. Metrics 
+
+We report our results using the Average Distance of Model Points (ADD) metric [23, 24] and, for symmetric objects, its symmetric variant ADD-S [76]. We compute the mean distance between the model’s points transformed using the ground-truth pose and the predicted pose. If the mean dis-tance is less than 10% of the diameter of the model, the predicted pose is considered correct. The metric is then the proportion of correct poses. On the YCB-V dataset, ad-ditional results are presented in terms of AUC (Area Under the Curve) of ADD-S and AUC of ADD(-S). For computing AUC, we set the maximum distance threshold at 10 cm [76]. 
+
+## 5.3. Implementation & Training Details 
+
+Cov2Pose is trained end-to-end with a mixed-geometry optimizer to respect manifold constraints. We also de-fine an optimizer with separate groups to partition train-able parameters into (i) Stiefel-constrained BiMap weights 
+
+{Wl} from (7) and (ii) Euclidean parameters for the back-bone. The Stiefel parameters are updated with a Rieman-nian step, which consists of a gradient projection and QR retraction [29] using an initial learning rate 10 −2, while the Euclidean parameters use Adam [35] with an initial learn-ing rate 10 −4. We use a ReduceLROnPlateau sched-uler [54] that halves the learning rates after 4 epochs with-out improvement on the validation loss. For feature extrac-tion, we use an ImageNet-pretrained [13, 63] EfficientNet-B6 backbone [63] from the Pytorch library. Its output res-olution is H=W =17 , resulting in a 289 ×289 spatial co-variance matrix that encodes co-activations and feeds the pose head. The SPD head is constructed by 4 BiMap in-40732 Table 1. LM results in terms of ADD(-S). Best result in bold ; second best underlined. Cov2Pose (Ours) outperforms all non-P nPmethods and slightly surpasses P nP-based ones.“—” indicates values not reported in the original paper. Classes in italics are symmetric. Method Ape Bvise. Cam Can Cat Drill Duck Eggbox Glue Holep. Iron Lamp Phone Avg. ↑
+
+> Indirect
+
+PVNet [57] 43.62 99.90 86.86 95.47 79.34 96.43 52.58 99.15 95.66 81.92 98.88 99.33 92.41 86.27 CheckerPose [42] — — — — — — — — — — — — — 97.1 VAPO [43] — — — — — — — — — — — — — 97.1 End-to-End  Pix2Pose [53] 58.1 91.0 60.9 84.4 65.0 76.3 43.8 96.8 79.4 74.8 83.4 82.0 45.0 72.4 Self6D++ [68] 76.0 91.6 97.1 99.8 85.6 98.8 56.5 91.0 92.2 35.4 99.5 97.4 91.8 85.6 DeepIM [39] 77.0 97.5 93.5 96.5 82.1 95.0 77.7 97.1 99.4 52.8 98.3 97.5 87.7 88.6 BPnP [10] † 74.75 99.00 96.25 98.00 94.25 99.25 78.50 96.50 90.00 91.50 97.75 99.75 97.00 93.27 EPro-PnP [11] † — — — — — — — — — — — — — 95.80 
+
+Ours 94.8 99.9 86.0 99.2 99.2 98.9 89.1 100 100 99.5 99.2 98.2 100 97.2  
+
+> †
+
+Method is End-to-End by using a differentiable P nP strategy. 
+
+terleaved with 4 ReEig layers. The number of parameters of the model is 41 .4M. We use 4 NVIDIA A100 GPUs (40 GB) with batch size 8 to train for 30 epochs on LM and LM-O, and for 20 epochs on YCB-V. In all datasets, 90% of the training data is used for training and 10% for validation. Testing is done with the best checkpoint on validation set. 
+
+## 5.4. Comparison with State-of-the-art Methods 
+
+Results on LM. Table 1 summarizes LM results. End-to-end methods predict pose directly from the input image. In-direct methods first estimate 2D–3D correspondences and then apply a P nP/RANSAC step. Cov2Pose surpasses all end-to-end baselines, including DeepIM [39], and exceeds PnP-based methods by 0.1 ADD(-S). 
+
+Results on LM-O. As shown in Table 2, we compare our approach with representative end-to-end methods trained per object and also include recent correspondence-based pose estimation techniques. Cov2Pose outperforms all end-to-end pose learning baselines and closes the gap to leading P nP-based approaches such as ZebraPose [62] un-der the same occlusion setup. 
+
+Table 2. LM-O results in terms of ADD(-S). Group-wise best in bold, group-wise second underlined. Cov2Pose (Ours) outper-forms all No-PnP methods and is slightly behind ZebraPose [62] with only a 0.1% difference.                                                                                  
+
+> Method Ape Can Cat Drill Duck Eggb. Glu. Holep. Avg. ↑
+> Indirect  ZebraPose [62] 57.9 95.0 60.6 94.8 64.5 70.9 88.7 83.0 76.9 CheckerPose [42] 58.3 95.7 62.3 93.7 69.9 70.0 86.4 83.8 77.5 VAPO [43] ————————78.02 6D-Diff [77] 60.6 97.9 63.2 96.6 67.2 73.5 92.0 85.5 79.6
+> End-to-End  PoseCNN [76] 9.6 45.2 0.93 41.4 19.6 22.0 38.5 22.1 24.9 Pix2Pose [53] ————————36.3 Single-Stage [27] †19.2 65.1 18.9 69.0 25.3 52.0 51.4 45.6 43.3 DeepIM [39] 59.2 63.5 26.2 55.6 52.4 63.0 71.7 52.5 55.5 Self6D++ [68] 57.7 95.0 52.6 90.5 26.7 45.0 87.1 23.5 59.8 GDR-Net [69] †46.8 90.8 40.5 82.6 46.9 54.2 75.8 60.1 62.2
+> Ours 64.0 96.4 74.1 96.3 55.8 57.9 93.6 76.7 76.8
+
+Results on YCB-V. Table 3 summarizes ADD(-S) and AUC averaged over all YCB-V objects. Cov2Pose attains the best ADD(-S) among end-to-end methods and the second-best AUC after GDR-Net [69], trailing by 1.6 AUC(ADD-S). P nP-based methods still lead overall, but Cov2Pose 
+
+reduces the gap w.r.t. the best P nP-based method, reducing it by 2.3 AUC(ADD-S) and 5.7 AUC(ADD(-S)). 
+
+Table 3. YCB-V results in terms of ADD(-S), AUC of ADD(-S)/ADD(-S). The higher the better. Group-wise best in bold, group-wise second underlined.                                     
+
+> Method ADD(-S) AUC of ADD-S AUC of ADD(-S) Indirect  PVNet [57] ––73.4 ZebraPose [62] 80.5 90.1 85.3 CheckerPose [42] 81.4 91.3 86.4 VAPO [43] 84.9 92.3 87.9
+> 6D-Diff [77] 83.8 91.5 87.0 End-to-End  Pix2Pose [53] 45.7 ——Single-Stage [27] †53.9 ——PoseCNN [76] —75.9 61.3 DeepIM [39] —88.1 81.9 GDR-Net [69] †60.1 91.6 84.4 Ours 69.7 90.0 82.2
+
+## 5.5. Ablation Study 
+
+We conduct ablations on the LM-O dataset and report per-formance averaged over all objects in terms of ADD(-S). 
+
+Impact of the Rotation Representation. In our frame-work, the predicted pose is embedded in a 4×4 Cholesky factor whose off–diagonal entries carry a 6D rotation pa-rameterization (u, v) ∈ R3×2. The latter is mapped to 
+
+SO (3) via a differentiable Gram–Schmidt step, which pro-duces a continuous training signal on the rotation manifold 
+
+SO (3) . As discussed at the end of Section 4, we also eval-uate a lower–dimensional variant that encodes rotation with Euler angles. In this setting, we regress ΣL ∈ S 3++ and decode the pose from its 3×3 Cholesky factor. Further de-tails of this configuration are in the supplementary. Table 4 shows that the 6D representation leads to a higher ADD(-S) than Euler angles, reflecting the benefit of continuity. 
+
+Impact of the SPD Head Components. We ablate the manifold-aware head and the structured pose encoding we 40733 Table 4. Comparison with an alternative rotation parameterization. Under identical settings, we replace our 6D + differentiable GS  
+
+> rotation with an Euler-angle parameterization encoded as a 3×3
+> SPD. The 6D+GS choice results in higher performance.
+
+Rep. SPD size Cont. on SO (3) Avg. ADD(-S) ↑
+
+Euler angles 3×3 ✗ 70.9 
+
+6D+GS (Ours) 4×4 ✓ 76.8 
+
+are using to isolate the effect of each. To investigate this, we design three additional variants. (A) We replace the SPD head with 2 FC layers that map a vectorized version of ˆΣ
+
+directly to the pose. This assesses the benefit of the SPD layers in learning the compact SPD matrix that is fed to the Cholesky layer. (B) We keep the CovPooling layer, but use it to compute channel covariances instead of spatial covari-ance and feed ˆΣc to the same SPD head. This contrasts the spatial covariance to the channel covariance. (C) We keep the SPD head and drop the Cholesky layer and train using the Frobenius norm between the projection of ΣL to the logarithmic tangent space and the precomputed corre-sponding SPD pose label. This assesses the effect of our pose decoding to (R, t) and the calculation of the training loss on SO(3) ×R3 instead of on the log-tangent space. All other settings are kept fixed. Table 5 shows that our full model attains the best performance. Indeed, the replace-ment of the SPD head with a Euclidean MLP head causes a sharp drop in accuracy, reflecting a mismatch between the Euclidean hypothesis and the SPD geometry of the repre-sentation.   
+
+> Table 5. Comparison between Ours , (A) Euclidean regression head, (B) Channel-wise covariance, and (C) Training on log tan-gent space of SPD manifold.
+
+Variant (A) (B) (C) Cov2Pose 
+
+Avg. ADD(-S) ↑ 31.0 70.9 72.3 76.8 
+
+## 5.6. Inference Time 
+
+Inference time is measured on a machine with an AMD 
+
+3.30 GHz CPU with an NVIDIA A100 GPU. The back-bone takes 22 .6ms for feature extraction, the covariance-pooling layer 0.5ms to compute the covariance matrix, and the head 23 .8ms to produce the compact 4×4 representa-tion and regress the pose, for a total of 46 .9ms. Table 6 reports inference time for running state-of-the-art methods. 
+
+Cov2Pose achieves the best trade-off between accuracy and speed compared to previous approaches. 
+
+# 6. Conclusion & Future Directions 
+
+We present Cov2Pose , an end-to-end framework for direct 6-DoF object pose estimation from a single RGB image. 
+
+Cov2Pose performs spatial covariance pooling and learns                                         
+
+> Figure 4. Qualitative results. Green 3D boxes denote GT poses, whereas blue 3D boxes denote predictions. Cov2Pose predicts accurate poses in cluttered scenes and under partial occlusion. Table 6. Comparison of inference time and ADD-(S) across datasets. We measured inference time of the open-source base-lines on the same hardware as ours. Method Time ADD-(S) (ms) LM [23] LM-O [6] YCB-V [76]
+> Indirect  PVNet [57] 44.9 86.27 ——ZebraPose [62] 119.3 —76.9 80.5 CheckerPose [42] 116.7 97.1 77.5 81.4 VAPO [43] 69.8 97.1 78.02 84.9
+> End-to-End  Pix2Pose [53] 123 72.4 36.3 45.7 DeepIM [39] 77.3 88.6 55.5 —GDR-Net [69] 16 —62.2 60.1
+> Ours 46.9 97.2 76.8 69.7
+
+directly on the symmetric positive-definite (SPD) manifold to regress object pose. Concretely, we encode the image as a spatial covariance matrix that captures co-variation among image regions, then compress it into a compact SPD code via a geometry-aware, end-to-end–trainable set of layers. A differentiable Cholesky decomposition acting on the SPD network output results in a continuous 6D rotation repre-sentation and a translation recovering the pose. Across 3 BOP benchmarks, Cov2Pose attains state-of-the-art accu-racy for end-to-end single-object pose estimation and sub-stantially reduces the gap as compared to correspondence-based approaches. As future directions, we will investigate symmetry-aware training and inference for pose-ambiguous objects within a CAD-free setup, while preserving the fully differentiable end-to-end nature of Cov2Pose . Currently, 
+
+Cov2Pose does not explicitly handle object symmetries, and addressing this limitation could be an interesting direc-tion for future work. A symmetry-focused pilot study and discussion are provided in the supplementary. 40734 Acknowledgement. The present work is supported by the National Research Fund (FNR), Luxembourg, under the C21/IS/15965298/ELITE project, and by Infinite Orbits. Experiments were performed on the Luxembourg national supercomputer MeluXina at LuxProvide. 
+
+# References 
+
+[1] P-A Absil, Robert Mahony, and Rodolphe Sepulchre. Opti-mization algorithms on matrix manifolds . Princeton Univer-sity Press, 2008. 5 [2] Dinesh Acharya, Zhiwu Huang, Danda Pani Paudel, and Luc Van Gool. Covariance pooling for facial expression recog-nition. In Proceedings of the IEEE conference on computer vision and pattern recognition workshops , pages 367–374, 2018. 2 [3] Nassim Ali Ousalah, Anis Kacem, Enjie Ghorbel, Emmanuel Koumandakis, and Djamila Aouada. Uncertainty-aware knowledge distillation for compact and efficient 6dof pose estimation. International Conference on Intelligent Robots and Systems (IROS) , 2025. 1 [4] Nassim Ali Ousalah, Peyman Rostami, Anis Kacem, En-jie Ghorbel, Emmanuel Koumandakis, and Djamila Aouada. Fpg-nas: Flops-aware gated differentiable neural architec-ture search for efficient 6dof pose estimation. IEEE Interna-tional Workshop on Multimedia Signal Processing (MMSP) ,2025. 1 [5] Walid Ayedi, Hichem Snoussi, and Mohamed Abid. A fast multi-scale covariance descriptor for object re-identification. Pattern Recognition Letters , 33(14):1902– 1907, 2012. Novel Pattern Recognition-Based Methods for Re-identification in Biometric Context. 3 [6] Eric Brachmann, Alexander Krull, Frank Michel, Stefan Gumhold, Jamie Shotton, and Carsten Rother. Learning 6d object pose estimation using 3d object coordinates. In Com-puter Vision – ECCV 2014 , pages 536–551, Cham, 2014. Springer International Publishing. 2, 6, 8 [7] Daniel Brooks, Olivier Schwander, Frederic Barbaresco, Jean-Yves Schneider, and Matthieu Cord. Riemannian batch normalization for spd neural networks. In Advances in Neu-ral Information Processing Systems . Curran Associates, Inc., 2019. 3 [8] Jo˜ ao Carreira, Rui Caseiro, Jorge Batista, and Cristian Smin-chisescu. Semantic segmentation with second-order pooling. In Computer Vision – ECCV 2012 , pages 430–443, Berlin, Heidelberg, 2012. Springer Berlin Heidelberg. 2 [9] Lorenzo Pasqualetto Cassinis, Robert Fonod, and Eberhard Gill. Review of the robustness and applicability of monoc-ular pose estimation systems for relative navigation with an uncooperative spacecraft. Progress in Aerospace Sciences ,110:100548, 2019. 1 [10] Bo Chen, Alvaro Parra, Jiewei Cao, Nan Li, and Tat-Jun Chin. End-to-end learnable geometric vision by backprop-agating pnp optimization. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,pages 8100–8109, 2020. 2, 7 [11] Hansheng Chen, Pichao Wang, Fan Wang, Wei Tian, Lu Xiong, and Hao Li. Epro-pnp: Generalized end-to-end prob-abilistic perspective-n-points for monocular object pose es-timation. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 2781–2790, 2022. 2, 3, 7 [12] Jiayi Chen, Yingda Yin, Tolga Birdal, Baoquan Chen, Leonidas J. Guibas, and He Wang. Projective manifold gra-dient layer for deep rotation regression. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 6646–6655, 2022. 5, 6 [13] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In CVPR , 2009. 1, 6 [14] Thanh-Toan Do, Ming Cai, Trung Pham, and Ian Reid. Deep-6dpose: Recovering 6d object pose from a single rgb image. arXiv preprint arXiv:1802.10367 , 2018. 2, 3 [15] Zhen Dong, Su Jia, Chi Zhang, Mingtao Pei, and Yuwei Wu. Deep manifold learning of symmetric positive definite matri-ces with application to face recognition. Proceedings of the AAAI Conference on Artificial Intelligence , 31(1), 2017. 3 [16] Martin A. Fischler and Robert C. Bolles. Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography. Commun. ACM ,24(6):381–395, 1981. 2 [17] Zilin Gao, Jiangtao Xie, Qilong Wang, and Peihua Li. Global second-order pooling convolutional networks. In Proceed-ings of the IEEE/CVF Conference on computer vision and pattern recognition , pages 3024–3033, 2019. 2 [18] Zhi Gao, Yuwei Wu, Yunde Jia, and Mehrtash Harandi. Learning to optimize on spd manifolds. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020. 3 [19] Zilin Gao, Qilong Wang, Bingbing Zhang, Qinghua Hu, and Peihua Li. Temporal-attentive covariance pooling networks for video recognition. In Advances in Neural Information Processing Systems , pages 13587–13598. Curran Associates, Inc., 2021. 2 [20] A. Ren´ e Geist, Jonas Frey, Mikel Zhobro, Anna Levina, and Georg Martius. Learning with 3d rotations: a hitchhiker’s guide to so(3). In Proceedings of the 41st International Con-ference on Machine Learning . JMLR.org, 2024. 4 [21] Elena Govi, Davide Sapienza, Samuele Toscani, Ivan Cotti, Giorgia Franchini, and Marko Bertogna. Addressing chal-lenges in industrial pick and place: A deep learning-based 6 degrees-of-freedom pose estimation solution. Computers in Industry , 161:104130, 2024. 1 [22] Kai Guo, Prakash Ishwar, and Janusz Konrad. Action recog-nition from video using feature covariance matrices. IEEE Transactions on Image Processing , 22(6):2479–2494, 2013. 2[23] Stefan Hinterstoisser, Vincent Lepetit, Slobodan Ilic, Ste-fan Holzer, Gary Bradski, Kurt Konolige, and Nassir Navab. Model based training, detection and pose estimation of texture-less 3d objects in heavily cluttered scenes. In Com-puter Vision – ACCV 2012 , pages 548–562, Berlin, Heidel-berg, 2013. Springer Berlin Heidelberg. 2, 6, 8 [24] Tom´ aˇ s Hodaˇ n, Jiˇ r´ ı Matas, and ˇ Stˇ ep´ an Obdrˇ z´ alek. On eval-uation of 6d object pose estimation. In Computer Vision 40735 – ECCV 2016 Workshops , pages 606–619, Cham, 2016. Springer International Publishing. 6 [25] Tom´ aˇ s Hodaˇ n, Martin Sundermeyer, Bertram Drost, Yann Labb´ e, Eric Brachmann, Frank Michel, Carsten Rother, and Jiˇ r´ ı Matas. Bop challenge 2020 on 6d object localization. In 
+
+European Conference on Computer Vision , pages 577–594. Springer, 2020. 6 [26] Tom´ aˇ s Hodaˇ n, Vibhav Vineet, Ran Gal, Emanuel Shalev, Jon Hanzelka, Treb Connell, Pedro Urbina, Sudipta N. Sinha, and Brian Guenter. Photorealistic image synthesis for object instance detection. In 2019 IEEE International Conference on Image Processing (ICIP) , pages 66–70, 2019. 6 [27] Yinlin Hu, Pascal Fua, Wei Wang, and Mathieu Salzmann. Single-stage 6d object pose estimation. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 2930–2939, 2020. 7 [28] Hung-Jui Huang, Michael Kaess, and Wenzhen Yuan. Nor-malflow: Fast, robust, and accurate contact-based object 6dof pose tracking with vision-based tactile sensors. IEEE Robotics and Automation Letters , 10(1):452–459, 2025. 1 [29] Zhiwu Huang and Luc Van Gool. A riemannian network for spd matrix learning. In Proceedings of the AAAI conference on artificial intelligence , 2017. 2, 3, 4, 5, 6 [30] Ziqin Huang, Gu Wang, Chenyangguang Zhang, Ruida Zhang, Xiu Li, and Xiangyang Ji. Givepose: Gradual intra-class variation elimination for rgb-based category-level ob-ject pose estimation. In Proceedings of the Computer Vision and Pattern Recognition Conference (CVPR) , pages 22055– 22066, 2025. 1 [31] Catalin Ionescu, Orestis Vantzos, and Cristian Sminchisescu. Matrix backpropagation for deep networks with structured layers. In 2015 IEEE International Conference on Computer Vision (ICCV) , pages 2965–2973, 2015. 2 [32] Shun Iwase, Xingyu Liu, Rawal Khirodkar, Rio Yokota, and Kris M. Kitani. Repose: Fast 6d object pose refinement via deep texture rendering. In Proceedings of the IEEE/CVF In-ternational Conference on Computer Vision (ICCV) , pages 3303–3312, 2021. 3 [33] Yufeng Jin, Vignesh Prasad, Snehal Jauhri, Mathias Franz-ius, and Georgia Chalvatzaki. 6dope-gs: Online 6d object pose estimation using gaussian splatting. IEEE/CVF Inter-national Conference on Computer Vision , 2025. 1 [34] Agastya Kalra, Guy Stoppi, Dmitrii Marin, Vage Taa-mazyan, Aarrushi Shandilya, Rishav Agarwal, Anton Boykov, Tze Hao Chong, and Michael Stark. Towards co-evaluation of cameras, hdr, and algorithms for industrial-grade 6dof pose estimation. In 2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 22691–22701, 2024. 1 [35] Diederik P Kingma. Adam: A method for stochastic opti-mization. arXiv preprint arXiv:1412.6980 , 2014. 6 [36] Yann Labb´ e, Justin Carpentier, Mathieu Aubry, and Josef Sivic. Cosypose: Consistent multi-view multi-object 6d pose estimation. In European Conference on Computer Vision ,pages 574–591. Springer, 2020. 2, 3 [37] Taeyeop Lee, Bowen Wen, Minjun Kang, Gyuree Kang, In So Kweon, and Kuk-Jin Yoon. Any6d: Model-free 6d pose estimation of novel objects. In Proceedings of the Com-puter Vision and Pattern Recognition Conference (CVPR) ,pages 11633–11643, 2025. 1 [38] Ming-Feng Li, Xin Yang, Fu-En Wang, Hritam Basak, Yuyin Sun, Shreekant Gayaka, Min Sun, and Cheng-Hao Kuo. Ua-pose: Uncertainty-aware 6d object pose estimation and on-line object completion with partial references. In Proceed-ings of the Computer Vision and Pattern Recognition Con-ference (CVPR) , pages 1180–1189, 2025. 1 [39] Yi Li, Gu Wang, Xiangyang Ji, Yu Xiang, and Dieter Fox. Deepim: Deep iterative matching for 6d pose estimation. In 
+
+Proceedings of the European conference on computer vision (ECCV) , pages 683–698, 2018. 2, 3, 7, 8 [40] Yuelong Li, Yafei Mao, Raja Bala, and Sunil Hadap. Mrc-net: 6-dof pose estimation with multiscale residual correla-tion. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pages 10476–10486, 2024. 2, 3 [41] Zhigang Li, Gu Wang, and Xiangyang Ji. Cdpn: Coordinates-based disentangled pose network for real-time rgb-based 6-dof object pose estimation. 2019 IEEE/CVF In-ternational Conference on Computer Vision (ICCV) , pages 7677–7686, 2019. 2, 3 [42] Ruyi Lian and Haibin Ling. Checkerpose: Progressive dense keypoint localization for object pose estimation with graph neural network. In Proceedings of the IEEE/CVF Interna-tional Conference on Computer Vision , pages 14022–14033, 2023. 2, 7, 8 [43] Ruyi Lian, Yuewei Lin, Longin Jan Latecki, and Haibin Ling. Vapo: Visibility-aware keypoint localization for effi-cient 6dof object pose estimation. International Conference on Intelligent Robots and Systems (IROS) , 2025. 1, 2, 7, 8 [44] Jiehong Lin, Lihua Liu, Dekun Lu, and Kui Jia. Sam-6d: Segment anything model meets zero-shot 6d object pose es-timation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 27906– 27916, 2024. 1 [45] Xingyu Liu, Gu Wang, Ruida Zhang, Chenyangguang Zhang, Federico Tombari, and Xiangyang Ji. Unopose: Un-seen object pose estimation with an unposed rgb-d reference image. In Proceedings of the Computer Vision and Pattern Recognition Conference (CVPR) , pages 22023–22034, 2025. 1[46] Xingyu Liu, Ruida Zhang, Chenyangguang Zhang, Gu Wang, Jiwen Tang, Zhigang Li, and Xiangyang Ji. Gdrnpp: A geometry-guided and fully learning-based object pose es-timator. IEEE Transactions on Pattern Analysis and Machine Intelligence , 47(7):5742–5759, 2025. 2, 3 [47] Robert Maack, Lars Thun, Thomas Liang, Hasan Tercan, and Tobias Meisen. Pcad: A real-world dataset for 6d pose indus-trial anomaly detection. In Proceedings of the Winter Con-ference on Applications of Computer Vision (WACV) Work-shops , pages 1132–1141, 2025. 1 [48] Fabian Manhardt, Wadim Kehl, Nassir Navab, and Federico Tombari. Deep model-based 6d pose refinement in rgb. In 
+
+Proceedings of the European Conference on Computer Vi-sion (ECCV) , pages 800–815, 2018. 2, 3 40736 [49] Josef Mayr, Anna Reithmeir, Maxime Di Folco, and Julia A. Schnabel. Covariance descriptors meet general vision en-coders: Riemannian deep learning for medical image classi-fication, 2025. 3 [50] Iain Murray. Differentiation of the cholesky decomposition. 
+
+arXiv preprint arXiv:1602.07527 , 2016. 5 [51] Xuan Son Nguyen, Luc Brun, Olivier Lezoray, and Sebastien Bougleux. A neural network based on spd manifold learning for skeleton-based hand gesture recognition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pat-tern Recognition (CVPR) , 2019. 3 [52] Naima Otberdout, Anis Kacem, Mohamed Daoudi, La-houcine Ballihi, Stefano Berretti, et al. Deep covari-ance descriptors for facial expression recognition. In 29th British Machine Vision Conference (BMVC’18) , pages 1–13. BMVA, 2018. 3 [53] Kiru Park, Timothy Patten, and Markus Vincze. Pix2pose: Pixel-wise coordinate regression of objects for 6d pose esti-mation. In Proceedings of the IEEE/CVF international con-ference on computer vision , pages 7668–7677, 2019. 7, 8 [54] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Rai-son, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala. Pytorch: An imperative style, high-performance deep learning library. In 
+
+Advances in Neural Information Processing Systems , 2019. 6[55] Leo Pauly, Wassim Rharbaoui, Carl Shneider, Arunkumar Rathinam, Vincent Gaudilli` ere, and Djamila Aouada. A sur-vey on deep learning-based monocular spacecraft pose esti-mation: Current state, limitations and prospects. Acta Astro-nautica , 212:339–360, 2023. 1 [56] Georgios Pavlakos, Xiaowei Zhou, Aaron Chan, Konstanti-nos G. Derpanis, and Kostas Daniilidis. 6-dof object pose from semantic keypoints. In 2017 IEEE International Con-ference on Robotics and Automation (ICRA) , pages 2011– 2018, 2017. 2 [57] Sida Peng, Yuan Liu, Qixing Huang, Xiaowei Zhou, and Hu-jun Bao. Pvnet: Pixel-wise voting network for 6dof pose estimation. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 4561–4570, 2019. 1, 2, 7, 8 [58] Mahdi Rad and Vincent Lepetit. Bb8: A scalable, accurate, robust to partial occlusion method for predicting the 3d poses of challenging objects without using depth. In Proceedings of the IEEE International Conference on Computer Vision (ICCV) , 2017. 2 [59] Huan Ren, Wenfei Yang, Shifeng Zhang, and Tianzhu Zhang. Rethinking correspondence-based category-level ob-ject pose estimation. In 2025 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 1170–1179, 2025. 1 [60] Michelle Schatzman and John Taylor. Numerical Analysis A Mathematical Introduction . 2023. 5 [61] Matthias Seeger, Asmus Hetzel, Zhenwen Dai, and Neil Lawrence. Auto-differentiating linear algebra. 2017. 5 [62] Yongzhi Su, Mahdi Saleh, Torben Fetzer, Jason Rambach, Nassir Navab, Benjamin Busam, Didier Stricker, and Fed-erico Tombari. Zebrapose: Coarse to fine surface encod-ing for 6dof object pose estimation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6738–6748, 2022. 2, 7, 8 [63] Mingxing Tan and Quoc Le. Efficientnet: Rethinking model scaling for convolutional neural networks. In International conference on machine learning , pages 6105–6114. PMLR, 2019. 1, 6 [64] Tao Tan and Qiulei Dong. Onda-pose: Occlusion-aware neu-ral domain adaptation for self-supervised 6d object pose es-timation. In Proceedings of the Computer Vision and Pattern Recognition Conference (CVPR) , pages 16829–16838, 2025. 1[65] Bugra Tekin, Sudipta N. Sinha, and Pascal Fua. Real-time seamless single shot 6d object pose prediction. In Proceed-ings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , 2018. 2 [66] Oncel Tuzel, Fatih Porikli, and Peter Meer. Region covari-ance: A fast descriptor for detection and classification. In 
+
+Computer Vision – ECCV 2006 , pages 589–600, Berlin, Hei-delberg, 2006. Springer Berlin Heidelberg. 3 [67] Chen Wang, Danfei Xu, Yuke Zhu, Roberto Mart´ ın-Mart´ ın, Cewu Lu, Li Fei-Fei, and Silvio Savarese. Densefusion: 6d object pose estimation by iterative dense fusion. In Proceed-ings of the IEEE/CVF conference on computer vision and pattern recognition , pages 3343–3352, 2019. 2, 3 [68] Gu Wang, Fabian Manhardt, Xingyu Liu, Xiangyang Ji, and Federico Tombari. Occlusion-aware self-supervised monoc-ular 6d object pose estimation. IEEE Transactions on Pattern Analysis and Machine Intelligence , 46(3):1788–1803, 2021. 7[69] Gu Wang, Fabian Manhardt, Federico Tombari, and Xi-angyang Ji. Gdr-net: Geometry-guided direct regression net-work for monocular 6d object pose estimation. In Proceed-ings of the IEEE/CVF conference on computer vision and pattern recognition , pages 16611–16621, 2021. 2, 3, 6, 7, 8 [70] He Wang, Srinath Sridhar, Jingwei Huang, Julien Valentin, Shuran Song, and Leonidas J Guibas. Normalized object coordinate space for category-level 6d object pose and size estimation. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 2642–2651, 2019. 1, 2 [71] Qilong Wang, Li Zhang, Banggu Wu, Dongwei Ren, Peihua Li, Wangmeng Zuo, and Qinghua Hu. What deep cnns bene-fit from global covariance pooling: An optimization perspec-tive. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pages 10771–10780, 2020. 2 [72] Qilong Wang, Jiangtao Xie, Wangmeng Zuo, Lei Zhang, and Peihua Li. Deep cnns meet global covariance pooling: Better representation and generalization. IEEE Transactions on Pattern Analysis and Machine Intelligence , 43(8):2582– 2597, 2021. 2 [73] Rui Wang, Xiao-Jun Wu, Ziheng Chen, Tianyang Xu, and Josef Kittler. Dreamnet: A deep riemannian manifold net-work for spd matrix learning. In Proceedings of the Asian 40737 Conference on Computer Vision (ACCV) , pages 3241–3257, 2022. 3 [74] Bowen Wen, Wei Yang, Jan Kautz, and Stan Birchfield. FoundationPose: Unified 6d pose estimation and tracking of novel objects. In CVPR , 2024. 1 [75] Yangzheng Wu and Michael Greenspan. Learning better key-points for multi-object 6dof pose estimation. In Proceed-ings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pages 564–574, 2024. 1, 2 [76] Yu Xiang, Tanner Schmidt, Venkatraman Narayanan, and Dieter Fox. Posecnn: A convolutional neural network for 6d object pose estimation in cluttered scenes. 2018. 1, 2, 3, 6, 7, 8 [77] Li Xu, Haoxuan Qu, Yujun Cai, and Jun Liu. 6d-diff: A keypoint diffusion framework for 6d object pose estimation. In Proceedings of the IEEE/CVF conference on computer vi-sion and pattern recognition , pages 9676–9686, 2024. 1, 2, 7[78] Sergey Zakharov, Ivan Shugurov, and Slobodan Ilic. Dpod: 6d pose object detector and refiner. In Proceedings of the IEEE/CVF international conference on computer vision ,pages 1941–1950, 2019. 1, 2 [79] Yi Zhou, Connelly Barnes, Jingwan Lu, Jimei Yang, and Hao Li. On the continuity of rotation representations in neural networks. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 5745–5753, 2019. 2, 3, 4, 5, 6 40738

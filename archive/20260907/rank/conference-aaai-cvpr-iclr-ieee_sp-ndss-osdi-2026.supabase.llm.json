@@ -1,0 +1,2435 @@
+{
+  "top_k": 200,
+  "generated_at": "2026-09-07T06:49:42.215408+00:00",
+  "papers": [
+    {
+      "id": "openreview-iclr-2026-nxaw2sruzd",
+      "source": "ICLR-2026-Rejected-Public",
+      "title": "ReCAP: Recursive Prompting for Self-Supervised Category-Level Articulated Pose Estimation from an Image",
+      "abstract": "Estimating category-level articulated object poses is crucial for robotics and virtual reality. \nPrior works either rely on costly annotations, limiting scalability, or depend on auxiliary signals such as dense RGB-D sensing and geometric constraints that are rarely available in practice. \nAs a result, articulated pose estimation from a single RGB image remains largely unsolved.\nWe propose ReCAP, a Recursive prompting for self-supervised Category-level Articulated object Pose estimation from an image. \nReCAP adapts a pre-trained foundation model using a Recursive Prompt Generator with residual injection, introducing less than 1\\% additional parameters.\nThis mechanism enables parameter-efficient scaling through recursive refinement, while residual injection preserves token alignment under dynamic reconfiguration, yielding robust articulated-object adaptation.\nTo further resolve structural ambiguities, we introduce $\\mathcal{X}$-SGP, a multi-scale fusion module that adaptively integrates semantic and geometric cues, an aspect often overlooked by geometry-centric approaches. \nExperiments on synthetic and real benchmarks demonstrate state-of-the-art monocular articulated pose estimation without requiring 3D supervision or auxiliary depth input. \nTo the best of our knowledge, ReCAP is the first self-supervised framework to accomplish this task from a single image.",
+      "authors": [
+        "Linlian Jiang",
+        "Zhixiang Chi",
+        "Ye Wang",
+        "Ziqiang Wang",
+        "Rui Ma",
+        "Yang Wang",
+        "Xinxin Zuo"
+      ],
+      "primary_category": "articulated object pose estimation",
+      "categories": [
+        "articulated object pose estimation"
+      ],
+      "published": "2025-09-15T17:27:26.604+00:00",
+      "link": "https://openreview.net/forum?id=NXaw2SRUzd",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-w09tbdycls",
+      "source": "ICLR-2026-Public",
+      "title": "Visual Odometry with Transformers",
+      "abstract": "Modern monocular visual odometry methods typically combine pre-trained deep learning components with optimization modules, resulting in complex pipelines that rely heavily on camera calibration and hyperparameter tuning, and often struggle in unseen real-world scenarios. Recent large-scale 3D models trained on massive amounts of multi-modal data have partially alleviated these challenges, providing generalizable dense reconstruction and camera pose estimation. Still, they remain limited in handling long videos and providing accurate per-frame estimates, which are required for visual odometry. In this work, we demonstrate that monocular visual odometry can be addressed effectively in an end-to-end manner, thereby eliminating the need for handcrafted components such as bundle adjustment, feature matching, camera calibration, or dense 3D reconstruction. We introduce VoT, short for **V**isual **o**dometry **T**ransformer, which processes sequences of monocular frames by extracting features and modeling global relationships through temporal and spatial attention. Unlike prior methods, VoT directly predicts camera motion without estimating dense geometry and relies solely on camera poses for supervision. The framework is modular and flexible, allowing seamless integration of various pre-trained encoders as feature extractors. Experimental results demonstrate that \\ours scales effectively with larger datasets, benefits substantially from stronger pre-trained backbones, generalizes across diverse camera motions and calibration settings, and outperforms traditional methods while running more than $3\\times$ faster. The code will be released.",
+      "authors": [
+        "Vladimir Yugay",
+        "Duy Kien Nguyen",
+        "Theo Gevers",
+        "Cees G. M. Snoek",
+        "Martin R. Oswald"
+      ],
+      "primary_category": "3D Transformer",
+      "categories": [
+        "3D Transformer",
+        "Visual Odometry",
+        "End-to-End Framework"
+      ],
+      "published": "2025-09-18T17:46:50.19+00:00",
+      "link": "https://openreview.net/forum?id=w09tBdYcls",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "aaai-2026-37573",
+      "source": "AAAI-2026-Accepted",
+      "title": "Monocular Vehicle Pose and Shape Reconstruction via Dynamic Context Adaptation and Progressive Geometry Refinement",
+      "abstract": "Accurate reconstruction of 3D vehicle pose and shape from monocular images is challenging, particularly for distant objects in autonomous driving. Existing methods often suffer from geometric ambiguity in depth estimation and structural hollowness in shape recovery, primarily due to inadequate multi-scale feature aggregation and unflexible prior modeling. To overcome these limitations, MonoVPR is proposed, a novel framework integrating dynamic context adaptation and progressive geometry refinement. Specifically, a Hierarchical Dual-Context Attention (HDCA) module is introduced to resolve scale-dependent degradation through gated cross-attention across multi-resolution feature maps, dynamically fusing object-centric geometric cues with scene-centric semantics. For shape refinement, the Bounded Iterative Mesh Refiner (BIMR) progressively optimizes template-guided deformations via multi-head attention and a tanh-bounded correction loop, ensuring physically plausible reconstructions.Extensive experiments on the ApolloCar3D benchmark demonstrate MonoVPR achieves state-of-the-art performance, showing exceptional capability in reconstructing geometrically consistent shapes and precise poses for challenging long-range scenarios.",
+      "authors": [
+        "Wei Li",
+        "Long Ji",
+        "Ying Wang",
+        "Xiao Wu",
+        "Zhaoquan Yuan",
+        "Penglin Dai"
+      ],
+      "primary_category": "AAAI-26 Technical Tracks 8",
+      "categories": [
+        "AAAI-2026",
+        "AAAI-26 Technical Tracks 8"
+      ],
+      "published": "2026-03-17T00:00:00+00:00",
+      "link": "https://ojs.aaai.org/index.php/AAAI/article/view/37573",
+      "pdf_url": "https://ojs.aaai.org/index.php/AAAI/article/download/37573/41535",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "aaai-2026-38061",
+      "source": "AAAI-2026-Accepted",
+      "title": "FoundationSLAM: Unleashing the Power of Depth Foundation Models for End-to-End Dense Visual SLAM",
+      "abstract": "We present FoundationSLAM, a learning-based monocular dense SLAM system that addresses the absence of geometric consistency in previous flow-based approaches for accurate and robust tracking and mapping.\nOur core idea is to bridge flow estimation with geometric reasoning by leveraging the guidance from foundation depth models. \nTo this end, we first develop a Hybrid Flow Network that produces geometry-aware correspondences, enabling consistent depth and pose inference across diverse keyframes. \nTo enforce global consistency, we propose a Bi-Consistent Bundle Adjustment Layer that jointly optimizes keyframe pose and depth under multi-view constraints. Furthermore, we introduce a Reliability-Aware Refinement mechanism that dynamically adapts the flow update process by distinguishing between reliable and uncertain regions, forming a closed feedback loop between matching and optimization.\nExtensive experiments demonstrate that FoundationSLAM achieves superior trajectory accuracy and dense reconstruction quality across multiple challenging datasets, while running in real-time at 18 FPS, demonstrating strong generalization to various scenarios and practical applicability of our method.",
+      "authors": [
+        "Yuchen Wu",
+        "Jiahe Li",
+        "Fabio Tosi",
+        "Matteo Poggi",
+        "Jin Zheng",
+        "Xiao Bai"
+      ],
+      "primary_category": "AAAI-26 Technical Tracks 13",
+      "categories": [
+        "AAAI-2026",
+        "AAAI-26 Technical Tracks 13"
+      ],
+      "published": "2026-03-17T00:00:00+00:00",
+      "link": "https://ojs.aaai.org/index.php/AAAI/article/view/38061",
+      "pdf_url": "https://ojs.aaai.org/index.php/AAAI/article/download/38061/42023",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "EgoXtreme: A Dataset for Robust Object Pose Estimation in Egocentric Views under Extreme Conditions",
+      "abstract": "Smart glass is emerging as an useful device since it provides plenty of insights under hands-busy, eyes-on-task situations. To understand the context of the wearer, 6D object pose estimation in egocentric view is becoming essential. However, existing 6D object pose estimation benchmarks fail to capture the challenges of real-world egocentric applications, which are often dominated by severe motion blur, dynamic illumination, and visual obstructions. This discrepancy creates a significant gap between controlled lab data and chaotic real-world application. To bridge this gap, we introduce EgoXtreme, a new large-scale 6D pose estimation dataset captured entirely from an egocentric perspective. EgoXtreme features three challenging scenarios--industrial maintenance, sports, and emergency rescue--designed to introduce severe perceptual ambiguities through extreme lighting, heavy motion blur, and smoke. Evaluations of state-of-the-art generalizable pose estimators on EgoXtreme indicate that their generalization fails to hold in extreme conditions, especially under low light. We further demonstrate that simply applying image restoration (e.g., deblurring) offers no positive improvement for extreme conditions. While performance gain has appeared in tracking-based approach, implying using temporal information in fast-motion scenarios is meaningful. We conclude that EgoXtreme is an essential resource for developing and evaluating the next generation of pose estimation models robust enough for real-world egocentric vision. The dataset and code are available at https://taegyoun88.github.io/EgoXtreme/",
+      "authors": [
+        "Yoon, Taegyoon",
+        "Han, Yegyu",
+        "Ji, Seojin",
+        "Park, Jaewoo",
+        "Kim, Sojeong",
+        "Kwon, Taein",
+        "Kim, Hyung-Sin"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Yoon_EgoXtreme_A_Dataset_for_Robust_Object_Pose_Estimation_in_Egocentric_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Yoon_EgoXtreme_A_Dataset_for_Robust_Object_Pose_Estimation_in_Egocentric_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-hpy2jwjzz4",
+      "source": "ICLR-2026-Accepted",
+      "title": "Pose Prior Learner: Unsupervised Categorical Prior Learning for Pose Estimation",
+      "abstract": "A prior represents a set of beliefs or assumptions about a system, aiding inference and decision-making. In this paper, we introduce the challenge of unsupervised categorical prior learning in pose estimation, where AI models learn a general pose prior for an object category from images in a self-supervised manner.\nAlthough priors are effective in estimating pose, acquiring them can be difficult. We propose a novel method, named Pose Prior Learner (PPL), to learn a general pose prior for any object category. PPL uses a hierarchical memory to store compositional parts of prototypical poses, from which we distill a general pose prior. This prior improves pose estimation accuracy through template transformation and image reconstruction. PPL learns meaningful pose priors without any additional human annotations or interventions, outperforming competitive baselines on both human and animal pose estimation datasets. Notably, our experimental results reveal the effectiveness of PPL using learned prototypical poses for pose estimation on occluded images. Through iterative inference, PPL leverages the pose prior to refine estimated poses, regressing them to any prototypical poses stored in memory. Our code, model, and data are publicly available at: [link](https://github.com/ZhangLab-DeepNeuroCogLab/Pose-Prior-Learner).",
+      "authors": [
+        "Ziyu Wang",
+        "Shuangpeng Han",
+        "Mengmi Zhang"
+      ],
+      "primary_category": "Prior Learning",
+      "categories": [
+        "Prior Learning",
+        "Pose Estimation"
+      ],
+      "published": "2026-01-26T14:00:06.028+00:00",
+      "link": "https://openreview.net/forum?id=hPY2jwJzZ4",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "ConceptPose: Training-Free Zero-Shot Object Pose Estimation using Concept Vectors",
+      "abstract": "Object pose estimation is a fundamental task in computer vision and robotics, yet most methods require extensive, dataset-specific training. Concurrently, large-scale vision language models show remarkable zero-shot capabilities. In this work, we bridge these two worlds by introducing ConceptPose, a framework for object pose estimation that is both training-free and model-free. ConceptPose leverages a vision-language-model (VLM) to create open-vocabulary 3D concept maps, where each point is tagged with a concept vector derived from saliency maps. By establishing robust 3D-3D correspondences across concept maps, our approach allows precise estimation of 6DoF relative pose. Without any object or dataset-specific training, our approach achieves state-of-the-art results on common zero shot relative pose estimation benchmarks, outperforming the strongest baseline by a relative 62% in average ADD(-S) score, including methods that utilize extensive dataset-specific training.",
+      "authors": [
+        "Kuang, Liming",
+        "Velikova, Yordanka",
+        "Saleh, Mahdi",
+        "Zaech, Jan-Nico",
+        "Paudel, Danda Pani",
+        "Busam, Benjamin"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Kuang_ConceptPose_Training-Free_Zero-Shot_Object_Pose_Estimation_using_Concept_Vectors_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Kuang_ConceptPose_Training-Free_Zero-Shot_Object_Pose_Estimation_using_Concept_Vectors_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-tw8ps0yirx",
+      "source": "ICLR-2026-Rejected-Public",
+      "title": "XYZ-IBD: Benchmarking Robust 6D Object Pose Estimation under Real-World Industrial Complexity",
+      "abstract": "We introduce XYZ-IBD, a bin-picking benchmark for 6D pose estimation that captures real-world industrial complexity, including challenging object geometries, reflective materials, severe occlusions, and dense clutter. The dataset reflects authentic robotic manipulation scenarios with millimeter-accurate annotations. Unlike existing datasets that primarily focus on household objects, which approach saturation, XYZ-IBD represents the unsolved vision problems in the real-world application. The dataset features metallic and mostly symmetrical objects of varying shapes and sizes. These objects are heavily occluded and randomly arranged in bins with high density, replicating the challenges of industrial bin-picking.\nXYZ-IBD was collected using two high-precision industrial cameras and one commercially available camera, providing RGB, grayscale, and depth images. It contains 75 multi-view real-world scenes with around 273k annotated object instances, along with a large-scale synthetic dataset rendered under simulated bin-picking conditions. We employ a meticulous annotation pipeline that includes anti-reflection spray, multi-view depth fusion, and semi-automatic annotation, achieving millimeter-level pose labeling accuracy required for industrial manipulation. Quantification in simulated environments confirms the reliability of the ground-truth annotations.\nWe benchmark state-of-the-art methods on 2D detection and 6D pose estimation tasks on our dataset, revealing significant performance degradation in our setups compared to current academic household benchmarks. By capturing the complexity of real-world bin-picking scenarios, XYZ-IBD introduces more realistic and challenging vision problems for future research.",
+      "authors": [
+        "Junwen Huang",
+        "Jiaqi Hu",
+        "Jizhong Liang",
+        "Nassir Navab",
+        "Peter KT Yu",
+        "Slobodan Ilic",
+        "Martin Sundermeyer",
+        "Benjamin Busam"
+      ],
+      "primary_category": "Dataset and Benchmarks",
+      "categories": [
+        "Dataset and Benchmarks",
+        "6D Pose Estimation",
+        "Multi-instance 2D detection",
+        "Industrial Bin-picking",
+        "Clutter Scenes"
+      ],
+      "published": "2025-09-18T19:56:34.451+00:00",
+      "link": "https://openreview.net/forum?id=TW8ps0YirX",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "SE(3)-Equivariance with Geometric and Topological Guidance for Category-Level Object Pose Estimation",
+      "abstract": "Object pose estimation is a key task for embodied robots, enabling them to interact with objects effectively. Category-level object pose estimation provides a way for robots to estimate the pose of unknown objects. However, estimating object pose from point clouds alone remains challenging. In this paper, we introduce SEGPose, a novel category-level object pose estimation method based on point clouds. Unlike previous methods, SEGPose leverages geometric, topological information, and SE(3)-equivariance, enhancing the network's accuracy in pose prediction. To utilize geometric and topological features, we propose a constraint-based feature extraction and 3D reconstruction method, enabling effective object shape reconstruction. We also design an SE(3)-equivariance feature prediction network to handle pose transformations consistently across viewpoints, improving pose accuracy. Experimental results on benchmark datasets show that SEGPose outperforms all current category-level pose estimation methods based on point clouds. Additionally, we apply the SEGPose to the robotic grasping tasks in real-world scenarios, and the results indicate that SEGPose exhibits excellent generalization capabilities.",
+      "authors": [
+        "Yu, Sheng",
+        "Zhai, Di-Hua",
+        "Xia, Yuanqing"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Yu_SE3-Equivariance_with_Geometric_and_Topological_Guidance_for_Category-Level_Object_Pose_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Yu_SE3-Equivariance_with_Geometric_and_Topological_Guidance_for_Category-Level_Object_Pose_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "PoseGaussian: 6D Pose Estimation for Unseen Objects via Sparse-View Object-Level 3D Gaussian Splatting",
+      "abstract": "6D pose estimation is a key technology in computer vision and robotic manipulation. However, many methods remain heavily dependent on CAD models that are difficult to obtain. Object-level 3D reconstruction provides an alternative route, and 3D Gaussian Splatting (3DGS) shows convincing potential owing to its training and rendering efficiency. Nevertheless, under sparse reference views, 3DGS is prone to floating artifacts and appearance overfitting, which weakens the stability of pose estimation. We present PoseGaussian, a method for sparse-view 6D pose estimation for unseen objects that builds on improved 3DGS. First, we use sparse RGB-D views to inject a depth structure prior into the 3DGS initialization for stable structure, and we adopt adaptive density control, view-warping augmentation, and joint photometric-depth supervision to reduce floaters and appearance overfitting under sparse reference views. Next, in the pose estimation stage, we apply a two-stage learning-guided ICP initializer that exploits geometric features to obtain a stable initial pose. Finally, we introduce a 3DGS-based iterative pose refiner that aligns rendered and query images in both appearance and geometry, further improving pose estimation accuracy. Experiments on LINEMOD, GenMOP, and our real-world datasets show that PoseGaussian achieves significant improvements over baseline methods under model-free and sparse-view settings, demonstrating strong generalization to unseen objects and robustness to view sparsity.",
+      "authors": [
+        "Shi, Wubin",
+        "Gai, Shaoyan",
+        "Da, Feipeng"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Shi_PoseGaussian_6D_Pose_Estimation_for_Unseen_Objects_via_Sparse-View_Object-Level_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Shi_PoseGaussian_6D_Pose_Estimation_for_Unseen_Objects_via_Sparse-View_Object-Level_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "aaai-2026-37643",
+      "source": "AAAI-2026-Accepted",
+      "title": "RCP-LO: A Relative Coordinate Prediction Framework for Generalizable Deep LiDAR Odometry",
+      "abstract": "LiDAR odometry is a critical component of SLAM in autonomous driving and robotics. Learning-based methods have shown remarkable performance by regressing relative poses in an end-to-end manner. However, when applying these trained models, originally developed on the widely used KITTI dataset, to other scenes, performance often drops significantly. In other words, existing methods struggle to generalize well to new environments. To address this challenge, we propose RCP-LO, a simple yet effective LiDAR odometry framework. \nWe introduce a novel representation for relative poses, reformulating them as relative coordinates, which can then be solved using geometrical verification. This approach avoids overly simplified pose representations and makes better use of scene geometry, thereby improving generalization.\nMoreover, to capture the inherent uncertainties in relative pose estimation from occluded LiDAR point clouds from dynamic environments, we adapt our framework to learn a denoising diffusion model, allowing for sampling plausible relative coordinates while improving robustness. We also introduce a differentiable geometric weighted singular value decomposition module, enabling efficient pose estimation through a single forward pass. \nExtensive experiments demonstrate that RCP-LO, trained exclusively on the KITTI dataset, achieves competitive performance compared to SOTA learning-based methods and generalizes effectively to the KITTI-360, Ford, and Oxford datasets.",
+      "authors": [
+        "Chen Liu",
+        "Wen Li",
+        "Yongshu Huang",
+        "Minghang Zhu",
+        "Yuyang Yang",
+        "Dunqiang Liu",
+        "Sheng Ao",
+        "Cheng Wang"
+      ],
+      "primary_category": "AAAI-26 Technical Tracks 9",
+      "categories": [
+        "AAAI-2026",
+        "AAAI-26 Technical Tracks 9"
+      ],
+      "published": "2026-03-17T00:00:00+00:00",
+      "link": "https://ojs.aaai.org/index.php/AAAI/article/view/37643",
+      "pdf_url": "https://ojs.aaai.org/index.php/AAAI/article/download/37643/41605",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "PiLoT: Neural Pixel-to-3D Registration for UAV-based Ego and Target Geo-localization",
+      "abstract": "We present PiLoT, a unified framework that tackles UAV-based ego and target geo-localization. Conventional approaches rely on decoupled pipelines that fuse GNSS and Visual-Inertial Odometry (VIO) for ego-pose estimation, and active sensors like laser rangefinders for target localization. However, these methods are susceptible to failure in GNSS-denied environments and incur substantial hardware costs and complexity. PiLoT breaks this paradigm by directly registering live video stream against a geo-referenced 3D map. To achieve robust, accurate, and real-time performance, we introduce three key contributions: 1) a Dual-Thread Engine that decouples map rendering from core localization thread, ensuring both low latency while maintaining drift-free accuracy; 2) a large-scale synthetic dataset with precise geometric annotations (camera pose, depth maps). This dataset enables the training of a lightweight network that generalizes in a zero-shot manner from simulation to real data; and 3) a Joint Neural-Guided Stochastic-Gradient Optimizer (JNGO) that achieves robust convergence even under aggressive motion.Evaluations on a comprehensive set of public and newly collected benchmarks show that PiLoT outperforms state-of-the-art methods while running over 25 FPS on NVIDIA Jetson Orin platform. Our code and dataset are available at: https://github.com/Choyaa/PiLoT.",
+      "authors": [
+        "Cheng, Xiaoya",
+        "Wang, Long",
+        "Liu, Yan",
+        "Liu, Xinyi",
+        "Tan, Hanlin",
+        "Liu, Yu",
+        "Zhang, Maojun",
+        "Yan, Shen"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Cheng_PiLoT_Neural_Pixel-to-3D_Registration_for_UAV-based_Ego_and_Target_Geo-localization_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Cheng_PiLoT_Neural_Pixel-to-3D_Registration_for_UAV-based_Ego_and_Target_Geo-localization_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-xwfxj38jet",
+      "source": "ICLR-2026-Public",
+      "title": "ST-VLO: Unified Spatio-Temporal Correlation for Visual-LiDAR Odometry with Temporal Drift Compensation",
+      "abstract": "We propose an effective and efficient visual-LiDAR odometry framework named ST-VLO, which establishes the unified spatio-temporal correlation with Mamba models and addresses the long-standing cumulative drift problem with temporal compensation for the localization in 4D dynamic environments. \nSpecifically, ST-VLO includes a novel unified spatial-temporal correlation module established on Mamba to fuse heterogeneous visual and LiDAR information across multi-frame video clips, overcoming the insufficient temporal information exploration in previous pairwise odometry methods. Furthermore, a Temporal Drift Compensation module is designed to minimize cumulative drifts by iteratively learning correction residuals from multiple history frames. To strengthen the spatial feature representation on salient features, we also propose a Keypoint-Aware Auxiliary Loss with a winner-takes-all strategy.\nST-VLO achieves state-of-the-art performance on two commonly-used autonomous driving datasets, surpassing previous methods with a 19\\% \\( t_{rel} \\) and 22\\% \\( r_{rel} \\) reduction on KITTI, and a 18\\% ATE and 16\\% RPE reduction on Argoverse.",
+      "authors": [
+        "Mengmeng Liu",
+        "Jiuming Liu",
+        "Michael Ying Yang",
+        "Chaokang Jiang",
+        "Jiangtao Li",
+        "Yunpeng Zhang",
+        "Hesheng Wang",
+        "Francesco Nex",
+        "Hao Cheng"
+      ],
+      "primary_category": "Robot Localization",
+      "categories": [
+        "Robot Localization",
+        "Visual-LiDAR Odometry",
+        "SLAM"
+      ],
+      "published": "2025-09-03T10:59:46.206+00:00",
+      "link": "https://openreview.net/forum?id=XwFXJ38jET",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "LiREC-Net: A Target-Free and Learning-Based Network for LiDAR, RGB, and Event Calibration",
+      "abstract": "Advanced autonomous systems rely on multi-sensor fusion for safer and more robust perception. To enable effective fusion, calibrating directly from natural driving scenes (i.e., target-free) with high accuracy is crucial for precise multi-sensor alignment. Existing learning-based calibration methods are typically designed for only a single pair of sensor modalities (i.e., a bi-modal setup). Unlike these methods, we propose LiREC-Net, a target-free, learning-based calibration network that jointly calibrates multiple sensor modality pairs, including LiDAR, RGB, and event data, within a unified framework. To reduce redundant computation and improve efficiency, we introduce a shared LiDAR representation that leverages features from both its 3D nature and projected depth map, ensuring better consistency across modalities. Trained and evaluated on established datasets, such as KITTI and DSEC, our LiREC-Net achieves competitive performance to bi-modal models and sets a new strong baseline for the tri-modal use case.",
+      "authors": [
+        "Dash, Aditya Ranjan",
+        "Battrawy, Ramy",
+        "Schuster, René",
+        "Stricker, Didier"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Dash_LiREC-Net_A_Target-Free_and_Learning-Based_Network_for_LiDAR_RGB_and_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Dash_LiREC-Net_A_Target-Free_and_Learning-Based_Network_for_LiDAR_RGB_and_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-liu-streamvlo-streaming-visual-lidar-odometry-with-cumulative-drift-compensation-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "StreamVLO: Streaming Visual-LiDAR Odometry with Cumulative Drift Compensation",
+      "abstract": "We propose StreamVLO, a streaming visual-LiDAR odometry framework that performs unified spatio-temporal correlation with Mamba models and tackles the long-standing cumulative drift problem via an online Cumulative Drift Compensation scheme for localization in 4D dynamic environments. Specifically, StreamVLO introduces a unified spatio-temporal correlation module built on Mamba to fuse heterogeneous visual and LiDAR cues across multi-frame clips, overcoming the limited temporal exploration of prior pairwise methods. Furthermore, a Cumulative Drift Compensation module minimizes cumulative drift by iteratively learning residual corrections from multiple historical frames in a causal manner. To strengthen spatial feature representation on salient regions, we adopt a Keypoint-Aware Auxiliary Loss with a winner-takes-all strategy. StreamVLO achieves state-of-the-art performance on two commonly used autonomous driving datasets, reducing errors by 19% t_rel and 22% r_rel on KITTI, and by 18% ATE and 16% RPE on Argoverse, while remaining suitable for real-time deployment.",
+      "authors": [
+        "Liu, Mengmeng",
+        "Liu, Jiuming",
+        "Yang, Michael Ying",
+        "Jiang, Chaokang",
+        "Li, Jiangtao",
+        "Zhang, Yunpeng",
+        "Wang, Hesheng",
+        "Nex, Francesco",
+        "Cheng, Hao"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Liu_StreamVLO_Streaming_Visual-LiDAR_Odometry_with_Cumulative_Drift_Compensation_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Liu_StreamVLO_Streaming_Visual-LiDAR_Odometry_with_Cumulative_Drift_Compensation_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "PoseGAM: Robust Unseen Object Pose Estimation via Geometry-Aware Multi-View Reasoning",
+      "abstract": "6D object pose estimation, which predicts the transformation of an object relative to the camera, remains challenging for unseen objects. Existing approaches typically rely on explicitly constructing feature correspondences between the query image and either the object model or template images. In this work, we propose PoseGAM, a geometry-aware multi-view framework that directly predicts object pose from a query image and multiple template images, eliminating the need for explicit matching. Built upon recent multi-view-based foundation model architectures, the method integrates object geometry information through two complementary mechanisms: explicit point-based geometry and learned features from geometry representation networks. In addition, we construct a large-scale synthetic dataset containing more than 190k objects under diverse environmental conditions to enhance robustness and generalization. Extensive evaluations across multiple benchmarks demonstrate our state-of-the-art performance, yielding an average AR improvement of 5.1% over prior methods and achieving up to 17.6% gains on individual datasets, indicating strong generalization to unseen objects.",
+      "authors": [
+        "Chen, Jianqi",
+        "Zhang, Biao",
+        "Tang, Xiangjun",
+        "Wonka, Peter"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Chen_PoseGAM_Robust_Unseen_Object_Pose_Estimation_via_Geometry-Aware_Multi-View_Reasoning_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Chen_PoseGAM_Robust_Unseen_Object_Pose_Estimation_via_Geometry-Aware_Multi-View_Reasoning_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-zfh9n579va",
+      "source": "ICLR-2026-Public",
+      "title": "AlignPose: Generalizable 6D Pose Estimation via Multi-view Feature-metric Alignment",
+      "abstract": "Single-view RGB model-based object pose estimation methods achieve strong generalization performance but are fundamentally limited by depth ambiguity, clutter, and occlusions. Multi-view pose estimation methods have the potential to solve these issues, but existing works rely on precise single-view pose estimates or lack generalization to unseen objects. To address these challenges, we introduce AlignPose, a 6D object pose estimation method that aggregates information from multiple extrinsically calibrated views and generalizes to unseen objects. The contributions of this work are threefold. First, leveraging powerful, frozen features from a foundation model, AlignPose iteratively minimizes the discrepancy between rendered and observed images across multiple viewpoints, enforcing geometric consistency without object-specific training. Second, robust handling of noisy inputs is achieved by aggregating pose candidates from an arbitrary single-view pose estimator via 3D non-maximum suppression. Third, extensive experiments on three BOP benchmarks (YCB-V, T-LESS, ITODD-MV) show AlignPose sets a new state of the art, especially on challenging industrial datasets where multiple views are readily available in practice.",
+      "authors": [
+        "Anna Šárová Mikeštíková",
+        "Médéric Fourmy",
+        "Martin Cífka",
+        "Josef Sivic",
+        "Vladimir Petrik"
+      ],
+      "primary_category": "6D pose estimation",
+      "categories": [
+        "6D pose estimation",
+        "multi-view",
+        "pose refinement",
+        "foundation models"
+      ],
+      "published": "2025-09-20T06:54:08.1+00:00",
+      "link": "https://openreview.net/forum?id=ZFh9n579va",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "Learning Scene Coordinate Reconstruction from Unposed Images via Pose Graph Optimization",
+      "abstract": "Learning-based structure-from-motion methods such as ACE-Zero have demonstrated strong performance in estimating camera poses and scene coordinates from unordered image collections without requiring ground truth supervision. However, the lack of global and multi-view consistency constraints in ACE-Zero can lead to pose drift and misalignment, particularly in complex or ambiguous scenes. In this work, we propose a hybrid framework that integrates pose graph optimization (PGO) into ACE-Zero to refine camera poses and suppress incorrect refinements. We construct pose graphs directly from ACE-Zero outputs by extracting relative pose constraints from predicted scene coordinates. Furthermore, we introduce an uncertainty-aware optimization strategy by estimating confidence scores using geometric priors, including epipolar and optical flow consistencies across views. Our approach improves the robustness and accuracy of pose estimation, demonstrating that global geometric reasoning can effectively complement learning-based inference in structure-from-motion.",
+      "authors": [
+        "Tse, Tze Ho Elden",
+        "Peng, Jizong",
+        "Yao, Angela"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Tse_Learning_Scene_Coordinate_Reconstruction_from_Unposed_Images_via_Pose_Graph_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Tse_Learning_Scene_Coordinate_Reconstruction_from_Unposed_Images_via_Pose_Graph_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-jfi5iwylnf",
+      "source": "ICLR-2026-Rejected-Public",
+      "title": "Unsupervised Domain Adaptation for 6-DoF Pose Estimation with Contrastive Alignment and Pseudo-Label Refinement",
+      "abstract": "Unsupervised domain adaptation (UDA) enables robust transfer of knowledge from simulated to real environments while exploiting a subset of unlabeled target data to improve real-world performance. Existing UDA methods for 6-DoF object pose estimation often rely on global feature matching, multi-stage larger frameworks, or image translation pipelines, which tend to overlook the pose-specific information embedded in feature representations. To bridge this limitation, we introduce CAPLR that targets the adaptation of pose-sensitive features in localized regions, ensuring that domain alignment preserves the geometric cues essential for accurate pose estimation. CAPLR achieves UDA with three key components: (1) Efficient Cross-Domain Pairing strategy leveraging intermediate features to identify pose similar image pairs across domains without supervision; (2) Contrastive Alignment to perform feature alignment at localised regions in both intermediate and task-specific representations; and (3) Consistency-Based Pseudo-Label Refinement to improve reliability by encouraging stable target predictions. Extensive experiments demonstrate that CAPLR achieves state-of-the-art performance across multiple well-known 6-DoF object pose estimation benchmarks featuring diverse and challenging scenarios.",
+      "authors": [
+        "Nidhal Eddine Chenni",
+        "Arunkumar Rathinam",
+        "Djamila Aouada"
+      ],
+      "primary_category": "6DoF pose estimation",
+      "categories": [
+        "6DoF pose estimation",
+        "keypoint regression",
+        "unsupervised domain adaptation",
+        "contrastive learning"
+      ],
+      "published": "2025-09-16T10:45:30.066+00:00",
+      "link": "https://openreview.net/forum?id=jfI5iWylNf",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "AlignPose: Generalizable 6D Pose Estimation via Multi-view Feature-metric Alignment",
+      "abstract": "Single-view RGB model-based object pose estimation methods achieve strong generalization but are fundamentally limited by depth ambiguity, clutter, and occlusions. Multi-view pose estimation methods have the potential to solve these issues, but existing works rely on precise single-view pose estimates or lack generalization to unseen objects. We address these challenges via the following three contributions. First, we introduce AlignPose, a 6D object pose estimation method that aggregates information from multiple extrinsically calibrated RGB views and does not require any object-specific training or symmetry annotation. Second, the key component of this approach is a new multi-view feature-metric refinement specifically designed for object pose. It optimizes a single, consistent world-frame object pose by minimizing the feature discrepancy between on-the-fly rendered object features and observed image features across all views simultaneously. Third, we report extensive experiments on six datasets (YCB-V, T-LESS, HouseCat6D, ITODD-MV, IPD, XYZ-IBD) using the BOP benchmark evaluation and show that AlignPose outperforms other published methods, especially on challenging industrial datasets where multiple views are readily available in practice.",
+      "authors": [
+        "Mikeštíková, Anna Šárová",
+        "Fourmy, Médéric",
+        "Cifka, Martin",
+        "Sivic, Josef",
+        "Petrik, Vladimir"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Mikestikova_AlignPose_Generalizable_6D_Pose_Estimation_via_Multi-view_Feature-metric_Alignment_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Mikestikova_AlignPose_Generalizable_6D_Pose_Estimation_via_Multi-view_Feature-metric_Alignment_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "OrienPose: Orientation-Guided Novel View Synthesis for Single-Image Unseen Object Pose Estimation",
+      "abstract": "Estimating the 3D pose of unseen objects from a single image remains a fundamental yet challenging problem in computer vision, especially under a CAD model-free setting.Pioneering attempts address this issue by matching templates generated through Novel View Synthesis (NVS), which essentially aims to learn the geometric transformation from a reference to a target view. While promising, these methods can only approximate this transformation under pixel-level supervision, as the starting orientation remains undefined. In the absence of explicit geometric constraints to verify the correctness of the predicted transformation, existing methods often synthesize novel views with geometry-distorted structures or severely blurred local textures, leading to unreliable template matching and suboptimal pose estimation results. To this end, we propose OrienPose, a novel object pose estimation framework via orientation-aware NVS from a single image. Specifically, we introduce the Orientation-Aware Guidance, which explicitly injects object orientation cues into the reference latent embedding to enhance orientation awareness during viewpoint transformation. We also introduce an orientation consistency loss that supervises viewpoint transformation at the geometric level, establishing sufficient supervision for explicit and geometry-consistent transformation guidance beyond pixel-level similarity. This loss justifies estimating the reference orientation rather than using its ground-truth pose, thereby ensuring the alignment of coordinate domains between the injected and supervised priors. Extensive experiments demonstrate that OrienPose achieves state-of-the-art performance in single-view unseen object pose estimation and impressive robustness to image degradations. Our code is available at https://github.com/pubyLu/OrienPose.",
+      "authors": [
+        "Liu, Yating",
+        "Qi, Zhaoshuai",
+        "Zou, Yang",
+        "Yang, Yongnan",
+        "Zhang, Shizhou",
+        "Zhang, Yanning"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Liu_OrienPose_Orientation-Guided_Novel_View_Synthesis_for_Single-Image_Unseen_Object_Pose_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Liu_OrienPose_Orientation-Guided_Novel_View_Synthesis_for_Single-Image_Unseen_Object_Pose_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-rmda02o8mv",
+      "source": "ICLR-2026-Accepted",
+      "title": "A Scene is Worth a Thousand Features: Feed-Forward Camera Localization from a Collection of Image Features",
+      "abstract": "Visually localizing an image, i.e., estimating its camera pose, requires building a scene representation that serves as a visual map. The representation we choose has direct consequences towards the practicability of our system. Even when starting from mapping images with known camera poses, state-of-the-art approaches still require hours of mapping time in the worst case, and several minutes in the best. This work raises the question whether we can achieve competitive accuracy much faster. We introduce FastForward, a method that creates a map representation and relocalizes a query image on-the-fly in a single feed-forward pass. At the core, we represent multiple mapping images as a collection of features anchored in 3D space. FastForward utilizes these mapping features to predict image-to-scene correspondences for the query image, enabling the estimation of its camera pose. We couple FastForward with image retrieval and achieve state-of-the-art accuracy when compared to other approaches with minimal map preparation time. Furthermore, FastForward demonstrates robust generalization to unseen domains, including challenging large-scale outdoor environments.",
+      "authors": [
+        "Axel Barroso-Laguna",
+        "Tommaso Cavallari",
+        "Victor Adrian Prisacariu",
+        "Eric Brachmann"
+      ],
+      "primary_category": "Visual Re-localization",
+      "categories": [
+        "Visual Re-localization",
+        "Relative Pose Regression",
+        "Pose Estimation",
+        "Visual Localization"
+      ],
+      "published": "2026-01-26T13:57:20.432+00:00",
+      "link": "https://openreview.net/forum?id=rmDA02o8MV",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "Cov2Pose: Leveraging Spatial Covariance for Direct Manifold-aware 6-DoF Object Pose Estimation",
+      "abstract": "In this paper, we address the problem of 6-DoF object pose estimation from a single RGB image. Indirect methods that typically predict intermediate 2D keypoints, followed by a Perspective-n-Point solver, have shown great performance. Direct approaches, which regress the pose in an end-to-end manner, are usually computationally more efficient but less accurate. However, direct pose regression heads rely on globally pooled features, ignoring spatial second-order statistics despite their informativeness in pose prediction. They also predict, in most cases, discontinuous pose representations that lack robustness. Herein, we therefore propose a covariance-pooled representation that encodes convolutional feature distributions as a symmetric positive definite (SPD) matrix. Moreover, we propose a novel pose encoding in the form of an SPD matrix via its Cholesky decomposition. Pose is then regressed in an end-to-end manner with a manifold-aware network head, taking into account the Riemannian geometry of SPD matrices. Experiments and ablations consistently demonstrate the relevance of second-order pooling and continuous representations for direct pose regression, including under partial occlusion.",
+      "authors": [
+        "Ousalah, Nassim Ali",
+        "Rostami, Peyman",
+        "Gaudillière, Vincent",
+        "Koumandakis, Emmanuel",
+        "Kacem, Anis",
+        "Ghorbel, Enjie",
+        "Aouada, Djamila"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Ousalah_Cov2Pose_Leveraging_Spatial_Covariance_for_Direct_Manifold-aware_6-DoF_Object_Pose_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Ousalah_Cov2Pose_Leveraging_Spatial_Covariance_for_Direct_Manifold-aware_6-DoF_Object_Pose_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "COG: Confidence-aware Optimal Geometric Correspondence for Unsupervised Single-reference Novel Object Pose Estimation",
+      "abstract": "Estimating the 6DoF pose of a novel object with a single reference view is challenging due to occlusions, view-point changes, and outliers. A core difficulty lies in finding robust cross-view correspondences, as existing methods often rely on discrete one-to-one matching that is non-differentiable and tends to collapse onto sparse keypoints. We propose Confidence-aware Optimal Geometric Correspondence (COG), an unsupervised framework that formulates correspondence estimation as a confidence-aware optimal transport problem. COG produces balanced soft correspondences by predicting point-wise confidences and injecting them as optimal transport marginals, suppressing non-overlapping regions. Semantic priors from vision foundation models further regularize the correspondences, leading to stable pose estimation. This design integrates confidence into the correspondence finding and pose estimation pipeline, enabling unsupervised learning. Experiments show unsupervised COG achieves comparable performance to supervised methods, and supervised COG outperforms them. Codes: https://github.com/YC-Che/COG",
+      "authors": [
+        "Che, Yuchen",
+        "Wu, Jingtu",
+        "Zheng, Hao",
+        "Kanezaki, Asako"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Che_COG_Confidence-aware_Optimal_Geometric_Correspondence_for_Unsupervised_Single-reference_Novel_Object_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Che_COG_Confidence-aware_Optimal_Geometric_Correspondence_for_Unsupervised_Single-reference_Novel_Object_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "HamiPose: Hamiltonian Optimization for Unsupervised Domain Adaptive Pose Estimation",
+      "abstract": "Unsupervised domain adaptation (UDA) for pose estimation promises transfer from synthetic to real domains but often suffers instability under domain shift. Prior work attributes this deterioration to gradient interference between source supervision and target consistency. This conflict is distinct in pose estimation, where sparse and heterogeneous supervision signals cause gradients to be highly sensitive to small localization errors and lead to unstable updates. To address these challenges, we propose HamiPose, a Hamiltonian optimization framework that transports decoupled and confidence-calibrated gradients within a unified geometry to mitigate instability. HamiPose first refines gradient interaction through keypointwise geometry decomposition, orthogonally projecting target gradients to preserve nonconflicting component. Channelwise gated alignment then calibrates the parallel component with confidence and alignment, producing decoupled, confidence-calibrated gradients. These gradients are advanced by a Hamiltonian optimizer with a symplectic integrator, providing controlled momentum that stabilizes updates. Extensive experiments demonstrate that HamiPose achieves state-of-the-art performance in UDA pose estimation while maintains strong performance under domain generalization settings.",
+      "authors": [
+        "Li, Jiawen",
+        "Jiang, Fei",
+        "Zhu, Dandan",
+        "Zhou, Aimin"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Li_HamiPose_Hamiltonian_Optimization_for_Unsupervised_Domain_Adaptive_Pose_Estimation_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Li_HamiPose_Hamiltonian_Optimization_for_Unsupervised_Domain_Adaptive_Pose_Estimation_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "ComPose: A Unified Completion-Pose Framework for Robust Category-Level Object Pose Estimation",
+      "abstract": "Category-level object pose estimation aims to predict the pose and size of arbitrary objects in specific categories. Existing methods struggle with the inherent incompleteness of observed point clouds, which limits their ability to capture complete object shapes for robust pose reasoning. While point cloud completion offers a promising solution, naively treating it as a separate preprocessing step for partial observations introduces compounding errors and additional computational overhead, ultimately hindering both accuracy and efficiency. To address these challenges, we propose ComPose, a novel unified framework that tightly integrates shape completion to provide complete geometric cues for enhanced pose estimation. At the core of ComPose is a keypoint-based progressive completion module, which recovers full shape representations by progressively predicting a sparse set of keypoints and their surrounding dense point sets, empowering the keypoints to capture holistic object geometries. A geometric relation encoding module further enriches keypoint features with both local and global geometric context. In addition, we introduce a novel geometric relation consistency loss to enforce structural alignment between observed keypoints and their predicted NOCS coordinates, ensuring globally coherent coordinate transformations. Extensive experiments on standard benchmarks demonstrate that our method outperforms state-of-the-art approaches without relying on category-level shape priors.",
+      "authors": [
+        "Ren, Huan",
+        "Chen, Yihan",
+        "Wang, Chuxin",
+        "Liu, Nailong",
+        "Yang, Wenfei",
+        "Zhang, Tianzhu"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Ren_ComPose_A_Unified_Completion-Pose_Framework_for_Robust_Category-Level_Object_Pose_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Ren_ComPose_A_Unified_Completion-Pose_Framework_for_Robust_Category-Level_Object_Pose_CVPR_2026_paper.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-iclr-2026-jqnzdvoxsl",
+      "source": "ICLR-2026-Public",
+      "title": "GeLoc3r: Enhancing Relative Camera Pose Regression with Geometric Consistency Regularization",
+      "abstract": "Prior ReLoc3R achieves breakthrough performance with fast 25ms inference and state-of-the-art regression accuracy, yet our analysis reveals subtle geometric inconsistencies in its internal representations that prevent reaching the precision ceiling of correspondence-based methods like MASt3R (which require 300ms per pair).\nIn this work, we present GeLoc3r, a novel approach to relative camera pose estimation that enhances pose regression methods through Geometric Consistency Regularization (GCR). \nGeLoc3r overcomes the speed-accuracy dilemma by training regression networks to produce geometrically consistent poses without inference-time geometric computation. During training, GeLoc3r leverages ground-truth depth to generate dense 3D-2D correspondences, weights them using a FusionTransformer that learns correspondence importance, and computes geometrically-consistent poses via weighted RANSAC. This creates a consistency loss that transfers geometric knowledge into the regression network. Unlike FAR method which requires both regression and geometric solving at inference, GeLoc3r only uses the enhanced regression head at test time, maintaining ReLoc3R's fast speed and approaching MASt3R's high accuracy. On challenging benchmarks, GeLoc3r consistently outperforms ReLoc3R, achieving significant improvements including 40.45% vs. 34.85% AUC@5° on the CO3Dv2 dataset (16% relative improvement), 68.66% vs. 66.70% AUC@5° on RealEstate10K, and 50.45% vs. 49.60% on MegaDepth1500. By teaching geometric consistency during training rather than enforcing it at inference, GeLoc3r represents a paradigm shift in how neural networks learn camera geometry, achieving both the speed of regression and the geometric understanding of correspondence methods.",
+      "authors": [
+        "Jingxing Li",
+        "Yongjae Lee",
+        "Deliang Fan"
+      ],
+      "primary_category": "Computer Vision",
+      "categories": [
+        "Computer Vision",
+        "Pose Estimation",
+        "Visual Localization",
+        "Vision Transformers",
+        "RANSAC"
+      ],
+      "published": "2025-09-16T05:37:25.129+00:00",
+      "link": "https://openreview.net/forum?id=jQNzDvoXSL",
+      "pdf_url": null,
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper",
+      "source": "CVPR-2026-Accepted",
+      "title": "LEADER: Learning Reliable Local-to-Global Correspondences for LiDAR Relocalization",
+      "abstract": "LiDAR relocalization has attracted increasing attention as it can deliver accurate 6-DoF pose estimation in complex 3D environments. Recent learning-based regression methods offer efficient solutions by directly predicting global poses without the need for explicit map storage. However, these methods often struggle in challenging scenes due to their equal treatment of all predicted points, which is vulnerable to noise and outliers. In this paper, we propose LEADER, a robust LiDAR-based relocalization framework enhanced by a simple, yet effective geometric encoder. Specifically, a Robust Projection-based Geometric Encoder architecture which captures multi-scale geometric features is first presented to enhance descriptiveness in geometric representation. A Truncated Relative Reliability loss is then formulated to model point-wise ambiguity and mitigate the influence of unreliable predictions. Extensive experiments on the Oxford RobotCar and NCLT datasets demonstrate that LEADER outperforms state-of-the-art methods, achieving 24.1% and 73.9% relative reductions in position error over existing techniques, respectively. The source code is released on https://github.com/JiansW/LEADER.",
+      "authors": [
+        "Wu, Jianshi",
+        "Zhu, Minghang",
+        "Liu, Dunqiang",
+        "Li, Wen",
+        "Ao, Sheng",
+        "Shen, Siqi",
+        "Wen, Chenglu",
+        "Wang, Cheng"
+      ],
+      "primary_category": "CVPR-2026",
+      "categories": [
+        "CVPR-2026"
+      ],
+      "published": "2026-06-01T00:00:00+00:00",
+      "link": "https://openaccess.thecvf.com/content/CVPR2026/html/Wu_LEADER_Learning_Reliable_Local-to-Global_Correspondences_for_LiDAR_Relocalization_CVPR_2026_paper.html",
+      "pdf_url": "https://openaccess.thecvf.com/content/CVPR2026/papers/Wu_LEADER_Learning_Reliable_Local-to-Global_Correspondences_for_LiDAR_Relocalization_CVPR_2026_paper.pdf",
+      "tags": [
+        "query:pe"
+      ]
+    }
+  ],
+  "queries": [
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?",
+      "sim_scores": {
+        "aaai-2026-37643": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-iclr-2026-xwfxj38jet": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "cvpr-2026-liu-streamvlo-streaming-visual-lidar-odometry-with-cumulative-drift-compensation-cvpr-2026-paper": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.01,
+          "rank": 40
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "aaai-2026-37643",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jqnzdvoxsl",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-iclr-2026-xwfxj38jet",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-liu-streamvlo-streaming-visual-lidar-odometry-with-cumulative-drift-compensation-cvpr-2026-paper",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-rmda02o8mv",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-zfh9n579va",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "aaai-2026-38061",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "aaai-2026-37573",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper",
+          "score": 0.49392712550607265,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-w09tbdycls",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jfi5iwylnf",
+          "score": 0.41577409931840303,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper",
+          "score": 0.3433395872420263,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-hpy2jwjzz4",
+          "score": 0.32035835650293487,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper",
+          "score": 0.2760180995475112,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper",
+          "score": 0.25462134764460337,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-nxaw2sruzd",
+          "score": 0.23371647509578536,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-tw8ps0yirx",
+          "score": 0.1933160472486314,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper",
+          "score": 0.1737891737891738,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper",
+          "score": 0.1360089186176142,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper",
+          "score": 0.06517094017094004,
+          "star_rating": 2
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "How to evaluate deep learning based spacecraft pose estimation accuracy?",
+      "sim_scores": {
+        "openreview-iclr-2026-jfi5iwylnf": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-iclr-2026-jqnzdvoxsl": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper": {
+          "score": 0.0136986301369863,
+          "rank": 13
+        },
+        "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-iclr-2026-zfh9n579va": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "aaai-2026-37573": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.011235955056179775,
+          "rank": 29
+        },
+        "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper": {
+          "score": 0.01098901098901099,
+          "rank": 31
+        },
+        "aaai-2026-38061": {
+          "score": 0.010752688172043012,
+          "rank": 33
+        },
+        "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper": {
+          "score": 0.010526315789473684,
+          "rank": 35
+        },
+        "aaai-2026-37643": {
+          "score": 0.010309278350515464,
+          "rank": 37
+        },
+        "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper": {
+          "score": 0.01,
+          "rank": 40
+        },
+        "openreview-iclr-2026-nxaw2sruzd": {
+          "score": 0.009259259259259259,
+          "rank": 48
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-iclr-2026-hpy2jwjzz4",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-iclr-2026-w09tbdycls",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jfi5iwylnf",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "aaai-2026-38061",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jqnzdvoxsl",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-tw8ps0yirx",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-zfh9n579va",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "aaai-2026-37643",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-nxaw2sruzd",
+          "score": 0.49392712550607265,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "aaai-2026-37573",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-rmda02o8mv",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper",
+          "score": 0.3910256410256411,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper",
+          "score": 0.32035835650293487,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper",
+          "score": 0.1737891737891738,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper",
+          "score": 0.06517094017094004,
+          "star_rating": 2
+        },
+        {
+          "paper_id": "openreview-iclr-2026-xwfxj38jet",
+          "score": 0.0483743061062648,
+          "star_rating": 2
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "How to perform spacecraft pose estimation from monocular imagery?",
+      "sim_scores": {
+        "aaai-2026-37573": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-iclr-2026-jfi5iwylnf": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "openreview-iclr-2026-zfh9n579va": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.011904761904761904,
+          "rank": 24
+        },
+        "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper": {
+          "score": 0.011764705882352941,
+          "rank": 25
+        },
+        "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        },
+        "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper": {
+          "score": 0.010869565217391304,
+          "rank": 32
+        },
+        "aaai-2026-37643": {
+          "score": 0.010101010101010102,
+          "rank": 39
+        },
+        "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper": {
+          "score": 0.009708737864077669,
+          "rank": 43
+        },
+        "openreview-iclr-2026-w09tbdycls": {
+          "score": 0.009615384615384616,
+          "rank": 44
+        },
+        "openreview-iclr-2026-rmda02o8mv": {
+          "score": 0.009345794392523364,
+          "rank": 47
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "aaai-2026-37573",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-nxaw2sruzd",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-w09tbdycls",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-rmda02o8mv",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-zfh9n579va",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jqnzdvoxsl",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper",
+          "score": 0.3910256410256411,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "aaai-2026-38061",
+          "score": 0.3910256410256411,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-hpy2jwjzz4",
+          "score": 0.3668882557771445,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jfi5iwylnf",
+          "score": 0.3668882557771445,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper",
+          "score": 0.2760180995475112,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper",
+          "score": 0.25462134764460337,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-tw8ps0yirx",
+          "score": 0.23371647509578536,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?",
+      "sim_scores": {
+        "openreview-iclr-2026-jfi5iwylnf": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "aaai-2026-37573": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-iclr-2026-tw8ps0yirx": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "aaai-2026-37643": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        },
+        "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper": {
+          "score": 0.012345679012345678,
+          "rank": 21
+        },
+        "openreview-iclr-2026-zfh9n579va": {
+          "score": 0.012195121951219513,
+          "rank": 22
+        },
+        "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        },
+        "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.010309278350515464,
+          "rank": 37
+        },
+        "openreview-iclr-2026-jqnzdvoxsl": {
+          "score": 0.00980392156862745,
+          "rank": 42
+        },
+        "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper": {
+          "score": 0.009615384615384616,
+          "rank": 44
+        },
+        "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper": {
+          "score": 0.009433962264150943,
+          "rank": 46
+        },
+        "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper": {
+          "score": 0.009174311926605505,
+          "rank": 49
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-iclr-2026-tw8ps0yirx",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jfi5iwylnf",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "aaai-2026-37573",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-zfh9n579va",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-iclr-2026-hpy2jwjzz4",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "aaai-2026-38061",
+          "score": 0.41577409931840303,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-jqnzdvoxsl",
+          "score": 0.3910256410256411,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-nxaw2sruzd",
+          "score": 0.29792429792429775,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-rmda02o8mv",
+          "score": 0.23371647509578536,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-iclr-2026-w09tbdycls",
+          "score": 0.21328671328671328,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "aaai-2026-37643",
+          "score": 0.0,
+          "star_rating": 1
+        }
+      ]
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "datasets used for training and evaluating spacecraft pose estimation algorithms",
+      "sim_scores": {
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-iclr-2026-jfi5iwylnf": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-iclr-2026-zfh9n579va": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "aaai-2026-37573": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper": {
+          "score": 0.011904761904761904,
+          "rank": 24
+        },
+        "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper": {
+          "score": 0.011764705882352941,
+          "rank": 25
+        },
+        "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        },
+        "openreview-iclr-2026-jqnzdvoxsl": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "aaai-2026-37643": {
+          "score": 0.011363636363636364,
+          "rank": 28
+        },
+        "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper": {
+          "score": 0.010869565217391304,
+          "rank": 32
+        },
+        "openreview-iclr-2026-tw8ps0yirx": {
+          "score": 0.010752688172043012,
+          "rank": 33
+        },
+        "aaai-2026-38061": {
+          "score": 0.01020408163265306,
+          "rank": 38
+        },
+        "openreview-iclr-2026-nxaw2sruzd": {
+          "score": 0.009900990099009901,
+          "rank": 41
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "sim_scores": {
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "aaai-2026-37643": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.010309278350515464,
+          "rank": 37
+        },
+        "openreview-iclr-2026-xwfxj38jet": {
+          "score": 0.010101010101010102,
+          "rank": 39
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "estimation of spacecraft orientation from sensor measurements",
+      "sim_scores": {
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "aaai-2026-37643": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-iclr-2026-xwfxj38jet": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper": {
+          "score": 0.0136986301369863,
+          "rank": 13
+        },
+        "cvpr-2026-liu-streamvlo-streaming-visual-lidar-odometry-with-cumulative-drift-compensation-cvpr-2026-paper": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-iclr-2026-w09tbdycls": {
+          "score": 0.009345794392523364,
+          "rank": 47
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "methods for determining the position and orientation of a spacecraft relative to a target",
+      "sim_scores": {
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "aaai-2026-37643": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.009174311926605505,
+          "rank": 49
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "monocular pose estimation",
+      "sim_scores": {
+        "openreview-iclr-2026-nxaw2sruzd": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-iclr-2026-w09tbdycls": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "aaai-2026-37573": {
+          "score": 0.012345679012345678,
+          "rank": 21
+        },
+        "aaai-2026-38061": {
+          "score": 0.010101010101010102,
+          "rank": 39
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "pose estimation dataset",
+      "sim_scores": {
+        "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-iclr-2026-hpy2jwjzz4": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-iclr-2026-tw8ps0yirx": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper": {
+          "score": 0.010416666666666666,
+          "rank": 36
+        },
+        "aaai-2026-37643": {
+          "score": 0.00980392156862745,
+          "rank": 42
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "pose estimation using a single camera image for space applications",
+      "sim_scores": {
+        "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-iclr-2026-zfh9n579va": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-iclr-2026-jfi5iwylnf": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper": {
+          "score": 0.013888888888888888,
+          "rank": 12
+        },
+        "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper": {
+          "score": 0.0136986301369863,
+          "rank": 13
+        },
+        "aaai-2026-37573": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "openreview-iclr-2026-rmda02o8mv": {
+          "score": 0.011764705882352941,
+          "rank": 25
+        },
+        "aaai-2026-38061": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        },
+        "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "aaai-2026-37643": {
+          "score": 0.011235955056179775,
+          "rank": 29
+        },
+        "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper": {
+          "score": 0.011111111111111112,
+          "rank": 30
+        },
+        "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper": {
+          "score": 0.010869565217391304,
+          "rank": 32
+        },
+        "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper": {
+          "score": 0.010526315789473684,
+          "rank": 35
+        },
+        "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper": {
+          "score": 0.01,
+          "rank": 40
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "relative pose determination",
+      "sim_scores": {}
+    }
+  ],
+  "global_candidate_ids": [
+    "aaai-2026-37643",
+    "cvpr-2026-jiang-spectral-geometric-neural-fields-for-pose-free-lidar-view-synthesis-cvpr-2026-paper",
+    "aaai-2026-42438",
+    "cvpr-2026-park-vird-view-invariant-representation-through-dual-axis-transformation-for-cross-view-pose-estimation-cvpr-2026-paper",
+    "aaai-2026-37573",
+    "openreview-iclr-2026-wmqoigkqut",
+    "aaai-2026-38424",
+    "openreview-iclr-2026-jfi5iwylnf",
+    "cvpr-2026-liu-beyond-matching-to-tiles-bridging-unaligned-aerial-and-satellite-views-cvpr-2026-paper",
+    "openreview-iclr-2026-azs6dkgm2i",
+    "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper",
+    "cvpr-2026-wang-fmpose3d-monocular-3d-pose-estimation-via-flow-matching-cvpr-2026-paper",
+    "openreview-iclr-2026-fvcrbaxj21",
+    "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper",
+    "openreview-iclr-2026-hpy2jwjzz4",
+    "openreview-iclr-2026-2cixkn2uls",
+    "openreview-iclr-2026-rv0j1cyrqk",
+    "cvpr-2026-lin-vga-empowering-aerial-ground-localization-by-visual-geometry-alignment-cvpr-2026-paper",
+    "aaai-2026-37633",
+    "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper",
+    "openreview-iclr-2026-5a5t3iw2b6",
+    "cvpr-2026-zheng-wildpose-a-unified-framework-for-robust-pose-estimation-in-the-cvpr-2026-paper",
+    "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper",
+    "cvpr-2026-han-ptc-depth-pose-refined-monocular-depth-estimation-with-temporal-consistency-cvpr-2026-paper",
+    "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper",
+    "cvpr-2026-zhou-memory-augmented-scene-understanding-and-exploration-for-open-world-aerial-object-goal-navigation-cvpr-2026-paper",
+    "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper",
+    "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper",
+    "openreview-iclr-2026-zfh9n579va",
+    "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper",
+    "cvpr-2026-li-aerogs-scale-aware-gaussian-splatting-for-pose-free-dynamic-uav-scene-reconstruction-cvpr-2026-paper",
+    "openreview-iclr-2026-shou7iva5o",
+    "aaai-2026-38282",
+    "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper",
+    "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper",
+    "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper",
+    "cvpr-2026-zhong-dynamic-visual-slam-using-a-general-3d-prior-cvpr-2026-paper",
+    "cvpr-2026-liang-unigeors-a-unified-benchmark-for-tri-view-geo-localization-cvpr-2026-paper",
+    "aaai-2026-38304",
+    "cvpr-2026-pan-dual-agent-reinforcement-learning-for-adaptive-and-cost-aware-visual-inertial-odometry-cvpr-2026-paper",
+    "aaai-2026-38079",
+    "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper",
+    "openreview-iclr-2026-r2j8osxhif",
+    "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper",
+    "aaai-2026-37668",
+    "openreview-iclr-2026-cjzn9leyl0",
+    "cvpr-2026-zhang-apex-a-decoupled-memory-based-explorer-for-asynchronous-aerial-object-goal-cvpr-2026-paper",
+    "cvpr-2026-fang-beyond-static-frames-temporal-aggregate-and-restore-vision-transformer-for-human-pose-cvpr-2026-paper",
+    "aaai-2026-38061",
+    "openreview-iclr-2026-e6gnzpqeqr",
+    "openreview-iclr-2026-xwfxj38jet",
+    "openreview-iclr-2026-cynr49qkn0",
+    "openreview-iclr-2026-xrf2uscsa4",
+    "openreview-iclr-2026-tw8ps0yirx",
+    "openreview-iclr-2026-88rkxlfuny",
+    "cvpr-2026-ning-lookasidevln-direction-aware-aerial-vision-and-language-navigation-cvpr-2026-paper",
+    "openreview-iclr-2026-e9n2olnzch",
+    "aaai-2026-37371",
+    "openreview-iclr-2026-jqnzdvoxsl",
+    "cvpr-2026-zhang-is-your-vlm-sky-ready-a-comprehensive-spatial-intelligence-benchmark-for-cvpr-2026-paper",
+    "openreview-iclr-2026-yypqvuahkc",
+    "cvpr-2026-li-paul-uncertainty-guided-partition-and-augmentation-for-robust-cross-view-geo-localization-under-cvpr-2026-paper",
+    "openreview-iclr-2026-okm3w71ymp",
+    "openreview-iclr-2026-nxaw2sruzd",
+    "cvpr-2026-liu-exploring-6d-object-pose-estimation-with-deformation-cvpr-2026-paper",
+    "cvpr-2026-dai-egocentric-visibility-aware-human-pose-estimation-cvpr-2026-paper",
+    "aaai-2026-42495",
+    "openreview-iclr-2026-c8htwyknip",
+    "openreview-iclr-2026-w09tbdycls",
+    "openreview-iclr-2026-u7ungom1ob",
+    "openreview-iclr-2026-rxai4fyjbe",
+    "aaai-2026-38878",
+    "cvpr-2026-xia-fisherposer-human-motion-estimation-from-sparse-observations-with-hierarchical-region-wise-cvpr-2026-paper",
+    "cvpr-2026-zhang-dicart-advancing-category-level-articulated-object-pose-estimation-in-discrete-state-spaces-cvpr-2026-paper",
+    "cvpr-2026-liu-streamvlo-streaming-visual-lidar-odometry-with-cumulative-drift-compensation-cvpr-2026-paper",
+    "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper",
+    "cvpr-2026-behari-task-driven-implicit-representations-for-automated-design-of-lidar-systems-cvpr-2026-paper",
+    "cvpr-2026-li-droid-slam-in-the-wild-cvpr-2026-paper",
+    "openreview-iclr-2026-nfmzp5pbzr",
+    "cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper",
+    "cvpr-2026-qin-uast-unified-active-search-and-tracking-for-arbitrary-targets-with-cvpr-2026-paper",
+    "cvpr-2026-zhang-progtrack-a-multi-object-tracking-algorithm-with-progressive-matching-strategy-cvpr-2026-paper",
+    "cvpr-2026-jing-aimdepth-asymmetric-image-event-mamba-for-monocular-depth-estimation-cvpr-2026-paper",
+    "aaai-2026-38884",
+    "cvpr-2026-guo-panovggt-feed-forward-3d-reconstruction-from-panoramic-imagery-cvpr-2026-paper",
+    "cvpr-2026-song-metrichmsr-metric-human-mesh-and-scene-recovery-from-monocular-images-cvpr-2026-paper",
+    "cvpr-2026-yang-dual-branch-distilled-transformer-for-efficient-asymmetric-uav-tracking-cvpr-2026-paper",
+    "openreview-iclr-2026-tnkcbzmbgw",
+    "cvpr-2026-zhang-unipr-unified-object-level-real-to-sim-perception-and-reconstruction-from-a-single-cvpr-2026-paper",
+    "cvpr-2026-zhang-generalized-cvo-fast-and-correspondence-free-local-point-cloud-registration-with-second-cvpr-2026-paper",
+    "openreview-iclr-2026-duizuirkjb",
+    "cvpr-2026-gu-fourier-angle-alignment-for-oriented-object-detection-in-remote-sensing-cvpr-2026-paper",
+    "cvpr-2026-skuddis-bev-sld-self-supervised-scene-landmark-detection-for-global-localization-with-lidar-cvpr-2026-paper",
+    "openreview-iclr-2026-bmrh2pfmsi",
+    "aaai-2026-38898",
+    "aaai-2026-38920",
+    "cvpr-2026-zhang-kasalv2-fully-automatic-3d-rotational-symmetry-classification-and-axis-localization-cvpr-2026-paper",
+    "aaai-2026-37720",
+    "cvpr-2026-lentsch-terraseg-self-supervised-ground-segmentation-for-any-lidar-cvpr-2026-paper",
+    "openreview-iclr-2026-rmda02o8mv",
+    "openreview-iclr-2026-aq67wv1izx",
+    "openreview-iclr-2026-tegxricpm5",
+    "cvpr-2026-kha-spectrally-distilled-representations-aligned-with-instruction-augmented-llms-for-satellite-imagery-cvpr-2026-paper",
+    "cvpr-2026-lee-lnem-lunar-neural-elevation-model-cvpr-2026-paper",
+    "openreview-iclr-2026-k5t8pfzwfr",
+    "cvpr-2026-chao-sv-gs-sparse-view-4d-reconstruction-with-skeleton-driven-gaussian-splatting-cvpr-2026-paper",
+    "cvpr-2026-piedade-revisiting-monocular-slam-with-spatio-temporal-scene-modeling-cvpr-2026-paper",
+    "openreview-iclr-2026-hwqy7izls4",
+    "cvpr-2026-ge-airsim360-a-panoramic-simulation-platform-within-drone-view-cvpr-2026-paper",
+    "openreview-iclr-2026-bpd4wxvfxv",
+    "aaai-2026-38258",
+    "openreview-iclr-2026-zgttqtd1zu",
+    "openreview-iclr-2026-imj2pfhxmu",
+    "openreview-iclr-2026-p4m6tkau7q",
+    "cvpr-2026-wang-la-pose-latent-action-pretraining-meets-pose-estimation-cvpr-2026-paper",
+    "cvpr-2026-guo-4d-local-modeling-toward-dynamic-global-perception-for-ambiguity-free-rotation-invariant-cvpr-2026-paper",
+    "cvpr-2026-xiong-bev-car-enhancing-monocular-birds-eye-view-segmentation-with-context-aware-rasterization-cvpr-2026-paper",
+    "cvpr-2026-peng-expanding-mmwave-datasets-for-human-pose-estimation-with-unlabeled-data-cvpr-2026-paper",
+    "cvpr-2026-noronha-moocap-a-multi-view-benchmark-for-cow-object-human-interaction-and-behavior-dynamics-cvpr-2026-paper",
+    "cvpr-2026-bhat-bop-ask-object-interaction-reasoning-for-vision-language-models-cvpr-2026-paper"
+  ],
+  "global_pool_lane_top_k": 30,
+  "global_pool_limit": 120,
+  "global_pool_guaranteed_per_lane": 2,
+  "global_pool_effective_size": 120,
+  "reranked_at": "2026-09-07T06:50:52.233723+00:00",
+  "llm_ranked": [
+    {
+      "paper_id": "cvpr-2026-ousalah-cov2pose-leveraging-spatial-covariance-for-direct-manifold-aware-6-dof-object-pose-cvpr-2026-paper",
+      "score": 8.0,
+      "evidence_en": "Direct 6-DoF object pose estimation from a single RGB image with covariance pooling and manifold-aware regression; core method directly transferable to monocular spacecraft pose estimation",
+      "evidence_cn": "从单张RGB图像直接估计6D物体位姿，协方差池化加流形感知回归可直接迁移至单目航天器位姿估计",
+      "canonical_evidence": "从单张RGB图像直接估计6D物体位姿，协方差池化加流形感知回归可直接迁移至单目航天器位姿估计",
+      "tldr_en": "Cov2Pose estimates 6-DoF object pose directly from a single RGB image, encoding spatial second-order statistics with covariance pooling and regressing on the pose manifold to improve robustness and accuracy over global-pooled direct regression.",
+      "tldr_cn": "单张RGB图像的6自由度物体位姿估计中，直接回归方法速度快但常忽略特征二阶统计量并输出不连续姿态表示。Cov2Pose提出协方差池化表征卷积特征的空间分布，并结合流形感知回归以更稳健地预测姿态。实验表明直接位姿回归精度有所提升且保持计算高效。该方法面向通用物体，是单目航天器位姿估计的重要技术基座。",
+      "title_zh": "Cov2Pose：利用空间协方差进行流形感知的直接6自由度物体姿态估计",
+      "motivation_cn": "现有直接位姿回归使用全局池化特征，忽略空间二阶统计量且输出不连续位姿表示，导致精度和鲁棒性不足。",
+      "method_cn": "提出协方差池化与流形感知的直接回归头，在单个RGB图像上端到端预测6自由度物体位姿。",
+      "result_cn": "在保持端到端效率的同时提升直接回归的位姿精度与鲁棒性，可与间接PnP方法互补。",
+      "conclusion_cn": "为单目6D位姿直接回归提供了更有效的特征与表示方案，可应用于航天器对目标位姿估计。",
+      "matched_requirement_id": "req-6",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-zfh9n579va",
+      "score": 8.0,
+      "evidence_en": "Generalizable 6D pose estimation for unseen objects from RGB views that reduces dependence on precise single-view priors; directly relevant to robust uncooperative spacecraft pose estimation",
+      "evidence_cn": "面向未见物体的RGB 6D位姿估计与鲁棒目标位姿任务同构，可用于非合作航天器位姿估计方法迁移",
+      "canonical_evidence": "面向未见物体的RGB 6D位姿估计与鲁棒目标位姿任务同构，可用于非合作航天器位姿估计方法迁移",
+      "tldr_en": "AlignPose estimates 6D pose of unseen objects by iteratively minimizing rendered-observed discrepancy with frozen foundation-model features across calibrated multi-views, improving generalization to clutter and occlusions without per-object training.",
+      "tldr_cn": "单目RGB模型化位姿估计受深度含糊、遮挡和杂乱场景限制，而现有方法又依赖精确单视角初值、泛化不足。AlignPose利用冻结的基础模型特征，在多个外参标定视角间迭代最小化渲染图与观测图差异，实现对未见物体6D位姿的估计。实验表明该方法在杂乱、遮挡以及新物体场景下具有更强的泛化性能。对无法预置合作标志的非合作航天器，这类多视角对齐估计策略尤其具有应用价值。",
+      "title_zh": "AlignPose：基于多视角特征度量对齐的泛化6D位姿估计",
+      "motivation_cn": "单视角模型化6D位姿估计受深度含糊与遮挡限制，现有方法难以泛化到未见物体。",
+      "method_cn": "提出AlignPose，利用冻结基础模型特征，在多外参标定视图间迭代最小化渲染-观测差异，从而估计未见物体的6D位姿。",
+      "result_cn": "在多视角条件下可有效处理杂乱与遮挡并泛化到未见物体，降低对精确单视角位姿初值的依赖。",
+      "conclusion_cn": "为无先验物体模型或少纹理目标的位姿估计提供通用方案，适用于非合作空间目标的相对位姿估计。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "cvpr-2026-shi-posegaussian-6d-pose-estimation-for-unseen-objects-via-sparse-view-object-level-cvpr-2026-paper",
+      "score": 8.0,
+      "evidence_en": "Sparse-view RGB-D 6D pose for unseen objects without CAD models; directly usable for robust pose tracking of uncooperative spacecraft with partial observations.",
+      "evidence_cn": "稀疏RGB-D下无需CAD模型的6D位姿估计；直接适用于部分观测下非合作航天器的鲁棒位姿估计。",
+      "canonical_evidence": "稀疏RGB-D下无需CAD模型的6D位姿估计；直接适用于部分观测下非合作航天器的鲁棒位姿估计。",
+      "tldr_en": "PoseGaussian improves sparse-view 3D Gaussian splatting with a depth structure prior and anti-artifact techniques to estimate 6D pose of unseen objects without CAD models. It reduces floating artifacts and appearance overfitting from sparse RGB-D views, enabling robust object pose estimation in partially observed settings relevant to uncooperative spacecraft.",
+      "tldr_cn": "面向无CAD模型物体的6D位姿估计常依赖难以获得的模型，而基于RGB-D稀疏视图的3D高斯泼溅存在漂浮伪影和外观过拟合，削弱位姿估计稳定性。PoseGaussian在3DGS初始化中注入深度结构先验以稳定结构，并提出针对漂浮伪影与位姿估计的改进策略。在稀疏参考视图下，该方法能够对未见物体获得更稳定的6D位姿估计结果。这项工作为无模型且部分观测场景中的物体位姿估计提供了新的技术路径，对空间非合作目标位姿估计具有借鉴价值。",
+      "title_zh": "PoseGaussian：基于稀疏视角物体级三维高斯泼溅的未见物体6D位姿估计",
+      "motivation_cn": "现有无CAD模型的物体6D位姿估计在稀疏视角下容易受到3D高斯泼溅伪影和外观过拟合的干扰。",
+      "method_cn": "PoseGaussian利用稀疏RGB-D视角构造深度结构先验，将其注入3DGS初始化，结合抗伪影与位姿优化策略估计未见物体位姿。",
+      "result_cn": "在稀疏参考视图设置下对未见物体实现了更稳定的6D位姿估计，缓解了漂浮伪影带来的精度下降。",
+      "conclusion_cn": "研究表明改进的3DGS可作为稀疏观测下无模型位姿估计的有力表示，适用于非合作目标的空间应用。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "cvpr-2026-liu-orienpose-orientation-guided-novel-view-synthesis-for-single-image-unseen-object-pose-cvpr-2026-paper",
+      "score": 8.0,
+      "evidence_en": "Single-image unseen-object 6D pose estimation with orientation-guided novel view synthesis; directly relevant to monocular spacecraft pose estimation.",
+      "evidence_cn": "基于方向引导新视角合成的单图未见物体6D位姿估计；直接服务航天器单目位姿估计问题。",
+      "canonical_evidence": "基于方向引导新视角合成的单图未见物体6D位姿估计；直接服务航天器单目位姿估计问题。",
+      "tldr_en": "OrienPose performs single-image 6D pose estimation of unseen objects by using predicted orientation to guide novel view synthesis and explicit geometric checks, overcoming distorted/blurred views of template-based NVS methods. It enables CAD-model-free single-image pose prediction, offering a reusable approach for monocular spacecraft pose estimation.",
+      "tldr_cn": "在无CAD模型条件下从单张图像估计未见物体的3D位姿仍很困难，已有基于新视角合成的方法仅以像素级监督近似视角变换，因起始朝向未定义且缺少几何校验，容易合成结构畸变或模糊的视图。OrienPose提出以朝向信息引导新视角合成，显式加入几何约束来验证预测变换，从而避免几何失真。实验表明，在标准未见物体位姿估计基准上，该方法相比现有单图模板匹配方法取得了更准确的位姿估计。其贡献是为单目物体位姿估计提供了一种带几何监督的可泛化范式，可助力单目空间目标观测。",
+      "title_zh": "OrienPose：面向单图未见物体位姿估计的朝向引导新视角合成",
+      "motivation_cn": "单图未见物体位姿估计在新视角模板匹配中缺少明确起始朝向和几何校验，导致生成几何畸变视图。",
+      "method_cn": "提出朝向引导的新视角生成，以预测朝向约束目标视图合成并引入几何一致性验证变换合理性。",
+      "result_cn": "在单帧未见物体位姿基准上减少了合成畸变并提升了3D位姿精度。",
+      "conclusion_cn": "显式朝向与几何约束能提高单目未见物体位姿估计的可靠性，对空间非合作目标的单目观测有参考价值。",
+      "matched_requirement_id": "req-6",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?"
+    },
+    {
+      "paper_id": "cvpr-2026-che-cog-confidence-aware-optimal-geometric-correspondence-for-unsupervised-single-reference-novel-object-cvpr-2026-paper",
+      "score": 8.0,
+      "evidence_en": "Unsupervised 6D pose estimation of novel objects from a single reference using confidence-aware optimal transport; robust correspondence method for uncooperative spacecraft under occlusion.",
+      "evidence_cn": "基于置信度感知最优输运的单参考新型物体6D位姿估计；为遮挡条件下非合作航天器提供鲁棒匹配方法。",
+      "canonical_evidence": "基于置信度感知最优输运的单参考新型物体6D位姿估计；为遮挡条件下非合作航天器提供鲁棒匹配方法。",
+      "tldr_en": "COG introduces confidence-aware optimal transport for unsupervised 6D pose estimation of novel objects from one reference view. It produces balanced soft correspondences by injecting point-wise confidences as optimal transport marginals, suppressing non-overlapping regions, and shows robustness to occlusion, viewpoint changes, and outliers for object-level pose matching.",
+      "tldr_cn": "单参考图像下的新型物体6D位姿估计常受遮挡、视角变化和离群点影响，而离散一对一匹配不可微且易坍塌到稀疏关键点。COG提出置信度感知的最优输运框架，将逐点置信度作为边际约束以生成平衡软对应关系，抑制非重叠区域，并利用语义先验进行引导。该无监督框架无需对每个参考图像重新优化参数，提升了泛化能力与计算效率。实验表明其在单参考物体位姿估计中对抗遮挡和离群点具有更强的鲁棒性，可为非合作航天器等弱纹理目标的位姿估计提供强对应范式。",
+      "title_zh": "COG：用于无监督单参考新型物体位姿估计的置信度感知最优几何对应",
+      "motivation_cn": "单参考新型物体6D位姿估计容易受遮挡、视角变化和离群点影响，离散对应匹配不可微且易塌缩。",
+      "method_cn": "提出将对应估计建模为置信度感知的最优输运问题，以逐点置信度约束生成平衡软对应并抑制非重叠区域。",
+      "result_cn": "实验显示在遮挡和离群点存在时对应更鲁棒，单参考6D位姿估计精度显著提升。",
+      "conclusion_cn": "置信度感知的最优输运为鲁棒几何对应提供了通用框架，可服务于非合作航天器的位姿估计。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "aaai-2026-37573",
+      "score": 7.0,
+      "evidence_en": "Monocular vehicle pose and shape reconstruction from a single image; pipeline transferable to monocular spacecraft pose estimation",
+      "evidence_cn": "单目图像车辆姿态与形状重建，其技术路线可迁移至单目航天器位姿估计",
+      "canonical_evidence": "单目图像车辆姿态与形状重建，其技术路线可迁移至单目航天器位姿估计",
+      "tldr_en": "MonoVPR reconstructs 3D vehicle pose and shape from a monocular image by integrating hierarchical dual-context attention and progressive geometry refinement, addressing depth ambiguity and structural hollowness for distant objects.",
+      "tldr_cn": "单目车辆三维姿态与形状重建在远距离和深度歧义下存在几何结构不完整等问题。MonoVPR设计了层级双上下文注意力，通过门控交叉注意力融合多尺度特征，并结合渐进式几何精化逐步恢复精确位姿与形状。实验表明该方法能改善远景车辆的重建质量。该框架面向单目图像，其动态上下文与渐进精化策略可借鉴到单目航天器相对位姿估计。",
+      "title_zh": "基于动态上下文自适应与渐进几何精化的单目车辆姿态与形状重建",
+      "motivation_cn": "现有单目车辆位姿形状重建存在深度估计几何歧义与结构空洞，尤其远距离目标准确度不足。",
+      "method_cn": "提出MonoVPR，用层级双上下文注意力融合多尺度特征，并结合渐进几何精化框架逐步优化位姿与形状。",
+      "result_cn": "在远处、复杂尺度场景中相比已有方法更准确地恢复车辆位姿与三维形状。",
+      "conclusion_cn": "验证了动态上下文融合与渐进式几何精化对单目位姿重建的有效性，可推广至其他刚性目标位姿估计。",
+      "matched_requirement_id": "req-6",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?"
+    },
+    {
+      "paper_id": "cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper",
+      "score": 7.0,
+      "evidence_en": "Robust 6D pose estimation for unseen objects using geometry-aware multi-view reasoning; relevant to uncooperative spacecraft pose estimation from template and query images",
+      "evidence_cn": "面向未见物体的鲁棒6D位姿估计，几何感知多视图推理，适用于基于模板图像的非合作航天器位姿估计",
+      "canonical_evidence": "面向未见物体的鲁棒6D位姿估计，几何感知多视图推理，适用于基于模板图像的非合作航天器位姿估计",
+      "tldr_en": "PoseGAM directly predicts 6D object pose from a query image and multiple template images without explicit matching, integrating point-based geometry and learned geometry features within a multi-view foundation model for robust unseen-object pose estimation.",
+      "tldr_cn": "对未见过的物体进行6自由度位姿估计仍困难，已有方法常需显式建立查询图与目标模型或模板图之间的特征对应。PoseGAM基于多视图基础模型直接回归姿态，并通过显式点几何与几何表征网络特征两种机制融入物体几何约束，避免显式匹配。实验表明该方法在未见物体上具有更强的鲁棒性。该框架有助于不依赖精细外观先验的非合作航天器位姿估计。",
+      "title_zh": "PoseGAM：通过几何感知多视图推理实现鲁棒的未见物体姿态估计",
+      "motivation_cn": "未见物体的6D位姿估计仍需显式特征对应，易受外观与遮挡影响，难以适应非合作目标。",
+      "method_cn": "提出PoseGAM，结合多视图基础模型、显式点云几何和几何表征特征，直接从查询图与模板图预测位姿。",
+      "result_cn": "在未见物体基准上取得了比显式匹配方法更鲁棒和准确的位姿估计效果。",
+      "conclusion_cn": "验证了几何感知多视图推理可显著提升模型无关物体的位姿估计泛化能力。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "cvpr-2026-ren-compose-a-unified-completion-pose-framework-for-robust-category-level-object-pose-cvpr-2026-paper",
+      "score": 7.0,
+      "evidence_en": "6DoF object pose estimation from incomplete point clouds, transferable to robust pose estimation of uncooperative spacecraft targets",
+      "evidence_cn": "从残缺点云估计6自由度物体位姿，可迁移用于非合作航天器目标的鲁棒位姿估计",
+      "canonical_evidence": "从残缺点云估计6自由度物体位姿，可迁移用于非合作航天器目标的鲁棒位姿估计",
+      "tldr_en": "ComPose unifies shape completion and category-level 6DoF pose estimation from partial point clouds, avoiding compounding errors and improving robust object pose; transferable to spacecraft target relative pose estimation.",
+      "tldr_cn": "针对残缺点云导致类别级物体位姿估计不准、独立补全带来误差累积的问题，提出ComPose统一框架，将形状补全与位姿回归紧耦合，以完整几何线索增强部分观测下的位姿推理。在通用物体位姿基准上验证了该框架能提升鲁棒性与效率。其非合作目标场景下的点云补全与位姿联合建模思路可直接用于航天器相对位姿估计。",
+      "title_zh": "ComPose：面向鲁棒类别级物体位姿估计的统一补全-位姿框架",
+      "motivation_cn": "观测点云常不完整，独立形状补全会引入复合误差并增加开销，限制位姿估计的鲁棒性。",
+      "method_cn": "提出紧耦合形状补全与类别级位姿估计的统一框架，利用完整几何线索辅助鲁棒位姿回归。",
+      "result_cn": "在类别级物体位姿基准上，精度与效率优于采用独立补全预处理的方法。",
+      "conclusion_cn": "证明补全与位姿联合学习能有效缓解部分观测造成的估计退化，适用于目标点云缺失场景。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-jfi5iwylnf",
+      "score": 7.0,
+      "evidence_en": "Sim-to-real unsupervised domain adaptation for 6DoF pose estimation, supporting robust spacecraft pose models trained on synthetic data",
+      "evidence_cn": "面向6自由度位姿估计的仿真到真实无监督域适应，可用于利用合成数据训练更稳健的航天器位姿模型",
+      "canonical_evidence": "面向6自由度位姿估计的仿真到真实无监督域适应，可用于利用合成数据训练更稳健的航天器位姿模型",
+      "tldr_en": "CAPLR adapts 6DoF pose estimators from simulation to real data by aligning pose-sensitive local features with contrastive learning and refining pseudo-labels, improving robustness for real-world deployment including spacecraft.",
+      "tldr_cn": "针对6自由度物体位姿估计从仿真迁移到真实环境的域差异问题，指出主流全局特征对齐或图像翻译方法会丢失位姿敏感的局部几何信息。提出CAPLR，在局部区域实施对比对齐，并以伪标签精炼提升无标注真实数据的利用。实验表明该方法有效保留位姿相关几何线索，在UDA位姿任务上取得更鲁棒的结果。该技术可用于利用合成卫星图像提升航天器在轨位姿估计精度。",
+      "title_zh": "CAPLR：基于对比对齐与伪标签精炼的6自由度位姿估计无监督域适应",
+      "motivation_cn": "现有无监督域适应方法忽略局部位姿敏感特征，仿真到真实迁移中几何线索易丢失。",
+      "method_cn": "利用对比对齐约束局部区域位姿敏感特征，并采用伪标签精炼增强目标域伪标注质量。",
+      "result_cn": "在无监督域适应位姿估计基准上取得更优的真实场景精度。",
+      "conclusion_cn": "表明局部几何特征的对比对齐是提升仿真到真实位姿估计泛化的有效途径。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "cvpr-2026-yu-se3-equivariance-with-geometric-and-topological-guidance-for-category-level-object-pose-cvpr-2026-paper",
+      "score": 7.0,
+      "evidence_en": "SE(3)-equivariant category-level 6DoF pose estimation from point clouds, applicable to untextured spacecraft targets",
+      "evidence_cn": "点云类别级6自由度位姿估计，融合SE(3)等变与几何拓扑约束，可支撑无纹理航天器目标的位姿估计",
+      "canonical_evidence": "点云类别级6自由度位姿估计，融合SE(3)等变与几何拓扑约束，可支撑无纹理航天器目标的位姿估计",
+      "tldr_en": "SEGPose estimates category-level object pose from point clouds using SE(3)-equivariant networks guided by geometric and topological reconstruction, improving pose accuracy and offering a texture-free approach for spacecraft targets.",
+      "tldr_cn": "针对纯点云类别级物体位姿估计难度大的问题，提出SEGPose，在特征提取与三维重建中引入几何与拓扑约束，并利用SE(3)等变性提高网络位姿预测精度。该方法通过有效的目标形状重建增强对未知物体的泛化。实验结果显示其精度优于仅使用点云的既有类别级位姿方法。这种不依赖纹理的等变几何建模对航天器这类无纹理目标相对位姿估计具有直接参考价值。",
+      "title_zh": "SEGPose：具有几何与拓扑引导的SE(3)等变类别级物体位姿估计",
+      "motivation_cn": "仅凭点云估计类别级物体位姿具有挑战性，纹理缺失时尤其需要几何、拓扑与姿态等变约束。",
+      "method_cn": "使用约束驱动特征提取与三维重建，并引入SE(3)等变网络结构，以几何拓扑信息辅助位姿预测。",
+      "result_cn": "在点云类别级位姿估计任务上取得更优的位姿精度。",
+      "conclusion_cn": "验证几何拓扑先验和旋转等变规则可有效提升点云目标位姿估计的泛化与准确性。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "cvpr-2026-kuang-conceptpose-training-free-zero-shot-object-pose-estimation-using-concept-vectors-cvpr-2026-paper",
+      "score": 7.0,
+      "evidence_en": "Zero-shot training-free 6DoF object pose estimation using concept vectors, directly useful for unseen uncooperative targets",
+      "evidence_cn": "免训练零样本6DoF目标位姿估计，能处理未知目标，对非合作航天器尤其适用",
+      "canonical_evidence": "免训练零样本6DoF目标位姿估计，能处理未知目标，对非合作航天器尤其适用",
+      "tldr_en": "ConceptPose builds open-vocabulary 3D concept maps with a VLM and estimates 6DoF relative pose via robust 3D-3D correspondences, with no object-specific training.",
+      "tldr_cn": "大多数目标位姿估计方法需要数据集专属训练，面对非合作航天器等未知目标时适应性差。ConceptPose利用大型视觉语言模型生成开放性词汇的3D概念图，每个三维点由显著图导出的概念向量标注；通过跨概念图的鲁棒3D-3D对应，可直接估计6DoF相对位姿，全流程无需训练和目标专属模型。实验证明其零样本条件下也能准确估计6DoF位姿，为未知空间目标的即时位姿感知提供了新范式。",
+      "title_zh": "ConceptPose：使用概念向量的免训练零样本目标位姿估计",
+      "motivation_cn": "现有目标位姿估计需数据集专属训练，无法处理训练中未见过的新目标。",
+      "method_cn": "以视觉语言模型构建开放词汇3D概念图，用概念向量建立3D-3D匹配，进而恢复6DoF相对位姿。",
+      "result_cn": "无需任何对象或数据集专属训练即实现精确的6DoF相对位姿估计，验证零样本能力。",
+      "conclusion_cn": "概念向量结合3D概念图为训练无关的通用物体位姿估计提供了有效解决途径，可用于非合作目标。",
+      "matched_requirement_id": "req-7",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?"
+    },
+    {
+      "paper_id": "cvpr-2026-mikestikova-alignpose-generalizable-6d-pose-estimation-via-multi-view-feature-metric-alignment-cvpr-2026-paper",
+      "score": 7.0,
+      "evidence_en": "Generalizable multi-view 6D object pose estimation, directly aligned with determining target 6D position and orientation",
+      "evidence_cn": "可泛化的多视图6D目标位姿估计方法，可给出目标的位置与姿态，与要求1方法目标一致",
+      "canonical_evidence": "可泛化的多视图6D目标位姿估计方法，可给出目标的位置与姿态，与要求1方法目标一致",
+      "tldr_en": "AlignPose aggregates multiple calibrated RGB views and uses object-designed multi-view feature-metric refinement for 6D pose estimation of unseen objects without object-specific training.",
+      "tldr_cn": "单视图RGB目标位姿估计受深度歧义、杂乱与遮挡限制，多视图方法又常依赖精确的单视图初值且难以泛化到新目标。AlignPose为已外参标定的多幅RGB视图设计了新的多视图特征度量精修，并作为核心组件聚合视图信息估计6D位姿，无需目标专属训练或对称标注。实验显示它能泛化到未见过物体，减少深度歧义并提高遮挡场景下的精度，为空间目标的多视角位姿测量提供强参考。",
+      "title_zh": "AlignPose：通过多视图特征度量对齐的泛化6D位姿估计",
+      "motivation_cn": "单视图位姿估计固有深度歧义，多视图方法依赖单视图初值且泛化性不足。",
+      "method_cn": "在多幅外参标定RGB视图间执行多视图特征度量对齐精修，无需目标专属训练或对称标注以估计6D位姿。",
+      "result_cn": "对未见物体具备强泛化性能，有效缓解杂乱与遮挡对位姿估计的影响。",
+      "conclusion_cn": "多视图特征度量精修能在不依赖目标专属训练的前提下显著提升通用6D位姿估计精度。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-hpy2jwjzz4",
+      "score": 6.0,
+      "evidence_en": "Category-level object pose prior learned from images; transferable to monocular spacecraft pose estimation",
+      "evidence_cn": "从图像中自监督学习物体类别姿态先验，方法可迁移至单目航天器位姿估计",
+      "canonical_evidence": "从图像中自监督学习物体类别姿态先验，方法可迁移至单目航天器位姿估计",
+      "tldr_en": "Learns a general pose prior for an object category from images without labels using hierarchical memory of prototypical pose parts; the prior improves pose estimation via template transformation and image reconstruction.",
+      "tldr_cn": "类别级物体姿态估计常依赖人工标注或难以获取的先验，限制了可扩展性。本文提出姿态先验学习器PPL，用层次化记忆存储典型姿态的组成部件，以自监督方式蒸馏出通用类别姿态先验。该先验通过模板变换和图像重建提升姿态估计精度，并可在多种图像输入上学习。此方法不限定物体类别，对航天器这类缺少标注的目标位姿估计具有潜在迁移价值。",
+      "title_zh": "姿态先验学习器：姿态估计的无监督类别先验学习",
+      "motivation_cn": "姿态先验能提升估计精度，但缺少标注时难以获取，限制了类别级物体姿态估计的可扩展性。",
+      "method_cn": "提出自监督框架，用层级记忆存储典型姿态部件并蒸馏类别姿态先验，以模板变换和重建辅助位姿估计。",
+      "result_cn": "在无需人工标注的情况下学习到有效的通用姿态先验，改善了目标姿态估计精度。",
+      "conclusion_cn": "展示了自监督类别先验学习可泛化于任意物体类别，为缺少标注数据的姿态估计提供新思路。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications"
+    },
+    {
+      "paper_id": "cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper",
+      "score": 6.0,
+      "evidence_en": "Joint target-free calibration of LiDAR and RGB sensors, an enabling step for LiDAR-camera fusion in relative pose estimation",
+      "evidence_cn": "联合标定LiDAR与RGB传感器无需靶标，是激光雷达+相机融合位姿估计的关键前置能力",
+      "canonical_evidence": "联合标定LiDAR与RGB传感器无需靶标，是激光雷达+相机融合位姿估计的关键前置能力",
+      "tldr_en": "LiREC-Net jointly calibrates multiple LiDAR-RGB-event sensor pairs in a unified learning framework using a shared LiDAR representation without requiring a calibration target.",
+      "tldr_cn": "多传感器融合的前提是精确标定，而现有学习方法一般只标定一对双模态传感器且依赖靶标。LiREC-Net提出免靶标、可学习的统一标定网络，能够在同一框架中对LiDAR、RGB和事件相机的多个传感器对进行联合标定。网络通过共享LiDAR表示降低冗余计算并提高特征效率，仅需自然驾驶场景即可完成精确多模态对齐。该工作可作为LiDAR与相机数据相对位姿估计系统的传感器配准步骤，支撑后续空间目标融合测量流程。",
+      "title_zh": "LiREC-Net：面向LiDAR、RGB与事件数据的无靶标学习标定网络",
+      "motivation_cn": "现有双模态标定方法难以扩展到多传感器系统，且靶标依赖限定了应用场景。",
+      "method_cn": "在统一网络中用共享LiDAR表示联合标定多个LiDAR、RGB与事件传感器对，目标为免靶标的端到端相对外参回归。",
+      "result_cn": "无需靶标即可高精度对齐自然场景中的多传感器对，并降低冗余计算，提升效率。",
+      "conclusion_cn": "无靶标联合标定可简化多模态传感系统标定流程，是LiDAR与相机融合感知的重要组成部分。",
+      "matched_requirement_id": "req-8",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?"
+    },
+    {
+      "paper_id": "cvpr-2026-yoon-egoxtreme-a-dataset-for-robust-object-pose-estimation-in-egocentric-cvpr-2026-paper",
+      "score": 6.0,
+      "evidence_en": "Egocentric 6D object pose dataset with extreme imaging conditions; transferable for constructing/evaluating robust spacecraft pose datasets",
+      "evidence_cn": "构建了含极端视觉条件的自视角6D位姿数据集，可为航天器位姿估计算法训练与评估提供数据集设计参考",
+      "canonical_evidence": "构建了含极端视觉条件的自视角6D位姿数据集，可为航天器位姿估计算法训练与评估提供数据集设计参考",
+      "tldr_en": "EgoXtreme presents a large egocentric 6D object pose dataset focused on motion blur, dynamic illumination, and obstructions, closing the gap between controlled lab data and real-world use and offering a challenging training/benchmark resource.",
+      "tldr_cn": "现有6D物体位姿估计基准多在受控条件下采集，不能覆盖真实应用中常见的严重运动模糊、动态光照和遮挡，导致模型泛化受限。为此作者提出EgoXtreme，这是一个完全从自视角采集的大规模6D位姿数据集，包含三类挑战性场景。该数据集用于训练和评测鲁棒位姿模型，能更好地体现真实应用与实验室数据的差距。这项工作可为构建航天器位姿估计的复杂场景数据集提供借鉴。",
+      "title_zh": "EgoXtreme：极端条件下自视角鲁棒物体位姿估计数据集",
+      "motivation_cn": "现有6D位姿数据集无法体现自视角应用中的运动模糊、动态光照与遮挡，制约了鲁棒位姿估计的真实应用。",
+      "method_cn": "从自视角大规模采集构造EgoXtreme数据集，覆盖多种挑战性成像条件以支撑6D位姿估计训练与基准测试。",
+      "result_cn": "该数据集能呈现真实应用与受控实验室数据间的显著差距，为鲁棒模型评估提供更有难度的测试平台。",
+      "conclusion_cn": "通过推进真实复杂条件下的位姿估计评测，本数据集对航天器等高价值目标的鲁棒位姿算法研究有参考意义。",
+      "matched_requirement_id": "req-5",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "datasets used for training and evaluating spacecraft pose estimation algorithms"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-tw8ps0yirx",
+      "score": 6.0,
+      "evidence_en": "Benchmark for 6D pose estimation with metallic symmetric objects, occlusion and dense clutter; provides transferable evaluation protocol for deep-learning pose accuracy under realistic complexity",
+      "evidence_cn": "提出了工业分拣6D位姿评测基准，其强遮挡、金属对称目标等设计可作为航天器深度学习位姿精度评估方法参考",
+      "canonical_evidence": "提出了工业分拣6D位姿评测基准，其强遮挡、金属对称目标等设计可作为航天器深度学习位姿精度评估方法参考",
+      "tldr_en": "XYZ-IBD is a 6D pose estimation benchmark for real-world bin picking with reflective metallic and mostly symmetric objects, severe occlusion, dense clutter and millimeter annotations to challenge current methods beyond saturated household datasets.",
+      "tldr_cn": "现有6D位姿估计基准多集中于接近饱和的家用物体，难以反映复杂工业场景中的真实难点。XYZ-IBD构建了面向抓取场景的6D位姿基准，包含金属、强反光及多对称物体，并具有毫米级标注和很强遮挡与堆叠。该基准用于评测现有深度学习位姿算法在真实复杂性下的表现，暴露工业应用中尚未解决的目标。其评测思路可迁移到航天器位姿估计精度评估，特别是在纹理弱、对称性强等场景中。",
+      "title_zh": "XYZ-IBD：面向真实工业复杂性的鲁棒6D目标位姿估计基准",
+      "motivation_cn": "现有6D位姿基准在家用物体上接近饱和，缺少工业级反射、遮挡和杂乱堆叠的真实挑战。",
+      "method_cn": "构建XYZ-IBD数据集，采集金属多对称物体的高密度遮挡分拣场景并提供毫米级精确标注，建立6D鲁棒位姿评测基准。",
+      "result_cn": "该基准暴露出复杂工业视觉下尚未解决的位姿估计问题，可有效区分现有方法的真实性能。",
+      "conclusion_cn": "通过复杂条件下的标准评测推动6D位姿估计落地应用，亦可为航天器位姿评估基准设计提供借鉴。",
+      "matched_requirement_id": "req-9",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to evaluate deep learning based spacecraft pose estimation accuracy?"
+    },
+    {
+      "paper_id": "cvpr-2026-cheng-pilot-neural-pixel-to-3d-registration-for-uav-based-ego-and-target-geo-localization-cvpr-2026-paper",
+      "score": 6.0,
+      "evidence_en": "Monocular pixel-to-3D registration for simultaneous ego and target geo-localization, analogous to spacecraft-target relative pose determination.",
+      "evidence_cn": "单目视频到三维地图的像素注册实现自身与目标定位，类比航天器与目标的相对位姿确定。",
+      "canonical_evidence": "单目视频到三维地图的像素注册实现自身与目标定位，类比航天器与目标的相对位姿确定。",
+      "tldr_en": "PiLoT registers live UAV video against a geo-referenced 3D map to jointly estimate ego and target geo-localization, avoiding GNSS and active sensors. A dual-thread engine keeps real-time accuracy, and the monocular pixel-to-3D registration idea can transfer to spacecraft-target relative pose determination.",
+      "tldr_cn": "面向无人机自身与目标地理定位的已有方法常依赖GNSS与视觉惯性里程计等分离式流程，在GNSS缺失环境中易失效。PiLoT提出将实时视频流直接与地理参考三维地图进行神经像素到3D注册，同时估计自身位置姿态与目标位置，并采用双线程引擎分离地图渲染与定位计算以降低延迟。实验显示该方法能够在保持实时性的同时取得鲁棒和准确的定位结果，为视觉相对定位问题提供了一种可迁移的单目注册方案。",
+      "title_zh": "PiLoT：面向无人机自身与目标地理定位的神经像素到三维注册",
+      "motivation_cn": "现有无人机自身与目标地理定位依赖GNSS和视觉惯性里程计解耦流水线，易在GNSS拒止环境失效且硬件成本高。",
+      "method_cn": "提出PiLoT，将实时视频流直接与地理参考三维地图做像素到三维注册，同时估计自身与目标定位，并用双线程引擎加速。",
+      "result_cn": "在保持实时定位能力的同时获得鲁棒准确的地理定位结果，表明不依赖GNSS的像素到三维注册可行。",
+      "conclusion_cn": "PiLoT为无人机目标定位提供了GNSS拒止环境下的统一单目注册范式，其思路可延伸至航天器相对位姿估计。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-rmda02o8mv",
+      "score": 6.0,
+      "evidence_en": "Feed-forward camera localization from a collection of image features with fast on-the-fly mapping; transferable to camera pose estimation relative to a pre-mapped target/scene.",
+      "evidence_cn": "利用图像特征集合前馈估计实时相机位姿；可迁移到基于预先地图的航天器相对相机位姿估计。",
+      "canonical_evidence": "利用图像特征集合前馈估计实时相机位姿；可迁移到基于预先地图的航天器相对相机位姿估计。",
+      "tldr_en": "FastForward builds a map representation from a collection of anchored image features and relocalizes a query image in one feed-forward pass, avoiding hours of mapping and iterative optimization. It achieves competitive camera pose accuracy in seconds, enabling fast map-based camera pose estimation for target-relative localization.",
+      "tldr_cn": "现有视觉定位系统即使已知建图图像位姿，最快仍需数分钟构建地图，难以满足即时使用。FastForward提出用一组锚定在场景坐标系中的图像特征集合直接作为地图表示，并通过单次前馈网络完成查询图像重定位，避免显式重建和迭代优化。所提方法在数秒级时间内即可建立可用的地图，查询帧的相机位姿精度与既往方法相当。这为快速地图生成与相机相对定位提供了新思路，也可服务于航天器近距操作中的目标-相机相对位姿解算。",
+      "title_zh": "一景千特征：基于图像特征集合的前馈相机定位",
+      "motivation_cn": "现有视觉定位系统的建图阶段耗时较长，即使是已知姿态的建图图像也需要数分钟到数小时。",
+      "method_cn": "提出FastForward，用一组图像特征集合构建地图表示，并以前馈网络直接对查询图像回归相机位姿，省去迭代优化。",
+      "result_cn": "结果显示地图构建与重定位可在秒级完成，精度与现有方法相当。",
+      "conclusion_cn": "快速前馈的地图表示与定位方式可降低视觉重定位延迟，对航天器在轨服务中的相对定位有借鉴价值。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target"
+    },
+    {
+      "paper_id": "cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper",
+      "score": 6.0,
+      "evidence_en": "Unsupervised domain adaptation pose estimation optimization that stabilizes synthetic-to-real transfer, a key need for robust spacecraft pose estimation",
+      "evidence_cn": "面向域自适应的姿态估计优化框架，可支撑航天器位姿估计合成数据向真实数据的稳健迁移",
+      "canonical_evidence": "面向域自适应的姿态估计优化框架，可支撑航天器位姿估计合成数据向真实数据的稳健迁移",
+      "tldr_en": "HamiPose stabilizes unsupervised domain adaptive pose estimation by transporting decoupled, confidence-calibrated gradients in a unified Hamiltonian geometry, reducing source-target gradient interference and improving cross-domain transfer for keypoint-based pose models.",
+      "tldr_cn": "无监督域自适应的姿态估计在从合成域迁移到真实域时，常因源监督与目标一致性梯度相互干扰而不稳定。为此本文提出HamiPose框架，将解耦并置信度校准的梯度在统一哈密顿几何中传输，并对关键点局部几何进行分解以细化梯度交互。实验显示该方法有效减轻域偏移引起的更新振荡，提升了跨域姿态估计的稳定性和精度。这项工作为含稀疏定位监督的位姿类任务提供了一种通用而稳健的训练范式。",
+      "title_zh": "HamiPose：用于无监督域自适应姿态估计的哈密顿优化",
+      "motivation_cn": "无监督域自适应的位姿估计在合成到真实域迁移时，源监督和目标一致性梯度相互干扰，导致更新不稳定。",
+      "method_cn": "提出HamiPose哈密顿优化框架，将解耦且置信度校准后的梯度在统一几何空间中传输，并通过关键点几何分解细化梯度交互。",
+      "result_cn": "实验表明HamiPose能有效抑制域偏移下的梯度振荡，提升跨域位姿估计的精度与稳定性。",
+      "conclusion_cn": "为关键点式位姿估计的域自适应提供了一种稳健的通用训练范式，可迁移到航天器合成数据训练等任务。",
+      "matched_requirement_id": "req-composite-pe",
+      "matched_query_tag": "query:pe:composite",
+      "matched_query_text": "Papers central to 航天器位姿估计, especially work that connects or combines: methods for determining the position and orientation of a spacecraft relative to a target; estimation of spacecraft orientation from sensor measurements; determination of relative position and orientation between two spacecraft or a spacecraft and target; pose estimation using a single camera image for space applications; datasets used for training and evaluating spacecraft pose estimation algorithms; How to perform spacecraft pose estimation from monocular imagery?; What methods are used for robust pose estimation of uncooperative spacecraft?; How to combine lidar and camera data for spacecraft relative pose estimation?; How to evaluate deep learning based spacecraft pose estimation accuracy?."
+    },
+    {
+      "paper_id": "openreview-iclr-2026-nxaw2sruzd",
+      "score": 5.0,
+      "evidence_en": "Self-supervised category-level articulated object pose estimation from one RGB image; relevant to monocular pose estimation methods",
+      "evidence_cn": "基于单张RGB图像的自监督类别级关节物体位姿估计，其方法思路适用于单目位姿估计",
+      "canonical_evidence": "基于单张RGB图像的自监督类别级关节物体位姿估计，其方法思路适用于单目位姿估计",
+      "tldr_en": "ReCAP adapts a pre-trained foundation model to articulated category-level pose estimation from one RGB image using a recursive prompt generator with residual injection, adding less than 1% parameters and avoiding dense annotations and RGB-D dependencies.",
+      "tldr_cn": "关节物体位姿估计常依赖昂贵标注或RGB-D等辅助信息，单目RGB图像下仍未很好解决。ReCAP通过递归提示生成器与残差注入适配预训练基础模型，仅增加不到1%参数即可完成自监督类别级关节物体位姿估计。该方法避免稠密标注和深度几何约束，具有较强的可扩展性。其从单张图像估计物体的思路可迁移至航天器部件位姿估计场景。",
+      "title_zh": "ReCAP：通过递归提示实现单目图像自监督类别级关节物体姿态估计",
+      "motivation_cn": "单目RGB图像下的关节物体位姿估计仍受限于标注成本或对深度等辅助信号的依赖，缺乏可扩展性。",
+      "method_cn": "提出ReCAP，用递归提示生成器结合残差注入微调预训练基础模型，以极低参数开销实现单目自监督位姿估计。",
+      "result_cn": "仅用少量额外参数即可完成自监督类别级关节位姿估计，减少了对标注与RGB-D依赖。",
+      "conclusion_cn": "展示递归提示策略可高效泛化基础模型到新位姿任务，适用图像级物体位姿估计。",
+      "matched_requirement_id": "req-6",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?"
+    },
+    {
+      "paper_id": "cvpr-2026-wu-leader-learning-reliable-local-to-global-correspondences-for-lidar-relocalization-cvpr-2026-paper",
+      "score": 5.0,
+      "evidence_en": "Robust LiDAR relocalization with 6-DoF pose regression and reliable local-to-global correspondence learning; useful for lidar-based relative pose estimation approaches",
+      "evidence_cn": "鲁棒激光雷达重定位结合6自由度位姿回归与可靠局部-全局对应学习，可用于基于激光雷达的位姿估计方法",
+      "canonical_evidence": "鲁棒激光雷达重定位结合6自由度位姿回归与可靠局部-全局对应学习，可用于基于激光雷达的位姿估计方法",
+      "tldr_en": "LEADER enhances LiDAR relocalization with a robust projection-based geometric encoder that captures multi-scale geometric features and learns reliable local-to-global correspondences for accurate 6-DoF pose prediction while being robust to noise and outliers.",
+      "tldr_cn": "在复杂三维场景中，基于深度回归的激光雷达重定位常因对噪声和离群点一视同仁而精度有限。LEADER提出鲁棒投影式几何编码器，捕获多尺度几何特征以增强描述，并通过可靠局部到全局对应学习提升6自由度位姿预测。实验显示其在挑战性场景中较现有回归方法更稳健。该对应学习方法可用于基于点云模型的航天器相对位姿估计。",
+      "title_zh": "LEADER：学习可靠局部到全局对应以实现激光雷达重定位",
+      "motivation_cn": "激光雷达重定位回归方法在复杂场景中对噪声离群点敏感，等权处理所有点导致位姿预测不稳定。",
+      "method_cn": "提出带鲁棒投影式几何编码器的LEADER框架，提取多尺度几何特征并学习可靠局部到全局对应来回归6自由度位姿。",
+      "result_cn": "在挑战场景下比已有回归方法更准确稳健地估计激光雷达6自由度位姿。",
+      "conclusion_cn": "验证了强几何描述与可靠对应学习对鲁棒激光雷达位姿回归的有效性，可迁移至点云目标位姿估计。",
+      "matched_requirement_id": "req-8",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?"
+    },
+    {
+      "paper_id": "cvpr-2026-liu-streamvlo-streaming-visual-lidar-odometry-with-cumulative-drift-compensation-cvpr-2026-paper",
+      "score": 5.0,
+      "evidence_en": "Unified visual-LiDAR fusion for streaming pose estimation with drift compensation, methodologically transferable to spacecraft relative pose sensor fusion",
+      "evidence_cn": "融合视觉与LiDAR进行流式位姿估计并抑制漂移，可作为航天器相对位姿估计中相机与激光雷达融合方法的借鉴",
+      "canonical_evidence": "融合视觉与LiDAR进行流式位姿估计并抑制漂移，可作为航天器相对位姿估计中相机与激光雷达融合方法的借鉴",
+      "tldr_en": "StreamVLO uses Mamba-based unified spatio-temporal correlation to fuse visual and LiDAR observations across clips and introduces online cumulative drift compensation, yielding more accurate localization in 4D dynamic environments.",
+      "tldr_cn": "视觉-激光雷达里程计常局限于成对帧时序建模，在4D动态环境中容易累积漂移。文章提出StreamVLO，以Mamba构建跨多帧的统一时空相关模块融合异构视觉与LiDAR特征，并通过因果式残差学习在线补偿累计漂移。实验表明该方法增强了动态环境下的定位稳定性，降低了长时漂移。该融合与补偿思路可迁移到航天器相对位姿估计中的相机与激光雷达联合任务。",
+      "title_zh": "StreamVLO：流式视觉-激光雷达里程计与累积漂移补偿",
+      "motivation_cn": "现有视觉-激光雷达位姿估计方法时序探索有限，且长时定位存在累积漂移问题。",
+      "method_cn": "StreamVLO采用Mamba统一时空相关融合视觉与LiDAR多帧信息，并用在线累积漂移补偿迭代修正历史帧残差。",
+      "result_cn": "动态4D环境中的定位漂移得到抑制，显著位置特征表示增强，里程计精度与鲁棒性提高。",
+      "conclusion_cn": "为视觉与激光雷达联合位姿估计提供了新的流式框架，可为多传感器航天器相对导航提供方法参考。",
+      "matched_requirement_id": "req-8",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?"
+    },
+    {
+      "paper_id": "aaai-2026-38061",
+      "score": 5.0,
+      "evidence_en": "End-to-end monocular dense SLAM jointly estimating camera pose, depth and geometry; provides reusable techniques for monocular spacecraft pose estimation",
+      "evidence_cn": "基于单目图像的稠密SLAM同时估计位姿与深度，可作为单目航天器相对位姿估计的技术参考",
+      "canonical_evidence": "基于单目图像的稠密SLAM同时估计位姿与深度，可作为单目航天器相对位姿估计的技术参考",
+      "tldr_en": "FoundationSLAM is a learning-based monocular dense SLAM system that injects depth foundation model guidance into a hybrid flow network, jointly optimizing keyframe poses and depths through bundle adjustment for more geometrically consistent tracking and mapping.",
+      "tldr_cn": "基于光流的单目稠密SLAM缺少几何一致性，导致位姿与深度估计在跨关键帧时不够稳定。FoundationSLAM利用深度基础模型引导混合光流网络产生几何感知对应，并提出双一致束调整层联合优化关键帧位姿与深度，同时引入可靠性感知精化模块。实验显示其在单目跟踪与稠密建图上的几何一致性与鲁棒性相比先前方法显著提升。该框架为单目相机在空间环境中的位姿估计提供了可借鉴的深度-几何结合范式。",
+      "title_zh": "FoundationSLAM：利用深度基础模型实现端到端稠密单目SLAM",
+      "motivation_cn": "单目稠密SLAM中纯光流方法缺乏几何一致性，跟踪与建图精度和鲁棒性受限。",
+      "method_cn": "提出以深度基础模型引导混合光流网络，并用双一致束调整层联合优化关键帧位姿与深度，附可靠性感知精化。",
+      "result_cn": "跨关键帧的深度与位姿估计更具一致性，单目稠密SLAM的准确性和鲁棒性得到增强。",
+      "conclusion_cn": "探索基础深度模型结合几何优化进行单目定位与建图，可为空间目标单目位姿估计提供重要支撑。",
+      "matched_requirement_id": "req-6",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-w09tbdycls",
+      "score": 5.0,
+      "evidence_en": "End-to-end monocular visual odometry predicting per-frame camera pose from image sequences; relevant baseline for monocular spacecraft relative motion estimation.",
+      "evidence_cn": "端到端单目视觉里程计逐帧预测相机位姿；可为航天器单目相对运动估计提供基线方法。",
+      "canonical_evidence": "端到端单目视觉里程计逐帧预测相机位姿；可为航天器单目相对运动估计提供基线方法。",
+      "tldr_en": "This work demonstrates that monocular visual odometry can be solved end-to-end with transformers, directly predicting per-frame camera pose without bundle adjustment or handcrafted components. It simplifies calibration and hyperparameter dependence while achieving competitive accuracy in real-world scenes, providing a reusable approach for monocular pose regression in space navigation.",
+      "tldr_cn": "传统单目视觉里程计依赖复杂的标定与优化模块，难以在未知真实场景中推广。本文提出基于Transformer的端到端单目视觉里程计方法，直接预测逐帧相机位姿，省去BA等人工设计组件。在标准视觉里程计基准上，该方法匹配或超越复杂流水线的精度，同时简化了标定依赖。研究展示了长序列与逐帧估计的可行性，可为航天器单目导航中的相对运动估计提供端到端方案。",
+      "title_zh": "基于Transformer的视觉里程计",
+      "motivation_cn": "传统单目视觉里程计流水线复杂、依赖相机标定和超参数，泛化到未知场景困难。",
+      "method_cn": "提出基于Transformer的端到端视觉里程计，直接由单目视频预测逐帧相机位姿，消除BA等手工优化模块。",
+      "result_cn": "在基准上证明了端到端方法能够保持良好精度并简化流程，支持长时间序列估计。",
+      "conclusion_cn": "该工作说明单目视觉里程计可被端到端建模，为基于图像序列的航天器相对运动估计提供了可借鉴途径。",
+      "matched_requirement_id": "req-6",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?"
+    },
+    {
+      "paper_id": "cvpr-2026-tse-learning-scene-coordinate-reconstruction-from-unposed-images-via-pose-graph-cvpr-2026-paper",
+      "score": 5.0,
+      "evidence_en": "Scene coordinate reconstruction and camera pose refinement from unposed images via pose graph optimization; model-free mapping for camera-to-target pose localization.",
+      "evidence_cn": "无位姿图像的场景坐标重建与位姿图优化修正相机位姿；可支持基于三维模型的目标相对定位。",
+      "canonical_evidence": "无位姿图像的场景坐标重建与位姿图优化修正相机位姿；可支持基于三维模型的目标相对定位。",
+      "tldr_en": "Scene coordinate reconstruction models such as ACE-Zero suffer from pose drift without global consistency. This work integrates pose graph optimization into ACE-Zero, extracting relative constraints from predicted coordinates and using uncertainty-aware refinement to correct camera poses in complex scenes. It demonstrates improved global consistency for map-based camera localization.",
+      "tldr_cn": "无监督学习框架ACE-Zero在估计相机位姿与场景坐标时缺少全局和多视图一致性约束，容易产生漂移和误校正。本文将位姿图优化引入ACE-Zero，从预测场景坐标中提取相对位姿约束构建位姿图，并设计不确定性感知的优化策略以抑制错误修正。实验表明混合框架能在复杂场景下改进相机位姿精度并降低累积漂移。由此显示位姿图正则化可直接服务于图像地图构建和面向目标的相机定位，对航天器相对位姿估计有借鉴意义。",
+      "title_zh": "通过位姿图优化从无位姿图像学习场景坐标重建",
+      "motivation_cn": "现有无监督场景坐标重建与相机位姿估计缺乏全局一致约束，复杂场景下易出现漂移和误校正。",
+      "method_cn": "提出将位姿图优化与ACE-Zero结合，由预测场景坐标提取相对位姿约束，并采用不确定性加权优化来修正相机位姿。",
+      "result_cn": "在场景坐标重建实验中，相机位姿精度提升，误校正与漂移得到抑制。",
+      "conclusion_cn": "证明基于场景坐标的位姿图优化能提升无监督SfM的稳健性，可迁移到基于地图的目标相对定位。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-xwfxj38jet",
+      "score": 4.0,
+      "evidence_en": "Unified visual-LiDAR spatio-temporal fusion and drift compensation, relevant to combining lidar and camera data for relative pose estimation",
+      "evidence_cn": "视觉与激光雷达时空融合及漂移补偿方法，可供相机-激光雷达相对位姿估计的多模态融合借鉴",
+      "canonical_evidence": "视觉与激光雷达时空融合及漂移补偿方法，可供相机-激光雷达相对位姿估计的多模态融合借鉴",
+      "tldr_en": "ST-VLO fuses visual and LiDAR observations across frames with Mamba and iteratively learns drift corrections, improving odometry accuracy in dynamic 4D environments; useful for combining lidar and camera data in relative navigation.",
+      "tldr_cn": "针对视觉-激光雷达里程计的时间信息利用不足和累积漂移问题，提出ST-VLO，采用Mamba建立跨帧视觉与激光雷达的统一时空相关模块，并设计了学习修正残差的时间漂移补偿模块。该方法在4D动态环境定位中有效缓解了长期误差累积。实验表明其定位精度和稳定性优于逐对融合方法。多模态时空融合思想可为航天器交会中的相机与激光雷达组合相对位姿估计提供参考。",
+      "title_zh": "ST-VLO：具有时间漂移补偿的视觉-激光雷达里程计统一时空关联",
+      "motivation_cn": "现有视觉-激光雷达里程计多采用成对帧融合，忽视多帧时间信息且累积漂移严重。",
+      "method_cn": "用Mamba统一建模跨帧视觉与LiDAR时空相关，并通过迭代学习残差进行时间漂移补偿。",
+      "result_cn": "在动态环境视觉-激光雷达里程计基准上有效降低累积漂移、提升定位稳定性。",
+      "conclusion_cn": "说明多帧时空相关与漂移补偿对多模态里程计重要，可迁移到航天器多传感器相对导航。",
+      "matched_requirement_id": "req-8",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?"
+    },
+    {
+      "paper_id": "openreview-iclr-2026-jqnzdvoxsl",
+      "score": 4.0,
+      "evidence_en": "Fast relative camera pose regression improved by geometric consistency regularization; useful generic building block for monocular relative pose estimation",
+      "evidence_cn": "用几何一致性正则化提升相对相机位姿回归，可作为单目相对位姿估计的通用技术组件",
+      "canonical_evidence": "用几何一致性正则化提升相对相机位姿回归，可作为单目相对位姿估计的通用技术组件",
+      "tldr_en": "GeLoc3r enhances regression-based relative camera pose estimation with geometric consistency regularization using ground-truth depth, closing the speed-accuracy gap of 25ms inference; relevant to efficient monocular relative pose pipelines.",
+      "tldr_cn": "针对回归式相对相机位姿估计虽快但精度低于特征对应点方法的问题，提出GeLoc3r，在训练时用真值深度生成稠密三维几何约束，并施加几何一致性正则化，使网络输出几何一致的位姿且推理期无需额外几何计算。实验表明该方法在保持毫秒级推理速度的同时接近对应点法的精度。该思路可服务于航天器交会中基于单目图像的高效相对位姿回归与验证。",
+      "title_zh": "GeLoc3r：利用几何一致性正则化增强相对相机位姿回归",
+      "motivation_cn": "相对相机位姿回归网络内部表示存在几何不一致，难以达到对应点方法的精度上限。",
+      "method_cn": "提出GeLoc3r，通过训练阶段的几何一致性正则化和真值深度生成的稠密三维约束优化回归网络。",
+      "result_cn": "在保持约25毫秒快速推理的同时使回归精度接近对应点类方法。",
+      "conclusion_cn": "表明将几何一致性嵌入训练可有效缓解位姿回归的速度-精度两难问题。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target"
+    },
+    {
+      "paper_id": "aaai-2026-37643",
+      "score": 4.0,
+      "evidence_en": "Deep LiDAR odometry that estimates relative pose with generalized coordinates; relative pose determination methodology may transfer, though target application is not spacecraft",
+      "evidence_cn": "深度激光雷达里程计估计传感器间的相对位姿，方法可迁移至航天器与目标相对位姿求定，但并非航天应用",
+      "canonical_evidence": "深度激光雷达里程计估计传感器间的相对位姿，方法可迁移至航天器与目标相对位姿求定，但并非航天应用",
+      "tldr_en": "RCP-LO addresses the poor generalization of learned LiDAR odometry by reformulating relative pose as relative coordinates solvable via geometric verification, avoiding oversimplified pose regression and improving cross-scene performance.",
+      "tldr_cn": "基于深度学习的激光雷达里程计在不同场景间泛化困难，在KITTI上训练的模型应用到新环境时精度明显下降。RCP-LO将相对位姿建模为相对坐标，并通过几何验证来求解，降低了简化姿态表征所带来的过拟合。实验显示该方法能显著提升跨场景相对位姿估计的泛化性能，减少性能衰退。该工作对基于点云的相对导航与定位提供了一种简单有效的方案。",
+      "title_zh": "RCP-LO：面向可泛化深度激光雷达里程计的相对坐标预测框架",
+      "motivation_cn": "现有端到端深度学习激光雷达里程计在跨场景迁移时泛化性能下降明显，位姿表征过于简化是关键原因。",
+      "method_cn": "RCP-LO将相对位姿重新表示为相对坐标，用几何验证求解，设计简单有效的回归框架避免单一过度简化表示。",
+      "result_cn": "跨数据集和跨场景实验表明，其泛化性显著优于现有方法，性能下降幅度更小。",
+      "conclusion_cn": "为点云相对位姿估计提供了可泛化表示与几何验证手段，可作为激光雷达相对导航任务的参考。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target"
+    }
+  ],
+  "llm_ranked_at": "2026-09-07T06:59:26.349144+00:00",
+  "display_min_score": 4.0,
+  "pruned_at": "2026-09-07T06:59:26.386170+00:00"
+}

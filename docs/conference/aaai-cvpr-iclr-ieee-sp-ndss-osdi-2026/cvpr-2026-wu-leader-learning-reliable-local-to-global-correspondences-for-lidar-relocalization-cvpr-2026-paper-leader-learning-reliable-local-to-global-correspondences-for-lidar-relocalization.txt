@@ -1,0 +1,457 @@
+Title: LEADER: Learning Reliable Local-to-Global Correspondences for LiDAR Relocalization
+
+URL Source: https://openaccess.thecvf.com/content/CVPR2026/papers/Wu_LEADER_Learning_Reliable_Local-to-Global_Correspondences_for_LiDAR_Relocalization_CVPR_2026_paper.pdf
+
+Published Time: Sat, 16 May 2026 16:47:25 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# LEADER: Learning Reliable Local-to-Global Correspondences for LiDAR Relocalization 
+
+# Jianshi Wu 1,2 Minghang Zhu 1,2 Dunqiang Liu 1,2 Wen Li 3 Sheng Ao 1,2,†
+
+# Siqi Shen 1,2 Chenglu Wen 1,2 Cheng Wang 1,21Fujian Key Laboratory of Urban Intelligent Sensing and Computing 
+
+> 2
+
+# Key Laboratory of Multimedia Trusted Perception and Efficient Computing, Ministry of Education of China, School of Informatics, Xiamen University, China 
+
+> 3
+
+# School of Engineering Mathematics and Technology, University of Bristol 
+
+# Abstract 
+
+LiDAR relocalization has attracted increasing attention as it can deliver accurate 6-DoF pose estimation in complex 3D environments. Recent learning-based regression methods offer efficient solutions by directly predicting global poses without the need for explicit map storage. However, these methods often struggle in challenging scenes due to their equal treatment of all predicted points, which is vulnerable to noise and outliers. In this paper, we propose LEADER, a robust LiDAR-based relocalization framework enhanced by a simple, yet effective geometric encoder. Specifically, a Robust Projection-based Geometric Encoder architecture which captures multi-scale geometric features is first pre-sented to enhance descriptiveness in geometric representa-tion. A Truncated Relative Reliability loss is then formulated to model point-wise ambiguity and mitigate the influence of unreliable predictions. Extensive experiments on the Oxford RobotCar and NCLT datasets demonstrate that LEADER outperforms state-of-the-art methods, achieving 24.1% and 73.9% relative reductions in position error over existing techniques, respectively. The source code is released on 
+
+https://github.com/JiansW/LEADER .
+
+# 1. Introduction 
+
+LiDAR-based relocalization plays an important role in robotics [22, 38, 41], autonomous driving [11, 23, 40], and virtual reality [64, 67]. Given a single LiDAR scan, LiDAR-based relocalization aims to estimate the 6 degree-of-freedom (6-DoF) pose of the sensor in the world coordi-nate system [37, 50, 61], especially in environments where GNSS is unreliable or unavailable. However, this is highly challenging due to large viewpoint variations and textureless       
+
+> †Corresponding author. 0123456
+> Mean Position Error on Oxford (m)
+> 0123456
+> Mean Position Error on NCLT (m)
+> PosePN++ HypLiLoc DiffLoc SGLoc LiSA LightLoc Ours
+> PosePN++ HypLiLoc DiffLoc SGLoc LiSA LightLoc Ours
+
+Figure 1. Mean position error comparisons on NCLT and Oxford dataset. Our method achieves superior relocalization accuracy on both datasets. 
+
+areas. Currently, most methods follow the “retrieval-then-registration” paradigm [28, 45, 59], which first retrieves candidate point clouds based on feature similarity [66] and then estimates the 6-DoF pose through point cloud regis-tration [2–4]. However, this relocalization method poses high demands on storage and communication resources, es-pecially for city-scale maps, making it difficult to achieve efficient relocalization [63]. Learning-based regression, which encodes scene infor-mation through neural networks, has been shown to be a promising direction for addressing these challenges [63]. These methods can be divided into two categories: Absolute Pose Regression (APR) [26, 35, 56] and Scene Coordinate Regression (SCR) [7–9, 34, 36]. APR directly predicts the global pose in an end-to-end fashion. In contrast, SCR esti-mates point correspondences between the current scan and a surrogate point cloud in world coordinates, then recovers This CVPR paper is the Open Access version, provided by the Computer Vision Foundation. Except for this watermark, it is identical to the accepted version; the final published version of the proceedings is available on IEEE Xplore. 9932 the global 6-DoF pose via hypothesis verification methods such as RANSAC (Random Sample Consensus [18]). Due to explicitly incorporating geometric constraints, SCR meth-ods typically achieve superior accuracy compared with APR methods. However, LiDAR relocalization faces two major chal-lenges, particularly in autonomous driving scenarios: First ,vehicles may undergo yaw rotations during driving, not al-ways maintain a fixed orientation; Second , many scene el-ements are inherently unreliable for relocalization, as not all structures in the environment provide stable cues. As a result, current SCR methods struggle to robustly handle these challenges due to two main reasons: 1) their network architectures are not inherently robust to yaw variations, resulting in inconsistent predictions under varying view-points; 2) they produce erroneous correspondences against degenerate scene regions, thereby degrading relocalization performance [24, 25, 69]. In this paper, we propose LEADER, a simple yet ef-fective SCR framework designed to address the aforemen-tioned challenges in correspondence estimation. Our ap-proach consists of two key components: 1) a robust yaw-invariant geometric encoder that generates rotation-resistant scene representations to handle yaw variations, and 2) an integrated unreliability quantification mechanism to assess point correspondence quality. In particular, we introduce a Robust Projection-based Geometric Encoder that extracts multi-scale features enhanced through projection and cyclic convolution operations, thereby strengthening representa-tion capability and yaw invariance. This is further comple-mented by a Truncated Relative Reliability loss that models point-wise reliability, effectively mitigating the influence of unreliable predictions. During inference, high-reliability correspondences are used to drive RANSAC-based pose estimation. Extensive experiments demonstrate that the pro-posed LEADER achieves superior relocalization accuracy compared with state-of-the-art methods, as shown in Fig. 1. Overall, our contributions are three-fold: • A Robust Projection-based Geometric Encoder enhanc-ing resilience to yaw variations in scene representation learning. • A Truncated Relative Reliability loss mitigating error prop-agation from degenerate regions while enabling the quality estimation of point correspondences. • State-of-the-art performance with 24.1% and 73.9% rel-ative position error reductions on Oxford RobotCar and NCLT datasets respectively. 
+
+# 2. Related work 
+
+2.1. Traditional relocalization 
+
+Conventional relocalization methods primarily rely on ex-plicit representations. Retrieval-based approaches [5, 30, 33, 52, 53, 58] identify the most similar frame from prebuilt databases, achieving fast computation at the cost of limited accuracy due to discrete pose sampling. Matching-based methods [14, 15, 20, 47, 48, 57] formulate relocalization as point cloud registration problems by establishing corre-spondences between frames. However, these approaches require storing dense point cloud maps, resulting in substan-tial storage overhead that poses challenges for large-scale deployment. 
+
+2.2. Absolute Pose Regression (APR) 
+
+With advancements in hardware and deep learning, neural networks have been increasingly adopted for relocalization. Absolute Pose Regression (APR) [12, 35, 55, 56, 65] elimi-nates explicit map storage by learning implicit scene repre-sentations through end-to-end pose estimation. Pioneered by PoseNet [25] in visual relocalization, this paradigm was first adapted to LiDAR data through PointLoc [56], which employs convolutional networks to directly regress 6-DoF poses from raw point clouds. Recent work DiffLoc [35] in-troduces diffusion models [51, 54] to refine pose predictions via iterative denoising, establishing the current state-of-the-art in APR-based LiDAR relocalization. 
+
+2.3. Scene Coordinate Regression (SCR) 
+
+As another implicit representation paradigm, Scene Coor-dinate Regression (SCR) [6, 34, 36, 60] differs from APR by decoupling coordinate prediction and pose estimation. SCR methods first regress global 3D coordinates for each scene point using learned features, and subsequently com-pute the optimal transformation via RANSAC-based geomet-ric verification. SGLoc [34] introduces Scene Coordinate Regression in LiDAR-based relocalization, employs sparse convolution to extract 3D features, and employs the Atten-tion [21, 39, 68] mechanism for multilayer feature fusion coding, with accuracy substantially exceeding that of APR methods, while RALoc [62] builds upon SGLoc to further address the rotation challenges in relocalization. The current SCR leader LiSA [60] incorporates semantic [31] priors to differentiate point-wise contributions, demonstrating varying contributions of scene points on final relocalization accuracy. 
+
+# 3. Method 
+
+The proposed framework, LEADER, takes a single LiDAR scan as input and directly outputs a global 6-DoF pose. As shown in Fig. 2, our network is trained end-to-end using the Truncated Relative Reliability loss. During inference, high-reliability correspondences are selected and refined via a RANSAC-based solver to recover the final pose. 
+
+3.1. Robust Projection-based Geometric Encoder 
+
+Our encoder architecture transforms raw point clouds into geometrically enhanced representations resilient to view-9933 Figure 2. The pipeline of the proposed LEADER. Raw point clouds undergo spatial transformation to establish yaw-invariant spatial representations. Hierarchical feature extraction then derives multi-level fused features by cyclic convolution. The Regressor processes features from the Robust Projection-based Geometric Encoder (RPGE) to output predict coordinates and reliability values, followed by Cartesian Recovery. During training, the Truncated Relative Reliability (TRR) loss optimizes predictions against ground truth. During inference, high-reliability points are selected via TRR filtering for robust 6-DoF pose estimation through RANSAC-based estimator. 
+
+point variations, particularly yaw rotations. The processing pipeline consists of two main stages: Spatial Transformation and Hierarchical Feature Extraction, which work collabora-tively to achieve yaw-robust representation learning. 
+
+Spatial Transformation: Given a raw point cloud 
+
+Praw = {pi = ( xi, y i, z i)}Ni=1 and transformation T, we first estimate its ground plane using Patchwork++ [32]. The point cloud is then rectified to the horizontal plane follow-ing [49], yielding the planar rectification matrix Tplane and transformed point cloud P′ = {p′ 
+
+> i
+
+= ( x′
+
+> i
+
+, y ′
+
+> i
+
+, z ′
+
+> i
+
+)}Ni=1 .Subsequently, we apply a geometrically constrained cylin-drical projection inspired by Scan Context [27, 43] and Mer-cator mapping. This transformation converts rectified points into cylindrical coordinates through: 
+
+xp = s · arctan 2( y′, x ′)
+
+yp = px′2 + y′2
+
+zp = z′
+
+⇒ pp 
+
+> i
+
+= ( xp 
+
+> i
+
+, y p 
+
+> i
+
+, z p 
+
+> i
+
+), (1) where scaling factor s controls angular resolution. The pro-jected points pp 
+
+> i
+
+are treated as Cartesian coordinates for subsequent feature extraction. Voxelization with cell size 
+
+δ is then applied to generate a structural representation v.Each voxel is denoted as vx,y,z = ( xv, y v, z v), with circum-ferential resolution of L x = 2 πs/δ . The final point cloud 
+
+Pv retains one point per voxel, establishing a consistent spatial structure for robust feature learning. 
+
+Hierarchical Feature Extraction: We transform the spa-tially transformed point cloud Pv into geometrically robust feature through a multi-scale processing pipeline. To main-tain yaw-invariant representation, we construct the initial feature vector for each point pv 
+
+> i
+
+as fi = [ yv 
+
+> i
+
+, z v 
+
+> i
+
+, I v 
+
+> i
+
+] ∈ R3,with Iv 
+
+> i
+
+representing intensity. These features are intention-ally selected for their independence from yaw variations, thereby preserving rotational invariance in the initial repre-sentation. To address the spatial continuity issue at the yaw bound-aries introduced by cylindrical projection, we employ cyclic sparse convolution with symmetric padding. Specifically, we generate an expanded point set through: 
+
+Pv 
+
+> pad
+
+=Pv ∪ { pv 
+
+> i
+
++ [2 πs, 0, 0] | xv 
+
+> i
+
+< w }∪ { pv 
+
+> i
+
+− [2 πs, 0, 0] | xv 
+
+> i
+
+> Lx − w} , (2) where w represents the convolution kernel width. After convolutional processing, points outside the original range 
+
+[0 , Lx] are discarded, ensuring seamless feature transition across the yaw boundary while maintaining structural conti-nuity. We design a U-Net-style [44, 46] architecture for multi-scale feature fusion. The network follows a UNet-style architecture with five downsampling stages and a single up-sampling stage applied after the fifth downsampling. Each convolutional layer is implemented as a cyclic sparse con-volution to consistently handle cylindrical projection effects. Channel dimensions progressively expand along the down-sampling path as [32,64,128,256,384]. After upsampling 9934 from the fifth stage, the resulting features are concatenated with those from the fourth downsampling stage and projected via a fully connected layer to 512 dimensions, yielding en-riched embeddings that capture both local geometric details and global contextual information. Each downsampling and fusion step is followed by two 3×3 convolutional layers. 
+
+3.2. Multihead Max Regressor 
+
+This module transforms encoded 512-dimensional features into global scene coordinates while recovering Cartesian rep-resentations, ensuring geometrically consistent outputs for subsequent pose estimation. The regression process consists of two sequential stages: multi-layer feature regression and Cartesian coordinate recovery. 
+
+Feature Regression: Given input features F ∈ RN
+
+(N = 512 ) from the encoder, we employ a multi-head pro-jection mechanism defined as: 
+
+F′ = max 
+
+> k
+
+ Reshape k×N (WdF + bd) , (3) where Wd ∈ RkN ×N projects features to kN dimen-sions ( k = 4), followed by reshaping into k parallel 
+
+N -dimensional heads. The max( ·) operation selects the strongest activation per dimension across heads. The regres-sion backbone consists of l = 5 stacked layers implementing Eq. (3), each followed by LayerNorm and LeakyReLU ac-tivation, concluding with a final fully connected layer to output a 4-D features that includes 3-D of scene coordinates 
+
+ˆci = ( xw 
+
+> i
+
+, y w 
+
+> i
+
+, z w 
+
+> i
+
+) in the world frame and 1-D of reliability scores ui, which are essential for the subsequent Truncated Relative Reliability (TRR) loss. 
+
+Cartesian Recovery: To reconstruct original Cartesian coordinates from regressed geometric representations, we in-vert the projection defined in Eq. (1). Continuous coordinates are derived from the voxel centers qx,y,z = ( xq, y q, z q) out-put by the RPGE: 
+
+ˆx = yq cos 
+
+ xq
+
+s
+
+
+
+, ˆy = yq sin 
+
+ xq
+
+s
+
+
+
+, ˆz = zq. (4) The final scene coordinates ˆP = {(ˆ xi, ˆyi, ˆzi)}Mi=1 in Carte-sian space preserve the yaw-robust geometric consistency established by the encoder, thereby completing the transfor-mation from encoded features to geometrically stable world coordinateds. As shown in Fig. 3, distinct density distributions are observed between the point clouds processed via different pipelines. The point cloud that is directly voxelized without any transformation demonstrates a relatively uniform point density. In contrast, the point cloud on processed through the Spatial Transformation followed by voxelization and Carte-sian Recovery, exhibits a clear variation in density, with points appearing denser in nearby regions and sparser in areas farther away.    
+
+> Figure 3. Comparison of point cloud density distribution. Left:
+> The point cloud is directly voxelized. Right: The point cloud is processed through the Spatial Transformation, voxelized, and then recovered via Cartesian Recovery.
+
+3.3. Loss function 
+
+We propose the Truncated Relative Reliability (TRR) loss to optimize the estimation network and mitigate error prop-agation from geometrically ambiguous points. Given the predicted scene coordinates ˆci and reliability scores ui from the regressor, the TRR loss operates through three principled components: 
+
+1) Geometric error calculation: The ground truth scene coordinates cgt  
+
+> i
+
+are derived from the point cloud ˆP and its cor-responding transformation matrix T. The Euclidean distance between predicted and ground truth coordinated defines the raw geometric loss: 
+
+Lraw ,i = ∥cgt  
+
+> i
+
+− ˆci∥2. (5) 
+
+2) Reliability calibration: To prevent gradient vanishing while bounding score magnitudes, we employ arc-tangent scaling with clamping: 
+
+uscale  
+
+> i
+
+= arctan( ui) · Ks, (6) 
+
+ucut  
+
+> i
+
+= arctan( clamp (ui, −10 π, 10 π)) · Ks. (7) where Ks = ln 10 /π is a normalization constant to bound output magnitudes. 
+
+3) Gradient-aware truncation: The final loss integrates these components through normalized exponential weight-ing: 
+
+wi = exp(max( uscale  
+
+> i
+
+, u cut  
+
+> i
+
+)) 
+
+P 
+
+> j
+
+exp(min( uscale  
+
+> j
+
+, u cut  
+
+> j
+
+)) , (8) 
+
+LTRR = X
+
+> i
+
+wiLraw ,i . (9) 
+
+Design rationale: The loss Eq. (9) encourages competi-tion among points: the network learns to suppress reliabil-ity for hard or ambiguous samples (reducing wi) while en-hancing it for discriminative points, thereby focusing model capacity on more reliable features. This self-rebalancing mechanism allows the model to autonomously allocate learn-ing resources, sacrificing precision on low-quality regions (e.g ., weak textures or dynamic objects) to improve overall representation quality. 9935 Table 1. Mean position error (m) and mean orientation error (°) on the Quality-enhanced Oxford dataset . All values are given as (m, °). Lower values are better, with the best highlighted using bold and the second-best highlighted using underline. In both errors, LEADER achieved the best or second-best performance among all baselines. Method 15-13-06-37 17-13-26-39 17-14-03-00 18-14-14-42 Average APR PointLoc [56] 10.75, 2.36 11.07, 2.21 11.53, 1.92 9.82, 2.07 10.79, 2.14 PosePN++ [65] 4.54, 1.83 6.44, 1.78 4.89, 1.55 4.64, 1.61 5.13, 1.69 HypLiLoc [55] 5.03, 1.46 4.31, 1.43 3.61, 1.11 2.61, 1.09 3.89, 1.27 DiffLoc [35] 2.03, 1.04 1.78, 0.79 2.05, 0.83 1.56, 0.83 1.86, 0.87 
+
+SCR SGLoc [34] 1.79, 1.67 1.81, 1.76 1.33, 1.59 1.19, 1.39 1.53, 1.60 LiSA [60] 0.94, 1.10 1.17, 1.21 0.84, 1.15 0.85, 1.11 0.95, 1.14 LightLoc [36] 0.82, 1.12 0.85, 1.07 0.81, 1.11 0.82, 1.16 0.83, 1.12 RALoc [62] 1.52, 1.28 1.71, 1.27 1.37, 1.20 1.41, 1.23 1.51, 1.24 
+
+Ours 0.69 , 1.08 0.64 , 1.16 0.59 , 1.10 0.62 , 1.09 0.63 , 1.11    
+
+> (a) PosePN++ (b) DiffLoc (c) LightLoc (d) LEADER
+
+Figure 4. Visualization results of part of the methods on trajectory 17-13-26-39 in Quality-enhanced Oxford dataset. The black and red points represent the true and predicted results, respectively. The star indicates the starting point. 
+
+3.4. Inference 
+
+During inference, the network predicts both scene coordi-nates ˆci = ( xw 
+
+> i
+
+, y w 
+
+> i
+
+, z w 
+
+> i
+
+) and reliability scores ui for each point. We establish 3D-3D correspondences through adap-tive reliability thresholding: 
+
+S =
+
+(
+
+argtopk (ui) if |argtopk (ui)| ≥ 50 ,
+
+{1, . . . , N } otherwise . (10) where argtopk (·) selects indices of points with top reliability scores. Let Pl = {pl 
+
+> i
+
+= ( xl
+
+> i
+
+, y l
+
+> i
+
+, z l
+
+> i
+
+)}i∈S denote selected local coordinates and Ppred = {ˆci}i∈S their predicted global counterparts. The 6-DoF pose T∗ ∈ SE(3) is estimated via [13]: 
+
+T∗ = arg min 
+
+> T
+
+ρ X
+
+> i∈S
+
+∥T · pl 
+
+> i
+
+− ˆci∥2
+
+!
+
+, (11) where ρ(·) is the estimator. Since the ground plane transformation Tplane is applied, the final global pose requires inverse compensation: 
+
+Tfinal = T∗ · T−1
+
+> plane
+
+. (12) This two-stage approach decouples learning-based corre-spondence prediction from geometric verification. The com-pensation step in Eq. (12) ensures consistency between the rectified coordinates and original global frame. 
+
+# 4. Experiments 
+
+4.1. Experimental setup 
+
+Datasets: Evaluation is conducted on two challenging bench-marks: • Quality-enhanced Oxford RobotCar [42]: Urban driving dataset with 10 km routes under varying weather condi-tions, processed with ground truth refinement from SGLoc. We use trajectories 11-14-02-26, 14-12-05-52, 14-14-48-55 and 18-15-20-12 as the training set, and trajectories 15-13-06-37, 17-13-26-39, 17-14-03-00 and 18-14-14-42 as the test set. • NCLT [10]: Campus dataset spanning 5.5 km across seasonal changes, notable for intentional LiDAR vibra-tions simulating vehicular motion. We use trajectories 2012-01-22, 2012-02-02, 2012-02-18 and 2012-05-11 as the training set, and trajectories 2012-02-12, 2012-02-19, 2012-03-31 and 2012-05-26 as the test set. 
+
+Implementation: LEADER is implemented in PyTorch [1] with MinkowskiEngine [15–17, 19] for sparse convolutions. Training configurations include: hardware using an Intel i9-14900K CPU, NVIDIA RTX 3090 (single) GPU, and 128 GB RAM; optimization via Adam [29] with initial learning rate LR=0.001 and multiplicative decay ( γ = 0 .9); geomet-ric parameters of voxel size δ = 0 .2 m and circumferential resolution L x = 1024 ; and training duration of 50 epochs. 9936 Table 2. Mean position error (m) and mean orientation error (°) on the NCLT dataset . All values are given as (m, °). Lower values are better, with the best highlighted using bold and the second-best highlighted using underline. In both errors, LEADER achieved the best performance among all baselines. Method 2012-02-12 2012-02-19 2012-03-31 2012-05-26 Average APR PointLoc [56] 7.23, 4.88 6.31, 3.89 6.71, 4.32 10.02, 5.32 7.57, 4.60 PosePN++ [65] 4.97, 3.75 3.68, 2.65 4.35, 3.38 9.59, 4.49 5.65, 3.57 HypLiLoc [55] 1.71, 3.56 1.68, 2.69 1.52, 2.90 2.90, 3.47 1.95, 3.16 DiffLoc [35] 0.99, 2.40 0.92, 2.14 0.98, 2.27 1.88, 2.43 1.19, 2.31 SCR SGLoc [34] 1.20, 3.08 1.20, 3.05 1.12, 3.28 3.81, 4.74 1.83, 3.54 LiSA [60] 0.97, 2.23 0.91, 2.09 0.87, 2.21 3.30, 2.84 1.51, 2.34 LightLoc [36] 1.03, 2.91 0.92, 2.63 0.86, 2.78 3.99, 3.49 1.70, 2.95 RALoc [62] 1.61, 4.71 1.61, 4.88 1.58, 4.71 3.51, 5.40 2.07, 4.92              
+
+> Ours 0.37 ,1.89 0.27 ,1.75 0.29 ,1.81 0.32 ,1.79 0.31 ,1.81
+> (a) PosePN++ (b) DiffLoc (c) LightLoc (d) LEADER
+> Figure 5. Visualization results of part of the methods on trajectory 2012-05-26. The black and red points represent the true and predicted results, respectively. The star indicates the starting point.
+
+4.2. Results on Oxford dataset 
+
+Tab. 1 summarizes the quantitative comparisons on the Quality-enhanced Oxford dataset. LEADER achieves state-of-the-art performance, with the lowest mean position error of 0.63 m and a mean orientation error of 1.11°, ranking 2nd overall among compared methods and 1st among SCR-based methods. The mean position error represents a 66.1% reduction over the APR baseline DiffLoc [35] and a 24.1% improvement over the SCR baseline LightLoc [36]. As shown in Fig. 4, LEADER maintains robust relocaliza-tion performance. Our method achieves superior positional precision with minimal catastrophic failures (isolated devia-tions from ground truth), whereas competitors exhibit more frequent relocalization failures. 
+
+4.3. Results on NCLT dataset 
+
+Tab. 2 demonstrates LEADER’s state-of-the-art performance on the high-precision NCLT benchmark, achieving 0.31 m mean position error and 1.81°mean orientation error. This represents a substantial improvement over existing methods, reducing position error by 73.9% compared to the APR base-line DiffLoc and by 79.5% against the SCR baseline LiSA. To our knowledge, LEADER is the first implicit LiDAR-based relocalization method achieving sub-0.5 m precision on NCLT dataset, overcoming challenges of sparse vegeta-
+
+> Figure 6. All training trajectories and the 2012-05-26 test trajectory on NCLT dataset.
+
+tion and seasonal variations. Fig. 5 visualizes results from challenging trajectory 2012-05-26, where training and test trajectories exhibit significant non-overlapping regions (Fig. 6). Despite significant view-point mismatches, our method maintains 0.32 m positional accuracy, surpassing DiffLoc and LiSA by 83.0% and 90.3% respectively. This robustness stems from two key factors: • Enhanced geometric resilience: Spatial Transformation maintains stable representations across diverse angle. • Reliability filtering: The TRR loss effectively suppresses unreliable points, ensuring only high-reliability features contribute to pose estimation. To further demonstrate relocalization consistency, Fig. 7 9937 0 1 2 3 4 5 6
+
+> Position Error (m)
+> 0% 20% 40% 60% 80% 100%
+> Percentage of Frames
+> DCP PosePN PosePN++ PointLoc SGLoc LiSA DiffLoc LightLoc Ours
+
+Figure 7. Cumulative distribution of position errors on NCLT dataset. Table 3. Frame coverage comparison at critical error thresholds. Method <0.5m (%) <1m (%) 99% Thresholds (m) SGLoc 24.5 63.8 8.70 DiffLoc 30.8 68.7 5.73 LiSA 34.3 72.0 4.98 LightLoc 46.3 79.6 8.70 
+
+Ours 90.0 98.3 1.23 
+
+presents the cumulative distribution of position errors across all test frames. LEADER achieves exceptional coverage: 90.0% of frames localized within 0.5m error and 98.3% within 1m. As shown in Tab. 3, this significantly outperforms exist-ing methods at critical precision thresholds. Notably, com-petitors require 4.98-8.70m error thresholds to reach 99% frame coverage, while LEADER achieves this milestone at just 1.23m. This unprecedented consistency confirms our method’s capability to deliver reliable sub-meter precision in challenging environments. 
+
+4.4. Runtime 
+
+LEADER achieves real-time performance on both the Ox-ford RobotCar (20 Hz) and NCLT (10 Hz) datasets. It pro-cesses each frame in 46 ms and 48 ms respectively, which is below the acquisition interval of each dataset. This en-sures efficient real-time operation suitable for autonomous navigation. 
+
+4.5. Ablation studies 
+
+Based on Tab. 4, we analyze the contributions of the RPGE and TRR modules on NCLT dataset: 
+
+Robust Projection-based Geometric Encoder (RPGE) :The Spatial Transformation component enhances robustness against yaw variations. Without this component (Methods 1–3), performance significantly degrades under perturbations (e.g ., 8.04 m vs. 0.95 m position error for Method 1). In contrast, when enabled (Methods 4–6), the framework main-tains consistent accuracy across perturbation conditions ( e.g ., 10 2 10 1 10 0 10 1 10 2 10 3
+
+> Error (m)
+> 10 2
+> 10 3
+> 10 4
+> 10 5
+> 10 6
+> Frequency
+> 2x
+> Without TRR With TRR
+
+Figure 8. TRR Loss effect on Scene Point Error distribution on NCLT dataset 2012-05-26 trajectory. 0 20 40 60 80 100 
+
+> Descending Reliability Score Percentile Bins
+> 10 0
+> 10 1
+> 10 2
+> Average Scene Point Error (m)
+
+Figure 9. Average Scene Point Error vs. Reliability Score Per-centiles on NCLT dataset 2012-05-26 trajectory. 
+
+0.59 m, 2.12°for both cases in Method 4). This demonstrates the component’s effectiveness in stabilizing representations against environmental variations. 
+
+Truncated Relative Reliability (TRR) : TRR introduces reliability-aware weighting during training (TRR-Train) and reliability-based pose refinement during inference (TRR-Test). Without TRR (Methods 1 and 4), baselines achieve 0.95 m (Method 1) and 0.59 m (Method 4) position errors. Enabling TRR-Train alone (Methods 2 and 5) reduces errors to 0.89 m and 0.35 m, respectively, demonstrating adaptive weighting improves feature learning. Further enabling TRR-Test (Methods 3 and 6) yields additional gains, as reliability-based refinement suppresses outlier predictions. We observe limited orientation error improvement, potentially due to sparser point distributions in distant regions after Spatial Transformation ( Fig. 3), as orientation estimation relies more on long-range features. 
+
+Efficiency : A critical outcome of our ablation study is the negligible runtime cost and fewer than 0.001 million addition parameters associated with the RPGE and TRR modules. Despite the inference time remaining unchanged, the relocalization accuracy is profoundly enhanced. The supplementary results in Fig. 8 and Fig. 9 further validate the mechanisms of the TRR module: 
+
+Error distribution shift (Fig. 8) : Enabling TRR sig-9938 Table 4. Ablation study evaluating the contributions of the RPGE and TRR modules on NCLT dataset. The ST column indicates the use of Spatial Transformation, while TRR-Train and TRR-Test denote the application of the TRR module during training and inference, respectively. Results for both normal and yaw-perturbed point clouds are reported as position/orientation errors (m, °), with inference time (ms) and parameters (M is million) included as an additional metric. Method ST TRR-Train TRR-Test Normal Point Cloud Yaw-Perturbed Point Cloud Inference Time Parameters 1 × × × 0.95, 1.94 8.04, 10.77 48 69.67 M 2 × ✓ × 0.89, 1.82 8.67, 10.44 48 69.67 M 3 × ✓ ✓ 0.88, 1.86 6.59, 10.14 48 69.67 M 4 ✓ × × 0.59, 2.12 0.59, 2.12 48 69.67 M 5 ✓ ✓ × 0.35, 1.80 0.35, 1.80 48 69.67 M 6 ✓ ✓ ✓ 0.31, 1.81 0.31, 1.81 48 69.67 M 
+
+nificantly reshapes the scene point error distribution. The proportion of high-precision points ( < 0.3 m) doubles com-pared to the baseline without TRR, show TRR prioritizes accurate relocalization for reliable regions. Meanwhile, the increase in > 5 m (outliers) suggests TRR implicitly down-weights challenging areas during training, aligning with its reliability-aware loss mechanism. These outliers are sup-pressed during inference by RANSAC, which discards low-reliability predictions. This trade-off reflects the fixed model capacity: TRR allocates resources to optimize learnable re-gions while tolerating irreducible errors in ambiguous areas. 
+
+Reliability-error correlation (Fig. 9) : The monotonic relationship between reliability scores and scene point er-rors confirms TRR’s ability to estimate prediction reliability. Points with top reliability scores (lowest percentile) achieve an average error of 0.4 m, whereas the lowest-reliability points exhibit catastrophic errors ( >100 m). This justifies our inference strategy of retaining only the top-k reliable points for pose estimation, as low-reliability regions intro-duce noise that degrades overall accuracy. 
+
+Robustness analysis (Tab. 5) : We further evaluate the proposed method under several degraded sensing scenarios to assess robustness. The baseline uses standard training and testing on NCLT, while other rows introduce test-time perturbations. Under extreme occlusion simulated by a 180° frontal field-of-view (FOV), the system maintains reason-able pose estimation despite a noticeable performance drop. When subjected to random point dropout of up to 50%, only minor degradation is observed, indicating strong resilience to point cloud sparsity. The addition of Gaussian noise (σ = 0 .05 ) applied to all points in the point cloud results in a slight performance degradation, with the error closely matching the baseline, indicating negligible impact under low-noise conditions. To evaluate the system’s inherent toler-ance to orientation variations without relying on ground point correction, which is typically used to level the point cloud, we introduce pitch and roll perturbations of up to 10 ◦. The results demonstrate that the method remains reliable under such perturbations, which simulate typical vehicle vibrations. Notably, in all perturbed scenarios, our approach achieves re-       
+
+> Table 5. Robustness evaluation under various degraded sensing conditions on the NCLT dataset. All values represent the mean position and orientation errors. Test Condition Error (m, °) Baseline 0.31, 1.81 180° FOV 0.78, 3.51 Random Dropout (0 - 50%) 0.33, 1.86 Gaussian Noise ( σ= 0 .05 )0.36, 1.93 Pitch/Roll Perturbation ( ±10 ◦)0.65, 3.17
+
+localization accuracy superior to the previous state-of-the-art result of (1.19 m, 2.31°) obtained under normal testing condi-tions, underscoring the robustness and practical applicability of the proposed system. 
+
+# 5. Conclusion 
+
+In this paper, we propose LEADER, a robust LiDAR-based global relocalization framework that significantly advances scene coordinate regression performance. Our approach in-troduces two key innovations: 1) A Robust Projection-based Geometric Encoder establishing robust scene representations resilient to yaw variations, and 2) A Truncated Relative Reli-ability loss enabling reliable estimation. Extensive experi-ments demonstrate state-of-the-art performance across chal-lenging datasets, with LEADER achieving unprecedented 0.31 m positional accuracy on the NCLT benchmark - the first implicit relocalization method to attain sub-0.5 m preci-sion on this dataset. Unlike prior methods that require full trajectory and ro-tation alignment between training and test data, our frame-work only requires trajectory proximity, greatly enhancing applicability. Currently, our method focuses on handling yaw angle variations, with pitch and roll effects mitigated through ground-based correction. Future work will aim to address the full SE(3) relocalization problem without relying on ground plane detection. 
+
+Acknowledgements. This work was supported by the Na-tional Natural Science Foundation of China (No. 62501502). 9939 References 
+
+[1] Jason Ansel, Edward Yang, Horace He, Natalia Gimelshein, Animesh Jain, Michael Voznesensky, Bin Bao, Peter Bell, David Berard, Evgeni Burovski, Geeta Chauhan, Anjali Chourdia, Will Constable, Alban Desmaison, Zachary DeVito, Elias Ellison, Will Feng, Jiong Gong, Michael Gschwind, Brian Hirsh, Sherlock Huang, Kshiteej Kalambarkar, Laurent Kirsch, Michael Lazos, Mario Lezcano, Yanbo Liang, Jason Liang, Yinghai Lu, CK Luk, Bert Maher, Yunjie Pan, Chris-tian Puhrsch, Matthias Reso, Mark Saroufim, Marcos Yukio Siraichi, Helen Suk, Michael Suo, Phil Tillet, Eikan Wang, Xiaodong Wang, William Wen, Shunting Zhang, Xu Zhao, Keren Zhou, Richard Zou, Ajit Mathews, Gregory Chanan, Peng Wu, and Soumith Chintala. PyTorch 2: Faster Machine Learning Through Dynamic Python Bytecode Transformation and Graph Compilation. In ASPLOS . ACM, 2024. 5 [2] Sheng Ao, Qingyong Hu, Bo Yang, Andrew Markham, and Yulan Guo. Spinnet: Learning a general surface descriptor for 3d point cloud registration. In CVPR , pages 11753–11762, 2021. 1 [3] Sheng Ao, Yulan Guo, Qingyong Hu, Bo Yang, Andrew Markham, and Zengping Chen. You only train once: Learning general and distinctive 3d local descriptors. IEEE TPAMI , 45 (3):3949–3967, 2022. [4] Sheng Ao, Qingyong Hu, Hanyun Wang, Kai Xu, and Yulan Guo. Buffer: Balancing accuracy, efficiency, and generaliz-ability in point cloud registration. In CVPR , pages 1255–1264, 2023. 1 [5] Relja Arandjelovic, Petr Gronat, Akihiko Torii, Tomas Pajdla, and Josef Sivic. Netvlad: Cnn architecture for weakly super-vised place recognition. In CVPR , pages 5297–5307, 2016. 2[6] Eric Brachmann and Carsten Rother. Learning less is more -6d camera localization via 3d surface regression. In CVPR ,pages 4654–4662, 2018. 2 [7] Eric Brachmann and Carsten Rother. Visual camera re-localization from rgb and rgb-d images using dsac. IEEE TPAMI , 44(9):5847–5865, 2021. 1 [8] Eric Brachmann, Alexander Krull, Sebastian Nowozin, Jamie Shotton, Frank Michel, Stefan Gumhold, and Carsten Rother. Dsac-differentiable ransac for camera localization. In CVPR ,pages 6684–6692, 2017. [9] Eric Brachmann, Tommaso Cavallari, and Victor Adrian Prisacariu. Accelerated coordinate encoding: Learning to relocalize in minutes using rgb and poses. In CVPR , pages 5044–5053, 2023. 1 [10] Nicholas Carlevaris-Bianco, Arash K. Ushani, and Ryan M. Eustice. University of Michigan North Campus long-term vision and lidar dataset. IJRR , 35(9):1023–1035, 2015. 5 [11] Daniele Cattaneo, Matteo Vaghi, and Abhinav Valada. Lcdnet: Deep loop closure detection and point cloud registration for lidar slam. IEEE TRO , 38(4):2074–2093, 2022. 1 [12] Shuai Chen, Xinghui Li, Zirui Wang, and Victor Prisacariu. Dfnet: Enhance absolute pose regression with direct feature matching. In ECCV , 2022. 2 [13] Zhi Chen, Kun Sun, Fan Yang, and Wenbing Tao. Sc2-pcr: A second order spatial compatibility for efficient and robust point cloud registration. In CVPR , pages 13221–13231, 2022. 5[14] Zhi Chen, Kun Sun, Fan Yang, Lin Guo, and Wenbing Tao. Sc 22-pcr++: Rethinking the generation and selection for ef-ficient and robust point cloud registration. IEEE TPAMI , 45 (10):12358–12376, 2023. 2 [15] Christopher Choy, JunYoung Gwak, and Silvio Savarese. 4d spatio-temporal convnets: Minkowski convolutional neural networks. In CVPR , pages 3075–3084, 2019. 2, 5 [16] Christopher Choy, Jaesik Park, and Vladlen Koltun. Fully convolutional geometric features. In ICCV , pages 8958–8966, 2019. [17] Christopher Choy, Junha Lee, Rene Ranftl, Jaesik Park, and Vladlen Koltun. High-dimensional convolutional networks for geometric pattern recognition. In CVPR , 2020. 5 [18] Martin A. Fischler and Robert C. Bolles. Random sample consensus: A paradigm for model fitting with applications to image analysis and automated cartography. CACM , 15: 381–395, 1981. 2 [19] JunYoung Gwak, Christopher B Choy, and Silvio Savarese. Generative sparse detection networks for 3d single-shot object detection. In ECCV , 2020. 5 [20] Zhixing Hou, Yan Yan, Chengzhong Xu, and Hui Kong. Hitpr: Hierarchical transformer for place recognition in point cloud. In ICRA , page 2612–2618. IEEE Press, 2022. 2 [21] Jie Hu, Li Shen, and Gang Sun. Squeeze-and-excitation networks. In CVPR , pages 7132–7141, 2018. 2 [22] Renlang Huang, Yufan Tang, Jiming Chen, and Liang Li. A consistency-aware spot-guided transformer for versatile and hierarchical point cloud registration. In NeurIPS , 2024. 1 [23] Xiaoshui Huang, Guofeng Mei, and Jian Zhang. Feature-metric registration: A fast semi-supervised approach for ro-bust point cloud registration without correspondences. In 
+
+CVPR , pages 11366–11374, 2020. 1 [24] Zhaoyang Huang, Yan Xu, Jianping Shi, Xiaowei Zhou, Hu-jun Bao, and Guofeng Zhang. Prior guided dropout for robust visual localization in dynamic environments. In ICCV , pages 2791–2800, 2019. 2 [25] Alex Kendall and Roberto Cipolla. Modelling uncertainty in deep learning for camera relocalization. In ICRA , pages 4762–4769. IEEE, 2016. 2 [26] Alex Kendall, Matthew Grimes, and Roberto Cipolla. Posenet: A convolutional network for real-time 6-dof camera relocal-ization. In CVPR , pages 2938–2946, 2015. 1 [27] Giseop Kim and Ayoung Kim. Scan context: Egocentric spatial descriptor for place recognition within 3d point cloud map. In IROS , pages 4802–4809, 2018. 3 [28] Giseop Kim, Sunwook Choi, and Ayoung Kim. Scan con-text++: Structural place recognition robust to rotation and lateral variations in urban environments. IEEE TRO , 38(3): 1856–1874, 2021. 1 [29] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In ICLR , 2015. 5 [30] Jacek Komorowski. Minkloc3d: Point cloud based large-scale place recognition. In WACV , pages 1789–1798, 2021. 2 9940 [31] Xin Lai, Yukang Chen, Fanbin Lu, Jianhui Liu, and Jiaya Jia. Spherical transformer for lidar-based 3d recognition. In 
+
+CVPR , pages 17545–17555, 2023. 2 [32] Seungjae Lee, Hyungtae Lim, and Hyun Myung. Patch-work++: Fast and robust ground segmentation solving partial under-segmentation using 3D point cloud. In IROS , pages 13276–13283, 2022. 3 [33] Jun Li, Changyin Sun, Junliang Xing, and Weiming Hu. pvlad: A discriminative image descriptor for image retrieval. In 
+
+WCICA , pages 93–98, 2014. 2 [34] Wen Li, Shangshu Yu, Cheng Wang, Guosheng Hu, Siqi Shen, and Chenglu Wen. Sgloc: Scene geometry encoding for outdoor lidar localization. In CVPR , pages 9286–9295, 2023. 1, 2, 5, 6 [35] Wen Li, Yuyang Yang, Shangshu Yu, Guosheng Hu, Chenglu Wen, Ming Cheng, and Cheng Wang. Diffloc: Diffusion model for outdoor lidar localization. In CVPR , pages 15045– 15054, 2024. 1, 2, 5, 6 [36] Wen Li, Chen Liu, Shangshu Yu, Dunqiang Liu, Yin Zhou, Siqi Shen, Chenglu Wen, and Cheng Wang. Lightloc: Learn-ing outdoor lidar localization at light speed. In CVPR , pages 6680–6689, 2025. 1, 2, 5, 6 [37] Hyungtae Lim, Beomsoo Kim, Daebeom Kim, Eungchang Mason Lee, and Hyun Myung. Quatro++: Robust global registration exploiting ground segmentation for loop closing in lidar slam. IJRR , 43(5):685–715, 2024. 1 [38] Chuhao Liu, Zhijian Qiao, Jieqi Shi, Ke Wang, Peize Liu, and Shaojie Shen. Sg-reg: Generalizable and efficient scene graph registration. IEEE TRO , 2025. 1 [39] Dongfang Liu, Yiming Cui, Liqi Yan, Christos Mousas, Bai-jian Yang, and Yingjie Victor Chen. Densernet: Weakly supervised visual localization using multi-scale feature ag-gregation. In AAAI , pages 6101–6109. AAAI Press, 2021. 2[40] Jiuming Liu, Weicai Ye, Guangming Wang, Chaokang Jiang, Lei Pan, Jinru Han, Zhe Liu, Guofeng Zhang, and Hesh-eng Wang. Difflow3d: Hierarchical diffusion models for uncertainty-aware 3d scene flow estimation. IEEE TPAMI ,2025. 1 [41] Weixin Lu, Yao Zhou, Guowei Wan, Shenhua Hou, and Shiyu Song. L3-net: Towards learning based lidar localization for autonomous driving. In CVPR , pages 6389–6398, 2019. 1 [42] Will Maddern, Geoff Pascoe, Chris Linegar, and Paul New-man. 1 Year, 1000km: The Oxford RobotCar Dataset. IJRR ,36(1):3–15, 2017. 5 [43] Yue Pan, Xingguang Zhong, Louis Wiesmann, Th¨ orbjorn Posewsky, Jens Behley, and Cyrill Stachniss. PIN-SLAM: LiDAR SLAM Using a Point-Based Implicit Neural Repre-sentation for Achieving Global Map Consistency. IEEE TRO ,40:4045–4064, 2024. 3 [44] Charles R. Qi, Li Yi, Hao Su, and Leonidas J. Guibas. Point-net++: deep hierarchical feature learning on point sets in a metric space. In NeurIPS , page 5105–5114, Red Hook, NY, USA, 2017. Curran Associates Inc. 3 [45] Zheng Qin, Hao Yu, Changjian Wang, Yulan Guo, Yuxing Peng, and Kai Xu. Geometric transformer for fast and robust point cloud registration. In CVPR , pages 11143–11152, 2022. 1[46] Olaf Ronneberger, Philipp Fischer, and Thomas Brox. U-net: Convolutional networks for biomedical image segmentation. In MICCAI , pages 234–241, Cham, 2015. Springer Interna-tional Publishing. 3 [47] Torsten Sattler, Michal Havlena, Konrad Schindler, and Marc Pollefeys. Large-scale location recognition and the geometric burstiness problem. In CVPR , pages 1582–1590, 2016. 2 [48] Torsten Sattler, Akihiko Torii, Josef Sivic, Marc Pollefeys, Hajime Taira, Masatoshi Okutomi, and Tomas Pajdla. Are large-scale 3d models really necessary for accurate visual localization? In CVPR , pages 6175–6184, 2017. 2 [49] Aleksandr Segal, Dirk H¨ ahnel, and Sebastian Thrun. Generalized-icp. In RSS . The MIT Press, 2009. 3 [50] Chenghao Shi, Xieyuanli Chen, Junhao Xiao, Bin Dai, and Huimin Lu. Fast and accurate deep loop closing and relocal-ization for reliable lidar slam. IEEE TRO , 2024. 1 [51] Jascha Sohl-Dickstein, Eric A. Weiss, Niru Maheswaranathan, and Surya Ganguli. Deep unsupervised learning using nonequilibrium thermodynamics. In ICML , page 2256–2265. JMLR.org, 2015. 2 [52] Akihiko Torii, Relja Arandjelovi´ c, Josef Sivic, Masatoshi Okutomi, and Tomas Pajdla. 24/7 place recognition by view synthesis. In CVPR , pages 1808–1817, 2015. 2 [53] Mikaela Angelina Uy and Gim Hee Lee. Pointnetvlad: Deep point cloud based retrieval for large-scale place recognition. In CVPR , pages 4470–4479, 2018. 2 [54] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszko-reit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, and Illia Polosukhin. Attention is all you need. In NeurIPS , page 6000–6010, Red Hook, NY, USA, 2017. Curran Associates Inc. 2 [55] Sijie Wang, Qiyu Kang, Rui She, Wei Wang, Kai Zhao, Yang Song, and Wee Peng Tay. Hypliloc: Towards effective lidar pose regression with hyperbolic fusion. In CVPR , pages 5176–5185, 2023. 2, 5, 6 [56] Wei Wang, Bing Wang, Peijun Zhao, Changhao Chen, Ronald Clark, Bo Yang, Andrew Markham, and Niki Trigoni. Point-loc: Deep pose regressor for lidar point cloud localization. 
+
+IEEE SJ , 22(1):959–968, 2021. 1, 2, 5, 6 [57] Yue Wang and Justin M. Solomon. Deep closest point: Learn-ing representations for point cloud registration. In ICCV ,2019. 2 [58] Yan Xia, Mariia Gladkova, Rui Wang, Qianyun Li, Uwe Stilla, Jo˜ ao F. Henriques, and Daniel Cremers. Casspr: Cross attention single scan place recognition. In ICCV , pages 8427– 8438, 2023. 2 [59] Xuecheng Xu, Sha Lu, Jun Wu, Haojian Lu, Qiuguo Zhu, Yiyi Liao, Rong Xiong, and Yue Wang. Ring++: Roto-translation-invariant gram for global localization on a sparse scan map. 
+
+IEEE TRO , 2023. 1 [60] Bochun Yang, Zijun Li, Wen Li, Zhipeng Cai, Chenglu Wen, Yu Zang, Matthias Muller, and Cheng Wang. Lisa: Lidar localization with semantic awareness. In CVPR , pages 15271– 15280, 2024. 2, 5, 6 [61] Fan Yang, Lin Guo, Zhi Chen, and Wenbing Tao. One-inlier is first: Towards efficient position encoding for point cloud registration. In NeurIPS , pages 6982–6995, 2022. 1 9941 [62] Yuyang Yang, Wen Li, Sheng Ao, Qingshan Xu, Shangshu Yu, Yu Guo, Yin Zhou, Siqi Shen, and Cheng Wang. Raloc: Enhancing outdoor lidar localization via rotation awareness. In ICCV , 2025. 2, 5, 6 [63] Huan Yin, Xuecheng Xu, Sha Lu, Xieyuanli Chen, Rong Xiong, Shaojie Shen, Cyrill Stachniss, and Yue Wang. Asurvey on global lidar localization: Challenges, advances and open problems. IJCV , 132(8):3139–3171, 2024. 1 [64] Hao Yu, Fu Li, Mahdi Saleh, Benjamin Busam, and Slobodan Ilic. Cofinet: Reliable coarse-to-fine correspondences for robust point cloud registration. In NeurIPS , 2021. 1 [65] Shangshu Yu, Cheng Wang, Chenglu Wen, Ming Cheng, Minghao Liu, Zhihong Zhang, and Xin Li. Lidar-based local-ization using universal encoding and memory-aware regres-sion. PR , 128:108685, 2022. 2, 5, 6 [66] Chongjian Yuan, Jiarong Lin, Zheng Liu, Hairuo Wei, Xi-aoping Hong, and Fu Zhang. Btc: A binary and triangle combined descriptor for 3d place recognition. IEEE TRO ,2024. 1 [67] Yongzhe Yuan, Yue Wu, Xiaolong Fan, Maoguo Gong, Qiguang Miao, and Wenping Ma. Where precision meets efficiency: Transformation diffusion model for point cloud registration. In AAAI , pages 9734–9742, 2025. 1 [68] Zhimin Yuan, Chenglu Wen, Ming Cheng, Yanfei Su, Wei-quan Liu, Shangshu Yu, and Cheng Wang. Category-level adversaries for outdoor lidar point clouds cross-domain se-mantic segmentation. IEEE TITS , 24(2):1982–1993, 2023. 2[69] Lei Zhou, Zixin Luo, Tianwei Shen, Jiahui Zhang, Mingmin Zhen, Yao Yao, Tian Fang, and Long Quan. Kfnet: Learning temporal camera relocalization using kalman filtering. In 
+
+CVPR , pages 4919–4928, 2020. 2 9942

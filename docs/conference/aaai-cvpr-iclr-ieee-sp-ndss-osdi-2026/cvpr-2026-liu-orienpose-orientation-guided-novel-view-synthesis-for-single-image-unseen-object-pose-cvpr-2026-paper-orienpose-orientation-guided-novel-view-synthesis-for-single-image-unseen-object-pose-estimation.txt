@@ -1,0 +1,400 @@
+Title: OrienPose: Orientation-Guided Novel View Synthesis for Single-Image Unseen Object Pose Estimation
+
+URL Source: https://openaccess.thecvf.com/content/CVPR2026/papers/Liu_OrienPose_Orientation-Guided_Novel_View_Synthesis_for_Single-Image_Unseen_Object_Pose_CVPR_2026_paper.pdf
+
+Published Time: Sat, 16 May 2026 16:50:54 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# OrienPose: Orientation-Guided Novel View Synthesis for Single-Image Unseen Object Pose Estimation 
+
+# Yating Liu, Zhaoshuai Qi *, Yang Zou, Yongnan Yang, Shizhou Zhang, Yanning Zhang School of Computer Science, Northwestern Polytechnical University 
+
+yatingliu@mail.nwpu.edu.cn zhaoshuaiqi1206@163.com ∗NVS 
+
+> Aligned Geometry Distorted
+> Geometry
+> Reference Reference
+> Synthesized
+
+Existing Methods  Ours 
+
+NVS 
+
+> 𝑳𝟐 -Pixel Level
+> Orientation
+> Estimator
+> Synthesized
+> Orientation
+> Estimator
+> 𝑳𝟐 -Pixel Level
+
+## ? +∆𝑹 =?                     
+
+> Undefined Geometric
+> Transformation
+> Star ting of TEnding of T
+> Query Target Ours NOPE Ours NOPE Reference Query Target Ours NOPE Ours NOPE Reference
+> Where is the
+> Ending of T?
+> Where is the
+> Star ting of T?
+
+𝑶 𝑹𝒆𝒇 + ∆𝑹 = 𝑶 𝑺𝒚𝒏  
+
+> Defined Geometric Transformation
+> Guidance Supervision
+
+Orientation  Awareness 
+
+> +∆𝑹
+> +∆𝑹
+
+How to synthesize geometrically consistent novel views under the ill-posed transformation? 
+
+Figure 1. Our goal is to predict the 3D pose of objects via Novel View Synthesis (NVS) from a reference view. Top: Existing NVS methods can only guess the geometric transformation from reference to synthesized view under pixel-level supervision due to un-defined starting orientation, causing geometry-distorted synthesis. In contrast, our framework explicitly defines this transformation by actively introducing orientation priors, achieving geometry-aligned synthesis and more accurate pose estimation. Bottom: We show the nature of problems by visualizing the latent space representation (green background) and the final predicted pose through rendering with the help of a 3D model (blue background). 
+
+# Abstract 
+
+Estimating the 3D pose of unseen objects from a sin-gle image remains a fundamental yet challenging prob-lem in computer vision, especially under a CAD model-free setting. Pioneering attempts address this issue by matching templates generated through Novel View Syn-thesis (NVS), which essentially aims to learn the geo-metric transformation from a reference to a target view. While promising, these methods can only approximate this transformation under pixel-level supervision, as the starting orientation remains undefined. In the absence of explicit geometric constraints to verify the correctness of the predicted transformation, existing methods often synthesize novel views with geometry-distorted struc-tures or severely blurred local textures, leading to un-reliable template matching and suboptimal pose estima-tion results. To this end, we propose OrienPose , an un-
+
+> ∗Corresponding author.
+
+seen object pose estimation framework via orientation-aware NVS from a single image. Specifically, we intro-duce the Orientation-Aware Guidance, which explicitly injects object orientation cues into the reference latent embedding to enhance orientation awareness during viewpoint transformation. We also introduce an orien-tation consistency loss that supervises viewpoint trans-formation at the geometric level, establishing sufficient supervision for explicit and geometry-consistent trans-formation guidance beyond pixel-level similarity. This loss justifies estimating the reference orientation rather than using its ground-truth pose, thereby ensuring the alignment of coordinate domains between the injected and supervised priors. Extensive experiments demon-strate that OrienPose achieves state-of-the-art perfor-mance in single-view unseen object pose estimation and impressive robustness to image degradations. Our code is available at https://github.com/pubyLu/OrienPose. This CVPR paper is the Open Access version, provided by the Computer Vision Foundation. Except for this watermark, it is identical to the accepted version; the final published version of the proceedings is available on IEEE Xplore. 26813 1. Introduction 
+
+Estimating an object’s 3D rotation from a single or several images is fundamental in applications such as robotics [26, 36], autonomous driving [8, 40], and AR/VR [7, 14]. Early works, such as regression-[16, 44, 50] or PnP-based [29–31] approaches, have achieved impressive estimation accuracy, most of which, however, operate at instance- or category-level and can-not generalize to unseen objects without retraining. To improve generalization performance, render-and-compare (R&C) methods [28] leverage an object-agnostic matcher for template matching, achieving strong cross-category generalization. However, render-ing dense view templates still relies on a known CAD model of the object, narrowing their real-world appli-cation. Recent efforts alleviate the CAD reliance by capturing rather than rendering a set of posed refer-ence images as templates [22], or reconstructing an ex-plicit [13, 33] or implicit [19, 25] 3D model from these references. While model-free generalization was achieved, their performance degrades significantly in a sparse or single-view setting, leaving single-image esti-mation a challenging open problem. Benefiting from the remarkable capacity of zero-shot image generation, recent works have introduced gen-erative models into novel view synthesis (NVS), moti-vating a more flexible “generate-and-compare” (G&C) paradigm compared to the conventional “render-and-compare” (R&C) scheme. Instead of rendering from CAD models, G&C methods [27, 42] generate novel view templates directly from a single reference image and its corresponding target views, offering a promising solution for single-image unseen object pose estimation. Despite the recent progress, NVS is essentially a ill-posed transformation problem, i.e., learning the ge-ometric transformation “ ? + ∆ R =? ” between refer-ence and target views without a defined starting ori-entation. Most of the NVS networks [5, 27, 42] rely solely on pixel-level supervision (e.g., L2 loss), which provides no explicit geometric constraints to ensure transformation correctness. As a result, the generated novel views often suffer from geometry-distorted struc-tures and blurred textures, leading to unreliable template matching and suboptimal pose estimation. The latest work, NOPE [27], has noticed this issue and introduces explicit rotation information from the reference to the target view, generating novel views with roughly correct contours. Nevertheless, we observe that the intrinsic object orientation serves as a degradation-robust geo-metric cue that is crucial for defining the transforma-tion. Ignoring this orientation information results in cur-rent NVS methods producing geometry-inconsistent and texture-blurred novel views, ultimately failing to allevi-ate the ill-posed transformation problem. To overcome these limitations, we propose Orien-Pose , an unseen object pose estimation framework via orientation-guided NVS from a single image. Following the G&C paradigm, we predict the pose of unseen ob-jects through template matching, but with an explicit ge-ometric formulation. As illustrated in Fig. 1 (top), since the viewpoint transformation in NVS is inherently ill-posed , we introduce the Orientation-Aware Guidance to provide explicit starting and ending orientation to form a defined geometric transformation. It explicitly guides the viewpoint transformation by injecting the probabilis-tic distribution of object orientation priors (via an orien-tation predictor) into the latent embedding of the ref-erence view. This process establishes a geometrically meaningful initialization for NVS, effectively mitigating the ambiguity of the transformation. To further com-pensate for the lack of explicit geometric constraints ,we design an orientation consistency loss that supervises the transformation at the geometric level, enforcing a geometry-aligned synthesis. As shown in Fig. 1 (bot-tom), our approach not only maintains accurate object contours but also preserves fine geometric structures in synthesized views, enhancing both template matching reliability and pose estimation accuracy. A natural question arises: “Why not use the orienta-tion estimator directly for pose prediction?” The main challenge lies in the mismatch between the estimator’s semantic coordinate frame and the object’s canonical one, which makes its predictions unreliable for abso-lute pose recovery. Instead, the estimator is employed to model consistent orientation distributions in Euler-angle space, providing stable orientation priors even un-der large viewpoint variations. This design enables the NVS process to establish a defined transformation guid-ance (i.e., Oref +∆ R = Osyn ), where orientation injec-tion at the beginning and orientation supervision at the end form a geometrically consistent learning cycle. Our contributions are as follows: • We propose an unseen object 3D pose estimation framework based on orientation-guided novel view synthesis, which requires only a single image without the need for CAD models. • We inject explicit orientation priors into reference la-tent features via an Orientation-Aware Guidance to al-leviate the challenge of ill-posed transformation, as well as an orientation consistency loss to handle the lack of explicit geometric constraints during NVS. • Our method achieves state-of-the-art performance on multiple benchmarks, demonstrating impressive gen-eralization to unseen objects and considerable robust-ness to challenging scenarios with occlusion and blur. 26814 2. Related work 
+
+2.1. RGB-only unseen object pose estimation 
+
+Model-based methods . In contrast to instance- [30, 44] or category-level methods [21, 32, 39], model-based methods often follow a “render-and-compare” pipeline to achieve unseen object pose estimation. Assuming the presence of a CAD model, these methods render dense view templates from it, which are then matched to the query image to yield the pose. To enhance generaliza-tion to unseen objects, template matching in pixel or latent feature space [1, 18, 28] is developed, achieving strong cross-category generalization. However, the as-sumption of a known CAD model significantly narrows their applicability in real-world settings. 
+
+Model-free methods . To mitigate the CAD reliance, one pioneering work [22] is to capture posed refer-ence images as templates rather than render them from a CAD model. Follow-up works instead reconstruct an explicit or implicit 3D representation of the object from these references, such as [13, 19, 33, 34, 45], from which 2D-3D correspondences are established to yield the object pose via PnP solvers [43]. [12] developed analytical solutions for precise complex motion estima-tion [9–11], their proof of degeneracy cases addressed the bottlenecks of weak geometric configurations, re-sulting in superior accuracy and a 2.5x speedup over ex-isting methods. Despite this, their performance degrades when only sparse-view references are provided, suffers from incomplete reconstruction due to unreliable match-ing between views. 
+
+Single-view unseen object estimation. Unseen object estimation from only a single image is rather challeng-ing due to significant ill-posedness with limited priors. PIZZA [6] directly regresses the relative pose between the query and reference images. MicKey [2] instead solves pose via a metric keypoint matching pipeline. RelPose [47] and its improved version RelPose++ [20] model the relative pose of two views as a conditional probability distribution, from which the pose with the highest probability is regarded as the best estimate. Follow-up work [48] enhances them by transforming images into 3D latent representations to achieve 3D awareness. While effective, these regression, match-ing and probability-based methods tend to learn more category-specific priors, which prove to be suboptimal in unseen object pose estimation [27, 35] Recently, NOPE [27] introduced generative models to “generate” novel view templates from a single ref-erence view instead of “render” or “capture”, achieving impressive generalization to unseen objects and state-of-the-art accuracy. A concurrent work [35] enhances the robustness to large viewpoint variation via a two-sided generation. However, learning to control the camera viewpoint efficiently is inherently challenging for these methods under pixel-level supervision alone, since they overlook the rich source of information provided by ob-ject orientation. 
+
+2.2. Single-image novel view synthesis 
+
+Generative models address the single-view NVS prob-lem by enforcing multi-view or 3D geometric consis-tency [5]. Multi-view consistency is achieved through stochastic [42] or ray conditioning [49], 3D-aware fea-ture attention [23], and epipolar constraints [37], while 3D geometric consistency is maintained via learning ge-ometric priors in feature volumes [3] or video diffusion models [17, 38]. Despite promising zero-shot gener-alization, these approaches overlook object orientation consistency, leading to geometry misaligned synthesis. In contrast, our framework forms an explicit transfor-mation guidance that injects and supervises orientations, achieving geometrically consistent novel view synthesis and reliable pose estimation. 
+
+# 3. Method 
+
+Given a single reference image Iref , our goal is to estimate the 3D (rotation) pose of the object in a query image Iqry . Following a “generate-and-compare” paradigm, we introduce an orientation-guided novel view synthesis (NVS) network (see Fig. 2) to “generate” multi-view templates from the input reference image and a set of viewpoints (or poses) conditioning the gener-ation. To achieve orientation awareness during NVS, an orientation-aware guidance (OAG) module is con-structed to inject the orientation distribution of the ob-ject in Iref into its latent embedding. Additionally, we develop an orientation-consistency loss to further guide the learning of the NVS network for a better control of viewpoint transformation. Those generated templates are then “compared” to Iqry , see Fig. 3, of which the pose corresponding to that most similar to Iqry is our estimate. Details are provided as follows. 
+
+3.1. Orientation-Aware Guidance 
+
+OAG injects the object orientation of the reference im-age into its latent representation to enable orientation-aware guidance for NVS. To avoid the texture distor-tions and generative artifacts noted in [27], this injection is performed entirely in the latent space by projecting both the reference image and its estimated orientation into compact embeddings. The image and orientation embeddings are obtained using a pretrained encoder and an MLP, respectively. Considering that no orientation information is pro-vided for an arbitrary reference image Iref , we draw in-spiration from recent advances of single-image generic 26815 Encoder  
+
+> ∆𝑅 𝑘
+> 𝑬 𝒑𝒐𝒔𝒆 condition
+> target
+> 𝑶 𝒕𝒈𝒕
+> ′𝑶 𝒕𝒈𝒕
+> OEM
+> 𝑬 𝒕𝒈𝒕 𝑬 𝒕𝒈𝒕 ′
+
+𝑳 𝒐𝒄 = 𝑫 𝑲𝑳 (𝑶 𝒕𝒈𝒕 ||𝑶 𝒕𝒈𝒕 ′ )
+
+> 𝑬 𝒓𝒆𝒇 ′𝑰 𝒓𝒆𝒇
+
+Orientation 
+
+Distribution 
+
+Orientation  – Aware  Guidance  [OAG] 
+
+> 𝑬 𝒐𝒓𝒊𝒆𝒏
+> OEM
+> Cr oss -
+> Attention Q
+> K
+> V
+> MLP
+> Merge
+> Norm
+
+Orientation -aware 
+
+Embedding 
+
+𝑰 𝒓𝒆𝒇  𝑬 𝒓𝒆𝒇 
+
+> patch
+> Project Project
+> Project
+
+(a)  (b) 
+
+(c) 
+
+> 𝑬 𝒓𝒆𝒇 ′
+
+training 
+
+frozen 
+
+mlp    
+
+> Encoder 𝑳𝟐 = 𝑬 𝒕𝒈𝒕 ′− 𝑬 𝒕𝒈𝒕 𝟐 𝟐
+> 𝑬 𝒓𝒆𝒇
+> OEM
+
+Orientation  Consistency Loss 
+
+NVS 
+
+OAG 
+
+𝑰 𝒓𝒆𝒇 
+
+Orientation 
+
+Guidance 
+
+> Norm
+
+Figure 2. Overview. (a) The orientation-guided NVS framework takes a reference image Iref and the conditioning of a target viewpoint ∆Rk as input. The embedding Eref of Iref extracted from a encoder accepts the orientation injection via OAG to output an orientation-aware embedding E′ 
+
+> ref
+
+, which is passed to NVS along with the embedded viewpoint Epose to generate the synthesized target view E′ 
+
+> tgt
+
+represented in embedding. (b) To strengthen the geometric supervision of the NVS process, we adopt an orientation consistency loss, which integrates the KL divergence between the OEM-estimated orientation distributions of the synthesized and target views, combined with a standard L2 loss. (c) OAG takes Iref and its embedding as inputs and extracts the object orientation shown in it via OEM. After embedding to Eorien , this orientation is injected into Eref through cross-attention to output the orientation-aware embedding E′ 
+
+> ref
+
+.
+
+orient estimation models, and use the Orient-Anything model [41] as our orientation estimator module (OEM) in OAG. To better adapt to the pose estimation task, OEM has been retrained on our training dataset. We use similar discrete one-dimensional probabilities to repre-sent the triple angles, i.e., the azimuth α, in-plane ro-tation θ, and elevation ω, which specifies a 3D object orientation, expressed as 
+
+
+
+P αref (x|α, σ α) = 12πB 0(1 /σ 2 
+
+> α)
+
+e
+
+> cos (x−α)
+> σ2
+> α
+
+P θref (y|θ, σ θ ) = 12πB 0(1 /σ 2  
+
+> θ)
+
+e
+
+> cos (y−θ)
+> σ2
+> θ
+
+P ωref (z|ω, σ ω ) = 1  
+
+> P180
+> n=1 e−(n−ω)22σ2
+> ω
+
+e− (z−ω)22σ2 
+
+> ω
+
+,
+
+(1) where x = y = 1 , . . . , 360 ◦, z = 1 , . . . , 180 ◦. σα, σθ
+
+and σω are variances for the respective angles. Please note that these angles are defined in a canonical coor-dinate system (CCS), which is not necessarily identical to that defining the absolute object pose. Details about the definition of CCS, the training, and the results of the OEM are provided in the Supplementary Material .After being embedded by an MLP, the orientation dis-tributions (i.e., Eorien ) are injected into the embedded reference image Eref through a cross-attention mecha-nism, which facilitates deep knowledge interaction and well alignment between these embeddings to achieve orientation awareness. 
+
+3.2. Orientation consistency loss 
+
+We further enhance our NVS network by constructing an orientation consistency loss (OCL) during learning the control of viewpoint transformation. OCL consists of both the orientation loss LOC and the traditional pixel-level L2 loss, expressed as 
+
+L = λ1L2 + λ2LOC , (2) where λ1 and λ2 are weights for each loss, respectively. In contrast to using a cross-entropy [41], we build 
+
+LOC on the Kullback-Leibler (KL) divergence between the predicted and ground-truth distributions for each ori-entation angle, which proves to be more effective for su-pervising the distribution learning, as 
+
+LOC =μ1DKL (P αgt , P αref ) + μ2DKL (P θ gt, P θ ref )+ μ3DKL (P ω gt, P ω ref ),
+
+(3) where μi, i = 1, 2, and 3 are weight factors. We also adopt L2 loss to achieve pixel-level supervision. 
+
+3.3. Pose estimation pipeline 
+
+The pipeline of OrienPose is shown in Fig. 3. Given the predefined viewpoints, our pretrained NVS network 26816 generates the novel view templates Iktmp , k = 1 , 2, ..., N 
+
+from the input reference image Iref . We then match these templates with the query image Iqry to obtain the final pose of the object in Iqry .reference    
+
+> viewpoints
+> query
+> 𝑶 𝒕𝒎𝒑 𝒌
+> OEM
+> 𝑬 𝒒𝒓𝒚
+> 𝑶 𝒒𝒓𝒚
+> Encoder
+> ∆𝑅 𝑘
+> ∆𝑅 1
+> ∆𝑅 2
+> 𝑬 𝒕𝒎𝒑 𝟏
+> 𝑬 𝒕𝒎𝒑 𝑵
+> 𝑬 𝒕𝒎𝒑 𝒌
+> 𝑵 templates
+> Templates Generating Templates Matching
+> OEM
+> 𝑺 𝑶𝑨 𝒌 → 𝑷𝒐𝒔𝒆 NVS
+
+Figure 3. Pose estimation pipeline. Given N viewpoints 
+
+∆Rk , k = 1 , 2, ..., N , the pretrained NVS generates from the input reference image N templates represented in their latent features Ektmp , which are “compared” with the embedding of the query image to output the orientation-aware similarities. The template with the highest similarity score SkOA is selected to yield the query pose. 
+
+Template generation . As shown in Fig. 3, the pre-trained NVS network takes a reference image Iref and a viewpoint ∆R as inputs, and outputs the corresponding target template Itgt in that viewpoint. Following [27], the synthesis of Itgt is also for-mulated as a probabilistic distribution learning problem conditioned on ∆Rk. Specifically, we model the proba-bility distribution p(∆ R|Iref , I tgt ) expressed as       
+
+> p(∆ R|Iref , I tgt ) = Θ( Etgt |μ(Eref ,∆R), σ (Eref ,∆R)) (4)
+
+where Eref and Etgt are the latent embeddings for Itgt 
+
+and Iref , respectively. μ(Eref , ∆R) and σ(Eref , ∆R)
+
+are the mean and covariance of the learned distribution. We take the mean μ(Iref , ∆R) as the expected aver-age embeddings of the object appearance under the tar-get view ∆R:
+
+μ(Eref , ∆R) = 
+
+Z
+
+> M
+
+μ(∆ R, M)p(M |Eref )dM, (5) where M is a 3D model of the object and μ(∆ R, M) is the embedding generated under ∆R.Since computing this integral directly is intractable, we approximate it using the NVS network F :
+
+E′ 
+
+> tgt
+
+= F (Eref , ∆R), (6) where E′ 
+
+> tgt
+
+is the generated representation of the target view. F is implemented as a U-Net-like backbone with a pose conditioning mechanism similar to [27, 42]. During the generation of templates, we sample from a regular icosahedron as NOPE [27] a set of viewpoints 
+
+R1, R 2, ..., R N , where the icosahedron is subdivided twice to produce N = 342 viewpoints. Each view-point is associated with a predefined camera pose Rv .By converting all Rv ’s to the coordinate system defin-ing Iref , N viewpoints relative to Iref can be obtained, i.e. vps = ∆ R1, ∆R2, ..., ∆RN , which are used for the NVS network to synthesize novel-view template sets 
+
+Iktmp , k = 1 , 2, ..., N .
+
+Template matching . The best match is selected by “comparing” generated templates to the query image 
+
+Iqry in a nearest-neighbor search (NNS) manner. Sim-ilarly, we construct an orientation-aware similarity met-ric SOA instead of only appearance similarity to assess how similar a template Iktmp and Iqry . This metric com-bines both the L2 distance between their latent features 
+
+Ektmp , E qry extracted from OAG and the KL divergence between orientations Oktmp , O qry extracted by OEM, as 
+
+SkOA = −|| Ektmp − Eqry || 22 − (DKL (Oqry || Oktmp ). (7) 
+
+The template with the highest similarity score SOA is selected as the best match, of which the corresponding query pose is the final estimation. 
+
+# 4. Experiments 
+
+4.1. Experimental setup 
+
+Datasets and Metrics . We used the same training dataset in [27] for training our network, which contains rendered images from 3D models in ShapeNet [4]. Two test sets were constructed, including 10 categories from ShapeNet and 5 instances from the real-world dataset NAVI [15]. Please note that all instances and categories in the test sets are never seen during training, facilitat-ing fair performance evaluation of unseen object estima-tion. Following the protocol in [27], 85% of the refer-ence images were randomly chosen with an azimuth in 
+
+|| azimuth || ≤ 45 ◦ compared to the query, while the remaining 15% were chosen from outside this range. More details have been provided in the Supplementary material . We used ACC 30 and Median pose error as in [24, 27] to characterize the estimation performance. 
+
+Comparative Methods. We compared OrienPose with state-of-the-art single-image unseen-level meth-ods requiring no CAD models, including the “generate-and-compare” method NOPE [27], regression-based method PIZZA [6], keypoint-based method MicKey [2], and probability-based methods RelPose [47] and Rel-Pose++ [20], which required only two views (one ref-erence and a query view, respectively) to align with our setting. We also implemented a strong baseline by replacing the NVS network in NOPE with a pow-erful diffusion-based NVS Free3D [49]. Since Free3D leverages different cues (i.e., 3D priors across multi-ple views) in contrast to the object orientation used in our model, comparison between them provides more in-sight about the effectiveness of the object orientation. We further compared several representative multi-view 26817 Table 1. Quantitative results on the ShapeNet, where bold and underlined indicate the best and second-best performances, respec-tively. Note that since only GigaPose requires a CAD model input, its results are not included during performance ranking.                                                                                                                                                                                                                                                             
+
+> Metrics Method bottle clock bus mug washer pistol guitar train dishwasher skateboard Mean GigaPose CVPR’2024 35.4 47.6 68.6 64.3 70.5 78.0 43.9 63.5 68.7 75.2 61.6 OnePose++ Neurips’2022 37.8 48.9 54.5 37.2 62.9 57.2 46.2 37.1 46.4 28.1 45.6 BoxDreamer ICCV’2025 15.5 24.8 30.2 28.8 43 39.9 16.7 20.3 45.9 22.1 28.7 RelPose ECCV’2022 43.4 45.9 44.8 45.8 43.8 45.7 47.4 45.3 47.7 43.2 45.3 RelPose++ 3DV’2024 45.8 48.9 42.3 45.5 44.3 45.8 47.9 42.4 47.4 43.7 45.4 PIZZA 3DV’2022 42.7 44.9 44.1 45 42.6 45.2 46.5 43 46.5 44.2 44.5 Mickey CVPR’2024 44.2 46.5 49.4 45.8 42.2 45.4 47.1 47 45.3 45.3 45.8 Free3D CVPR’2024 41.2 37.8 39.2 43.1 36.7 40.3 44.6 37.1 45.9 38.5 40.4 NOPE CVPR’2024 57.1 49 48.8 46.3 59.4 57.9 51 53.7 45.2 54.9 52.3 ACC 30  ↑
+> OrienPose(Ours) -66.1 57.1 58.7 51.9 65.5 62.6 59.6 58.9 53.2 62.1 59.6
+> GigaPose CVPR’2024 35.8 31.0 18.8 21.4 17.5 18.6 32.7 22.1 21.3 16.5 23.57 OnePose++ Neurips’2022 64.6 39.1 24.5 49.9 19.5 28.7 43.7 85.4 48.5 94.6 49.8 BoxDreamer ICCV’2025 95 80.1 76.9 70.0 42.7 66.7 84.6 82.2 41.4 99.7 73.9 RelPose ECCV’2022 31.8 31.2 31.5 31.1 31.8 31.2 30.8 31.5 30.8 32.0 31.3 RelPose++ 3DV’2024 31.4 30.4 33.9 31.8 32.8 31.8 30.7 33.3 31.1 32.9 32.0 PIZZA 3DV’2022 39.9 33.5 32.6 32.4 40.7 33.3 31.1 35.8 31.1 33.6 34.4 Mickey CVPR’2024 32.0 31.3 30.1 31.5 32.4 31.4 30.9 31.0 31.6 31.5 31.3 Free3D CVPR’2024 41.1 84.7 56.2 47.4 76.5 44.0 50.8 64.4 51.6 56.1 57.3 NOPE CVPR’2024 25.4 33.1 34.2 32.3 23.7 18.2 29.7 27.9 31.1 21.4 27.7 Median  ↓
+> OrienPose(Ours) -19.2 25.4 18.3 28.6 14.5 11.7 20.8 22.8 27.6 15.8 20.4
+
+methods, including BoxDreamer [46] and its precur-sor, Onepose++ [13], as well as a CAD model-based method, GigaPose [28]. To better align with our single-view setting while balancing performance, the input view numbers for OnePose++ and BoxDreamer are set to 48 and 5, respectively. Implementation details of all methods are provided in the Supplementary material .
+
+4.2. Comparison results 
+
+Results on ShapeNet . As shown in Tab. 1, OnePose++ and BoxDreamer only achieve average performance among SoTA methods, even given multiple views, which significantly degrade in our sparse-view set-ting. In contrast, RelPose, RelPose++, and PIZZA have shown high consistency across categories, since they learned generalizable priors while modeling the pose distribution. However, the lack of leverage of 3D pri-ors limits their performance to a similar level of es-timation accuracy. MicKey improves slightly in met-rics compared to regression-based PIZZA, despite the weak texture of the object, even with explicit predic-tion of 3D keypoints. Unlike using deterministic mod-els in the above methods, NOPE leverages a generative model to implicitly model the viewpoint transition with 3D awareness, achieving the previous SoTA results, with 52.3% and 27 .7◦ for ACC 30 and Median, respectively. It should be noted that no obvious gain has been ob-served for Free3D compared to NOPE. This may be at-tributed to the diffusion model, which changes the tex-ture or invents incorrect details in generated views, as indicated in [27]. In contrast, since the stronger orien-tation cue has been injected for better novel viewpoint control, our orientation-aware OrientPose outperforms NOPE by a large margin, i.e., an average gain of 7.3%
+
+in ACC 30 and a reduction of 7.3◦ in Median, setting a new SoTA in the single-image unseen-level task without CAD models. The visualization results, as shown in Fig. 4, further confirm our findings. Due to the lack of explicit geomet-ric modeling, NOPE only maintains a coarse-level trans-formation consistency between generated novel views, focusing mostly on the shape contour preservation with-out sufficient details. Accordingly, NOPE performs more effectively for objects with anisotropic shapes, see 
+
+bottle, clock, mug, and washer (with an obvious vi-sual boundary between the white and red textures on it) , whereas it often yields flipped poses for those with isotropic structures, which raises ambiguity without ad-ditional details. In contrast, our OrienPose, guided by orientation-aware injection and supervision, achieves better viewpoint control with highly consistent geomet-ric details preserved during view transformation, en-abling more discriminative in difficult objects for NOPE and thus superior performances. Considering the space limitation, the latent features generated by NOPE and ours demonstrate the preservation of contour and detail, as shown in the Supplementary Material .
+
+Results on NAVI . The results in the NAVI test set pro-26818 clock 
+
+> skateboard  guit ar
+> bus  train washer
+> mug
+> bottle
+> dishwasher pistol
+
+Reference  Query  NOPE  Ours  Pose Distribution  Reference  Query  NOPE  Ours  Pose Distribution Figure 4. Visualization results of the best and second best performers for the ShapeNet test set. The arrow (last columns for each object) indicates the estimated pose distribution on a unit sphere, where green, red, and blue represent the ground-truth, ours, and NOPE, respectively, best viewed in zoomed-in. The predicted poses (3rd and 4th columns for each object) of NOPE and Ours are visualized by rendering the object from these poses. The 3D model is only used for visualization, not as input to the methods. 
+
+vide further observations on the zero-shot sim-to-real generalization of different methods. As shown in Tab. 2, almost all methods except RelPose and PIZZA have shown a noticeable performance drop when directly transferring to real objects. An ACC 30 drops over 10%, and the Median error increases over 20 ◦ can be observed in the results of the previous SoTA method NOPE. To our surprise, both RelPose and PIZZA demonstrate im-pressive robustness to the sim-to-real gap, outperform-ing NOPE in ACC 30 and Median, respectively, due to the learned generalizable priors. In contrast, our OrienPose still demonstrates superior results compared to RelPose and PIZZA, achieving the best average per-formance despite suffering from similar performance degradations, similar to those of NOPE. Additional re-sults are provided in the Supplementary Material .
+
+4.3. Ablation studies 
+
+Robustness under image degradations . We fur-ther evaluated the robustness to challenging scenarios with image degradations, including blur and occlusions. Specifically, we applied four intensity levels of Gaussian blur to input reference images of bus in ShapeNet, cor-responding to blurs ranging from slight to heavy, where 
+
+10% − 40% represents the intensity levels. Similarly, random occlusions with 10% − 40% (from slight to heavy) object area were applied. As shown in Tab. 3, our method achieves consistently high accuracy in the presence of different levels of im-age blur, resulting in only a drop of less than 3% in ACC 30 even given the heavy blur of 40%. While a larger increase of median error is observed for the 40% blur, the overall performance still retains a high level of ac-curacy for both metrics, reaching 56% for ACC 30 and 
+
+Table 2. Results on NAVI, where bold and underlined indicate the best and second-best performances, respectively. Similarly, the results of GigaPose are excluded during ranking.                                                                                                                         
+
+> Metrics Method bull bunny sink shark schoolBus Mean
+> GigaPose 79.4 82.6 68.1 40.1 66.9 67.4 OnePose++ 45 40.1 49.3 20.9 61.8 43.4 BoxDreamer 19.8 20.1 29.5 21.6 24.3 23.1 RelPose 45.5 42.7 43.8 39 54.1 45.0 RelPose++ 28.9 28.3 27.7 42.9 38.7 33.3 PIZZA 37.6 49.5 47.5 39.6 57.4 46.3 Mickey 27.7 37.6 31.6 34.6 51.4 36.6 Free3D 26.9 35.7 27.2 30.1 35.8 31.1 NOPE 25.7 39.6 27.7 42.5 48.5 36.8 ACC 30  ↑
+> OrienPose(Ours) 41.2 56.4 38.4 55.9 62.4 50.9
+> GigaPose 21.1 17.9 16.3 39.8 22.8 23.6 OnePose++ 35.2 46.8 30.8 79.5 21.1 42.6 BoxDreamer 99.4 92.7 84.2 86.1 95.9 91.6 RelPose 31.4 32 30.7 34.3 28.2 31.3
+> RelPose++ 42.2 40.4 41.4 31.9 35.6 38.3 PIZZA 59.6 35.1 30.4 32.6 27.5 37.0 Mickey 42.4 45.9 39.8 34.5 29.4 38.4 Free3D 72.1 56.2 86.4 69.3 79.2 72.6 NOPE 54.6 37.9 49.7 36.4 67.2 49.1 Median  ↓
+> OrienPose(Ours) 54.1 26.9 46.3 28.5 23.1 35.7
+
+Table 3. Quantitative result of robustness on bus .                              
+
+> Metrics Origin Blur Occlusion 10% 20% 30% 40% 10% 20% 30% 40% ACC 30 ↑58.7 58.2 57.9 56.2 56.0 57.2 56.9 55.9 53.3
+> Median ↓18.3 18.6 19.0 24.9 24.9 22.1 25.2 27.5 29.0
+
+24 .9◦ for Median error, demonstrating the considerable robustness of our method to image blur. 26819 10%  20%  30%  40% 
+
+> Query
+> Occlusion Blur
+> Reference
+> Diff. Map  Diff. Map
+
+Figure 5. Results under blur ( top ) and occlusion ( bottom ). The rendered images of predicted pose are combined with their dif-ference maps with GT, where darker colors indicate smaller differences. w/o OA G      
+
+> w/o 𝑳 𝑶𝑪 w OAG& 𝑳 𝑶𝑪
+> ACC 30 ↑
+> Median↓
+> 53.3
+> 55.1 58.7
+> 18.3 °24.7 °
+> 27.9 °
+
+Figure 6. Ablation studies on OAG and LOC on bus .
+
+Similarly, OrienPose performs robustly in moderate occlusions with levels of 10% and 20%. In contrast, heavy occlusion leads to more significant drops in per-formance compared to image blur, which is mostly at-tributed to the incomplete structure and reduced local details resulting from large-area occlusion. Neverthe-less, OrienPose in the highest level of occlusion still achieves 53.3% and 29 .0◦ for ACC 30 and Median error, respectively, which are still competitive to the second-best performer OnePose++ in the bus column in Tab. 1, confirming OrienPose’s robustness to difficult scenarios. We provide visualization results to better understand the behavior with different image degradations. As shown in Fig. 5, while local details are reduced by se-vere image blur, see the last column of the blurred im-age, OrienPose still learns sufficient prior via project-ing the blurred image into the orientation-aware latent space, accordingly achieving comparable visual results under 40% blur as those with less blur. Similarly, the tolerance for the loss of details also enables more robust-ness to moderate occlusion, see the first two columns of occluded images. In contrast, OrienPose tends to fail with an obvious pose error in the most difficult cases, particularly when a large occluded portion of the object is present. This is evident in the last column of the oc-cluded image, where the completeness of the structure is compromised. However, we believe that this result is Reference  Query  NOPE  Ours  Pose  Distri .
+
+> adizero sink
+
+Figure 7. Results for large viewpoint changes. 
+
+straightforward, as the incomplete structure may cause shape ambiguity, leading to multiple visually plausible interpretations of the same image, from which Orien-Pose provides its most likely choice. 
+
+Effectiveness of OAG and LOC . We also investigated the contributions of OAG and the orientation consis-tency loss LOC through an ablation study on the cate-gory bus in ShapeNet. As shown in Fig. 6, the perfor-mance gains sustained increase by the introduction of both OAG and LOC compared to either one alone, con-firming the significance of the orientation-aware guid-ance and LOC supervision for novel view synthesis. More results can be found in Supplementary material .
+
+4.4. Limitations 
+
+We report the results in a more challenging scenario with large viewpoint changes between the reference and query views. The viewpoint interval was chosen ran-domly within a larger range [45 ◦, 90 ◦] in the NAVI test set. As shown in Fig. 7, while noticeable errors can be observed, OrienPose still achieves promising results compared to those of NOPE, which tends to fail with almost random guesses. Further research will be con-ducted to learn more about priors in multiple views or the underlying 3D geometry of the object, in order to better control the large viewpoint transformation. 
+
+# 5. Conclusion 
+
+We propose a 3D object pose estimation method, Orien-Pose, following a “generate-and-compare” paradigm, which requires only a single reference image and can di-rectly generalize to unseen objects without retraining or the input of a CAD model. An orientation-aware novel view synthesis framework is developed to learn better control of the ill-posed viewpoint transformation, where explicit orientation priors are injected into the reference latent embedding via orientation-aware guidance. Ad-ditionally, an orientation consistency loss is constructed to provide additional explicit geometric constraints dur-ing NVS. The superiority of OrienPose has been demon-strated by extensive results, which show impressive gen-eralizability to unseen objects and considerable robust-ness to significant image degradations, advancing pose estimation toward more challenging open-set scenarios. 26820 References 
+
+[1] Philipp Ausserlechner, David Haberger, Stefan Thalham-mer, Jean-Baptiste Weibel, and Markus Vincze. Zs6d: Zero-shot 6d object pose estimation using vision trans-formers. In 2024 IEEE International Conference on Robotics and Automation (ICRA) , pages 463–469. IEEE, 2024. 3 [2] Axel Barroso-Laguna, Sowmya Munukutla, Vic-tor Adrian Prisacariu, and Eric Brachmann. Matching 2d images in 3d: Metric relative pose from metric correspondences. In Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition ,pages 4852–4863, 2024. 3, 5 [3] Eric R Chan, Koki Nagano, Matthew A Chan, Alexan-der W Bergman, Jeong Joon Park, Axel Levy, Miika Ait-tala, Shalini De Mello, Tero Karras, and Gordon Wet-zstein. Generative novel view synthesis with 3d-aware diffusion models. In Proceedings of the IEEE/CVF Inter-national Conference on Computer Vision , pages 4217– 4229, 2023. 3 [4] Angel X Chang, Thomas Funkhouser, Leonidas Guibas, Pat Hanrahan, Qixing Huang, Zimo Li, Silvio Savarese, Manolis Savva, Shuran Song, Hao Su, et al. Shapenet: An information-rich 3d model repository. arXiv preprint arXiv:1512.03012 , 2015. 5 [5] Francesco Di Felice, Alberto Remus, Stefano Gasperini, Benjamin Busam, Lionel Ott, Federico Tombari, Roland Siegwart, and Carlo Alberto Avizzano. Zero123-6d: Zero-shot novel view synthesis for rgb category-level 6d pose estimation. In 2024 IEEE/RSJ International Con-ference on Intelligent Robots and Systems (IROS) , pages 14204–14211. IEEE, 2024. 2, 3 [6] Yuming Du, Yang Xiao, Michael Ramamonjisoa, Vin-cent Lepetit, et al. Pizza: A powerful image-only zero-shot zero-cad approach to 6 dof tracking. In 2022 In-ternational Conference on 3D Vision (3DV) , pages 515– 525. IEEE, 2022. 3, 5 [7] Michele Gattullo, Giulia Wally Scurati, Michele Fiorentino, Antonio Emmanuele Uva, Francesco Ferrise, and Monica Bordegoni. Towards augmented reality man-uals for industry 4.0: A methodology. Robotics and Computer-Integrated Manufacturing , 56:276–286, 2019. 2[8] Sorin Grigorescu, Bogdan Trasnea, Tiberiu Cocias, and Gigel Macesanu. A survey of deep learning techniques for autonomous driving. Journal of field robotics , 37(3): 362–386, 2020. 2 [9] Banglei Guan and Ji Zhao. Affine correspondences be-tween multi-camera systems for relative pose estimation. 
+
+IEEE Transactions on Pattern Analysis and Machine In-telligence , 48(2):2012–2029, 2026. 3 [10] Banglei Guan, Ji Zhao, Daniel Barath, and Friedrich Fraundorfer. Minimal solvers for relative pose estimation of multi-camera systems using affine correspondences. 
+
+International Journal of Computer Vision , 131(1):324– 345, 2023. [11] Banglei Guan, Ji Zhao, Saibal Mitra, and Laurent Kneip. Six-point method for multi-camera systems with reduced solution space. International Journal of Computer Vi-sion , 133(10):7270–7292, 2025. 3 [12] Banglei Guan, Ji Zhao, and Laurent Kneip. A complete solution to generalized relative pose estimation from affine correspondences. IEEE Transactions on Pattern Analysis and Machine Intelligence , pages 1–15, 2026. 3 [13] Xingyi He, Jiaming Sun, Yuang Wang, Di Huang, Hu-jun Bao, and Xiaowei Zhou. Onepose++: Keypoint-free one-shot object pose estimation without cad models. Ad-vances in Neural Information Processing Systems , 35: 35103–35115, 2022. 2, 3, 6 [14] Mar´ ıa-Blanca Ib´ a˜ nez and Carlos Delgado-Kloos. Aug-mented reality for stem learning: A systematic review. 
+
+Computers & Education , 123:109–123, 2018. 2 [15] Varun Jampani, Kevis-Kokitsi Maninis, Andreas Engel-hardt, Arjun Karpur, Karen Truong, Kyle Sargent, Stefan Popov, Andre Araujo, Ricardo Martin-Brualla, Kaushal Patel, Daniel Vlasic, Vittorio Ferrari, Ameesh Maka-dia, Ce Liu, Yuanzhen Li, and Howard Zhou. Navi: Category-agnostic image collections with high-quality 3d shape and pose annotations. In NeurIPS , 2023. 5 [16] Wadim Kehl, Fabian Manhardt, Federico Tombari, Slo-bodan Ilic, and Nassir Navab. Ssd-6d: Making rgb-based 3d detection and 6d pose estimation great again. In Pro-ceedings of the IEEE international conference on com-puter vision , pages 1521–1529, 2017. 2 [17] Jeong-gi Kwak, Erqun Dong, Yuhe Jin, Hanseok Ko, Shweta Mahajan, and Kwang Moo Yi. Vivid-1-to-3: Novel view synthesis with video diffusion models. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6775–6785, 2024. 3[18] Yann Labb´ e, Lucas Manuelli, Arsalan Mousavian, Stephen Tyree, Stan Birchfield, Jonathan Tremblay, Justin Carpentier, Mathieu Aubry, Dieter Fox, and Josef Sivic. Megapose: 6d pose estimation of novel objects via render & compare. arXiv preprint arXiv:2212.06870 ,2022. 3 [19] JongMin Lee, Yohann Cabon, Romain Br´ egier, Sungjoo Yoo, and Jerome Revaud. Mfos: Model-free & one-shot object pose estimation. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 2911–2919, 2024. 2, 3 [20] Amy Lin, Jason Y Zhang, Deva Ramanan, and Shubham Tulsiani. Relpose++: Recovering 6d poses from sparse-view observations. In 2024 International Conference on 3D Vision (3DV) , pages 106–115. IEEE, 2024. 3, 5 [21] Yunzhi Lin, Jonathan Tremblay, Stephen Tyree, Patri-cio A Vela, and Stan Birchfield. Single-stage keypoint-based category-level object pose estimation from an rgb image. In 2022 International Conference on Robotics and Automation (ICRA) , pages 1547–1553. IEEE, 2022. 3[22] Yuan Liu, Yilin Wen, Sida Peng, Cheng Lin, Xiaoxiao Long, Taku Komura, and Wenping Wang. Gen6d: Gen-eralizable model-free 6-dof object pose estimation from rgb images. In European Conference on Computer Vi-sion , pages 298–315. Springer, 2022. 2, 3 26821 [23] Yuan Liu, Cheng Lin, Zijiao Zeng, Xiaoxiao Long, Lingjie Liu, Taku Komura, and Wenping Wang. Sync-dreamer: Generating multiview-consistent images from a single-view image. arXiv preprint arXiv:2309.03453 ,2023. 3 [24] Octave Mariotti and Hakan Bilen. Semi-supervised viewpoint estimation with geometry-aware conditional generation. In European Conference on Computer Vi-sion , pages 631–647. Springer, 2020. 5 [25] Ben Mildenhall, Pratul P Srinivasan, Matthew Tancik, Jonathan T Barron, Ravi Ramamoorthi, and Ren Ng. Nerf: Representing scenes as neural radiance fields for view synthesis. Communications of the ACM , 65(1):99– 106, 2021. 2 [26] Douglas Morrison, Peter Corke, and J¨ urgen Leitner. Closing the loop for robotic grasping: A real-time, generative grasp synthesis approach. arXiv preprint arXiv:1804.05172 , 2018. 2 [27] Van Nguyen Nguyen, Thibault Groueix, Georgy Poni-matkin, Yinlin Hu, Renaud Marlet, Mathieu Salzmann, and Vincent Lepetit. Nope: Novel object pose estimation from a single image. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recogni-tion , pages 17923–17932, 2024. 2, 3, 5, 6 [28] Van Nguyen Nguyen, Thibault Groueix, Mathieu Salz-mann, and Vincent Lepetit. Gigapose: Fast and robust novel object pose estimation via one correspondence. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 9903–9913, 2024. 2, 3, 6 [29] Kiru Park, Timothy Patten, and Markus Vincze. Pix2pose: Pixel-wise coordinate regression of objects for 6d pose estimation. In Proceedings of the IEEE/CVF in-ternational conference on computer vision , pages 7668– 7677, 2019. 2 [30] Sida Peng, Yuan Liu, Qixing Huang, Xiaowei Zhou, and Hujun Bao. Pvnet: Pixel-wise voting network for 6dof pose estimation. In Proceedings of the IEEE/CVF confer-ence on computer vision and pattern recognition , pages 4561–4570, 2019. 3 [31] Mahdi Rad and Vincent Lepetit. Bb8: A scalable, ac-curate, robust to partial occlusion method for predicting the 3d poses of challenging objects without using depth. In Proceedings of the IEEE international conference on computer vision , pages 3828–3836, 2017. 2 [32] Huan Ren, Wenfei Yang, Shifeng Zhang, and Tianzhu Zhang. Rethinking correspondence-based category-level object pose estimation. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 1170– 1179, 2025. 3 [33] Jiaming Sun, Zihao Wang, Siyu Zhang, Xingyi He, Hongcheng Zhao, Guofeng Zhang, and Xiaowei Zhou. Onepose: One-shot object pose estimation without cad models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6825– 6834, 2022. 2, 3 [34] Yuan Sun, Xuan Wang, Yunfan Zhang, Jie Zhang, Caigui Jiang, Yu Guo, and Fei Wang. icomma: Inverting 3d gaussian splatting for camera pose estimation via com-paring and matching. arXiv preprint arXiv:2312.09031 ,2023. 3 [35] Yujing Sun, Caiyi Sun, Yuan Liu, Yuexin Ma, and Siu Ming Yiu. Generalizable single-view object pose es-timation by two-side generating and matching. In 2025 IEEE/CVF Winter Conference on Applications of Com-puter Vision (WACV) , pages 545–556. IEEE, 2025. 3 [36] Jonathan Tremblay, Thang To, Balakumar Sundar-alingam, Yu Xiang, Dieter Fox, and Stan Birch-field. Deep object pose estimation for semantic robotic grasping of household objects. arXiv preprint arXiv:1809.10790 , 2018. 2 [37] Hung-Yu Tseng, Qinbo Li, Changil Kim, Suhib Alsisan, Jia-Bin Huang, and Johannes Kopf. Consistent view syn-thesis with pose-guided diffusion models. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 16773–16783, 2023. 3 [38] Vikram Voleti, Chun-Han Yao, Mark Boss, Adam Letts, David Pankratz, Dmitry Tochilkin, Christian Laforte, Robin Rombach, and Varun Jampani. Sv3d: Novel multi-view synthesis and 3d generation from a single image using latent video diffusion. In European Conference on Computer Vision , pages 439–457. Springer, 2024. 3 [39] He Wang, Srinath Sridhar, Jingwei Huang, Julien Valentin, Shuran Song, and Leonidas J Guibas. Nor-malized object coordinate space for category-level 6d object pose and size estimation. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 2642–2651, 2019. 3 [40] Jiadai Wang, Jiajia Liu, and Nei Kato. Networking and communications in autonomous driving: A survey. IEEE Communications Surveys & Tutorials , 21(2):1243–1274, 2018. 2 [41] Zehan Wang, Ziang Zhang, Tianyu Pang, Chao Du, Hengshuang Zhao, and Zhou Zhao. Orient anything: Learning robust object orientation estimation from ren-dering 3d models. arXiv preprint arXiv:2412.18605 ,2024. 4, 1 [42] Daniel Watson, William Chan, Ricardo Martin-Brualla, Jonathan Ho, Andrea Tagliasacchi, and Mohammad Norouzi. Novel view synthesis with diffusion models. 
+
+arXiv preprint arXiv:2210.04628 , 2022. 2, 3, 5 [43] Yihong Wu and Zhanyi Hu. Pnp problem revisited. Jour-nal of Mathematical Imaging and Vision , 24(1):131–141, 2006. 3 [44] Yu Xiang, Tanner Schmidt, Venkatraman Narayanan, and Dieter Fox. Posecnn: A convolutional neural network for 6d object pose estimation in cluttered scenes. arXiv preprint arXiv:1711.00199 , 2017. 2, 3 [45] Lin Yen-Chen, Pete Florence, Jonathan T Barron, Al-berto Rodriguez, Phillip Isola, and Lin Tsung-Yi. inerf: Inverting neural radiance fields for pose estimation. in 2021 ieee. In RSJ International Conference on Intelligent Robots and Systems (IROS) , pages 1323–1330, 2021. 3 [46] Yuanhong Yu, Xingyi He, Chen Zhao, Junhao Yu, Ji-aqi Yang, Ruizhen Hu, Yujun Shen, Xing Zhu, Xiaowei Zhou, and Sida Peng. Boxdreamer: Dreaming box cor-26822 ners for generalizable object pose estimation. arXiv preprint arXiv:2504.07955 , 2025. 6 [47] Jason Y Zhang, Deva Ramanan, and Shubham Tulsiani. Relpose: Predicting probabilistic relative rotation for sin-gle objects in the wild. In European Conference on Com-puter Vision , pages 592–611. Springer, 2022. 3, 5 [48] Chen Zhao, Tong Zhang, and Mathieu Salzmann. 3d-aware hypothesis & verification for generalizable relative object pose estimation. arXiv preprint arXiv:2310.03534 , 2023. 3 [49] Chuanxia Zheng and Andrea Vedaldi. Free3d: Consis-tent novel view synthesis without 3d representation. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 9720–9731, 2024. 3, 5 [50] Yang Zou, Zhaoshuai Qi, Yating Liu, Weiyi Liu, Zihao Xu, Weipeng Sun, Xingyuan Li, Jiaqi Yang, and Yan-ning Zhang. Axispose: Model-free matching-free single-shot 6d object pose estimation via axis generation. IEEE Transactions on Circuits and Systems for Video Technol-ogy , 2026. 2 26823

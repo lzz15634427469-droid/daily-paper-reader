@@ -1,0 +1,60 @@
+{
+  "version": 2,
+  "extractor": "papercropper",
+  "tables": [
+    {
+      "url": "assets/tables/cvpr-2026-accepted/cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper/table-001.webp",
+      "caption": "",
+      "page": 0,
+      "index": 1,
+      "width": 865,
+      "height": 355,
+      "label": "Table"
+    },
+    {
+      "url": "assets/tables/cvpr-2026-accepted/cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper/table-002.webp",
+      "caption": "",
+      "page": 0,
+      "index": 2,
+      "width": 864,
+      "height": 266,
+      "label": "Table"
+    },
+    {
+      "url": "assets/tables/cvpr-2026-accepted/cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper/table-003.webp",
+      "caption": "",
+      "page": 0,
+      "index": 3,
+      "width": 864,
+      "height": 454,
+      "label": "Table"
+    },
+    {
+      "url": "assets/tables/cvpr-2026-accepted/cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper/table-004.webp",
+      "caption": "",
+      "page": 0,
+      "index": 4,
+      "width": 861,
+      "height": 279,
+      "label": "Table"
+    },
+    {
+      "url": "assets/tables/cvpr-2026-accepted/cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper/table-005.webp",
+      "caption": "",
+      "page": 0,
+      "index": 5,
+      "width": 804,
+      "height": 350,
+      "label": "Table"
+    },
+    {
+      "url": "assets/tables/cvpr-2026-accepted/cvpr-2026-dash-lirec-net-a-target-free-and-learning-based-network-for-lidar-rgb-and-cvpr-2026-paper/table-006.webp",
+      "caption": "",
+      "page": 0,
+      "index": 6,
+      "width": 831,
+      "height": 257,
+      "label": "Table"
+    }
+  ]
+}

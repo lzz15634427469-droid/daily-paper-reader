@@ -1,0 +1,665 @@
+Title: HamiPose: Hamiltonian Optimization for Unsupervised Domain Adaptive Pose Estimation
+
+URL Source: https://openaccess.thecvf.com/content/CVPR2026/papers/Li_HamiPose_Hamiltonian_Optimization_for_Unsupervised_Domain_Adaptive_Pose_Estimation_CVPR_2026_paper.pdf
+
+Published Time: Sat, 16 May 2026 16:48:01 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# HamiPose: Hamiltonian Optimization for Unsupervised Domain Adaptive Pose Estimation 
+
+## Jiawen Li 1, Fei Jiang 2,3* , Dandan Zhu 1, Aimin Zhou 1
+
+> 1
+
+East China Normal University, 2Chongqing Academy of Science and Technology, 3Chongqing University 
+
+jwli@stu.ecnu.edu.cn, jiang.feiabc@163.com, ddzhu@mail.ecnu.edu.cn, amzhou@cs.ecnu.edu.cn 
+
+## Abstract 
+
+Unsupervised domain adaptation (UDA) for pose estima-tion promises transfer from synthetic to real domains but often suffers instability under domain shift. Prior work at-tributes this deterioration to gradient interference between source supervision and target consistency. This conflict is distinct in pose estimation, where sparse and heterogeneous supervision signals cause gradients to be highly sensitive to small localization errors and lead to unstable updates. To address these challenges, we propose HamiPose, a Hamil-tonian optimization framework that transports decoupled and confidence-calibrated gradients within a unified geom-etry to mitigate instability. HamiPose first refines gradient interaction through keypointwise geometry decomposition, orthogonally projecting target gradients to preserve non-conflicting component. Channelwise gated alignment then calibrates the parallel component with confidence and align-ment, producing decoupled, confidence-calibrated gradients. These gradients are advanced by a Hamiltonian optimizer with a symplectic integrator, providing controlled momentum that stabilizes updates. Extensive experiments demonstrate that HamiPose achieves state-of-the-art performance in UDA pose estimation while maintains strong performance under domain generalization settings. 
+
+## 1. Introduction 
+
+Pose estimation is a fundamental problem in computer vi-sion with applications in human–computer interaction, aug-mented reality, and video understanding [4, 5]. However, building large, labeled real-world pose datasets is costly and time-consuming, which limits the scalability of supervised methods. Synthetic datasets provide a practical alternative: they can be generated at scale with precise annotations and controlled variability [23, 42]. This data landscape motivates the adoption of Unsupervised Domain Adaptation (UDA) as a practical solution. By transferring knowledge from la-
+
+> *Corresponding author. Target Domain
+> Source Domain
+> Gradient Conflict
+> Sparse & Heterogeneous Supervision signal Input
+> Pseudo label Ground truth Oscillations in optimization
+> Training dynamics
+
+…
+
+> …
+> Source gradient Target gradient
+
+Figure 1. Distinct challenges in UDA pose estimation. Source supervision provides sparse heatmap peaks, while target pseudo labels are sparse and heterogeneous across keypoints. These prop-erties amplify the mismatch between Euclidean similarity and the preconditioned metric, leading to oscillatory optimization. 
+
+beled synthetic domain (source) to unlabeled real domain (target), UDA consequently enables generalization without target annotations [14, 18, 24, 28, 29]. Early work on UDA pose estimation emphasized repre-sentation alignment through adversarial training and mo-ment matching to reduce the distribution gap between source and the target domains [14, 18]. Subsequent studies moved toward the prediction space by enforcing agreement with pseudo heatmaps and consistency regularization, while also introducing source-free and test-time protocols to enhance practicality [18, 24, 28, 29]. However, aligning features or predictions alone cannot fully resolve how multiple train-ing signals interact during optimization. This limitation has motivated a shift of attention from global alignment to the optimization dynamics, revealing that performance degrada-tion under domain shift often stems from gradient conflict between the source-supervised objective and the target con-sistency gradients [6, 9, 25, 31]. The gradient conflict in UDA pose estimation also arises from the joint effect of source supervision and target consis-tency, but it presents distinct challenges, as shown in Figure 1. Pose estimation is supervised with heatmaps, where both source and target signals are sparse and sharply localized. Each joint appears as a narrow peak whose informative gradi-This CVPR paper is the Open Access version, provided by the Computer Vision Foundation. Except for this watermark, it is identical to the accepted version; the final published version of the proceedings is available on IEEE Xplore. 13856 ents exist only in a small neighborhood. Even minor spatial offsets can flip gradient directions and destabilize updates, an effect that intensifies near sharp responses and is linked to optimization instability [8]. In addition, the quality of pseudo heatmaps varies with occlusion, truncation, and motion blur, which makes supervision reliability fluctuate across joints and propagates as label noise during adaptation [18, 29]. Therefore, conflict is heterogeneous across keypoints, with a few difficult joints dominating disagreement while others remain consistent. These two properties, sparsity and het-erogeneity, induce oscillatory parameter updates that hinder stable convergence and weaken cross-domain generalization. These observations motivate a dynamics-preserving for-mulation that stabilizes parameter evolution under sparse and heterogeneous supervision. Hamiltonian dynamics meets this need by modeling systems that exhibit oscilla-tion and long-horizon evolution, where conserved quantities and geometry-preserving trajectories curb artificial energy drift and mitigate numerical overshoot during prolonged integration. Symplectic integrators are designed for this setting and are known to preserve the qualitative stability of oscillatory motion without sacrificing efficiency. Car-rying this perspective to learning, we treat optimization as geometry-aware transport on an energy landscape, with the loss acting as potential energy and a data-driven metric inducing kinetic energy, so that parameter updates evolve along structure-preserving flows with controlled momen-tum. Therefore, a Hamiltonian view provides the required dynamics-preserving foundation and supports a geometry-consistent optimization paradigm that stabilizes adaptation under sparse and heterogeneous supervision. To realize this idea, we introduce HamiPose, which mod-els the optimization process as a Hamiltonian system. Hami-Pose first refines gradient interaction at the detection head, where domain shift is most pronounced and pseudo signals are most variable. For each keypoint, the target gradient is decomposed into components that are orthogonal and parallel to the source direction, and the nonconflicting or-thogonal component is preserved to avoid destructive cancel-lation across heterogeneous joints. The parallel component is calibrated by channelwise gated alignment that combines geometric agreement with teacher confidence, which sup-presses unreliable pseudo signals while retaining informa-tive ones. A simple warmup on the alignment sharpness avoids premature hard filtering and gradually increases se-lectivity as estimates improve. The resulting decoupled and confidence-calibrated gradients are then transported by a Hamiltonian optimizer that uses a symplectic integrator to supply controlled momentum. This mechanism smooths high-frequency oscillations induced by sparse and peaky supervision, maintains first-order efficiency, and improves long-horizon stability. Overall, these elements produce a sta-ble and geometry-consistent optimization procedure that re-duces gradient conflict, enhances convergence under limited labels, and strengthens cross-domain generalization. The main contributions of our work are summarized as follows: • We introduce HamiPose, a geometry-consistent Hamilto-nian optimization framework for UDA pose estimation that mitigates gradient interference arising from sparse, localized supervision and heterogeneous pseudo-labels. • We derive a conflict-mitigated update rule by orthogonally decomposing per-keypoint gradients and gating the paral-lel component with channel-level alignment. A data-driven diagonal metric and symplectic integration then transport the updates in a unified geometry for stable convergence. • We validate the effectiveness of HamiPose across multiple UDA pose estimation benchmarks and it achieves state-of-the-art performance. In addition, it delivers competitive results on domain generalization benchmarks. 
+
+## 2. Related Work 
+
+2.1. Unsupervised Domain Adaptive Pose Estima-tion 
+
+Unsupervised domain adaptive (UDA) pose estimation trans-fers supervision from labeled source data to unlabeled target data by combining input or style alignment, temporal or consistency priors, and teacher-student learning. Classical works such as CC-SSL [26], RegDA [14], and TransPar [10] encourage cross-domain consistency through shared architec-tures or feature extractors, while Mean Teacher [33] variants refine pseudo labels to stabilize training [15, 18, 22]. Re-cent work shifts from generic alignment to setting-aware robustness. Source-free adaptation removes dependence on source data during adaptation and is attractive when data sharing is restricted [29]. Dual-teacher strategies and pho-tometric priors improve transfer in low-light scenes [1]. Se-vere motion blur is mitigated by coupling RGB supervision with event cues to restore spatial structure under fast mo-tion [19]. Occlusion-resilient designs curb error propaga-tion from noisy pseudo labels when joints are missing or truncated [7]. Although distinct from UDA, domain gen-eralization in 3D pose offers complementary gains by en-couraging invariance through augmentation and optimiza-tion [30]. Across these directions, a recurring challenge is the interaction between source-driven and target-driven up-dates. Misaligned gradients can destabilize optimization and slow convergence, motivating approaches that diagnose and regulate gradient interactions during adaptation [6, 25]. 
+
+2.2. Gradient Matching for Domain Adaptation 
+
+Aligning optimization dynamics across domains through gradient criteria is a central principle for UDA. Pioneer-ing methods methods reduce cross-domain gradient discrep-ancy to stabilize training and improve transfer, while gradi-ent–distribution alignment matches feature–gradient statis-13857 tics to tighten generalization [6, 9]. Recent work extends this view to large models and distributed settings by aligning both directions and magnitudes. Prompt-based UDA aligns per-objective gradients with an added norm regularizer and improves stability in vision–language adaptation, and fed-erated matching provides a coordination signal when data cannot be shared [27, 31, 36]. Evidence from cross-domain face anti-spoofing links gradient alignment to flatter min-ima under shift, and semantic conditioning further refines matching when labels or categories are available [2, 12, 21]. Complementary to these criteria on instantaneous updates, Gradual Domain Adaptation via Gradient Flow aligns the tra-jectory of optimization by transporting the source toward the target through intermediate domains with preserved labels, which yields smoother steps and reduces abrupt changes in descent directions [41]. Unlike classification, pose estima-tion optimizes structured, spatially peaked heatmap outputs. Gradients are highly sparse and per-keypoint heterogeneous due to occlusion, truncation, and viewpoint changes. Pseudo-label noise compounds this by amplifying conflicting compo-nents for a subset of joints, making cosine-similarity drops local and intermittent. Therefore, we propose to accommo-date joint-wise inconsistency and selectively regulate target updates rather than enforcing global agreement. 
+
+2.3. Gradient Operations for Domain Generaliza-tion 
+
+Domain generalization (DG) aims to remain robust on un-seen domains without target labels. Operating in gradi-ent space helps control cross-domain interference. Beyond projection, gradient-statistics matching aligns higher-order structure across environments. Fishr matches per-parameter gradient variances as an empirical Fisher proxy and reduces domain-specific drift [32]. Sharpness-aware methods pro-vide a complementary view. SAM seeks flatter minima by optimizing a local worst-case neighborhood and has in-spired DG variants that couple flatness with cross-domain goals [8, 39]. Projection-based surgery removes opposing components to increase agreement across domains, with conflict-aware variants integrating adversarial and task gra-dients toward conflict-free directions [25, 38]. Gradient matching further strengthens DG by minimizing the gap be-tween clean and perturbed objectives [35], while gradient discrepancy minimization coordinates multiple sources in federated DG [36]. Recent work explores training-time an-nealing and Pareto-guided searches over gradient directions to promote inter-domain agreement [3]. 
+
+## 3. Method 
+
+3.1. Preliminaries 
+
+Given a labeled source domain S = {(xsi , y si )}Ns 
+
+> i=1
+
+and an unlabeled target domain T = {xTi }Nt
+
+> i=1
+
+, where Ns and Nt
+
+are the number of samples, the goal is to learn a model that performs well on T without using target annotations. In this work, we focus on the task of pose estimation, which is formulated as the estimation of a Gaussian heatmap 
+
+H ∈ RH×W ×K , where H and W are the height and width of heatmap and K is the number of keypoints. Each chan-nel of H represents a 2D Gaussian centered at the ground truth location of the corresponding keypoint. A model fθ (·)
+
+is trained on S and adapted to T . To facilitate adaptation, we adopt the Mean Teacher framework [33], which encour-ages consistency between student and teacher predictions on unlabeled data. The overall training objective combines a supervised loss on the labeled source domain and an unsu-pervised consistency loss on the unlabeled target domain:               
+
+> L(θ) = Ls(θ) + λLt(θ, θ ′) = E(xs,Hs)∼S
+> ∥fθ(xs)−Hs∥22
+> 
+> +λExt∼T
+> h
+> ∥fθ(xT)−fθ′(xT)∥22
+> i
+> ,
+> (1)
+
+where Hs denotes the ground truth, fθ and fθ′ denote the student and the teacher, respectively. The teacher parameters are updated after each iteration by an exponential moving average: 
+
+θ′ 
+
+> t
+
+= τ θ ′ 
+
+> t−1
+
++ (1 − τ ) θt, (2) where τ ∈ [0 , 1) is the EMA decay rate controlling the momentum of the teacher update. Domain shift manifests in optimization as a gradient conflict between source and target objectives. In the following sections, we operate on gradients in the output (heatmap) space to detect and mitigate such conflicts before propagating updates to the full network. 
+
+3.2. Keypointwise Geometry Decomposition 
+
+To capture heterogeneous behavior, we decompose the out-put head by keypoints and measure source–target agreement at the channel level under a shared, normalized geometry so that comparisons are scale-consistent. Let the network output be the stack of heatmaps H = fθ (x) ∈ RK×H×W ,where Hk denotes the heatmap of keypoint k (the k-th output channel). The final layer of the pose estimator has weights 
+
+W and biases b. The parameters producing the k-th out-put channel are grouped as θ(k) = {Wk, :, b k}. We define 
+
+gout  
+
+> s
+
+= ∇HLs and gout  
+
+> t
+
+= ∇HLt. Denote by g(k) 
+
+> s
+
+and g(k)
+
+> t
+
+the portions of gout  
+
+> s
+
+and gout  
+
+> t
+
+that correspond to θ(k) (com-puted on the same mini-batch). Directly comparing these gradients in the raw space can be misleading due to differ-ent scales/curvatures across groups. We therefore equip the parameter space with a block-diagonal metric 
+
+D(t−1)  
+
+> k
+
+=  α(k) 
+
+> t−1
+
++ ε I|θ(k)|, (3) where ε > 0 stabilizes inverses and I|θ(k)| is the identity on group k. The second-moment accumulator α(k) is up-dated at the end of each iteration via an EMA of the applied 13858 groupwise parameter increment: 
+
+α(k) 
+
+> t−1
+
+= μ α (k) 
+
+> t−2
+
++ (1 − μ) mean  (∆ θ(k)
+
+> t−1
+
+)2, α(k)0 = 1 ,
+
+(4) where ∆θ(k) 
+
+> t−1
+
+denotes the actual parameter increment applied to θ(k) during iteration t−1, μ ∈ [0 , 1) is the EMA decay. Let Jk = ∂Hk/∂θ (k). Denote by g(k) 
+
+> s
+
+and g(k) 
+
+> t
+
+the por-tions of gout  
+
+> s
+
+and gout  
+
+> t
+
+associated with channel k. We com-pute alignment by pulling back the output gradients to pa-rameter space and using the group metric D(t−1)  
+
+> k
+
+:
+
+ˆg(k) 
+
+> s
+
+= J⊤ 
+
+> k
+
+g(k) 
+
+> s
+
+, ˆg(k) 
+
+> t
+
+= J⊤ 
+
+> k
+
+g(k) 
+
+> t
+
+. (5) The metric-normalized cosine and projection coefficients are then 
+
+ρk = (ˆ g(k) 
+
+> s
+
+)⊤ D(t−1) 
+
+> k
+
+−1 ˆg(k)
+
+> t
+
+∥ˆg(k) 
+
+> s
+
+∥ D(t−1) 
+
+> k
+
+−1 ∥ˆg(k) 
+
+> t
+
+∥ D(t−1) 
+
+> k
+
+−1
+
+, (6) where ∥v∥ D(t−1) 
+
+> k
+
+−1 =
+
+q
+
+v⊤ D(t−1) 
+
+> k
+
+−1v. Then we de-fine the projection coefficient: 
+
+ak = (ˆ g(k) 
+
+> s
+
+)⊤ D(t−1) 
+
+> k
+
+−1 ˆg(k)
+
+> t
+
+(ˆ g(k) 
+
+> s
+
+)⊤ D(t−1) 
+
+> k
+
+−1 ˆg(k)
+
+> s
+
+. (7) More details are provided in Appendix. We then form the parallel and orthogonal components in the output space using the projection scalar ak computed from the pullback gradients ˆg(k) 
+
+> s
+
+, ˆg(k) 
+
+> t
+
+under the metric (D(t−1)  
+
+> k
+
+)−1:
+
+g(k) 
+
+> t, ∥
+
+= ak g(k) 
+
+> s
+
+, g(k) 
+
+> t, ⊥
+
+= g(k) 
+
+> t
+
+− g(k) 
+
+> t, ∥
+
+. (8) By construction (J⊤ 
+
+> k
+
+g(k)
+
+> t, ⊥
+
+⊤ D(t−1) 
+
+> k
+
+−1 J⊤ 
+
+> k
+
+g(k) 
+
+> s
+
+) = 0 ,the orthogonal target component is harmless to the source descent in the parameter-space metric and enables selective filtering downstream. 
+
+3.3. Channelwise Gated Alignment 
+
+Even under the normalized geometry introduced above, the target gradient can be partly opposite to the source gradi-ent on a per-keypoint basis due to occlusions, truncations, or heterogeneous pseudo-label quality. Naively averaging source and target risks destructive interference and oscilla-tion. However, since J⊤ 
+
+> k
+
+g(k) 
+
+> t, ⊥
+
+is orthogonal to J⊤ 
+
+> k
+
+g(k) 
+
+> s
+
+under 
+
+ D(t−1) 
+
+> k
+
+−1, a directionally selective filter is suggested: al-ways pass the orthogonal part, and selectively admit only the reliable positively aligned parallel part. First, we modulate by a per-channel confidence extracted from the teacher heatmap: 
+
+ck = max 
+
+> u∈Ω
+
+ fθ′ (xT )
+
+> k
+
+(u) ∈ [0 , 1] , (9) where Ω is the spatial grid and (·)k indexes the k-th heatmap channel. To avoid aggressive gating early on, we anneal an alignment sharpness parameter γ > 0 from small to large: 
+
+γ(t) = γmin + ( γmax − γmin ) · min  1, t/T warm 
+
+. (10) With the pieces above, we form a deterministic gate using 
+
+ρk in Eq. (6): 
+
+ϕk = max 0, tanh  γ(t) ρk
+
+ · ck ∈ [0 , 1] , (11) which sets ϕk = 0 for nonpositive alignment ( ρk ≤ 0), progressively admits positively aligned components as γ
+
+increases, and is modulated by the teacher confidence ck.The per-group filtered target is 
+
+˜g(k) 
+
+> t, pc
+
+= g(k) 
+
+> t, ⊥
+
++ ϕk g(k) 
+
+> t, ∥
+
+, (12) and we compose the total update as 
+
+gout total = gout  
+
+> s
+
++ λ ˜gt, pc . (13) Since ϕk ≥ 0 and ρk > 0 implies ak > 0, we have 
+
+ J⊤ 
+
+> k
+
+g(k)
+
+> s
+
+⊤ D(t−1) 
+
+> k
+
+−1 J⊤ 
+
+> k
+
+˜g(k)
+
+> t, pc
+
+
+
+= ϕk
+
+ J⊤ 
+
+> k
+
+g(k)
+
+> s
+
+⊤ D(t−1) 
+
+> k
+
+−1 J⊤ 
+
+> k
+
+g(k)
+
+> t
+
+ ≥ 0,
+
+(14) which shows that the composed update is non-conflicting with the source direction under the parameter-space metric after pullback. A formal proof is provided in the Appendix. 
+
+3.4. Hamiltonian Optimization 
+
+After channelwise filtering the target signal remains sparse and heterogeneous, which yields high frequency oscillations across batches. We adopt a Hamiltonian formulation that augments the parameters with momentum and transports them in an adaptive geometry. This structure-preserving dynamics introduces inertia that damps oscillations while keeping the procedure first order in cost. Let p denote a momentum variable with the same shape as θ. We define the Hamiltonian 
+
+H(θ, p ) = 12 p⊤ D(t−1) −1p + Ls(θ) + λ Lt(θ), (15) with mass matrix 
+
+D(t−1) = ( αt−1 + ε) I|θ|, ε > 0, (16) and an EMA that uses the applied parameter increment 
+
+αt = μ α t−1 + (1 − μ) mean  (∆ θt)2, α0 = 1 . (17) The canonical equations are 
+
+˙θ = ∇pH =  D(t−1) −1p, 
+
+˙p = −∇ θ H = −∇ θ
+
+ Ls + λ Lt
+
+. (18) 13859 Following Sec. 3.3, we filter the target gradient per chan-nel in the output space to obtain gout total (Eq. (13)). Let 
+
+H = fθ (x) and Jθ = ∂H/∂θ . We then pull the filtered signal back to parameter space: 
+
+gH = ∇θ L = J⊤ 
+
+> θ
+
+gout total . (19) This pullback preserves the non-conflict property established at the head under the same metric family, so all layers receive a filtered and geometrically consistent update. We adopt a one-gradient symplectic Euler scheme. Eq. (19) is evaluated once per iteration and the two momen-tum kicks reuse the same gH, so the per-step cost matches a standard backward pass. The extra work comes from ap-plying  D(t−1) −1 to p. Since D is block diagonal with scalar blocks, this amounts to scaling the momentum block by block. For each parameter group k, replace p(k) with 
+
+(α(k) 
+
+> t−1
+
++ ε)−1p(k). The operation touches each parameter once, so the cost is O(|θ|) and is negligible. We then use a kick, drift, kick step: 
+
+p ← p − ϵ 
+
+> 2
+
+gH,θ ← θ + ϵ  D(t−1) −1p, p ← p − ϵ 
+
+> 2
+
+gH,
+
+(20) where ϵ is the step size. 
+
+## 4. Experiments 
+
+4.1. Datasets and Evaluation Metrics 
+
+Datasets. We evaluate our method on three human pose datasets and three hand pose datasets, encompassing both synthetic and real-world domains. For human pose estima-tion, we use SURREAL [34] as the synthetic source domain, while Human3.6M [13] and Leeds Sports Pose (LSP) [17] serve as real-world target domains. For hand pose estimation, we adopt the Rendered Hand Pose Dataset (RHD) [42] as the synthetic source domain, with Hand-3D-Studio (H3D) [40] and FreiHand [43] as real-world target domains. More de-tails are presented in Appendix. 
+
+Metrics. We use the Percentage of Correct Keypoints (PCK) metric, a standard evaluation protocol in pose estima-tion. Specifically, we report PCK@0.05, which calculates the percentage of predicted keypoints that fall within 5% of the image size from the ground truth. For the 16-keypoint hu-man body skeleton, we break down the results into six major regions: Shoulder (Sld), Elbow (Elb), Wrist, Hip, Knee, and Ankle. For the 21-keypoint hand skeleton, we report part-based accuracy on the Metacarpophalangeal joints (MCP), Proximal Interphalangeal joints (PIP), Distal Interphalangeal joints (DIP), and Fingertips (Fin). 
+
+4.2. Implementation Details 
+
+We adopt the Simple Baseline [37] as our hand keypoint de-tection model, using a pre-trained ResNet101 [11] backbone. 
+
+Algorithm 1: HamiPose training                                                                                                                                                    
+
+> Input :Source S, target T, weights λ, μ, τ , step ϵ, metric ε,warmup Twarm , total steps T
+> Output : Teacher θ′for evaluation
+> Init θ←init ,θ′←θ,p←0,α←1,α(k)←1
+> for t= 1 ..T do
+> Sample (xs,Hs)∼ S and xT∼ T
+> Compute Ls, L tby Eq. (1) with student fθand teacher fθ′
+> Set gout
+> s,gout , and γ(t)by Eq. (10)
+> // Keypointwise geometry decomposition
+> for k= 1 ..K do
+> Set D(t−1)
+> k= ( α(k)
+> t−1+ε)I,Jk=∂Hk/∂θ (k)
+> ˆg(k)
+> s←J⊤
+> kg(k)
+> s,ˆg(k)
+> t←J⊤
+> kg(k)
+> t
+> Compute ρkby Eq. (6) and akby Eq. (7) Set g(k)
+> t, ∥←akg(k)
+> s,g(k)
+> t, ⊥←g(k)
+> t−g(k)
+> t, ∥
+> // Channelwise gated alignment
+> Get ckby Eq. (9) and ϕkby Eq. (11) for all k
+> Form ˜g(k)
+> t, pc =g(k)
+> t, ⊥+ϕkg(k)
+> t, ∥and assemble ˜gout
+> t
+> Compose gout total =gout
+> s+λ˜gout
+> tby Eq. (13)
+> // Hamiltonian Optimization
+> Compute gH=J⊤
+> θgout total by Eq. (19)
+> p←p−ϵ
+> 2gH
+> Set D(t−1) = ( αt−1+ε)Iby Eq. (16)
+> ∆θt←ϵ(D(t−1) )−1pθ←θ+ ∆ θt
+> p←p−ϵ
+> 2gH
+> Update αby Eq. (17) using the applied ∆θt
+> Update each α(k)by Eq. (4) using ∆θ(k)
+> t
+> θ′←τ θ ′+ (1 −τ)θ
+> return θ′
+
+For training on each target domain, we follow the practices in Simple Baseline and RegDA [14], with the entire training process consisting of 70 epochs. The batch size is set to 32, with a total of 500 iterations per epoch. Building on the aug-mentation techniques in RegDA, we further applied rotation (-30° to 30°) and random 2D translation (-5% to 5%) to the input images from both the source and target domains. Un-less otherwise stated, we fix the following hyperparameters. For the loss function, the weight of unsupervised learning λ
+
+is set to 1.0 consistent with current research. Unless other-wise stated, all exponential moving averages use a decay of 
+
+0.99 . This includes the teacher update with τ = 0 .99 and the second-moment accumulators for the adaptive metric with 
+
+μ = 0 .99 for both the groupwise terms α(k) (Eq. 4) and the global term α (Eq. 17). We add a small constant ε = 10 −8
+
+to all metric inverses for numerical stability. Optimization uses a symplectic step size ϵ = 1 × 10 −3 with a one-epoch linear warm-up followed by cosine decay. 
+
+4.3. Comparisons to State-of-the-Art 
+
+4.3.1. Domain Adaptation Human Body Pose Estimation. We evaluate our method under two UDA human pose settings: SURREAL →LSP and 
+
+SURREAL →Human3.6M and the results are shown in Ta-13860 Table 1. Comparison with SOTA on human pose estimation task. The top two results are highlighted as best and second-best , respectively.                                                                                                                                                                                        
+
+> Method SURREAL →LSP SURREAL →Human3.6M Sld Elb Wrist Hip Knee Ankle All Sld Elb Wrist Hip Knee Ankle All
+> Source Only 57.4 73.6 59.3 55.5 63.1 66.6 56.7 48.1 78.9 64.7 40.9 75.5 78.6 55.3
+> [CVPR’20] CC-SSL [26] 36.8 66.3 63.9 59.6 67.3 70.4 60.7 44.3 68.5 55.2 22.2 62.3 57.8 51.7
+> [CVPR’21] MDAM [22] 61.4 77.7 75.5 65.8 76.7 78.3 69.2 51.7 83.1 68.9 17.7 79.4 76.6 62.9
+> [CVPR’21] RegDA [14] 62.7 76.7 71.1 81.0 80.3 75.3 74.6 73.3 86.4 72.8 54.8 82.0 84.4 75.6
+> [ECCV’22] Uniframe [18] 69.2 84.9 83.3 85.5 84.7 84.3 82.0 78.1 89.6 81.1 52.6 85.3 87.1 79.0
+> [ICCV’23] SFHPE [29] 70.7 85.4 83.8 86.6 85.2 85.0 83.2 77.9 88.8 80.4 52.3 84.2 86.9 78.7
+> [ECCV’24] DA-LLPose [1] 70.9 85.7 84.1 86.9 85.5 85.3 83.5 78.2 89.1 80.7 52.6 84.5 87.2 79.0
+> [CVPR’21] CGDM [6] 69.5 82.4 80.9 84.1 83.0 79.8 80.6 75.6 85.3 76.8 45.9 82.9 85.1 75.4
+> [ICLR’24] GGF [41] 69.2 82.0 80.6 83.7 82.6 79.4 80.2 75.3 84.9 76.4 45.6 82.5 84.7 75.0
+> [NeurIPS’24] PGDA [31] 70.4 86.3 83.6 86.1 84.7 85.5 82.7 78.4 88.3 80.9 51.8 84.7 86.4 79.2 Our HamiPose 71.6 86.4 84.5 87.5 86.0 86.2 83.9 79.1 89.7 81.5 55.0 85.5 87.5 79.8 PGDA Ours DA-LLPose SFUDA GT PGDA Ours DA-LLPose SFUDA GT
+
+Figure 2. Qualitative results of our method. Top-left: H3D, Bottom-left: FreiHAND, Top-right: LSP, Bottom-right: Human3.6M. 
+
+ble 1. The comparison includes two families of baselines, namely pose-oriented UDA methods (e.g., CC-SSL [26], MDAM [22], RegDA [14], UniFrame [18], SFHPE [29], DA-LLPose [1]) and gradient-related approaches that ex-plicitly leverage or regularize gradients (e.g., CGDM [6], FGDA [9], PGDA [31]). Our method attains the highest overall scores (All), reaching 83.9% on LSP and 79.8% on Human3.6M. Beyond the aggregate metric, our method matches or surpasses the best baseline on the majority of per-joint columns. The ranking advantage is consistent across the two transfers with different domain gaps. 
+
+Hand Pose Estimation. Tables 3 summarize results on 
+
+RHD →H3D and RHD →FreiHand under the same two base-lines as above. Our method attains the best performance, with All scores of 83.1% on H3D and 59.9% on FreiHand. Inspecting the fine-grained columns shows clearer margins on DIP and Fin metrics, while MCP and PIP remain bet-ter than competing methods. The advantage persists across both transfer directions. Both tables establish consistent top performance against both pose-oriented and gradient-related baselines, at the level of both the All metric and the challeng-ing fine-grained evaluations. We provide qualitative results in Figure 2. It is clear that our method produces more ac-curate keypoints compared to others. Additional qualitative examples and analysis are provided in the Appendix. 
+
+4.3.2. Domain Generalization 
+
+We further assess domain generalization and compare our approach with both pose-oriented UDA baselines (CCSSL, RegDA, UniFrame) and domain generalization baselines (Fishr, SAM, SAGM, GGA). The experimental results are summarized in Table 2. 
+
+Generalization to Human3.6M. We adapt models on SURREAL →LSP and directly evaluate them on the unseen Human3.6M dataset. Despite the small size of LSP (about 2k images), our method attains the highest overall accuracy with an All score of 77.5%. It ranks first on the majority of per-joint columns, including shoulder, elbow, wrist, knee, and ankle, while achieving comparable accuracy on hip where domain gap is particularly large. 13861 Table 2. Domain generalization experiments on FreiHand and Human3.6M. Source only indicates training only on RHD or SURREAL.                                                                                                                                 
+
+> Method Human3.6M FreiHand Sld Elb Wrist Hip Knee Ankle All MCP PIP DIP Fin All
+> Source only 51.9 65.2 63.1 38.0 68.7 67.4 63.9 34.5 48.9 52.8 48.7 46.1
+> [CVPR’20] CCSSL [26] 52.7 76.9 63.1 31.6 75.7 72.9 62.2 34.3 46.3 48.4 44.4 42.6
+> [CVPR’21] RegDA [14] 76.9 80.2 69.7 52.0 80.3 80.0 73.2 37.8 51.8 53.2 47.5 46.9
+> [ECCV’22] UniFrame [18] 77.0 85.9 73.8 47.6 80.7 80.6 74.3 35.6 52.3 55.4 50.6 47.1
+> [ICML’22] Fishr [32] 77.9 86.5 73.8 47.9 81.0 81.1 74.6 35.8 53.6 56.9 50.8 47.8
+> [ECCV’22] SAM [8] 78.4 86.7 74.1 48.1 81.3 81.2 74.9 36.3 53.8 57.1 51.0 48.3
+> [CVPR’23] SAGM [35] 79.0 87.1 74.5 48.4 81.5 81.5 75.5 37.8 55.2 58.7 52.5 49.9
+> [CVPR’25] GGA [3] 79.8 87.7 75.4 49.2 82.2 82.4 76.8 38.5 56.7 59.4 53.6 51.0 Our HamiPose 80.7 88.3 76.1 50.2 82.6 82.9 77.5 40.6 58.0 60.8 54.8 52.2
+
+Table 3. Comparison with SOTA on hand pose estimation task.                                                  
+
+> Method RHD →H3D RHD →FreiHand MCP PIP DIP Fin All MCP PIP DIP Fin All
+> Source only 67.7 64.5 63.6 55.0 62.1 35.4 50.4 55.1 51.0 47.1 CC-SSL [26] 81.5 79.9 74.4 64.0 75.1 37.4 48.2 50.1 46.5 43.8 MDAM [22] 82.3 79.6 72.3 61.5 74.1 32.3 48.1 51.7 47.3 45.1 RegDA [14] 79.6 74.4 71.2 62.9 72.5 40.9 55.0 58.2 53.1 51.1 UniFrame [18] 86.7 84.6 78.9 68.1 79.6 43.5 64.0 67.4 62.4 58.5 SFHPE [29] 88.4 89.2 80.9 71.4 82.2 43.7 65.9 66.6 63.1 58.8 DA-LLPose [1] 88.8 89.6 81.3 71.8 82.6 44.1 66.3 67.0 63.5 59.2 CGDM [6] 85.3 86.0 75.6 68.8 78.9 40.2 62.5 63.1 60.4 55.6 GGF [9] 86.8 86.9 76.4 69.7 79.9 40.9 63.3 63.9 61.2 56.5 PGDA [31] 88.2 89.0 80.3 70.8 82.0 42.5 64.6 65.4 62.1 57.5 Our HamiPose 89.6 89.9 82.5 72.0 83.1 45.2 67.0 67.5 63.9 59.9
+
+Generalization to FreiHAND. We further adapt models on RHD →H3D and evaluate on the unseen FreiHAND dataset. Overall accuracy on FreiHAND is lower for most meth-ods, which reflects the large distribution gap. Our method achieves the best results across all reported metrics, with All at 52.2% and the strongest fine-grained scores on MCP, PIP, DIP, and Fin. These results establish consistent top performance across unseen domains for both human and hand settings when compared with pose-oriented and DG baselines. Unlike human pose estimation, which benefits from in-the-wild datasets such as LSP, hand pose estimation still predominantly relies on lab-collected data. To further probe robustness in the wild, we additionally evaluate on WBH [16], a benchmark curated from COCO hand images. Figure 3 presents qualitative comparisons on challenging cases. Our method produces results closer to the ground truth than competing approaches, suggesting improved gen-eralization under real-world imaging conditions. 
+
+4.4. Ablation Study 
+
+We conduct ablation studies on SURREAL →Human3.6M (human) and RHD →H3D (hand) benchmarks, and the re-sults are summarized in Table 4. We begin from a Mean-Teacher baseline and enable three components in turn so that each delta isolates the mechanism under test. First, a unified metric that combines a model-wide mass with a Ground-Truth  Ours  GASM GGA 
+
+Figure 3. Qualitative comparison between HamiPose and GD methods on the WBH [16] in-the-wild hand dataset. 
+
+head-level normalizer equalizes gradient scales and reduces bias toward easy regions, adding about two points over-all and yielding larger gains on hard parts. For example, SURREAL →Human3.6M rises from 75.3% to 77.2% with a similar lift on hip, which suggests that geometry-aware normalization curbs update dominance from well-supervised joints and restores capacity for occluded ones. Next, a chan-nelwise gated filter that preserves orthogonal target infor-mation while removing only the source-opposing parallel component pushes the scores to 78.5% for human and 82.3% for hand, with clear improvements on hip and fingertips. Fi-nally, Hamiltonian transport introduces geometry-coupled inertia that integrates residual spiky kicks from sparse super-vision and dampens high-frequency oscillations, reaching 79.8% for human and 83.1% for hand, with hip at 55.0% and fingertips at 72.0%. The steady gains, especially on the difficult parts, indicate that the three modules work together. Each contributes a distinct effect through normalization, se-lective conflict removal, and stable transport, rather than merely shifting errors or reflecting tuning noise. 
+
+Keypointwise Gating vs Unified Gating. Figure 4 plots the source-target gradient conflict ratio, defined as the fraction of gradients with negative cosine similarity, across epochs. Both methods start with high conflict due to heterogeneous target pseudo labels. After filtering is applied, the keypoint-wise gate suppresses conflicts faster, whereas the unified gate declines more slowly. By epoch 30, the keypointwise curve 13862 Table 4. Ablation studies on SURREAL →Human3.6M and RHD →H3D.                                                                     
+
+> Unified Metric Channelwise Filtering Hamiltonian Transport SURREAL →Human3.6M RHD →H3D Sld Elb Wrist Hip Knee Ankle All MCP PIP DIP Fin All
+> ✘✘✘74.5 85.8 77.6 50.2 82.3 83.8 75.3 85.8 87.6 79.4 67.9 79.3
+> ✔✘✘76.5 87.2 79.3 52.4 84.0 85.7 77.2 87.1 88.4 80.7 69.3 80.9
+> ✔✔✘77.9 88.9 80.5 53.6 84.7 86.4 78.5 88.6 89.3 81.6 70.8 82.3
+> ✔✔✔79.1 89.7 81.5 55.0 85.5 87.5 79.8 89.6 89.9 82.5 72.0 83.1
+
+Figure 4. The evolution gradient conflict ratio between the key-pointwise gating strategy and the unified gating strategy during training process. 
+
+Figure 5. Training loss over epochs for three optimizers 
+
+stabilizes near 6%, while the unified curve remains around 8 to 9%. The advantage comes from evaluating alignment for each keypoint in its own geometric context, which removes localized conflicts from occlusions and noisy pseudo labels and yields smoother, faster agreement between domains. 
+
+Hamiltonian Optimization vs Conventional Solvers. Fig-ure 5 tracks the training-loss trajectories of Hamiltonian opti-mization, stochastic gradient descent (SGD), and Adam [20] under identical conditions. Although all methods eventually reach comparable minima, their convergence behaviors dif-fer clearly. SGD shows strong oscillations early in training, reflecting overshoot under alternating source and target su-pervision. Adam damps some oscillations but exhibits noisy plateaus after mid-training, indicating unstable adaptation to the sparse target signal. By contrast, the Hamiltonian variant displays monotonic, low-variance descent throughout the 70 epochs. The loss curve is smoother, with smaller step-to-step 
+
+Table 5. Hyper-parameter analysis on RHD →H3D.                                                
+
+> γmin Warmup γmax
+> ratio (%) 1.0 1.5 2.0 2.5 3.0 0.0 568.0 68.4 68.6 68.5 68.3 10 68.8 69.2 70.3 69.9 69.6 15 68.5 69.1 69.8 69.6 69.2 20 68.2 68.9 69.5 69.3 69.0 0.5 567.8 68.1 68.4 68.2 68.0 10 68.4 68.9 69.7 69.3 69.0 15 68.1 68.6 69.2 68.9 68.6 20 67.9 68.3 68.8 68.6 68.3
+
+fluctuations, confirming that coupling the momentum to the adaptive geometry introduces an effective inertial smoothing term. This inertia integrates high-frequency kicks from the spiky heatmap supervision over time and naturally filters out inconsistent gradient bursts without additional compu-tational cost. Overall, these results show that Hamiltonian transport achieves the best balance between convergence speed and stability. 
+
+Hyper-parameter analysis. Table 5 summarizes the analy-sis of alignment sharpness over γmin , γmax , and the warmup ratio. The warmup length in Eq. (10) is parameterized as 
+
+Twarm = rwarm Ttotal . Starting from a nonsharpened regime stabilizes early adaptation and yields the strongest peak. Per-formance is best with a moderate γmax , where very small values underuse aligned updates and very large values in-crease conflict. A short warmup ratio admits noisy updates too early, while an excessively long one delays adaptation. The best region combines a modest warmup ratio with a mod-erate γmax . We set γmin = 0 , γmax = 2 , and rwarm = 10% .Detailed experimental results are provided in the Appendix. 
+
+## 5. Conclusion 
+
+This paper reframes UDA for pose estimation as an optimiza-tion consistency problem under sparse and heterogeneous su-pervision and introduces HamiPose to resolve it. HamiPose uses a unified data driven metric to evaluate source–target in-teraction, performs keypoint level conflict filtering by decom-posing target gradients into parallel and orthogonal compo-nents with confidence gating, and integrates updates through a symplectic scheme that provides momentum while sup-pressing oscillation. Extensive experiments on UDA pose estimation benchmarks verify its effectiveness, and it also performs strongly on domain generalization tasks. 13863 6. Acknowledgments 
+
+This paper is supported by National Natural Foundation of China (No. 62207014). 
+
+## References 
+
+[1] Yihao Ai, Yifei Qi, Bo Wang, Yu Cheng, Xinchao Wang, and Robby T Tan. Domain-adaptive 2d human pose estimation via dual teachers in extremely low-light conditions. In Pro-ceedings of the European Conference on Computer Vision ,pages 221–239. Springer, 2024. 2, 6, 7 [2] Roberto Alcover-Couso, Marcos Escudero-Vi˜ nolo, Juan C SanMiguel, and Jesus Bescos. Gradient-based class weighting for unsupervised domain adaptation in dense prediction visual tasks. Pattern Recognition , 166:111633, 2025. 3 [3] Aristotelis Ballas and Christos Diou. Gradient-guided an-nealing for domain generalization. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 20558–20568, 2025. 3, 7 [4] Zhe Cao, Ilija Radosavovic, Angjoo Kanazawa, and Jitendra Malik. Reconstructing hand-object interactions in the wild. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 12397–12406, 2021. 1 [5] Bardia Doosti, Shujon Naha, Majid Mirbagheri, and David J. Crandall. Hope-net: A graph-based model for hand-object pose estimation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6607– 6616, 2020. 1 [6] Zhekai Du, Jingjing Li, Hongzu Su, Lei Zhu, and Ke Lu. Cross-domain gradient discrepancy minimization for unsuper-vised domain adaptation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,pages 3936–3945, 2021. 1, 2, 3, 6, 7 [7] Arindam Dutta, Sarosij Bose, Saketh Bachu, Calvin-Khang Ta, Konstantinos Karydis, and Amit K Roy-Chowdhury. Un-supervised domain adaptation for occlusion resilient human pose estimation. arXiv preprint arXiv:2501.02773 , 2025. 2 [8] Pierre Foret, Ariel Kleiner, Hossein Mobahi, and Behnam Neyshabur. Sharpness-aware minimization for efficiently improving generalization. In International Conference on Learning Representations , 2021. 2, 3, 7 [9] Zhiqiang Gao, Shufei Zhang, Kaizhu Huang, Qiufeng Wang, and Chaoliang Zhong. Gradient distribution alignment certifi-cates better adversarial domain adaptation. In Proceedings of the IEEE/CVF International Conference on Computer Vision ,pages 8917–8926, 2021. 1, 3, 6, 7 [10] Zhongyi Han, Haoliang Sun, and Yilong Yin. Learning trans-ferable parameters for unsupervised domain adaptation. IEEE Transactions on Image Processing , 31:6424–6439, 2022. 2 [11] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 770–778, 2016. 5 [12] Yan He, Fei Peng, Rizhao Cai, Zitong Yu, Min Long, and Kwok-Yan Lam. Category-conditional gradient alignment for domain adaptive face anti-spoofing. IEEE Transactions on Information Forensics and Security , 19:10071–10085, 2024. 3[13] Catalin Ionescu, Dragos Papava, Vlad Olaru, and Cristian Sminchisescu. Human3. 6m: Large scale datasets and predic-tive methods for 3d human sensing in natural environments. 
+
+IEEE Transactions on Pattern Analysis and Machine Intelli-gence , 36(7):1325–1339, 2014. 5 [14] Junguang Jiang, Yifei Ji, Ximei Wang, Yufeng Liu, Jianmin Wang, and Mingsheng Long. Regressive domain adapta-tion for unsupervised keypoint detection. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6780–6789, 2021. 1, 2, 5, 6, 7 [15] Rui Jin, Jing Zhang, Jianyu Yang, and Dacheng Tao. Multi-branch adversarial regression for domain adaptative hand pose estimation. IEEE Transactions on Circuits and Systems for Video Technology , 32(9):6125–6136, 2022. 2 [16] Sheng Jin, Lumin Xu, Jin Xu, Can Wang, Wentao Liu, Chen Qian, Wanli Ouyang, and Ping Luo. Whole-body human pose estimation in the wild. In Proceedings of the European Conference on Computer Vision , pages 196–214, 2020. 7 [17] Sam Johnson and Mark Everingham. Clustered pose and nonlinear appearance models for human pose estimation. In 
+
+British Machine Vision Conference , page 5, 2010. 5 [18] Donghyun Kim, Kaihong Wang, Kate Saenko, Margrit Betke, and Stan Sclaroff. A unified framework for domain adaptive pose estimation. In Proceedings of the European Conference on Computer Vision , pages 603–620, 2022. 1, 2, 6, 7 [19] Youngho Kim, Hoonhee Cho, and Kuk-Jin Yoon. From sharp to blur: Unsupervised domain adaptation for 2d human pose estimation under extreme motion blur using event cameras. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 9406–9417, 2025. 2 [20] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. International Conference on Learn-ing Representations , 2015. 8 [21] Binh M. Le and Simon S. Woo. Gradient alignment for cross-domain face anti-spoofing. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,pages 188–199, 2024. 3 [22] Chen Li and Gim Hee Lee. From synthetic to real: Unsu-pervised domain adaptation for animal pose estimation. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vi-sion and Pattern Recognition , pages 1482–1491, 2021. 2, 6, 7[23] Lijun Li, Linrui Tian, Xindi Zhang, Qi Wang, Bang Zhang, Liefeng Bo, Mengyuan Liu, and Chen Chen. Renderih: A large-scale synthetic dataset for 3d interacting hand pose estimation. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 20338–20348, 2023. 1[24] Qiuxia Lin, Linlin Yang, and Angela Yao. Cross-domain 3d hand pose estimation with dual modalities. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 17184–17193, 2023. 1 [25] Lucas Mansilla, Rodrigo Echeveste, Diego H Milone, and Enzo Ferrante. Domain generalization via gradient surgery. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 6610–6618, 2021. 1, 2, 3 13864 [26] Jiteng Mu, Weichao Qiu, Gregory D. Hager, and Alan L. Yuille. Learning from synthetic animals. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 12386–12395, 2020. 2, 6, 7 [27] Binh Nguyen, Minh-Duong Nguyen, Jinsun Park, Viet Pham, and Won-Joo Hwang. Federated domain generalization with data-free on-server gradient matching. In International Con-ference on Learning Representations , pages 77488–77513, 2025. 3 [28] Takehiko Ohkawa, Yu-Jhe Li, Qichen Fu, Ryosuke Furuta, Kris M Kitani, and Yoichi Sato. Domain adaptive hand key-point and pixel localization in the wild. In Proceedings of the European Conference on Computer Vision , pages 68–87, 2022. 1 [29] Qucheng Peng, Ce Zheng, and Chen Chen. Source-free do-main adaptive human pose estimation. In Proceedings of the IEEE/CVF International Conference on Computer Vision ,pages 4803–4813, 2023. 1, 2, 6, 7 [30] Qucheng Peng, Ce Zheng, and Chen Chen. A dual-augmentor framework for domain generalization in 3d human pose es-timation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 2240–2249, 2024. 2 [31] Hoang Phan, Lam Tran, Quyen Tran, and Trung Le. En-hancing domain adaptation through prompt gradient align-ment. Advances in Neural Information Processing Systems ,37:45518–45551, 2024. 1, 3, 6, 7 [32] Alexandre Rame, Corentin Dancette, and Matthieu Cord. Fishr: Invariant gradient variances for out-of-distribution gen-eralization. In International Conference on Machine Learn-ing , pages 18347–18377. PMLR, 2022. 3, 7 [33] Antti Tarvainen and Harri Valpola. Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results. In Advances in Neural Information Processing Systems , pages 1195–1204, 2017. 2, 3[34] Gul Varol, Javier Romero, Xavier Martin, Naureen Mahmood, Michael J. Black, Ivan Laptev, and Cordelia Schmid. Learning from synthetic humans. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,pages 4627–4635, 2017. 5 [35] Pengfei Wang, Zhaoxiang Zhang, Zhen Lei, and Lei Zhang. Sharpness-aware gradient matching for domain generaliza-tion. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pages 3769–3778, 2023. 3, 7 [36] Yikang Wei and Yahong Han. Multi-source collaborative gra-dient discrepancy minimization for federated domain general-ization. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 15805–15813, 2024. 3 [37] Bin Xiao, Haiping Wu, and Yichen Wei. Simple baselines for human pose estimation and tracking. In Proceedings of the European Conference on Computer Vision , pages 472–487, 2018. 5 [38] Yuanqi Yao, Gang Wu, Kui Jiang, Siao Liu, Jian Kuai, Xian-ming Liu, and Junjun Jiang. Improving domain generalization in self-supervised monocular depth estimation via stabilized adversarial training. In Proceedings of the European Confer-ence on Computer Vision , pages 183–201, 2024. 3 [39] Ruipeng Zhang, Ziqing Fan, Jiangchao Yao, Ya Zhang, and Yanfeng Wang. Domain-inspired sharpness aware minimiza-tion under domain shifts. In International Conference on Learning Representations , pages 54751–54777, 2024. 3 [40] Zhengyi Zhao, Tianyao Wang, Siyu Xia, and Yangang Wang. Hand-3d-studio: A new multi-view system for 3d hand re-construction. In IEEE International Conference on Acoustics, Speech and Signal Processing , pages 2478–2482, 2020. 5 [41] Zhan Zhuang, Yu Zhang, and Ying Wei. Gradual domain adaptation via gradient flow. In International Conference on Learning Representations , pages 26953–26978, 2024. 3, 6 [42] Christian Zimmermann and Thomas Brox. Learning to esti-mate 3d hand pose from single rgb images. In Proceedings of the IEEE/CVF International Conference on Computer Vision ,pages 4913–4921, 2017. 1, 5 [43] Christian Zimmermann, Duygu Ceylan, Jimei Yang, Bryan Russell, Max Argus, and Thomas Brox. Freihand: A dataset for markerless capture of hand pose and shape from single rgb images. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 813–822, 2019. 5 13865

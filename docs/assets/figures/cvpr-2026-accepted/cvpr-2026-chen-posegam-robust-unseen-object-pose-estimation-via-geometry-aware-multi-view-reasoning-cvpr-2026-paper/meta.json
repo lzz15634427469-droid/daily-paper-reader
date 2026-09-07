@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "extractor": "papercropper",
+  "figures": [
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper/fig-001.webp",
+      "caption": "",
+      "page": 0,
+      "index": 1,
+      "width": 1800,
+      "height": 397,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper/fig-002.webp",
+      "caption": "",
+      "page": 0,
+      "index": 2,
+      "width": 1809,
+      "height": 920,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper/fig-003.webp",
+      "caption": "",
+      "page": 0,
+      "index": 3,
+      "width": 853,
+      "height": 712,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-chen-posegam-robust-unseen-object-pose-estimation-via-geometry-aware-multi-view-reasoning-cvpr-2026-paper/fig-004.webp",
+      "caption": "",
+      "page": 0,
+      "index": 4,
+      "width": 1803,
+      "height": 820,
+      "label": "Figure"
+    }
+  ]
+}

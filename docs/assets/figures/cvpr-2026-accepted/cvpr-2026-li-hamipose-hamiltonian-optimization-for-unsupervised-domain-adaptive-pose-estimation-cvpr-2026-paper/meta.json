@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "extractor": "papercropper",
+  "figures": [
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper/fig-001.webp",
+      "caption": "",
+      "page": 0,
+      "index": 1,
+      "width": 844,
+      "height": 465,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper/fig-002.webp",
+      "caption": "",
+      "page": 0,
+      "index": 2,
+      "width": 868,
+      "height": 467,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper/fig-003.webp",
+      "caption": "",
+      "page": 0,
+      "index": 3,
+      "width": 702,
+      "height": 566,
+      "label": "Figure"
+    },
+    {
+      "url": "assets/figures/cvpr-2026-accepted/cvpr-2026-li-hamipose-hamiltonian-optimization-for-unsupervised-domain-adaptive-pose-estimation-cvpr-2026-paper/fig-004.webp",
+      "caption": "",
+      "page": 0,
+      "index": 4,
+      "width": 863,
+      "height": 381,
+      "label": "Figure"
+    }
+  ]
+}

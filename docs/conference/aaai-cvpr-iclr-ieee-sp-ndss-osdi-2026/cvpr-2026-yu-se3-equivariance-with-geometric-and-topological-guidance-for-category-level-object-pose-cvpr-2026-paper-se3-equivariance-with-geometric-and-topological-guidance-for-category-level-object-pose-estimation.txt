@@ -1,0 +1,318 @@
+Title: SE(3)-Equivariance with Geometric and Topological Guidance for Category-Level Object Pose Estimation
+
+URL Source: https://openaccess.thecvf.com/content/CVPR2026/papers/Yu_SE3-Equivariance_with_Geometric_and_Topological_Guidance_for_Category-Level_Object_Pose_CVPR_2026_paper.pdf
+
+Published Time: Sat, 16 May 2026 16:52:52 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# SE(3)-Equivariance with Geometric and Topological Guidance for Category-Level Object Pose Estimation 
+
+## Sheng Yu 1,2 Di-Hua Zhai 1,2* Yuanqing Xia 1,2,3 1Beijing Institute of Technology 2National Key Lab of Autonomous Intelligent Unmanned Systems 
+
+> 3
+
+## Zhongyuan University of Technology 
+
+## Abstract 
+
+Object pose estimation is a key task for embodied robots, enabling them to interact with objects effectively. Category-level object pose estimation provides a way for robots to estimate the pose of unknown objects. However, estimat-ing object pose from point clouds alone remains challeng-ing. In this paper, we introduce SEGPose, a novel category-level object pose estimation method based on point clouds. Unlike previous methods, SEGPose leverages geometric, topological information, and SE(3)-equivariance, enhanc-ing the network’s accuracy in pose prediction. To utilize ge-ometric and topological features, we propose a constraint-based feature extraction and 3D reconstruction method, en-abling effective object shape reconstruction. We also de-sign an SE(3)-equivariance feature prediction network to handle pose transformations consistently across viewpoints, improving pose accuracy. Experimental results on bench-mark datasets show that SEGPose outperforms all cur-rent category-level pose estimation methods based on point clouds. Additionally, we apply the SEGPose to the robotic grasping tasks in real-world scenarios, and the results in-dicate that SEGPose exhibits excellent generalization capa-bilities. 
+
+## 1. Introduction 
+
+Object pose estimation is crucial in computer vision, with applications in robotic grasping [19, 34], autonomous driv-ing [25], and augmented reality [33]. Instance-level pose estimation methods, such as [15, 17, 28, 39], have gained attention but depend on 3D models, limiting their use in real-world scenarios with unknown models. To overcome the reliance on object models in instance-level pose estimation, category-level methods [3, 5, 20, 32, 35] have been proposed. Unlike instance-level methods, category-level pose estimation does not require object mod-els and generalizes well to unseen objects within known cat-   
+
+> *Corresponding author. Email: zhaidih@bit.edu.cn Point Cloud 6D Pose
+> Encoder Geometric
+> Feature
+> Pose
+> Estimation
+> Point
+> Cloud
+> Encoder
+> SE(3) -
+> equivariance
+> Encoder
+> Geometric Feature
+> Topological Feature
+> SE(3) -
+> equivariance
+> Feature
+> Topology -
+> guided Recon.
+> SE(3) -equivariance -
+> guided Pose
+> Estimation
+> Geometric
+> Alignment
+> 6D Pose
+> (a) Previous Methods
+> (b) Ours
+
+Figure 1. Comparison between previous methods [10, 46] and our method. 
+
+egories, offering strong practical value. These methods yield promising results in real-world sce-narios but depend heavily on the fusion of RGB and point cloud features for pose estimation. In dark or low-light envi-ronments, RGB textures become blurred, complicating im-plementation. In contrast, depth images are unaffected by ambient lighting. We tackle a scenario where pose estima-tion relies solely on depth information, using RGB images only for object segmentation. Previous methods, such as [10, 19, 46], rely solely on depth information for pose estimation, focusing mainly on geometric features. However, object point clouds also con-tain topological and graph features, which capture relation-ships between points. Objects within the same category often share similar topological structures, aiding in point cloud reconstruction and pose estimation. Most existing methods overlook this aspect, relying only on geometry. Al-though a few methods, such as [43], have addressed this is-sue, they completely ignore other properties of point clouds, such as SE(3)-equivariance. Thus, incorporating topologi-cal and geometric information is crucial for pose estimation. In real-world scenarios, such as robotic grasping, objects are in motion, and the camera’s viewpoint changes, caus-ing variations in the point cloud and continuous changes This CVPR paper is the Open Access version, provided by the Computer Vision Foundation. Except for this watermark, it is identical to the accepted version; the final published version of the proceedings is available on IEEE Xplore. 35114 in the object’s pose. The predicted pose must adapt ac-cordingly, a property known as SE(3)-equivariance. Under SE(3)-equivariance, any 3D rotation or translation of the in-put point cloud results in the same transformation in the output. This property is crucial in dynamic scenarios like robot grasping, autonomous driving, and augmented reality, where object pose is constantly changing. However, most existing methods fail to leverage this property, limiting their pose prediction performance. To address the issues mentioned above, in this paper, we propose an object pose estimation method called SEGPose, which integrates the geometric features, topological fea-tures, and SE(3)-equivariance properties of point clouds. To the best of our knowledge, this is the first time that geo-metric information, topological information, and SE(3)-equivariance of point clouds are simultaneously incor-porated into category-level object pose estimation. First, to enable geometric and topological features to effectively guide pose estimation, we design a geometry-topology-guided point cloud feature extraction and reconstruction method. This method guides the construction of topolog-ical features using both the topological information of the point cloud and the category-level topological information. By combining these with the geometric features of the point cloud, we make full use of the object’s structural informa-tion to enhance pose estimation. Then, we propose a pose estimation method based on SE(3)-equivariance features and design an SE(3)-equivariance-guided pose estimation head. This estimation head leverages SE(3)-equivariance features to guide the point cloud features of the object in predicting its pose. As a result, the predicted pose adapts dynamically to changes in the input, leading to improved accuracy and robustness in pose estimation. Finally, we ap-ply SEGPose to multiple datasets for performance evalua-tion. Experimental results show that SEGPose outperforms all existing depth-based category-level object pose estima-tion methods, and surpasses most state-of-the-art RGB-D-based category-level pose estimation approaches as well. In summary, the main contributions of this paper are summarized as follows: • We propose a point cloud feature extraction method that combines topological constraints, category-level topolog-ical constraints, and geometric constraints, and develop a geometry-topology-based 3D reconstruction method. • We propose an SE(3)-equivariant pose estimation method that guides the network to apply synchronized transfor-mations according to the point cloud’s SE(3)-equivariant properties, enhancing accuracy by ensuring consistency between point cloud transformations and predicted poses. • Our SEGPose outperforms existing depth-based pose es-timation methods on multiple public datasets and sur-passes most RGB-D-based methods, achieving state-of-the-art performance. 
+
+## 2. Related Works 
+
+2.1. Instance-level 6D Object Pose Estimation 
+
+Instance-level 6D object pose estimation methods can be categorized into template matching, regression-based, and correspondence-based approaches. Template matching methods, such as [16, 27, 30], align 3D models to RGB-D images based on extracted features, which can be time-consuming. To address this, regression-based methods, like [17, 39], directly output the 6D pose from RGB images, though with lower accuracy. Correspondence-based meth-ods, such as [7, 15, 22, 28–30], establish 2D-3D or 3D-3D correspondences, using PnP and SVD to compute the 6D pose, with some relying on RANSAC-based PnP [2, 6]. All these methods are fully-supervised and require 3D CAD models. 
+
+2.2. Category-level 6D Object Pose Estimation 
+
+Instance-level 6D object pose estimation has made great progress but relies on 3D CAD models, limiting its ability to handle unseen objects. In contrast, category-level meth-ods aim to predict the pose of unseen objects in the same category. To enhance pose estimation accuracy, some methods in-corporate prior point clouds. In [32], Tian et al. im-prove accuracy by introducing prior point clouds. SGPA [5] uses a vision transformer to fuse features from the prior point cloud, scene point cloud, and RGB image. Cat-Former [41] enhances pose prediction by optimizing prior point clouds through deformation. Recent research also ex-plores prior-free methods. DualPoseNet [20] uses a dual-channel structure for feature extraction and a novel pose refinement method based on pose consistency. FS-Net [8] represents rotation with decoupled vectors, while VI-Net [21] separates rotation into viewpoint and in-plane rotations for higher precision. IST-Net [24] achieves state-of-the-art performance on the REAL275 benchmark by transforming camera-space features to world-space counterparts without priors. Although effective, these methods rely on RGB image data for pose estimation. To address this, several depth-based approaches have been proposed, such as [10, 19, 43, 44, 46]. Lin et al. introduced SAR-Net [19], which uses point clouds and shape registration for pose estimation. Di et al. proposed GPV-Pose [10], a geometry-guided frame-work with confidence-aware pose and bounding box predic-tions. While these methods excel in pose estimation, they mainly focus on geometric information, neglecting topolog-ical information and SE(3)-equivariance. 
+
+## 3. Method 
+
+In this paper, we perform category-level pose estimation of the target object using object point clouds. The quantities 35115 Mask -RCNN                
+
+> C
+> Add
+> Concatenation
+> Multiply
+> RGB image
+> Depth image
+> GM Graph Module
+> ◼HS -Pose Encoder
+> MP Max Pooling
+> MLP MLP Layer o
+> GM MP
+> MLP
+> MLP
+> Sig
+> Sig
+> C
+> Topological
+> Label
+> Generator
+> MLP
+> MLP
+> Reconstructor
+> C
+> Linear
+> MLP
+> 𝑅 𝑡 𝑠
+> Sig Sigmoid
+> ◼6D Pose
+> ◼SE(3) -Equivariance Encoder
+> ◼Topological Guidence
+> ◼Reconstruction
+> C
+> Correspond recon NOCS recon Sgt NOC
+> 3D Graph
+> Max Pooling 121ct 2ct 12
+
+Ftopo F1tF2tF1tF2tFfuse se SE F 
+
+> ◼SE(3) -equivariance -guided Pose Estimation ct
+
+Lct Lpt Lpt LFigure 2. The pipeline of the SEGPose. We first use Mask-RCNN to predict the mask and extract the point cloud of the target object. SEGPose employs the HS-encoder for feature extraction, obtaining both geometric and topological features for 3D reconstruction. The SE(3)-equivariance encoding module then extracts SE(3)-equivariance features, which are combined with geometric features for pose estimation. Finally, the pose is refined by aligning the reconstructed point cloud with the ground truth NOCS point cloud. 
+
+to be predicted include the object’s rotation component R ∈
+
+SO (3) , translation component t ∈ R3, and 3D size s ∈ R3.
+
+3.1. Pipeline Overview 
+
+The SEGPose training pipeline is shown in Figure 2. We in-put the RGB and depth images to an instance segmentation network (e.g., Mask-RCNN [14]) to extract the object mask. The depth images are then cropped based on the instance mask to obtain the target object’s point cloud, denoted as 
+
+Po ∈ RNo×3, with No points. SEGPose uses the HS-encoder [46] to extract geometric features and predict topo-logical features with guidance from point cloud topological labels. Using these features, it performs 3D reconstruction of the point cloud. Additionally, an SE(3)-equivariance en-coding module extracts SE(3)-equivariance features, which guide the pose prediction head for object pose estimation. Finally, the reconstructed point cloud and predicted pose are refined by aligning with the ground truth NOCS point cloud. 
+
+3.2. Topological Label for Pose Estimation 
+
+Geometric features can be constrained using the object model or NOCS point cloud. However, there is no suitable label for applying constraints to topological information. Therefore, we first construct topological labels to guide and constrain the topological features learned during training. In this paper, we use the persistent homology algorithm [13] to extract topological features, represented by persis-tence diagrams [11]. However, these diagrams consist of discontinuous birth-death points, making integration with neural network training challenging. To address this, we improve persistence diagrams using persistence images [1]. The calculation steps are as follows: First, we use the alpha complex method [12] to construct 1D and 2D topo-logical features of the point cloud, obtaining the birth-death coordinates of the persistence diagrams, D1 and D2. Then, we apply a linear transformation T (x, y ) = ( x, y − x) to obtain the birth-persistence coordinates. However, directly predicting the topological feature map may lead to model collapse. To address this, we use the method from [1] and apply a regularized Gaussian kernel to 
+
+T (D), transforming discrete points into a continuous distri-bution. The regularized distribution is given by 
+
+N (p|¯p, σ 2) = 12πσ 2 e− (x−¯x)2+( y− ¯y)22σ2 (1) where ¯p = (¯ x, ¯y) denotes the point position on T (D∗), and 
+
+σ2 is the variance. After converting the points to a continuous distribution, features with long persistence highlight key parts of the point cloud. These features are crucial and require special attention, necessitating the construction of weight factors to emphasize them. We define the weight as w = y−xt , where t is the largest persistence value in the diagram. Using this weight, we compute the persistent surface as 
+
+SD∗ (p) = X 
+
+> ¯p∈T(D∗)
+
+w(¯ p)N (p|¯p, σ 2) (2) 35116 where ¯p represents points sampled from the birth-persistence coordinates in T (D∗).After adjusting the weights, we divide SD∗ into M × M
+
+patches, then integrate the information within each patch to form a finite-dimensional vector representing the topo-logical features. For the nth patch, the double integral is calculated as: 
+
+V (SD∗ )n =
+
+Z Z 
+
+SnD∗ (x, y ) dy dx (3) Next, we use the integral values from the persistence dia-gram of each patch as pixel values in the persistence image, resulting in I1 and I2. This completes the generation of the object’s topological labels. During training, we combine the geometric and topological labels to guide and constrain the network, allowing it to capture both the geometric and topological features of the object. 
+
+3.3. Geometric and Topological Features Extraction 
+
+After constructing the object’s topological labels, we build a network for predicting geometric and topological features to extract the geometric and topological information of the object. The geometric and topological feature extraction module of SEGPose is shown in Figure 2. We take the object point cloud Po as the input, and use the HS-encoder [46] to extract features from the object, ob-taining the object point cloud feature F . Then, we need to use the point cloud features F extracted by the network to predict the object’s topological information, and rely on the guidance of the topological information to complete the 3D reconstruction of the target object. We use the transformer-based graph module proposed in [41], which can effectively analyze the topological infor-mation between points in the point cloud. By constructing multiple topological graphs, it enables the extraction and analysis of topological features Ftopo of the points in the point cloud. Next, we use the extracted point cloud topological fea-tures Ftopo , combined with adaptive max pooling and MLP, to predict the point cloud topological graph. A topological information guidance head is then constructed to predict 1D and 2D persistence images using Ftopo . To align the persis-tence image with the actual topological structure and mini-mize deviations, we impose topological constraints. These constraints consist of two parts: First, the predicted topolog-ical features should roughly align with the actual object’s topological graph, as described in Section 3.2. However, due to noise, limited viewpoints, and other factors, the ac-tual topological labels may be imprecise. To address this, we introduce a category topological constraint. Objects within the same category share similar shapes and, conse-quently, topological structures. This constraint ensures that the predicted topological persistence image aligns with the object’s category-specific structure. By applying both the point cloud and category topological constraints, the pre-dicted persistence image converges to an appropriate solu-tion, aligning with both the point cloud’s topological struc-ture and the category’s topological characteristics. Then, we use the object’s 1D topological persistence im-age I1 and 2D persistence image I2 to generate its topolog-ical features Ft1 and Ft2, completing the 3D reconstruction of the point cloud Precon . Unlike previous methods, we in-corporate both geometric and topological features simulta-neously. This approach ensures that the reconstructed point cloud is not only geometrically accurate but also aligns with the actual topological structure. With dual constraints of ge-ometry and topology, the reconstruction reaches its optimal state. The reconstructor, consisting of multiple MLP lay-ers, integrates features to directly predict the reconstructed point cloud. 
+
+3.4. SE(3)-Equivariance for Pose Estimation 
+
+To fully leverage the SE(3)-equivariance feature of objects, we propose a pose estimation method guided by SE(3)-equivariance. Since SE(3)-equivariance differs from geo-metric features, we use Vector Neuron Networks (VNNs) [9] as the backbone to extract these equivariance features. We input the object point cloud Po and apply the VNN-DGCNN [9] layer for SE(3)-equivariance feature extrac-tion. VNN uses vector representations to capture spatial in-formation, making it ideal for tasks requiring equivariance to 3D transformations. Combined with DGCNN [36], VNN effectively extracts graph features from the point cloud. Fi-nally, we concatenate the outputs of each VNN layer to ob-tain the fused SE(3)-equivariance feature Ff use .Based on the fused SE(3)-equivariance features, we first apply the VNN-Linear layer to adjust the features, yielding the adjusted feature Fadj . We then compute the element-wise product of Fadj and Ff use to obtain the SE(3)-equivariance feature Fse . To adjust the point cloud shape, we use Ff use with an MLP to predict shape weights, and adjust the point cloud accordingly to obtain Padj . This adjusted point cloud is also considered part of the SE(3)-equivariance features. Finally, we concatenate Padj and 
+
+Fse , apply an MLP, and obtain the final SE(3)-equivariance feature FSE .Finally, we hope to use SE(3)-equivariance features to effectively guide the object’s pose estimation. We pro-pose an object pose estimation head guided by SE(3)-equivariance features. In this head, SE(3)-equivariance fea-tures guide point cloud features to predict object pose pa-rameters. First, we adjust the point cloud feature F using 1D convolution and the SE(3)-equivariance features using VNN-Linear. These are concatenated to form the fused fea-ture Fse 1, which serves as input for the next layer’s SE(3)-equivariance features. Based on Fse 1, we generate feature 35117 weights W1 via a Sigmoid function to adjust the point cloud features, producing the adjusted feature V1. Finally, we use the output Vf inal to predict the rotational components Rr ,
+
+Rb, the translational component t, and the scale factor s
+
+through MLP. The object rotation R is computed from Rr
+
+and Rb as in [10, 44, 46]. 
+
+3.5. Loss Functions 
+
+In this paper, we constrain the network using multiple loss functions. First, we use Lbasic to constrain the object’s pose and symmetric reconstruction, defined as 
+
+Lbasic = λ1Lpose + λ2Lsym (4) where λ1 and λ2 are the weights for pose and symmetric reconstruction losses, and Lpose and Lsym are the same as those in [10, 46]. Then, we construct a topology loss function to guide and constrain the object’s topological features from both the point cloud topology and category topology. For the point cloud topology, we directly use MAE to calculate the loss value between the predicted persistence image and the ground truth: 
+
+Lpt = Lpt 1(I1, ˆI1) + Lpt 2(I2, ˆI2) (5) where I1 and I2 indicate the predicted persistence images, and ˆI1 and ˆI2 indicate the ground truth. We aim for the predicted persistence image to closely match the labels derived from the point cloud to generate effective topological features. However, due to erroneous and outlier points, we do not want them to be overly close. To address this, we introduce a category topology constraint that limits the persistence image based on object categories. To achieve this, we define a balancing factor α:
+
+Lct = α1Lct 1(I1, ˆIct 1) + α2Lct 2(I2, ˆIct 2) (6) where α = e−2Lpt ∗ , ∗ ∈ { 1, 2}, ˆIct 1 and ˆIct 2 represent the ground truth. We use the predicted object pose to transfer the recon-structed point cloud from geometric space to NOCS space and align it with the category-specific NOCS point cloud, as shown in Figure 2. This alignment corrects incorrect poses without additional prediction branches and is robust to shape variations within the object class, eliminating the need for specific CAD models during training. Alignment accuracy is measured using Density Chamfer Distance [38]: 
+
+Lalig =β1
+
+1
+
+|P N OCS cate |
+
+X
+
+> ˜p
+
+1 − 1
+
+mθ
+
+> ˆp
+
+e−γ|| ˜p−ˆp|| 2
+
+!
+
++
+
+β2
+
+1
+
+|P N OCS reco |
+
+X
+
+> p
+
+1 − 1
+
+mθ
+
+> ˆp′
+
+e−γ|| p−ˆp′|| 2
+
+! (7) where ˆp = min p || ˜p − p|| 2, ˆp′ = min ˜p || p − ˜p|| 2, ˜p ∈PN OCS cate and p ∈ PN OCS reco represent the points in the category-specific NOCS point cloud and the reconstructed point cloud, β1, β 2 are primarily used to adjust the influ-ence of distance, ensuring that the initial shape of the point cloud plays a dominant role during the alignment process, 
+
+α, γ are the hyperparameters, mˆp, m ˆp′ are the point-specific query frequencies, which is used to normalize the overall contribution of each point to the evaluation system. To enhance the network’s robustness to point clouds from different viewpoints and occlusions, we apply data augmentation. To ensure feature extraction under random occlusion, we introduce a cosine similarity function to mea-sure the feature similarity between the original point cloud 
+
+Porig and the augmented input Po:
+
+LF = 1 − Forig Fo
+
+|Forig || Fo| (8) where Forig and Fo are the features of the original and aug-mented point clouds, respectively, after encoding by the HS-encoder. We also use the Lrec loss to constrain the recon-struction of Porig and Po, as in [10]. In [10], a feature constraint is imposed using the consis-tency between the bounding box and pose. Since both the object pose and bounding box exhibit SE(3)-equivariance, we propose an SDF-based bounding box-pose consistency method. We divide the object into three regions—outside, inside, and on the surface—based on its bounding box. The SDF values are defined as follows: SDF > 0 for points outside the object, SDF = 0 on the surface, and SDF < 0
+
+inside the object. By calculating the SDF values for all points, we can derive a determined sum, ensuring that ac-curate bounding box predictions lead to closely matching 
+
+SDF values. We use L1 loss to compute the prediction er-ror between the predicted and true SDF , denoted as Lsdf .In summary, the total loss can be calculated as 
+
+L = Lbasic +λ3Lpt +Lct +Lalig +λ4(LF +Lrec )+ λ5Lsdf 
+
+(9) 
+
+## 4. Experiments 
+
+4.1. Experimental Setup 
+
+Datasets. The benchmark datasets used for category-level object pose estimation are the REAL275 dataset and the CAMERA25 dataset [35]. The CAMERA25 dataset com-prises 300K images, with 25K images designated for evalu-ation. It is created by integrating synthetic objects into real-world scenes. In contrast, the REAL275 dataset consists of 4300 real-world training images from 7 scenes and 2750 real-world evaluation images from 6 scenes. Both datasets contains: bottle, bowl, camera, can, laptop, and mug. 
+
+Evaluation Metrics. We evaluate the performance of SEGPose using widely used evaluation metrics [10, 19, 20, 35118 Table 1. Comparison with state-of-the-art methods on CAMERA25 dataset and REAL275 dataset. Bold red highlights the best performance among RGB-D-based methods, while bold black highlights the best performance among depth-based methods.                                                                                                                                                                                                                                                                      
+
+> Method Type Prior CAMERA25 REAL275 FPS
+> IoU 50 IoU 75 5◦2cm 5◦5cm 10 ◦2cm 10 ◦5cm IoU 50 IoU 75 5◦2cm 5◦5cm 10 ◦2cm 10 ◦5cm
+> NOCS[35] RGB-D 83.9 69.5 32.3 40.9 48.2 64.6 78.0 30.1 7.2 9.5 13.8 25.2 4.8 DualPoseNet[20] RGB-D 92.4 86.4 64.7 70.7 77.2 84.7 79.8 62.2 29.3 35.9 50.0 66.8 2.3 SPD[32] RGB-D ✓93.2 83.1 54.3 59.0 73.3 81.5 77.3 53.2 19.2 21.4 43.2 54.1 5.9 SGPA[5] RGB-D ✓93.2 88.1 70.7 74.5 82.7 88.4 80.1 61.9 35.9 39.6 61.3 70.7 5.0 CatFormer[41] RGB-D ✓93.5 89.9 74.9 79.8 85.3 90.2 83.1 73.8 47.7 53.7 69.0 79.5 8.0 VI-Net[21] RGB-D -79.1 74.1 81.4 79.3 87.3 -48.3 50.0 57.6 70.8 82.1 -AG-Pose[23] RGB-D 93.8 91.3 77.8 82.8 85.5 91.6 83.7 79.5 54.7 61.7 74.7 83.1 26.8 SpotPose[31] RGB-D 94.3 92.5 80.4 83.8 87.7 92.2 84.1 81.2 59.7 64.8 81.5 88.2 -SAR-Net[19] D✓86.8 79.0 66.7 70.9 75.3 80.3 79.3 62.4 31.6 42.3 50.3 68.3 10.0 GPV-Pose[10] D93.4 88.3 72.1 79.1 -89.0 83.0 64.4 32.0 42.9 55.0 73.3 69.0 SSP-Pose [45] D✓-86.8 64.7 75.5 -87.4 82.3 66.3 34.7 44.6 -77.8 25.0 DR-Pose[47] D✓92.7 89.3 74.3 78.0 85.0 89.7 78.9 68.2 41.7 46.0 67.7 76.3 -RBP-Pose [44] D✓93.1 89.0 73.5 79.6 82.1 89.5 -67.8 38.2 48.1 63.1 79.2 24.3 HS-Pose[46] D93.3 89.4 73.3 80.5 80.4 89.4 82.1 74.7 46.5 55.2 68.6 82.7 50.0 TG-Pose[43] D93.4 89.7 74.5 81.9 81.1 90.4 82.6 76.2 49.8 59.0 71.7 86.6 50.0 HRC-Pose[18] D93.6 90.0 75.2 82.5 82.3 91.2 83.4 77.8 49.8 58.6 72.5 85.4 -ours D93.7 90.5 76.3 82.9 82.7 91.2 83.1 78.3 51.8 61.1 73.9 87.1 45.8
+
+32, 35]. For rotation and translation evaluation, we uti-lize 3D Intersection-Over-Union (IoU) with thresholds of 0.5 and 0.75. Additionally, we employ 5◦2cm , 5◦5cm ,
+
+10 ◦2cm , and 10 ◦5cm to directly assess rotation and trans-lation accuracy. If the errors fall within the thresholds, the predictions are deemed correct. Based on these evaluation metrics, we will use overall mAP to assess the performance of SEGPose compared to other SOTA methods. 
+
+Implementation Details. We use Mask-RCNN as the instance segmentation network, and the number of points in the point cloud is 1024. We set the batch size to 24 and the initial learning rate to 1e−4, using a cosine schedule to gradually decay the learning rate. All experiments are con-ducted on a single NVIDIA RTX 3090 GPU. We set λ1 = 8 ,
+
+λ2 = 1 , λ3 = 4 , λ4 = 0 .1, λ5 = 2 . We also set β1 = 0 .5,and β2 = 1 follwing [38]. 
+
+4.2. Experiments on CAMERA25 Dataset and REAL275 Dataset 
+
+To compare SEGPose with SOTA methods, we conduct ex-periments on benchmark datasets, evaluating performance on the CAMERA25 and REAL275 datasets. The results are shown in Table 1, which presents the performance of both RGB-D-based and depth-based pose estimation methods. First, we compare SEGPose with depth-based meth-ods. Experimental results show that SEGPose outperforms previous approaches, with improvements stemming from three key aspects: (1) SEGPose incorporates both geomet-ric and topological features during point cloud reconstruc-tion, ensuring optimal quality and accurate shape and struc-tural information for pose estimation. (2) SEGPose in-troduces SE(3)-equivariance and designs a pose estimation head based on this property, enhancing pose prediction ac-curacy under varying viewpoints. (3) Data augmentation techniques, such as scale changes, random cropping, and point cloud dropout, are applied during training, improving network robustness and pose estimation performance. In contrast, previous methods focus mainly on geo-metric features, neglecting topological features and SE(3)-equivariance. Some approaches, like SAR-Net, rely on prior point clouds that require deformation; ineffective de-formation can degrade pose estimation. Compared to the SOTA method HRC-Pose, SEGPose achieves a better per-formance on most metrics, delivering excellent pose esti-mation results. We compare SEGPose’s performance with other RGB-D-based methods. As shown in Table 1, SEGPose outper-forms most methods but still lags behind the SOTA method, SpotPose. This gap is primarily due to SpotPose’s use of RGB-D information for more accurate point cloud re-construction and keypoint prediction. However, SEGPose achieves significantly higher prediction speeds, making it better suited for real-time object pose estimation in practi-cal scenarios. Finally, we also provide the pose visualization results of SEGPose. We compare SEGPose with the previous depth-based SOTA method, HS-Pose, and the experimental results are shown in Figure 3. Experimental results show that SEGPose outperforms HS-Pose in capturing poses of complex object categories, such as cameras and mugs. This is due to SEGPose’s ef-fective use of point cloud topology and SE(3)-equivariance, which enhance the network’s ability to grasp the scale and shape of the point cloud, improving pose accuracy. 
+
+4.3. Ablation Studies 
+
+To validate the effectiveness of the proposed module, we first conduct a series of ablation experiments on the module. The experimental results are shown in Table 2. In Table 2(A), we first remove the topology guidance and SE(3)-equivariance modules, along with related com-ponents like topology-guided reconstruction and specific loss functions, using only Lbasic as the loss function. Pose estimation is then based solely on the point cloud’s geo-35119 Table 2. Ablation studies on different configurations of network on REAL275. Topo represents topological guidance, SE(3) represents the SE(3)-equivariance module, Recon represents point cloud reconstruction guided by topological information, Pose represents pose estimation guided by SE(3)-equivariance, and Augmentation represents input data augmentation.                                                                                                                                                                                                                         
+
+> Group Module Recon Pose Augmentation Loss Terms REAL275 Topo SE(3) Lpt Lct Lalig LFLrec Lsd fIoU 50 IoU 75 5◦2cm 5◦5cm 10 ◦2cm 10 ◦5cm
+> (A)
+> ✓81.3 71.6 43.8 51.1 63.8 79.2
+> ✓✓✓✓✓✓✓✓82.3 75.3 46.5 54.2 69.8 83.9
+> ✓✓✓✓✓✓✓✓82.1 74.6 45.2 53.4 68.7 83.5
+> ✓✓✓✓✓✓✓✓✓✓✓83.1 78.3 51.8 61.1 73.9 87.1
+> (B) ✓✓✓✓✓✓✓✓✓✓82.4 75.9 48.3 58.1 70.7 84.6 (C) ✓✓✓✓✓✓✓✓✓✓82.5 76.1 49.0 60.3 71.1 85.4 (D) ✓✓✓✓✓✓✓✓✓✓82.7 76.8 49.5 60.7 71.6 85.8 (E)
+> ✓✓✓✓✓✓✓✓✓82.4 75.6 47.1 56.4 69.7 83.8
+> ✓✓✓✓✓✓✓✓✓✓82.6 77.0 49.4 60.6 72.0 86.8
+> ✓✓✓✓✓✓✓✓✓✓82.5 76.2 48.5 58.3 70.9 84.3
+> ✓✓✓✓✓✓✓✓✓✓82.4 76.7 48.3 59.6 70.1 85.5
+> ✓✓✓✓✓✓✓✓✓✓82.2 76.1 48.0 58.9 69.6 84.7
+> ✓✓✓✓✓✓✓✓✓✓81.9 72.3 45.2 55.7 67.8 82.6
+> ✓✓✓✓✓✓✓✓✓✓82.3 76.3 48.5 59.0 70.3 85.3 HS -Pose SEG Pose
+
+Figure 3. Qualitative results of HS-Pose and SEGPose. The green bounding box is the ground truth, and the red line is the prediction. 
+
+metric information. The results in the first row of Table 2(A) show a significant performance drop when both mod-ules are removed, due to the absence of topology and SE(3)-equivariance guidance, which hinders the network’s ability to capture the object’s shape and pose. However, adding either module improves performance, demonstrating their effectiveness. Notably, the performance gain from adding the topology module is greater than from adding the SE(3)-equivariance module, as topology helps the network bet-ter reconstruct the point cloud, reduce external interference, and enhance pose estimation accuracy. In Table 2(B), we conduct an ablation experiment on topology-guided point cloud reconstruction. In this exper-iment, reconstruction relies solely on geometric features. The results show a slight performance decline when topol-ogy guidance is removed, as the absence of topological con-straints reduces the network’s effectiveness, demonstrating the importance of topology guidance. Next, we examine the impact of SE(3)-equivariance on pose prediction in Table 2(C). In the ablation experiment, SE(3)-equivariance guidance is removed, and pose predic-tion is based solely on point cloud features. The results show a performance decline compared to the best network performance. This decline is due to the loss of SE(3)-equivariance guidance, which prevents the network from effectively handling dynamic pose changes in complex sce-narios, thus impairing pose estimation. These results further highlight the positive effect of SE(3)-equivariance on pose prediction. We apply data augmentation to the point cloud input, in-cluding random cropping, resizing, and random occlusion. To evaluate its effectiveness, we conduct an ablation exper-iment, and the results are shown in Table 2(D). When data augmentation is removed, the network’s performance de-clines, as the lack of diverse data reduces its robustness and ability to handle varied point cloud structures. We conduct an ablation study on the network’s loss func-tion, with results shown in Table 2(E). The first three rows assess the topological loss function. Removing all topo-logical loss functions leads to biased predictions and per-formance decline due to the lack of topological label guid-ance. Introducing the point cloud topological loss Lpt or category topological loss Lct improves performance, with 
+
+Lpt yielding better results as it aligns more closely with the object’s actual topology. Removing Lalig , which gov-erns NOCS point cloud alignment, degrades performance by preventing pose adjustment with the ground truth NOCS point cloud. Removing LF , which affects data augmenta-tion, increases the feature discrepancy between augmented and original point clouds, leading to performance decline. To validate the importance of Lrec , we remove it from the network. Without Lrec , the network lacks the constraint for 35120 accurate 3D point cloud reconstruction, leading to discrep-ancies between the reconstructed and real point clouds. This impacts NOCS point cloud alignment and pose estimation accuracy. As shown in Table 2(D), performance drops sig-nificantly after removing Lrec . Lastly, removing the SE(3)-equivariance loss Lsdf (last row in Table 2(E)) prevents the network from learning effective SE(3)-equivariance, further decreasing performance. 
+
+4.4. Experiments on Wild6D Dataset 
+
+To test SEGPose’s generalization, we apply it to pose es-timation on the Wild6D dataset [42], which includes five object categories: bottle, bowl, camera, laptop, and mug, placed in various real-world scenes. We evaluate perfor-mance on the Wild6D test set and compare results with depth-based methods, as shown in Table 3. 
+
+Table 3. Quantitative comparison with other methods on the Wild6D dataset. The bold black numbers represent the best val-ues in the depth-based method.                                                             
+
+> Method Type mAP(%)
+> IoU 25 IoU 50 5◦5cm 10 ◦5cm 15 ◦5cm
+> NOCS[35] RGB-D 51.0 32.1 13.3 34.9 39.6 RePoNet[42] RGB-D 83.3 67.1 30.3 40.2 43.0 DualPoseNet[20] RGB-D 90.1 66.7 24.5 37.9 41.9 CatFormer[41] RGB-D 86.6 62.8 29.7 41.9 45.6 SAR-Net[19] D77.6 6.1 8.8 25.6 35.6 CPPF[40] D79.6 21.0 7.8 18.1 21.7 GPV-Pose[10] D82.0 55.6 27.0 39.4 43.0 HS-Pose[46] D85.4 58.1 28.6 41.6 44.7 ours D88.1 72.2 35.6 48.1 52.2
+
+Experimental results show that SEGPose outperforms previous depth-based category-level pose estimation meth-ods, demonstrating better generalization and pose accuracy. This highlights the importance of topological and SE(3)-equivariance guidance, which helps the network understand object structure, adapt to dynamic changes, and achieve ac-curate pose prediction. To highlight SEGPose’s superiority in real-world pose prediction, we compare it with HS-Pose through visualiza-tion, as shown in Figure 4. The red bounding box represents the ground truth, and the green line shows the prediction. SEGPose outperforms HS-Pose by more accurately captur-ing object poses and generalizing better to pose estimation for unknown objects in real-world scenarios. 
+
+4.5. Robotic Grasping Experiments 
+
+To further evaluate SEGPose’s generalization in real-world scenarios, we apply it to grasping tasks with a UR3 robot. The tasks include (A) single-object grasping, (B) occluded scene grasping, (C) object handover, (D) pouring, (E) object stacking, and (F) object grasping with external disturbances, as shown in Figure 5. Following the experimental setup of previous related methods [4, 37], we use easily graspable objects such as bottles, bowls, and mugs. Each category in-HS -Pose Ours 
+
+Figure 4. Qualitative results of HS-Pose and SEGPose on the Wild6D Dataset. 
+
+volves 15 grasping attempts, and a grasp is considered suc-cessful if the robot grasps and places the object correctly. (A)  (B)  (C)  (D)  (E)  (F) 
+
+Figure 5. Examples of category-level object grasping in real-world scenarios. 
+
+In the experiment, we compare the grasping success rates of SEGPose with some related methods. The experimental results show that, in real robot grasping scenarios, SEGPose demonstrates stronger generalization and higher grasping accuracy, exhibiting superior practical generalization. 
+
+Table 4. Comparison of grasp success rates on different tasks.                               
+
+> Method Grasp Success Rate (%) (A) (B) (C) (D) (E) (F) 6-DOF GraspNet[26] 68.9 46.7 57.8 51.1 26.7 60.0 GPV-Pose[10] 71.1 62.2 66.7 55.6 26.7 68.9 HS-Pose[46] 75.6 66.7 68.9 64.4 55.6 75.6 ours 88.9 82.2 75.6 71.1 64.4 84.4
+
+## 5. Conclusion 
+
+In this paper, we propose a new depth-based category-level object pose estimation method, SEGPose. First, we introduce a point cloud reconstruction method guided by geometric and topological information, achieving precise reconstruction of object point clouds. Then, we present a pose estimation method based on SE(3)-equivariance, which uses SE(3)-equivariance to guide the network for ac-curate object pose prediction. Finally, we conduct perfor-mance tests on various datasets and robotic grasp tasks, and the experimental results show that SEGPose outperforms all existing depth-based category-level object pose estimation methods, achieving state-of-the-art performance. 35121 Acknowledgments: The work was supported by the Na-tional Natural Science Foundation of China under Grant 62173035, Grant 61803033 and Grant 61836001. 
+
+## References 
+
+[1] Henry Adams, Tegan Emerson, Michael Kirby, Rachel Neville, Chris Peterson, Patrick Shipman, Sofya Chepush-tanova, Eric Hanson, Francis Motta, and Lori Ziegelmeier. Persistence images: A stable vector representation of persis-tent homology. Journal of Machine Learning Research , 18 (8):1–35, 2017. 3 [2] Eric Brachmann, Frank Michel, Alexander Krull, Michael Ying Yang, Stefan Gumhold, et al. Uncertainty-driven 6D pose estimation of objects and scenes from a single rgb image. In IEEE Conference on Computer Vision and Pattern Recognition , pages 3364–3372, 2016. 2 [3] Dengsheng Chen, Jun Li, Zheng Wang, and Kai Xu. Learn-ing canonical shape space for category-level 6D object pose and size estimation. In IEEE Conference on Computer Vision and Pattern Recognition , pages 11973–11982, 2020. 1 [4] Hanzhi Chen, Binbin Xu, and Stefan Leutenegger. Func-grasp: Learning object-centric neural grasp functions from single annotated example object. In IEEE International Con-ference on Robotics and Automation (ICRA) , pages 1900– 1906, 2024. 8 [5] Kai Chen and Qi Dou. SGPA: Structure-guided prior adap-tation for category-level 6D object pose estimation. In IEEE Conference on Computer Vision and Pattern Recognition ,pages 2773–2782, 2021. 1, 2, 6 [6] Wei Chen, Jinming Duan, Hector Basevi, Hyung Jin Chang, and Ales Leonardis. Pointposenet: point pose network for robust 6D object pose estimation. In IEEE Winter Confer-ence on Applications of Computer Vision , pages 2824–2833, 2020. 2 [7] Wei Chen, Xi Jia, Hyung Jin Chang, Jinming Duan, and Ales Leonardis. G2l-net: Global to local network for real-time 6D pose estimation with embedding vector features. In 
+
+IEEE Conference on Computer Vision and Pattern Recogni-tion , pages 4233–4242, 2020. 2 [8] Wei Chen, Xi Jia, Hyung Jin Chang, Jinming Duan, Linlin Shen, and Ales Leonardis. FS-Net: Fast shape-based net-work for category-level 6D object pose estimation with de-coupled rotation mechanism. In IEEE Conference on Com-puter Vision and Pattern Recognition , pages 1581–1590, 2021. 2 [9] Congyue Deng, Or Litany, Yueqi Duan, Adrien Poulenard, Andrea Tagliasacchi, and Leonidas J Guibas. Vector neu-rons: A general framework for SO(3)-equivariant networks. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 12200–12209, 2021. 4 [10] Yan Di, Ruida Zhang, Zhiqiang Lou, Fabian Manhardt, Xi-angyang Ji, Nassir Navab, and Federico Tombari. GPV-Pose: Category-level object pose estimation via geometry-guided point-wise voting. In IEEE Conference on Computer Vision and Pattern Recognition , pages 6781–6791, 2022. 1, 2, 5, 6, 8[11] Edelsbrunner, Letscher, and Zomorodian. Topological per-sistence and simplification. Discrete & computational ge-ometry , 28:511–533, 2002. 3 [12] Herbert Edelsbrunner. Alpha shapes-a survey. In Tessella-tions in the sciences: Virtues, techniques and applications of geometric tilings . 2011. 3 [13] Herbert Edelsbrunner and Dmitriy Morozov. Persistent ho-mology: theory and practice. In European Congress of Math-ematics , pages 31–50, 2014. 3 [14] Kaiming He, Georgia Gkioxari, Piotr Doll´ ar, and Ross Gir-shick. Mask r-cnn. In IEEE International Conference on Computer Vision , pages 2961–2969, 2017. 3 [15] Yisheng He, Wei Sun, Haibin Huang, Jianran Liu, Haoqiang Fan, and Jian Sun. PVN3D: A deep point-wise 3d keypoints voting network for 6DoF pose estimation. In IEEE Con-ference on Computer Vision and Pattern Recognition , pages 11632–11641, 2020. 1, 2 [16] Stefan Hinterstoisser, Cedric Cagniart, Slobodan Ilic, Peter Sturm, Nassir Navab, Pascal Fua, and Vincent Lepetit. Gra-dient response maps for real-time detection of textureless ob-jects. IEEE Transactions on Pattern Analysis and Machine Intelligence , 34(5):876–888, 2011. 2 [17] Wadim Kehl, Fabian Manhardt, Federico Tombari, Slobodan Ilic, and Nassir Navab. SSD-6D: Making RGB-based 3D detection and 6D pose estimation great again. In IEEE Inter-national Conference on Computer Vision , pages 1521–1529, 2017. 1, 2 [18] Zhujun Li, Shuo Zhang, and Ioannis Stamos. Learning point cloud representations with pose continuity for depth-based category-level 6d object pose estimation. In Proceedings of the IEEE/CVF International Conference on Computer Vi-sion , pages 2415–2425, 2025. 6 [19] Haitao Lin, Zichang Liu, Chilam Cheang, Yanwei Fu, Guodong Guo, and Xiangyang Xue. SAR-Net: Shape align-ment and recovery network for category-level 6D object pose and size estimation. In IEEE Conference on Computer Vision and Pattern Recognition , pages 6707–6717, 2022. 1, 2, 6, 8 [20] Jiehong Lin, Zewei Wei, Zhihao Li, Songcen Xu, Kui Jia, and Yuanqing Li. Dualposenet: Category-level 6D object pose and size estimation using dual pose network with re-fined learning of pose consistency. In IEEE International Conference on Computer Vision , pages 3560–3569, 2021. 1, 2, 6, 8 [21] Jiehong Lin, Zewei Wei, Yabin Zhang, and Kui Jia. VI-Net: Boosting category-level 6D object pose estimation via learn-ing decoupled rotations on the spherical representations. In 
+
+IEEE/CVF International Conference on Computer Vision ,pages 14001–14011, 2023. 2, 6 [22] Shifeng Lin, Zunran Wang, Yonggen Ling, Yidan Tao, and Chenguang Yang. E2EK: End-to-end regression network based on keypoint for 6D pose estimation. IEEE Robotics and Automation Letters , 7(3):6526–6533, 2022. 2 [23] Xiao Lin, Wenfei Yang, Yuan Gao, and Tianzhu Zhang. Instance-adaptive and geometric-aware keypoint learning for category-level 6d object pose estimation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 21040–21049, 2024. 6 35122 [24] Jianhui Liu, Yukang Chen, Xiaoqing Ye, and Xiaojuan Qi. IST-Net: Prior-free category-level pose estimation with im-plicit space transformation. In IEEE/CVF International Con-ference on Computer Vision , pages 13978–13988, 2023. 2 [25] Fabian Manhardt, Wadim Kehl, and Adrien Gaidon. Roi-10d: Monocular lifting of 2d detection to 6d pose and met-ric shape. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 2069– 2078, 2019. 1 [26] Arsalan Mousavian, Clemens Eppner, and Dieter Fox. 6-DoF GraspNet: Variational grasp generation for object manipula-tion. In IEEE/CVF International Conference on Computer Vision , pages 2901–2910, 2019. 8 [27] Markus Oberweger, Mahdi Rad, and Vincent Lepetit. Mak-ing deep heatmaps robust to partial occlusions for 3d object pose estimation. In European Conference on Computer Vi-sion , pages 119–134, 2018. 2 [28] Sida Peng, Yuan Liu, Qixing Huang, Xiaowei Zhou, and Hu-jun Bao. PVNet: Pixel-wise voting network for 6DoF pose estimation. In IEEE Conference on Computer Vision and Pattern Recognition , pages 4561–4570, 2019. 1, 2 [29] Mahdi Rad and Vincent Lepetit. BB8: A scalable, accu-rate, robust to partial occlusion method for predicting the 3D poses of challenging objects without using depth. In IEEE International Conference on Computer Vision , pages 3828– 3836, 2017. [30] Mahdi Rad, Markus Oberweger, and Vincent Lepetit. Fea-ture mapping for learning fast and accurate 3d pose inference from synthetic images. In IEEE Conference on Computer Vi-sion and Pattern Recognition , pages 4663–4672, 2018. 2 [31] Huan Ren, Wenfei Yang, Shifeng Zhang, and Tianzhu Zhang. Rethinking correspondence-based category-level ob-ject pose estimation. In Proceedings of the Computer Vi-sion and Pattern Recognition Conference , pages 1170–1179, 2025. 6 [32] Meng Tian, Marcelo H Ang, and Gim Hee Lee. Shape prior deformation for categorical 6D object pose and size estima-tion. In European Conference on Computer Vision , pages 530–546, 2020. 1, 2, 6 [33] Henning Tjaden, Ulrich Schwanecke, and Elmar Schomer. Real-time monocular pose estimation of 3d objects using temporally consistent local color histograms. In Proceed-ings of the IEEE international conference on computer vi-sion , pages 124–132, 2017. 1 [34] Chen Wang, Danfei Xu, Yuke Zhu, Roberto Mart´ ın-Mart´ ın, Cewu Lu, Fei-Fei Li, and Silvio Savarese. Densefusion: 6D object pose estimation by iterative dense fusion. In IEEE Conference on Computer Vision and Pattern Recognition ,pages 3343–3352, 2019. 1 [35] He Wang, Srinath Sridhar, Jingwei Huang, Julien Valentin, Shuran Song, and Leonidas J Guibas. Normalized object coordinate space for category-level 6D object pose and size estimation. In IEEE Conference on Computer Vision and Pattern Recognition , pages 2642–2651, 2019. 1, 6, 8 [36] Yue Wang, Yongbin Sun, Ziwei Liu, Sanjay E Sarma, Michael M Bronstein, and Justin M Solomon. Dynamic graph cnn for learning on point clouds. Acm Transactions On Graphics , 38(5):1–12, 2019. 4 [37] Hongtao Wen, Jianhang Yan, Wanli Peng, and Yi Sun. Trans-Grasp: Grasp pose estimation of a category of objects by transferring grasps from only one labeled instance. In Euro-pean Conference on Computer Vision , pages 445–461, 2022. 8[38] Tong Wu, Liang Pan, Junzhe Zhang, Tai Wang, Ziwei Liu, and Dahua Lin. Density-aware chamfer distance as a com-prehensive metric for point cloud completion. arXiv preprint arXiv:2111.12702 , 2021. 5, 6 [39] Yu Xiang, Tanner Schmidt, Venkatraman Narayanan, and Dieter Fox. PoseCNN: A convolutional neural network for 6d object pose estimation in cluttered scenes. In Robotics: Science and Systems , 2018. 1, 2 [40] Yang You, Ruoxi Shi, Weiming Wang, and Cewu Lu. CPPF: Towards robust category-level 9D pose estimation in the wild. In IEEE Conference on Computer Vision and Pattern Recognition , pages 6866–6875, 2022. 8 [41] Sheng Yu, Di-Hua Zhai, and Yuanqing Xia. CatFormer: Category-level 6D object pose estimation with transformer. In AAAI Conference on Artificial Intelligence , pages 6808– 6816, 2024. 2, 4, 6, 8 [42] Yanjie Ze and Xiaolong Wang. Category-level 6D object pose estimation in the wild: A semi-supervised learning ap-proach and a new dataset. Advances in Neural Information Processing Systems , 35:27469–27483, 2022. 8 [43] Yue Zhan, Xin Wang, Lang Nie, Yang Zhao, Tangwen Yang, and Qiuqi Ruan. Tg-pose: Delving into topology and geom-etry for category-level object pose estimation. IEEE Trans-actions on Multimedia , 26:9749–9762, 2024. 1, 2, 6 [44] Ruida Zhang, Yan Di, Zhiqiang Lou, Fabian Manhardt, Fed-erico Tombari, and Xiangyang Ji. RBP-Pose: Residual bounding box projection for category-level pose estimation. In European Conference on Computer Vision , pages 655– 672, 2022. 2, 5, 6 [45] Ruida Zhang, Yan Di, Fabian Manhardt, Federico Tombari, and Xiangyang Ji. Ssp-pose: Symmetry-aware shape prior deformation for direct category-level object pose estimation. In IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , pages 7452–7459, 2022. 6 [46] Linfang Zheng, Chen Wang, Yinghan Sun, Esha Dasgupta, Hua Chen, Aleˇ s Leonardis, Wei Zhang, and Hyung Jin Chang. HS-Pose: Hybrid scope feature extraction for category-level object pose estimation. In IEEE/CVF Con-ference on Computer Vision and Pattern Recognition , pages 17163–17173, 2023. 1, 2, 3, 4, 5, 6, 8 [47] Lei Zhou, Zhiyang Liu, Runze Gan, Haozhe Wang, and Marcelo H Ang. Dr-pose: A two-stage deformation-and-registration pipeline for category-level 6d object pose esti-mation. In IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , pages 1192–1199, 2023. 6 35123
