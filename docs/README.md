@@ -48,17 +48,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-08-09 ~ 2026-09-07</span>
+      <span class="dpr-home-dashboard-kicker">2026-09-07</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 5 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 7 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
-    <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>2 次</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>0</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>5</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>1</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>6</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-09-07 07:10:49 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-09-07 23:19:41 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,9 +69,9 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日推荐5篇论文，均为速读，无精读，其中3篇明确给出评分。</p>
-<p>最值得关注的是9.0分的《Attitude Estimation from Photometric Data using Gaussian Process Regression》，以及两篇8.0分的相机位姿估计与无人机导航相关工作。</p>
-<p>建议优先精读最高分论文，并延伸关注3D高斯泼溅在位姿估计中的应用。</p>
+<p>今日聚焦7篇论文，精读1篇、速读6篇，核心锁定无人机视觉编队控制与视觉定位鲁棒性。</p>
+<p>最值得关注：GPS受限下基于视觉的无人机编队控制（8.0分），以及重力先验提升位姿估计效率（7.0分）。</p>
+<p>建议优先精读高分编队控制，并对比SLAM在真实与合成退化下的表现，判断实际部署风险。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -80,12 +80,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">精读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">0 篇</strong>
+    <strong class="dpr-home-dashboard-count">1 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p class="dpr-home-dashboard-empty">今日暂无推荐。</p>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Vision-Based Leader-Follower Formation Control for Cooperative UAVs in GPS-Degraded Environments">Vision-Based Leader-Follower Formation Control for Cooperative UAVs in GPS-Degraded Environments</span></li></ul>
   </div>
-
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>1</strong></span></div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-skim-card">
   <div class="dpr-home-dashboard-header">
@@ -93,12 +93,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">5 篇</strong>
+    <strong class="dpr-home-dashboard-count">6 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Attitude Estimation from Photometric Data using Gaussian Process Regression">Attitude Estimation from Photometric Data using Gaussian Process Regression</span></li><li><span class="dpr-home-dashboard-paper-title" title="GS-CPE: Unified 6-Degree-of-Freedom Camera Pose Estimation via 3D Gaussian Splatting">GS-CPE: Unified 6-Degree-of-Freedom Camera Pose Estimation via 3D Gaussian Splatting</span></li><li><span class="dpr-home-dashboard-paper-title" title="AirAlign: Geometry-Aware Relative Pose Alignment for UAV Last-Meter Navigation">AirAlign: Geometry-Aware Relative Pose Alignment for UAV Last-Meter Navigation</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Efficient and Robust Absolute Pose Estimation via Gravity-Prior-Driven Transformation Decoupling and Pose Refinement">Efficient and Robust Absolute Pose Estimation via Gravity-Prior-Driven Transformation Decoupling and Pose Refinement</span></li><li><span class="dpr-home-dashboard-paper-title" title="Failure or Drift? Evaluating Monocular SLAM under Synthetic and Real-World Corruptions">Failure or Drift? Evaluating Monocular SLAM under Synthetic and Real-World Corruptions</span></li><li><span class="dpr-home-dashboard-paper-title" title="CrossFeat: Bridging Imaging Modalities in Feature Descriptor Space">CrossFeat: Bridging Imaging Modalities in Feature Descriptor Space</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>5</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>6</strong></span></div>
 </section>
 </div>
 

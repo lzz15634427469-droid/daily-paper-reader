@@ -1,0 +1,121 @@
+{
+  "date": "20260907",
+  "date_label": "",
+  "generated_at": "2026-09-07 23:19:41 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.01420v1",
+      "route": "202609/07/2609.01420v1-vision-based-leader-follower-formation-control-for-cooperative-uavs-in-gps-degraded-environments",
+      "title": "Vision-Based Leader-Follower Formation Control for Cooperative UAVs in GPS-Degraded Environments",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "利用机载RGB-D相机估计领航无人机相对位姿，与航天器相对位姿估计问题相似。",
+      "first_seen_at": "2026-09-07 23:19:41 UTC",
+      "updated_at": "2026-09-07 23:19:41 UTC"
+    },
+    {
+      "paper_id": "2609.00713v1",
+      "route": "202609/07/2609.00713v1-efficient-and-robust-absolute-pose-estimation-via-gravity-prior-driven-transformation-decoupling-and-pose-refinement",
+      "title": "Efficient and Robust Absolute Pose Estimation via Gravity-Prior-Driven Transformation Decoupling and Pose Refinement",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "提出重力先验下的鲁棒绝对位姿估计与变换解耦方法，适用于利用对应点求解目标位姿的任务。",
+      "first_seen_at": "2026-09-07 23:19:41 UTC",
+      "updated_at": "2026-09-07 23:19:41 UTC"
+    },
+    {
+      "paper_id": "2608.30690v1",
+      "route": "202609/07/2608.30690v1-failure-or-drift-evaluating-monocular-slam-under-synthetic-and-real-world-corruptions",
+      "title": "Failure or Drift? Evaluating Monocular SLAM under Synthetic and Real-World Corruptions",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向单目位姿跟踪的退化评估方法；可迁移至位姿估计精度与鲁棒性评测",
+      "first_seen_at": "2026-09-07 23:19:41 UTC",
+      "updated_at": "2026-09-07 23:19:41 UTC"
+    },
+    {
+      "paper_id": "2609.00272v1",
+      "route": "202609/07/2609.00272v1-crossfeat-bridging-imaging-modalities-in-feature-descriptor-space",
+      "title": "CrossFeat: Bridging Imaging Modalities in Feature Descriptor Space",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "跨模态特征描述符转换框架可将单模态描述符推广至RGB-深度及多光谱等，利于相机与激光雷达特征关联及相对位姿估计",
+      "first_seen_at": "2026-09-07 23:19:41 UTC",
+      "updated_at": "2026-09-07 23:19:41 UTC"
+    },
+    {
+      "paper_id": "2609.03222v1",
+      "route": "202609/07/2609.03222v1-following-a-unique-path-a-fast-certifier-applied-to-outlier-robust-pose-registration",
+      "title": "Following a Unique Path: A Fast Certifier Applied to Outlier-Robust Pose Registration",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "为离群鲁棒位姿配准设计验证器，有助于在退化松弛中保障鲁棒位姿估计最优性。",
+      "first_seen_at": "2026-09-07 23:19:41 UTC",
+      "updated_at": "2026-09-07 23:19:41 UTC"
+    },
+    {
+      "paper_id": "2609.04026v1",
+      "route": "202609/07/2609.04026v1-stable-and-scalable-bundle-adjustment-of-holistic-3d-structures",
+      "title": "Stable and Scalable Bundle Adjustment of Holistic 3D Structures",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "光束平差能联合优化相机位姿与三维结构，可支撑基于图像的相对位姿估计",
+      "first_seen_at": "2026-09-07 23:19:41 UTC",
+      "updated_at": "2026-09-07 23:19:41 UTC"
+    },
+    {
+      "paper_id": "2609.04965v1",
+      "route": "202609/07/2609.04965v1-arc-loc-leveraging-azimuthal-ray-convergence-as-a-geometric-cue-for-direct-cross-view-localization",
+      "title": "ARC-Loc: Leveraging Azimuthal Ray Convergence as a Geometric Cue for Direct Cross-View Localization",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "利用几何射线汇聚从单幅图像直接估计相机相对参考影像的位姿，与单目航天器位姿估计思路相近",
+      "first_seen_at": "2026-09-07 23:19:41 UTC",
+      "updated_at": "2026-09-07 23:19:41 UTC"
+    }
+  ]
+}

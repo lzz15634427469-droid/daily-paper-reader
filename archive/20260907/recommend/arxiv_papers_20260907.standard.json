@@ -1,0 +1,287 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-07T23:15:08.344967+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 6,
+    "quick_skim_target": 11,
+    "quick_selected": 6
+  },
+  "deep_dive": [
+    {
+      "id": "2609.01420v1",
+      "source": "arxiv",
+      "title": "Vision-Based Leader-Follower Formation Control for Cooperative UAVs in GPS-Degraded Environments",
+      "abstract": "Cooperation in multi-UAV systems requires reliable relative perception so that follower vehicles can maintain formation and continue their mission safely even when absolute positioning sensors degrade or fail. This paper presents a vision-based cooperative formation framework running on a follower UAV that uses a front-facing RGB-D camera to detect, track, and localize a leader UAV in real-time. A lightweight YOLO-based detector is trained on a dedicated drone dataset and deployed onboard to predict leader bounding boxes, which are then fused with depth information via a pinhole camera model to estimate the leader's relative pose. These estimates provide a leader-follower position controller and can also be used as a backup when GPS or external localization is unavailable. This framework is implemented as a set of ROS nodes and evaluated in a physics-based multi-UAV simulation built on XTDrone, with sensor noise and communication dropouts. We evaluate detection accuracy, runtime, and formation-keeping error under nominal conditions and under simulated failures of the positioning sensors. The results show that the proposed framework maintains stable leader-follower formations with reasonable computational cost and provides a practical basis for extending vision-based cooperative formation control to real-world multi-UAV systems.",
+      "authors": [
+        "Deekshitha Angadi",
+        "Naveena Budda",
+        "Vikas Agarwal",
+        "Rojesh Arunkumar Mulasa",
+        "Ravi Killamsetty",
+        "Mohamed Samshad",
+        "Narsimlu Kemsaram"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-01T15:35:38+00:00",
+      "link": "https://arxiv.org/pdf/2609.01420v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Uses onboard RGB-D camera to estimate relative pose of a leader UAV, analogous to spacecraft relative pose estimation.",
+      "llm_evidence_cn": "利用机载RGB-D相机估计领航无人机相对位姿，与航天器相对位姿估计问题相似。",
+      "llm_evidence": "利用机载RGB-D相机估计领航无人机相对位姿，与航天器相对位姿估计问题相似。",
+      "canonical_evidence": "利用机载RGB-D相机估计领航无人机相对位姿，与航天器相对位姿估计问题相似。",
+      "llm_tldr_en": "Presents a vision-based UAV leader-follower framework that detects a leader with YOLO and estimates its relative pose from an RGB-D camera, demonstrating an onboard relative-pose estimation pipeline transferable to spacecraft rendezvous.",
+      "llm_tldr_cn": "多无人机协同时在GPS退化环境下需要可靠的相对感知。本文面向跟随无人机提出基于视觉的编队框架，用前置RGB-D相机检测并跟踪领航无人机，通过轻量YOLO检测器获取包围框并与深度信息融合，经由针孔模型估计领航机相对位姿。所得位姿驱动领航-跟随位置控制器，并可在绝对定位失效时作为备份。该流程可直接迁移到航天器交会接近中的相对位姿估计任务。",
+      "llm_tldr": "多无人机协同时在GPS退化环境下需要可靠的相对感知。本文面向跟随无人机提出基于视觉的编队框架，用前置RGB-D相机检测并跟踪领航无人机，通过轻量YOLO检测器获取包围框并与深度信息融合，经由针孔模型估计领航机相对位姿。所得位姿驱动领航-跟随位置控制器，并可在绝对定位失效时作为备份。该流程可直接迁移到航天器交会接近中的相对位姿估计任务。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.00713v1",
+      "source": "arxiv",
+      "title": "Efficient and Robust Absolute Pose Estimation via Gravity-Prior-Driven Transformation Decoupling and Pose Refinement",
+      "abstract": "Estimation of the absolute pose of an object is an essential task for various robotic applications. Recently, incorporating gravity direction as prior information has emerged as a popular approach to simplify absolute pose estimation. However, developing a robust and efficient algorithm to solve this challenging problem remains a difficult question due to large amounts of mismatches. In addition, obtaining an accurate pose solution from selected inlier correspondences with gravity prior is still a research gap. In this paper, we propose a novel transformation strategy that exploits geometric relations derived from the gravity prior. Through transformation decoupling, the original 6 degrees of freedom (DoF) absolute pose estimation problem is simplified into a 4-DoFs problem: 1-DoF for the rotation angle and 3-DoFs for translation, significantly improving the efficiency. For the 1-DoF rotation angle, we apply a one-dimensional global voting algorithm for optimal estimation. Once the optimal rotation is obtained, the mismatched correspondences are preliminarily filtered, and translation estimation, a linear problem, can be easily solved. Furthermore, to obtain accurate pose results, we introduce a novel pose refinement algorithm to enhance the accuracy of both rotation and translation. Extensive experiments on synthetic data and three publicly available real-world datasets (TUM RGB-D, ETH3D, and RobotCar) demonstrate that the proposed method achieves stronger performance compared to existing state-of-the-art (SOTA) approaches. To further validate our method, we integrated it into ORB-SLAM2. The results on the KITTI dataset show it effectively reduces drift and improves trajectory alignment during relocalization. The source code will be released upon acceptance.",
+      "authors": [
+        "Hu Cao",
+        "Qianyi Yang",
+        "Xinyi Li",
+        "Jiong Liu",
+        "Yinlong Liu",
+        "Alois Knoll"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-01T04:43:39+00:00",
+      "link": "https://arxiv.org/pdf/2609.00713v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Proposes robust absolute pose estimation with gravity prior and transformation decoupling, applicable to target pose-from-correspondences problems.",
+      "llm_evidence_cn": "提出重力先验下的鲁棒绝对位姿估计与变换解耦方法，适用于利用对应点求解目标位姿的任务。",
+      "llm_evidence": "提出重力先验下的鲁棒绝对位姿估计与变换解耦方法，适用于利用对应点求解目标位姿的任务。",
+      "canonical_evidence": "提出重力先验下的鲁棒绝对位姿估计与变换解耦方法，适用于利用对应点求解目标位姿的任务。",
+      "llm_tldr_en": "Addresses robust absolute pose estimation under noise and mismatches by decoupling the 6DoF pose with gravity-prior geometry, yielding more accurate and efficient pose refinement.",
+      "llm_tldr_cn": "在机器人应用中，绝对位姿估计常因大量误匹配而不鲁棒，且利用重力先验时从内点精确求解仍有空白。本文提出变换解耦策略，利用重力先验的几何关系将6自由度位姿估计解耦，配合位姿细化和鲁棒筛选机制，显著抑制误匹配影响。方法与现有重力先验方案相比在效率和精度上均有优势，可服务于基于点对应的目标位姿估计任务。该思路也可用于航天器相对位姿估计中的稳健求解模块。",
+      "llm_tldr": "在机器人应用中，绝对位姿估计常因大量误匹配而不鲁棒，且利用重力先验时从内点精确求解仍有空白。本文提出变换解耦策略，利用重力先验的几何关系将6自由度位姿估计解耦，配合位姿细化和鲁棒筛选机制，显著抑制误匹配影响。方法与现有重力先验方案相比在效率和精度上均有优势，可服务于基于点对应的目标位姿估计任务。该思路也可用于航天器相对位姿估计中的稳健求解模块。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.30690v1",
+      "source": "arxiv",
+      "title": "Failure or Drift? Evaluating Monocular SLAM under Synthetic and Real-World Corruptions",
+      "abstract": "Visual SLAM is commonly evaluated on clean trajectories, although deployment failures are often caused by adverse weather, illumination, blur, and sensor artifacts. Controlled corruptions are attractive because they isolate such factors, but a synthetic stress test is useful only when it leads to the same engineering conclusion as the condition it is intended to approximate. This work examines that question for monocular SLAM. We evaluate a classical feature-based system and two learned trackers under image-space, geometry-aware, and compound corruptions, and compare their behavior with adverse conditions from 4Seasons. Rather than reducing robustness to a single trajectory error, the evaluation separates explicit tracking failure from drift accumulated by methods that remain active. The results show that learned trackers largely replace catastrophic loss with sustained, and sometimes severe, drift. More importantly, the apparent ordering of the learned systems changes with the physical fidelity of the corruption: structured rain and fog proxies preserve the real-world ordering, whereas a simple illumination proxy does not. Code is available at: https://github.com/abhaythomas/master_thesis_vslamlab_robustness.",
+      "authors": [
+        "Abhay Skaria Thomas",
+        "Shashank Agnihotri",
+        "Margret Keuper"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO"
+      ],
+      "published": "2026-08-31T12:28:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.30690v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "evaluation methodology for monocular pose tracking under corruptions; transferable to pose-estimation robustness assessment",
+      "llm_evidence_cn": "面向单目位姿跟踪的退化评估方法；可迁移至位姿估计精度与鲁棒性评测",
+      "llm_evidence": "面向单目位姿跟踪的退化评估方法；可迁移至位姿估计精度与鲁棒性评测",
+      "canonical_evidence": "面向单目位姿跟踪的退化评估方法；可迁移至位姿估计精度与鲁棒性评测",
+      "llm_tldr_en": "Proposes an evaluation protocol for monocular SLAM under synthetic and real-world corruptions that separates tracking failure from drift, offering transferable methodology for robustness assessment of monocular pose estimators.",
+      "llm_tldr_cn": "单目SLAM通常用干净轨迹评估，实际失效往往来自天气、光照、模糊与传感器伪影。该文检验受控合成退化能否复现真实恶劣条件下的工程结论，对经典特征法和两个学习型跟踪器施加图像域、几何一致与复合退化，并用4Seasons真实数据进行对照。它不把鲁棒性压缩为单一轨迹误差，而是区分显式跟踪失败与漂移，给出更细的鲁棒性评测框架。该评测方法论可迁移到单目位姿估计的精度与鲁棒性评估，尽管场景并非航天器目标。",
+      "llm_tldr": "单目SLAM通常用干净轨迹评估，实际失效往往来自天气、光照、模糊与传感器伪影。该文检验受控合成退化能否复现真实恶劣条件下的工程结论，对经典特征法和两个学习型跟踪器施加图像域、几何一致与复合退化，并用4Seasons真实数据进行对照。它不把鲁棒性压缩为单一轨迹误差，而是区分显式跟踪失败与漂移，给出更细的鲁棒性评测框架。该评测方法论可迁移到单目位姿估计的精度与鲁棒性评估，尽管场景并非航天器目标。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to evaluate deep learning based spacecraft pose estimation accuracy?",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.00272v1",
+      "source": "arxiv",
+      "title": "CrossFeat: Bridging Imaging Modalities in Feature Descriptor Space",
+      "abstract": "Most advances in keypoint descriptions address monomodal settings, where image variations arise from viewpoint, illumination, or contrast changes. Multimodal scenarios involve images produced by fundamentally different sensing processes, such as multispectral imaging, RGB-depth, satellite imagery, or medical imaging, causing the same structures to appear differently. A common solution to cross-modal description is to train descriptors for each modality pair, which requires retraining whenever the modalities change, or to train large models, which incur a significant increase in runtime. Instead, we propose CrossFeat, a framework that enables an existing monomodal descriptor to operate across modalities. Our method learns a crossing function in descriptor space that maps features from one modality to a representation compatible with another. To preserve the structural information captured by the original descriptor, CrossFeat introduces a geometry-appearance disentanglement such that only appearance is altered while the geometric properties are preserved. Experiments across multiple domains and datasets demonstrate improved performance in multimodal matching.",
+      "authors": [
+        "Paul Schneider",
+        "Nazim Haouchine"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-31T19:14:54+00:00",
+      "link": "https://arxiv.org/pdf/2609.00272v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Universal cross-modal feature descriptor mapping RGB-depth, multispectral, and satellite correspondences; directly useful for camera-lidar registration in relative pose estimation",
+      "llm_evidence_cn": "跨模态特征描述符转换框架可将单模态描述符推广至RGB-深度及多光谱等，利于相机与激光雷达特征关联及相对位姿估计",
+      "llm_evidence": "跨模态特征描述符转换框架可将单模态描述符推广至RGB-深度及多光谱等，利于相机与激光雷达特征关联及相对位姿估计",
+      "canonical_evidence": "跨模态特征描述符转换框架可将单模态描述符推广至RGB-深度及多光谱等，利于相机与激光雷达特征关联及相对位姿估计",
+      "llm_tldr_en": "CrossFeat lets an existing monomodal descriptor work across imaging modalities by learning a crossing function in descriptor space, avoiding per-pair retraining and large models; it supports multimodal matching for RGB-depth, multispectral, and satellite data.",
+      "llm_tldr_cn": "现有多模态描述子通常需要按模态对重新训练或依赖大模型，跨模态匹配成本高。CrossFeat通过学习描述符空间中的跨模态转换函数，使已有单模态描述子可直接用于RGB-深度、多光谱和卫星等异源图像，无需成对重训练。它可提升不同传感器视图下关键点的匹配一致性，为相机与激光雷达等异构数据的联合相对位姿估计提供支撑。",
+      "llm_tldr": "现有多模态描述子通常需要按模态对重新训练或依赖大模型，跨模态匹配成本高。CrossFeat通过学习描述符空间中的跨模态转换函数，使已有单模态描述子可直接用于RGB-深度、多光谱和卫星等异源图像，无需成对重训练。它可提升不同传感器视图下关键点的匹配一致性，为相机与激光雷达等异构数据的联合相对位姿估计提供支撑。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.03222v1",
+      "source": "arxiv",
+      "title": "Following a Unique Path: A Fast Certifier Applied to Outlier-Robust Pose Registration",
+      "abstract": "Certifiable methods have arisen as a means to guarantee global optimality of solutions to non-convex problems using convex semidefinite programming (SDP) relaxations. The most performant of these methods use a local solver to obtain the candidate solution, and then certify its optimality using efficient linear algebra techniques. However, for many problems of interest in robotics, this local-solve-then-certify approach is impeded by a form of degeneracy in the relaxation, leaving a costly optimization of the relaxation as the only recourse. In this paper, we introduce our Central-Path Certifier (CP-Cert), a certifiable method explicitly tailored to certify candidate optima to problems that exhibit this form of degeneracy. Using a candidate as a starting point, our approach seeks a nearby region of the feasible space -- known as the central path -- where a valid certificate can be readily obtained. The approach is kept efficient by exploiting indirect linear algebra techniques, problem sparsity, and parallelism. We apply CP-Cert to both matrix-weighted pose registration and pointcloud data association, whose novel SDP relaxation is of independent interest. On simulated examples, we explore the properties of this novel relaxation and show that CP-Cert is fast and scalable, achieving runtimes that are up to three orders of magnitude faster than state-of-the-art direct solvers. Finally, we combine these contributions into a certifiable, outlier-robust pose-estimation pipeline, which we apply to real-world data.",
+      "authors": [
+        "Connor Holmes",
+        "Abhishek Goudar",
+        "Timothy D. Barfoot"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-02T23:39:56+00:00",
+      "link": "https://arxiv.org/pdf/2609.03222v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Provides a certifier for outlier-robust pose registration, supporting robust pose estimation algorithms under degenerate relaxations.",
+      "llm_evidence_cn": "为离群鲁棒位姿配准设计验证器，有助于在退化松弛中保障鲁棒位姿估计最优性。",
+      "llm_evidence": "为离群鲁棒位姿配准设计验证器，有助于在退化松弛中保障鲁棒位姿估计最优性。",
+      "canonical_evidence": "为离群鲁棒位姿配准设计验证器，有助于在退化松弛中保障鲁棒位姿估计最优性。",
+      "llm_tldr_en": "Introduces Central-Path Certifier (CP-Cert) to certify candidate pose-registration solutions in degenerate SDP relaxations, providing fast optimality guarantees and robustness to outliers.",
+      "llm_tldr_cn": "可验证方法通过凸半定规划松弛保证非凸位姿配准的全局最优，但退化情况下只能依赖昂贵优化。本文提出中央路径验证器CP-Cert，针对这种退化问题，用候选解与快速线性代数沿中央路径完成最优性验证，避免求解原始松弛。它适用于离群鲁棒位姿配准，在保证几何最优性的同时降低计算成本，可增强航天器模型与点云配准等任务的可靠性。",
+      "llm_tldr": "可验证方法通过凸半定规划松弛保证非凸位姿配准的全局最优，但退化情况下只能依赖昂贵优化。本文提出中央路径验证器CP-Cert，针对这种退化问题，用候选解与快速线性代数沿中央路径完成最优性验证，避免求解原始松弛。它适用于离群鲁棒位姿配准，在保证几何最优性的同时降低计算成本，可增强航天器模型与点云配准等任务的可靠性。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.04026v1",
+      "source": "arxiv",
+      "title": "Stable and Scalable Bundle Adjustment of Holistic 3D Structures",
+      "abstract": "Bundle Adjustment (BA) is a cornerstone of 3D computer vision and has benefited from decades of advances in sparse optimization and numerical methods. It was originally developed for jointly optimizing camera intrinsics, poses and sparse 3D points. While extensions incorporate lines and other primitives, integrating richer geometric structures such as parallelism, coplanarity, or wireframes often introduces significantly increased computational cost and reduced numerical stability. In this paper, we propose a unified framework that extends bundle adjustment to jointly optimize geometric features and higher-order relations. We first introduce a taxonomy that distinguishes scalable geometric features with direct 2D measurements (e.g., points and lines), from groups encoding higher-order relations (e.g., coplanarity, parallelism, etc.), where we show that groups can be modeled as camera-like entities within the bundle adjustment framework. Building on this formulation, we propose that both group constraints and cross-feature relations (i.e., point-line associations) can be expressed through 2D reprojection measurements. By formulating group-induced and cross-feature reprojection errors, we preserve the sparsity structure of classical point-based BA under Schur elimination, while avoiding direct 3D regularization that degrades the conditioning and stability. Experiments on both real-world and synthetic datasets demonstrate runtime performance comparable to classical point-only bundle adjustment, while producing significantly richer 3D structures and improved geometric accuracy.",
+      "authors": [
+        "Shaohui Liu",
+        "Rémi Pautrat",
+        "Daniel Barath",
+        "Richard Hartley",
+        "Viktor Larsson",
+        "Marc Pollefeys"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-03T16:08:03+00:00",
+      "link": "https://arxiv.org/pdf/2609.04026v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Bundle adjustment jointly optimizes camera pose and 3D structure, enabling image-based relative pose estimation",
+      "llm_evidence_cn": "光束平差能联合优化相机位姿与三维结构，可支撑基于图像的相对位姿估计",
+      "llm_evidence": "光束平差能联合优化相机位姿与三维结构，可支撑基于图像的相对位姿估计",
+      "canonical_evidence": "光束平差能联合优化相机位姿与三维结构，可支撑基于图像的相对位姿估计",
+      "llm_tldr_en": "Bundle adjustment is a core tool for jointly estimating camera poses and sparse 3D points. This paper extends it to richer higher-order geometry with a stable and scalable unified framework, making it a practical optimization backend for structure-based relative pose estimation from imagery.",
+      "llm_tldr_cn": "光束平差是三维视觉中优化相机位姿与场景结构的基石，但整合平行、共面、线框等高阶几何约束往往带来计算量上升和数值不稳定问题。该文提出统一框架，将光束平差扩展到同时优化几何特征与高阶关系，在保持稳定性的同时提升可扩展性。实验证明其能处理含丰富结构先验的场景并给出可靠优化解。作为通用几何优化工具，该方法可用作图像位姿估计流程的后端精化模块，支撑航天器等目标的相对位姿求解。",
+      "llm_tldr": "光束平差是三维视觉中优化相机位姿与场景结构的基石，但整合平行、共面、线框等高阶几何约束往往带来计算量上升和数值不稳定问题。该文提出统一框架，将光束平差扩展到同时优化几何特征与高阶关系，在保持稳定性的同时提升可扩展性。实验证明其能处理含丰富结构先验的场景并给出可靠优化解。作为通用几何优化工具，该方法可用作图像位姿估计流程的后端精化模块，支撑航天器等目标的相对位姿求解。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.04965v1",
+      "source": "arxiv",
+      "title": "ARC-Loc: Leveraging Azimuthal Ray Convergence as a Geometric Cue for Direct Cross-View Localization",
+      "abstract": "Cross-view localization (CVL) estimates the pose of a ground image by matching it to a geo-referenced satellite image. To bridge the extreme viewpoint gap, mainstream pipelines rely on Bird's-Eye-View (BEV) transformations or 2D-to-3D lifting. However, deriving 3D structures from a single ground image is fundamentally ill-posed, causing these methods to endure geometric distortions and computational costs during 3D lifting or BEV projection. Furthermore, relying on external depth foundation models to resolve this introduces latency and remains susceptible to noisy predictions. In this work, we present a different approach inspired by a human navigation technique called resection, that can perform direct ground to satellite image matching and localization without relying on external depth foundation models. The key insights of our method are that (i) ground keypoints can be translated into azimuthal rays on the satellite map, and (ii) these rays ideally converge at the user location. Exploiting this geometric constraint through direct line-to-point correspondences, we introduce a minimal Azimuthal Ray Convergence (ARC) solver to identify the intersection, alongside an ARC loss to optimize the matching network. By eliminating dependencies on computationally heavy BEV transformations and external depth foundation models, our approach achieves faster, memory-efficient inference, while its explicit feature matching ensures straightforward compatibility with existing frameworks. Experiments on VIGOR and KITTI demonstrate that ARC-Loc maintains competitive localization accuracy compared to recent approaches, highlighting its practicality.",
+      "authors": [
+        "Hyeongsik Kim",
+        "Mincheol Kim",
+        "Heejoon Moon",
+        "Je Hyeong Hong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-04T10:19:37+00:00",
+      "link": "https://arxiv.org/pdf/2609.04965v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Direct monocular camera pose estimation from one image against a reference view using geometric ray convergence, conceptually close to single-image spacecraft pose estimation",
+      "llm_evidence_cn": "利用几何射线汇聚从单幅图像直接估计相机相对参考影像的位姿，与单目航天器位姿估计思路相近",
+      "llm_evidence": "利用几何射线汇聚从单幅图像直接估计相机相对参考影像的位姿，与单目航天器位姿估计思路相近",
+      "canonical_evidence": "利用几何射线汇聚从单幅图像直接估计相机相对参考影像的位姿，与单目航天器位姿估计思路相近",
+      "llm_tldr_en": "ARC-Loc directly estimates a ground camera pose from one image using azimuthal ray convergence as a geometric cue, avoiding BEV projection or 3D lifting. This monocular pose-from-image method is conceptually applicable to spacecraft pose estimation from a single camera.",
+      "llm_tldr_cn": "跨视角定位通常依赖鸟瞰图或二维到三维提升，存在几何畸变和深度噪声。作者借鉴人工导航中的后方交会思想，以方位射线汇聚为几何线索，直接从单幅地面图像估计相对卫星影像的相机位姿，避免隐式三维重建。该方案绕开昂贵的三维提升和外部深度模型，降低延迟并减少噪声影响。这种单图几何线索的位姿求解思想可迁移到航天器单目相对位姿估计等应用。",
+      "llm_tldr": "跨视角定位通常依赖鸟瞰图或二维到三维提升，存在几何畸变和深度噪声。作者借鉴人工导航中的后方交会思想，以方位射线汇聚为几何线索，直接从单幅地面图像估计相对卫星影像的相机位姿，避免隐式三维重建。该方案绕开昂贵的三维提升和外部深度模型，降低延迟并减少噪声影响。这种单图几何线索的位姿求解思想可迁移到航天器单目相对位姿估计等应用。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
