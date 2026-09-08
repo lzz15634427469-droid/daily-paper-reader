@@ -1,0 +1,132 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-08T21:54:33.109423+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.00730v1",
+      "source": "arxiv",
+      "title": "Design and Implementation of a Kalman Filter-Infused Algorithm for Tilt Estimation",
+      "abstract": "Accurate tilt angle estimation is important in many engineering applications, such as robotics, motion tracking, and embedded control systems. However, measurements from low-cost inertial sensors are often degraded by noise and drift. This paper presents a single-axis tilt angle estimation system based on the MPU6050 inertial measurement unit, implemented on an RP2040 microcontroller platform, with sensor fusion achieved through a Kalman filter. The accelerometer provides a direct estimate of tilt angle from gravity but is sensitive to noise and short-term fluctuations. The gyroscope provides smooth angular rate measurements, but integration over time introduces drift. To overcome these limitations, a Kalman filter is used to combine measurements from both sensors, leveraging the long-term stability of the accelerometer and the short-term smoothness of the gyroscope. Both simulation and hardware experiments are performed. In simulation, sensor noise and drift are modeled to evaluate the filter performance under control conditions. In the hardware implementation, real-time MPU6050 data is acquired and processed by the RP2040 platform, and the estimated tilt angle is compared with accelerometer-only and gyroscope-only outputs. The results show that the proposed method effectively reduces noise measurements and suppresses long-term drift while preserving good dynamic response. Overall, the system provides more stable and accurate tilt estimation than either sensor alone, demonstrating a practical and accessible approach for Kalman filter based sensor fusion in embedded application.",
+      "authors": [
+        "Yuehan Ma",
+        "Hongji Dai"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO",
+        "eess.SP",
+        "eess.SY"
+      ],
+      "published": "2026-09-01T05:07:14+00:00",
+      "link": "https://arxiv.org/pdf/2609.00730v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Kalman-filter-based sensor fusion for tilt/attitude estimation from inertial measurements; transferable to spacecraft attitude-from-sensor methods",
+      "llm_evidence_cn": "用卡尔曼滤波融合加速度计与陀螺仪估计倾斜角，适用于航天器基于惯性敏感器的姿态确定",
+      "llm_evidence": "用卡尔曼滤波融合加速度计与陀螺仪估计倾斜角，适用于航天器基于惯性敏感器的姿态确定",
+      "canonical_evidence": "用卡尔曼滤波融合加速度计与陀螺仪估计倾斜角，适用于航天器基于惯性敏感器的姿态确定",
+      "llm_tldr_en": "Fuses MPU6050 accelerometer and gyroscope with Kalman filtering on an RP2040 to estimate single-axis tilt angle accurately despite noise and drift; provides a lightweight example of inertial sensor-fusion attitude estimation transferable to spacecraft orientation.",
+      "llm_tldr_cn": "针对低成本惯性传感器噪声大、陀螺仪积分漂移导致倾斜角估计不准的问题，提出基于MPU6050与RP2040的卡尔曼滤波融合算法，将加速度计的重力倾角估计与陀螺仪角速率积分相结合。实验表明卡尔曼滤波能有效抑制噪声与漂移，获得平滑可靠的倾斜角输出。该方法与航天器利用惯性敏感器进行姿态确定的滤波融合思路一致，可作为相关空间应用的参考实现。",
+      "llm_tldr": "针对低成本惯性传感器噪声大、陀螺仪积分漂移导致倾斜角估计不准的问题，提出基于MPU6050与RP2040的卡尔曼滤波融合算法，将加速度计的重力倾角估计与陀螺仪角速率积分相结合。实验表明卡尔曼滤波能有效抑制噪声与漂移，获得平滑可靠的倾斜角输出。该方法与航天器利用惯性敏感器进行姿态确定的滤波融合思路一致，可作为相关空间应用的参考实现。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "estimation of spacecraft orientation from sensor measurements",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.01089v1",
+      "source": "arxiv",
+      "title": "Adaptive Depth-Map-Guided Bundle Adjustment for Correspondence-Free Multi-View Point Cloud Registration",
+      "abstract": "Robotic processing of irregular steel scrap requires dense 3-D measurement to replace manual visual assessment in hazardous cutting workcells. The reconstructed map is used to estimate piece dimensions, boundary geometry, feasible preheating and cutting regions, and collision-aware torch paths. The reconstruction errors therefore propagate directly to downstream measurement and planning. Existing multi-view registration methods commonly rely on feature extraction and data association to establish correspondences between views. In workcells with smooth metallic surfaces, repeated structures, occlusions, and partial overlaps, however, wrong correspondences may be established, leading to inaccurate pose estimation and distorted reconstruction. This paper presents an adaptive layered depth-map-guided bundle adjustment framework for correspondence-free multi-view point cloud registration. The scene is represented by a global 2.5-D grid, where each cell can adaptively maintain multiple depth hypotheses. Raw depth observations are directly projected into the global map to form depth constraints without explicit feature correspondences. At grid cells where multiple surfaces produce conflicting depths, a softmax-based layer assignment links each observation to compatible depth hypotheses. The resulting nonlinear least-squares formulation jointly refines sensor poses and the layered depth map, with correspondences implicitly induced by the depth-map representation and projection model. Experiments on self-collected industrial datasets show that the proposed method achieves consistently competitive reconstruction accuracy while maintaining robustness and low computational cost in challenging industrial scenarios. We release the open-source code implementation at: https://github.com/YiranZhou-Robotics/ADM-BA.git",
+      "authors": [
+        "Yiran Zhou",
+        "Yingyu Wang",
+        "Shoudong Huang",
+        "Liang Zhao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-01T11:28:46+00:00",
+      "link": "https://arxiv.org/pdf/2609.01089v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Correspondence-free depth-guided multi-view registration estimates sensor poses for relative positioning",
+      "llm_evidence_cn": "深度图引导的无对应多视角配准估计传感器位姿，可用于相对定位与位姿确定",
+      "llm_evidence": "深度图引导的无对应多视角配准估计传感器位姿，可用于相对定位与位姿确定",
+      "canonical_evidence": "深度图引导的无对应多视角配准估计传感器位姿，可用于相对定位与位姿确定",
+      "llm_tldr_en": "Multi-view point cloud registration often fails when correspondences are wrong. This paper introduces depth-map-guided bundle adjustment for correspondence-free multi-view registration, improving pose and reconstruction robustness. It is relevant to dense 3D relative pose estimation.",
+      "llm_tldr_cn": "在光滑金属表面、重复结构和遮挡场景中，多视角点云配准常因错误对应关系而失效。本文提出由深度图引导的无对应光束法平差，绕开数据关联，直接在多视角间联合优化传感器位姿与三维结构，提升重建与位姿估计的鲁棒性。该方法可为空间目标等复杂表面的三维位姿估计提供通用的配准与优化工具。",
+      "llm_tldr": "在光滑金属表面、重复结构和遮挡场景中，多视角点云配准常因错误对应关系而失效。本文提出由深度图引导的无对应光束法平差，绕开数据关联，直接在多视角间联合优化传感器位姿与三维结构，提升重建与位姿估计的鲁棒性。该方法可为空间目标等复杂表面的三维位姿估计提供通用的配准与优化工具。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.02010v1",
+      "source": "arxiv",
+      "title": "Efficient Sensor Fusion Through Covariance-Constrained Observation Decimation (CCOD)",
+      "abstract": "Observation decimation is frequently employed in state estimation to reduce sensing, communication, and computational requirements, but decreasing the measurement assimilation frequency increases estimation uncertainty. Selecting an appropriate observation decimation factor therefore requires accurately predicting the resulting estimator performance. While the discrete algebraic Riccati equation (DARE) provides the steady-state estimation-error covariance for standard linear time-invariant Kalman filters, it is not directly applicable to estimators employing decimated measurement updates. Existing approaches address this limitation through lifted system representations or periodic Riccati equation formulations, both of which incur additional computational complexity. This paper presents a covariance-constrained observation decimation (CCOD) framework that reformulates the DARE inputs using equivalent decimated system and process-noise matrices that capture covariance growth between measurement updates. The proposed reformulation enables direct prediction of the steady-state estimation-error covariance through a single DARE evaluation without increasing the system dimension or solving coupled periodic Riccati equations. The resulting covariance prediction is used to determine the maximum observation decimation factor that satisfies a prescribed estimation uncertainty bound. Validation using a high dimensional linear time-invariant system and a space object tracking application demonstrates that the proposed approach accurately predicts steady-state estimator performance while reducing the measurement assimilation frequency required to satisfy specified covariance constraints.",
+      "authors": [
+        "Andres Enriquez Fernandez",
+        "Erik Blasch",
+        "Angel Flores-Abad",
+        "John J. Bird"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-02T02:37:22+00:00",
+      "link": "https://arxiv.org/pdf/2609.02010v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "generic Kalman-filter covariance analysis for decimated updates supports sensor-fusion relative pose estimation",
+      "llm_evidence_cn": "降频量测更新下的通用卡尔曼协方差预测，可服务于相对位姿融合估计",
+      "llm_evidence": "降频量测更新下的通用卡尔曼协方差预测，可服务于相对位姿融合估计",
+      "canonical_evidence": "降频量测更新下的通用卡尔曼协方差预测，可服务于相对位姿融合估计",
+      "llm_tldr_en": "CCOD efficiently predicts steady-state estimation covariance for Kalman filters with decimated measurements, enabling covariance-aware selection of observation decimation factors. This is a generic tool for bandwidth-limited sensor-fusion pose filters used in spacecraft relative navigation.",
+      "llm_tldr_cn": "观测抽取（降低量测更新频率）常被用于减少传感与计算资源开销，但设计者难以用标准代数Riccati方程预测由此带来的估计不确定性。本文提出协方差约束观测抽取（CCOD）方法，以高效方式计算采用抽取量测更新的Kalman类估计器的稳态协方差，克服了提升系统与周期Riccati表示的额外负担。通过该方法可在给定精度约束下选取最优抽取因子，为视觉/激光等间歇量测的传感器融合位姿估计提供通用的性能分析工具。",
+      "llm_tldr": "观测抽取（降低量测更新频率）常被用于减少传感与计算资源开销，但设计者难以用标准代数Riccati方程预测由此带来的估计不确定性。本文提出协方差约束观测抽取（CCOD）方法，以高效方式计算采用抽取量测更新的Kalman类估计器的稳态协方差，克服了提升系统与周期Riccati表示的额外负担。通过该方法可在给定精度约束下选取最优抽取因子，为视觉/激光等间歇量测的传感器融合位姿估计提供通用的性能分析工具。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

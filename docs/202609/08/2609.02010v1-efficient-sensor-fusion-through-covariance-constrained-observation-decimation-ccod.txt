@@ -1,0 +1,483 @@
+Title: Efficient Sensor Fusion Through Covariance-Constrained Observation Decimation (CCOD)
+
+URL Source: https://arxiv.org/pdf/2609.02010v1
+
+Published Time: Thu, 03 Sep 2026 00:26:35 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Efficient Sensor Fusion Through Covariance-Constrained Observation Decimation (CCOD) 
+
+Andres Enriquez Fernandez ∗
+
+The University of Texas at El Paso, El Paso, TX 
+
+Erik Blasch †
+
+AFRL, Rome, NY 
+
+Angel Flores-Abad ‡ and John J. Bird §
+
+The University of Texas at El Paso, El Paso, TX 
+
+Observation decimation is frequently employed in state estimation to reduce sensing, com-munication, and computational requirements, but decreasing the measurement assimilation frequency increases estimation uncertainty. Selecting an appropriate observation decimation factor therefore requires accurately predicting the resulting estimator performance. While the discrete algebraic Riccati equation (DARE) provides the steady-state estimation-error covari-ance for standard linear time-invariant Kalman filters, it is not directly applicable to estima-tors employing decimated measurement updates. Existing approaches address this limitation through lifted system representations or periodic Riccati equation formulations, both of which incur additional computational complexity. This paper presents a covariance-constrained ob-servation decimation (CCOD) framework that reformulates the DARE inputs using equivalent decimated system and process-noise matrices that capture covariance growth between mea-surement updates. The proposed reformulation enables direct prediction of the steady-state estimation-error covariance through a single DARE evaluation without increasing the system dimension or solving coupled periodic Riccati equations. The resulting covariance prediction is used to determine the maximum observation decimation factor that satisfies a prescribed es-timation uncertainty bound. Validation using a high dimensional linear time-invariant system and a space object tracking application demonstrates that the proposed approach accurately predicts steady-state estimator performance while reducing the measurement assimilation fre-quency required to satisfy specified covariance constraints. 
+
+## I. Introduction 
+
+Standard estimation frameworks can be modified to execute an observation update step after a sequence of consec-utive state propagation steps such as the decimated measurement update (DMU) estimator. DMU applications arise in response to different scenarios such as managing system resource limitations including Size, Weight, and Power (SWaP) constraints, intermittent observations due to environmental conditions (e.g., aerospace robotics, GPS-denied scenarios, or satellite orbiting dynamics); or communication limitations caused by latency and bandwidth constraints on remote sensing applications [1]. In determining the appropriate decimation factor, it is necessary to determine the impact that dropped observations have on the quality of the state estimate relative to requirements in a particular application. Performance of a candidate estimator can be established through Monte Carlo simulation, but this is computationally expensive and not appropriate for determining the decimation at run-time. Kalman filters for linear, time-invariant systems with constant process and measurement noise covariances reach a steady-state where the estimation-error covariance converges to a constant value [2]. The steady-state Kalman filter defines the long-term, predictable estimator performance providing a more efficient metric for assessing the enduring performance of a system compared to Monte Carlo simulations. 
+
+> ∗Graduate Research Assistant, Department of Aerospace and Mechanical Engineering, AIAA Member.
+> †Program Officer, AFRL, and AIAA Fellow
+> ‡Associate Professor, Department of Aerospace and Mechanical Engineering, AIAA Member.
+> §Assistant Professor, Department of Aerospace and Mechanical Engineering, AIAA Member.
+
+1arXiv:2609.02010v1 [eess.SY] 2 Sep 2026 While the discrete algebraic Riccati equation (DARE) yields a solution to the steady-state covariance of a standard Kalman filter, it is not directly applicable to systems subject to a DMU. To address this, Yang [3] utilizes a lifting method. Lifting allows using the standard DARE for a periodic system by stacking the system dynamics over a period, which augments the dimensionality of the system matrices and increases computational cost. Alternatively, Sagfors and Toivonen [4] obtain a solution for a periodic system by using the discrete-time periodic Riccati equation (DPRE). However, DPRE converts the problem into a sequence of coupled equations where the solution of one equation requires the solution of the next; consequently, the computational cost grows as the decimation factor grows. The main contribution of this work is a reformulation of the DARE inputs that enables a direct computation of the steady-state covariance of an estimator subject to DMU, while avoiding increased system dimensionality or coupled periodic Riccati equations. The proposed covariance-constrained observation decimation (CCOD) approach replaces the original DARE system and process noise matrices with equivalent decimated matrices that capture covariance growth between measurement updates. These equivalent system and process noise matrices allow the steady-state solution from a single evaluation of the DARE. The reformulated DARE inputs are used to predict the steady-state estimator-error covariance of an arbitrary linear system subject to a DMU Kalman filter implementation. Finally, the prediction can be used to establish the minimum measurement data assimilation frequency required to maintain an estimation-error covariance within a predefined threshold. The remainder of this paper is organized as follows: Section 2 reviews steady-state covariance theory and CCOD filter decimation; Section 3 outlines the experimental setup; Section 4 presents the results; and Section 5 concludes the work. 
+
+## II. Steady-State Covariance 
+
+A key step for implementing the DMU is to predict the steady-state covariance of a filter. For linear, discrete time-invariant (LDTI) systems with constant process and measurement covariances ( 𝑄 and 𝑅 ), the Kalman gain 𝐾 of a linear Gaussian system approaches a steady-state value if the system satisfies specific structural properties. Specifically, Simon shows the Kalman filter’s a priori state covariance ( 𝑃 − 
+
+> 𝑘
+
+) for large 𝑘 approaches a unique, steady-state value if the system pair ( 𝐴, 𝐵 ) is stabilizable and the pair ( 𝐴, 𝐻 ) is detectable [2]. When these stabilizability and detectability conditions are met, the steady-state covariance is obtained as the unique stabilizing solution to the discrete algebraic Riccati equation (DARE)[2]: 
+
+𝑃 ∞ = 𝐴𝑃 ∞ 𝐴 ⊺ − 𝐴𝑃 ∞ 𝐻 ⊺ (𝐻𝑃 ∞ 𝐻 ⊺ + 𝑅 )−1 𝐻𝑃 ∞ 𝐴 ⊺ + 𝑄 
+
+where 𝑃 ∞ is the steady-state a priori covariance, 𝐴 is the system matrix, 𝐻 is the observation model, and 𝑄 is the covariance process noise. Furthermore, satisfying these stabilizability and detectability conditions guarantees the 𝑃 ∞
+
+will yield a stable estimator. Conversely, if these structural conditions are violated, a stale steady-state solution does not exist, and the estimator error covariance will grow unbounded. 
+
+## III. Filter Decimation 
+
+We aim to determine the steady-state 𝑃 − 
+
+> 𝑘
+
+of an estimator subject to a DMU. To illustrate our definition of a DMU, Figure 1 shows the probabilistic graphical model (PGM) of a DMU system where the observations y𝑘 are assimilated only when 𝑘 (mod 𝑑 ) = 0, for 𝑘 = 1, 2, . . . , 𝑁 . Here, 𝑑 represents the number of consecutive time steps that the system does not perform a measurement update with u𝑘 as the control input vector and x𝑘 is the state vector. 
+
+x1
+
+y1
+
+x2
+
+u1
+
+x𝑘 mod 𝑑 =0
+
+u𝑘 −1
+
+y𝑘 
+
+x𝑁 
+
+u𝑁 −1
+
+Fig. 1 PGM of decimated system. 
+
+The DARE provides a steady-state solution for a non-decimated discrete-time system. However, directly applying the original system matrices 𝐴 and 𝑄 to a DMU estimator does not capture covariance growth during skipped mea-surement epochs. To capture the effect of decimation, we develop modified 𝐴 dec and 𝑄 dec matrices, which enable 2a DARE-based solution for any decimation value 𝑑 . As shown in Figure 2, these modified matrices 𝐴 dec and 𝑄 dec 
+
+must capture the state evolution and covariance growth through epochs which are present in the original system but absent in the decimated system. Notably, the 𝐻 and 𝑅 (measurement noise covariance) matrices remain unmodified, as they are not involved in the time update. The decimation reformulation allows for a direct steady-state solution while maintaining the original system dimensionality. 
+
+Fig. 2 𝐴 , 𝑄 , 𝐻 , and 𝑅 matrices for a decimated system and 𝐴 dec and 𝑄 dec for the DARE. Proposition 1 (Equivalent Decimated System). 
+
+Consider a LDTI system subject to a DMU with integer decimation factor 𝑑 . The equivalent decimated system matrices are given by: 
+
+𝐴 dec = 𝐴 𝑑 (1a) 
+
+𝑄 dec =
+
+> 𝑑 −1
+
+∑
+
+> 𝑗 =0
+
+𝐴 𝑗 𝑄 ( 𝐴 𝑗 )⊺ (1b) such that the covariance propagation across 𝑑 consecutive prediction steps without intermediate measurement updates satisfies: 
+
+𝑃 − 
+
+> 𝑘 +𝑑
+
+= 𝐴 𝑑 𝑃 + 
+
+> 𝑘
+
+( 𝐴 𝑑 )⊺ +
+
+> 𝑑 −1
+
+∑
+
+> 𝑗 =0
+
+𝐴 𝑗 𝑄 ( 𝐴 𝑗 )⊺
+
+= 𝐴 dec 𝑃 + 
+
+> 𝑘
+
+𝐴 ⊺ 
+
+> dec
+
++ 𝑄 dec 
+
+substituting these 𝐴 dec and 𝑄 dec into the standard DARE yields the decimated DARE: 
+
+𝑃 ∞dec = 𝐴 dec 𝑃 ∞dec 𝐴 ⊺ 
+
+> dec
+
+− 𝐴 dec 𝑃 ∞dec 𝐻 ⊺ (𝐻𝑃 ∞dec 𝐻 ⊺ + 𝑅 )−1 𝐻𝑃 ∞dec 𝐴 ⊺ 
+
+> dec
+
++ 𝑄 dec 
+
+where 𝑃 ∞dec is the steady-state a priori covariance under decimation. 
+
+Proof. 
+
+The a priori state estimate propagation of a standard discrete-time Kalman filer over a single step is governed by [5]: 
+
+ˆx− 
+
+> 𝑘 +1
+
+= 𝐴 ˆx+ 
+
+> 𝑘
+
++ 𝐵 u𝑘 
+
+where ˆx+ 
+
+> 𝑘 +1
+
+is the a posteriori state estimate from the previous step and 𝐵 is the control-input matrix. Recursively applying this single-step propagation equation over an arbitrary interval of 𝑖 subsequent steps yield the standard multi-step state trajectory expansion documented in the literature [2]: 
+
+ˆx− 
+
+> 𝑘 +𝑖
+
+= 𝐴 𝑖 ˆx+ 
+
+> 𝑘
+
++
+
+> 𝑖 −1
+
+∑
+
+> 𝑗 =0
+
+𝐴 𝑗 𝐵 u𝑘 +𝑖 −1− 𝑗 (2) Equation 2 represents the deterministic, un-updated state estimate trajectory across the decimation gap. While the state estimate propagates deterministically via the multi-step equation, the uncertainty of this estimate grows due to 3stochastic disturbances. The effect of the process noise is captured by tracking the error covariance matrix. Assuming a constant process noise 𝑄 , the standard one-step propagation of the state covariance is given by: 
+
+𝑃 − 
+
+> 𝑘 +1
+
+= 𝐴𝑃 + 
+
+> 𝑘
+
+𝐴 ⊺ + 𝑄 
+
+evaluating the covariance over two time steps without an intermediate update means setting 𝑃 + 
+
+> 𝑘 +1
+
+= 𝑃 −
+
+> 𝑘 +1
+
+. Substituting the one-step propagation into the next step yields: 
+
+𝑃 − 
+
+> 𝑘 +2
+
+= 𝐴 (𝑃 −
+
+> 𝑘 +1
+
+) 𝐴 ⊺ + 𝑄 
+
+= 𝐴 ( 𝐴𝑃 + 
+
+> 𝑘
+
+𝐴 ⊺ + 𝑄 ) 𝐴 ⊺ + 𝑄 
+
+= 𝐴𝐴𝑃 + 
+
+> 𝑘
+
+𝐴 ⊺ 𝐴 ⊺ + 𝐴𝑄 𝐴 ⊺ + 𝑄 
+
+generalizing to an arbitrary number of prediction steps 𝑖 , the a priori covariance at time 𝑘 + 𝑖 is: 
+
+𝑃 − 
+
+> 𝑘 +𝑖
+
+= 𝐴 𝑖 𝑃 + 
+
+> 𝑘
+
+( 𝐴 𝑖 )⊺ +
+
+> 𝑖 −1
+
+∑
+
+> 𝑗 =0
+
+𝐴 𝑗 𝑄 ( 𝐴 𝑗 )⊺
+
+setting 𝑖 = 𝑑 establishes the representations for 𝐴 dec and 𝑄 dec shown previously in Equation 1. 
+
+## IV. Experiment and Case Study 
+
+We implement an experiment and a case study that leverage the steady-state covariance prediction from the DARE to determine the maximum permissible decimation factor for a Kalman filter without exceeding a user-specified covariance threshold. In these particular experiments, the implemented constraint threshold is governed by the maximum variance among all individual states, ensuring that no diagonal element of the steady-state covariance matrix exceeds a maximum allowable threshold. However, this framework is generalizable; any scalar functional of the covariance matrix can be substituted as the limiting criterion. 
+
+A. Arbitrary System Experiment 
+
+For this experiment, a scalable, synthetic linear system of arbitrary state dimension x ∈ R𝑛 is constructed. Utilizing a generalized synthetic system enables precise control over structural properties, specifically controllability, observabil-ity, and stability which are difficult to isolate in a fixed physical system model. To thoroughly test the boundaries of the decimated filter, the system is designed to exhibit complex dynamics, including highly oscillatory and marginally stable modes. Analyzing the complex dynamics requires precise placement of the system eigenvalues. The complete procedure for generating an arbitrary, structurally controlled system matrix is detailed in the Appendix. We generate a system matrix 𝐴 of size 𝑛 = 20 using Equation A1 where all eigenvalues of 𝐴 are complex. The values of 𝜎 𝑘 and 𝜔 𝑘 are selected randomly between 0.6 and 0.7. Limiting 𝜎 𝑘 and 𝜔 𝑘 to the interval [0.6, 0.7] will result in the magnitude of the resulting complex eigenvalues to always be less than 1 (0.84 < 𝜌 < 0.99 ). This ensures the dynamics are always relatively close to the system stability limit (for an asymptotically stable discrete time invariant linear system, the magnitude of its eigenvalues must be less than 1 [2]). The input matrix 𝐵 is defined such that only half of the states receive direct input. We arbitrarily select which states receive a direct input, where those states receiving input are assigned unity gain. From the partially controllable system, the controllability matrix is constructed per [2]: 
+
+P =
+
+[
+
+𝐵 𝐴𝐵 𝐴 2 𝐵 . . . 𝐴 𝑛 −1 𝐵 
+
+]
+
+here, 𝑛 represents the dimension of the state vector, and a full rank controllability matrix P confirms the pair ( 𝐴, 𝐵 ) is fully controllable. The output matrix 𝐻 is defined such that only half of the states are directly observed. The observed states are arbitrarily selected. The system observability matrix O is constructed per [2]: 
+
+O =
+
+[
+
+𝐻 ⊺ (𝐻 𝐴 )⊺ (𝐻 𝐴 2)⊺ . . . (𝐻 𝐴 𝑛 −1)⊺
+
+]⊺
+
+a full rank observability matrix O confirms that the pair ( 𝐴, 𝐻 ) is fully observable. Because full controllability and observability strictly imply that the system is also stabilizable and detectable, these structural properties satisfy the 4convergence conditions outlined by Simon [2]. The structural properties ensure the existence of a unique, positive-semidefinite steady-state covariance solution 𝑃 ∞.The measurement noise is set equal for all the measurement states to be Gaussian with 𝜈 ∼ N ( 0, 0.1). For the states under direct input, we consider a zero input with Gaussian noise given by 𝜔 ∼ N ( 0, 1) which yields 𝑄 = 𝐵 Σ𝜔 𝐵 ⊺ .
+
+B. Space Object Tracking Case Study 
+
+To evaluate the proposed CCOD approach using an independent, real-world data verification benchmark, a relative space object tracking problem is implemented. This case study models a proximity operations tracking scenario where a chaser vehicle maintains a local state estimate of a target. To isolate the estimator’s performance and ensure compliance with the Linear Time-Invariant (LTI) constraints required by the CCOD framework, the tracking filter cannot embed non-linear orbital dynamics, nor can it process irregular, time-varying sampling intervals. To bridge these non-linear dynamics and time-varying sampling intervals constraints, a constant-interval simulation pipeline was constructed utilizing raw historical Two-Line Element (TLE) records for the International Space Station (ISS) from January 1, 2026 [6]. This simulation is achieved using the Skyfield astrodynamics library [7],[8]. To handle irregular gaps, the pipeline dynamically scans the database at each constant time step Δ𝑡 , loading the most recent chronological TLE into a Sim-plified General Perturbations (SGP4) engine [9]. SGP4 uses these discrete historical parameters as updated initial conditions to analytically simulate and sample the absolute inertial state forward [10]. To evaluate the LTI tracking performance, a secondary target object is initialized with a stable in-track phase sep-aration by slightly shifting its Mean Anomaly relative to the ISS, and both absolute tracks are propagated forward in-dependently using the SGP4 engine over a multi-day window. Because the global Earth-Centered Inertial (ECI) frame is highly non-linear, the absolute states are continuously transformed into a local relative Radial, Along-Track, Cross-Track (RTN) frame whose origin is attached to the ISS along a circular nominal reference orbit ( 𝑟 nominal = 6771 .0 km ). By isolating small relative displacements around this localized, rotating origin, the dominant non-linear central grav-ity terms cancel out, yielding the linearized Clohessy-Wiltshire equations of motion. This transformation utilizes a standard frame rotation for positions and incorporates the required kinematic Coriolis transport corrections ( 𝜔 × r) for relative velocities to maintain tracking fidelity. This state mapping yields the continuous LTI system governed by the linearized Clohessy-Wiltshire (CW) equations [11]. Since this work implements a first-order discrete Euler integration scheme, the constant system matrix 𝐴 ∈ R6×6
+
+is explicitly defined by: 
+
+𝐴 =
+
+
+
+1 0 0 Δ𝑡 0 00 1 0 0 Δ𝑡 00 0 1 0 0 Δ𝑡 
+
+3𝑛 2Δ𝑡 0 0 1 2𝑛 Δ𝑡 00 0 0 −2𝑛 Δ𝑡 1 00 0 −𝑛 2Δ𝑡 0 0 1
+
+
+
+where 𝑛 = ( 𝜇 𝑟 3nominal 
+
+) 12 represents the orbital mean motion. The discrete-time estimation state vector is defined by the relative kinematics x =
+
+[
+
+𝑥 𝑦 𝑧 §𝑥 §𝑦 §𝑧 
+
+]⊺
+
+. The observation model tracks the position vector y =
+
+[
+
+𝑥 𝑦 𝑧 
+
+]⊺
+
+.The measurement noise covariance matrix 𝑅 is set to 10 m 2, establishing a conservative variance baseline for vision-based position measurements. 
+
+𝑅 = I3×30.01 km 2.
+
+The process noise covariance matrix 𝑄 is parameterized to capture the unmodeled nonlinearities, orbital perturba-tions, and Earth oblateness effects ( 𝐽 2) omitted by the linear Clohessy-Wiltshire state transition model relative to the SGP4 truth engine: 
+
+𝑄 =
+
+[I3×310 −12 km 2 03×3
+
+03×3 I3×310 −14 km 2
+
+> 𝑠 2
+
+]
+
+Δ𝑡 
+
+5C. Finding the Maximum Measurement Decimation Factor 
+
+To determine the maximum permissible decimation factor, 𝑃 ∞dec is iteratively evaluated via the decimated DARE for increasing values of 𝑑 . This iterative search terminates when any diagonal element of 𝑃 ∞dec exceeds the user-specified threshold 𝑃 − 
+
+> desired
+
+and the decimation factor that satisfies the condition is obtained. Finally, a discrete-time Kalman filter subject to a DMU is then implemented with the obtained decimation factor to evaluate the evolution of 𝑃 − 
+
+> 𝑘
+
+.
+
+## V. Results 
+
+We now demonstrate the performance of the proposed CCOD implementation using a controlled experiment and a case study: a generalized arbitrary linear system and a relative space object tracking case. The covariance behavior is tracked to verify the performance of the CCOD approach as the estimator’s covariance subject to a decimation factor 
+
+𝑑 converges to a steady state value. 
+
+A. Arbitrary System 
+
+Figure 3 illustrates the time history of 𝑃 − 
+
+> 𝑘
+
+for an arbitrary 20-state linear system evaluated via a CCOD discrete-time Kalman filter implementation. A maximum allowable variance threshold of 7.0 (dimensionless, as the system is arbitrary) is specified, yielding a permissible decimation factor of 𝑑 = 21 . The vertical dotted red lines in the plot indicate the discrete time-steps when a measurement update occurs. Within the initial 0.025 seconds of the simulation, the state variances immediately bifurcate into two distinct groups. One group settles above 17 and the other drops below 10. This bifurcation occurs because the directly measured states are instantly reduced during the initial measurement update at 𝑡 = 0 seconds, while all covariance elements subsequently propagate through the discrete-time dynamics via single-step time updates. Due to the dynamics coupling, the two variance groups intermix during the subsequent propagation steps. After a 5-second simulation duration, the maximum steady-state variance element converges to 6.9995, validating the modified DARE prediction by remaining just below the specified threshold of 7.0. 0.000 0.001 0.002 0.003 0.004 0.005 
+
+# time (s) 
+
+0510 15 20 25 30 
+
+> Prior covariance
+> measurement update
+
+−0.0010 −0.0005 0.0000 0.0005 0.0010 
+
+# time (s) +4 .999 
+
+01234567
+
+> Prior covariance
+
+Fig. 3 Time history of 𝑃 − 
+
+> 𝑘
+
+variance terms associated with all the states for a Kalman filter implementation subject to a DMU with decimation factor of 21. Simulation time is 5 seconds, time-step used is 5 × 10 −5 seconds. Left: Initial 0.005 seconds of simulation. Right: Final 0.002 seconds of simulation 
+
+6B. Space Object Tracking 
+
+The non-decimated system utilizes a sensor measurement frequency of 1 Hz, establishing a standard sampling rate for vision-based position measurements. Figure 4 shows the time history of 𝑃 − 
+
+> 𝑘
+
+for the tracking test case. A maximum allowable variance threshold of 0.0005 (in this case units are either km 2 for relative position states or km 2 
+
+> s2
+
+for relative velocity states) is specified. The resulting maximum decimation factor allowed is 𝑑 = 39 . The maximum 𝑃 − 
+
+> 𝑘
+
+at the end of the run is 0.00049 km 2 corresponding to the along-track position confirming that the CCOD implementation is able to ensure the 𝑃 − 
+
+> 𝑘
+
+threshold is not exceeded after implementing a decimation factor of 𝑑 .0.00 0.02 0.04 
+
+# time (hours) 
+
+0.000 0.002 0.004 0.006 0.008 0.010 
+
+> Prior covariance
+> X (Radial Position) [km] Y (Along-Track Position) [km] Z (Cross-Track Position) [km] Vx (Radial Velocity) [km/s] Vy (Along-Track Velocity) [km/s] Vz (Cross-Track Velocity) [km/s] measurement update
+
+6.91 6.92 6.93 6.94 6.95 
+
+# time (hours) 
+
+0.0000 0.0001 0.0002 0.0003 0.0004 0.0005 
+
+> Prior covariance
+
+Fig. 4 Time history of 𝑃 − 
+
+> 𝑘
+
+variance terms associated with all the states for the tracking implementation subject to a DMU with decimation factor of 39. Run time is 6.954 hours, time-step used is 1 second. Left: Initial 0.05 hours of run. Right: Final 0.05 hours of run 
+
+## VI. Conclusion 
+
+A DMU reduces the amount of data an estimator needs to assimilate at the expense of increased estimator covariance. The DARE predicts the steady-state covariance of non-decimated LDTI system estimator implementations where the estimator covariance converges. Obtaining a steady-state covariance prediction for a DMU estimator implementation is more challenging and requires reformulation of the DARE inputs that account for the covariance growth that happens in intervals between measurement updates due to process uncertainty. To account for a covariance growth without observations, we developed expressions for the system matrix 𝐴 𝑑𝑒𝑐 and process noise matrix 𝑄 𝑑𝑒𝑐 subject to decimation. These expressions address a critical covariance prediction implemen-tation step and are summarized in Equation 1. We also provided proof that these new expressions for the decimated system and process noise matrices are able to predict the steady-state covariance of a DMU estimator implementation when used as inputs to the DARE. To test our CCOD approach, we implement an arbitrary large LDTI system and a space object tracking experiments. In both cases, a DMU estimator implementation successful maintains the steady state covariance below a desired threshold while maximizing the level of measurement update decimation factor, reducing the amount information the estimator needs to assimilate in the form of sensor data. Results are shown for linear systems and potential extensions to nonlinear systems are left for future work. 7Appendix: Structurally controlled System Matrix Design 
+
+To construct a scalable, real-valued system matrix 𝐴 ∈ R𝑛 ×𝑛 with precise control over stability profiles, damping properties, and the distribution of oscillatory vs. non-oscillatory modes, an eigen-decomposition framework is utilized [12, 13]: 
+
+𝐴 = 𝑉 Λ𝑉 −1 (A1) where 𝐴 is a square matrix, 𝑉 is a square, orthogonal eigenvector matrix, and Λ ∈ R𝑛 ×𝑛 is the composite, block-diagonal modal matrix containing the desired discrete-time properties. Utilizing an orthogonal eigenvector matrix guarantees an ideal matrix condition number of 1, eliminating floating-point inversion errors and allowing replacement of 𝑉 −1
+
+with the matrix transpose 𝑉 ⊺ .
+
+Construct the Orthogonal Eigenvector Matrix 
+
+A random matrix 𝑉 0 ∈ R𝑛 ×𝑛 is initialized with elements drawn randomly. A QR decomposition is performed on this matrix to enhance numerical robustness, ensuring a condition number of 1. 
+
+Assemble the Modal Matrix Λ for Mixed Dynamics 
+
+Let 𝑁 𝑟 be the number of desired purely real eigenvalues and 𝑁 𝑐 be the number of desired complex conjugate pairs, such that the total state dimension satisfies 𝑛 = 𝑁 𝑟 + 2𝑁 𝑐 . The global modal matrix Λ is formed as a block-diagonal composition of scalar real eigenvalues and 2 × 2 real-valued blocks representing complex modes: 
+
+Λ = blockdiag (𝜆 1, . . . , 𝜆 𝑁 𝑟 , Λ1, . . . , Λ𝑁 𝑐 )
+
+The stability limits and modal frequencies are governed by specifying the geometric boundaries of these entries relative to the discrete-time unit circle. 
+
+Real Blocks (Lowercase 𝜆 𝑖 )
+
+For non-oscillatory modes, the purely real eigenvalues are represented by scalars 𝜆 𝑖 ∈ R. These are assigned directly to the diagonal of Λ. To guarantee asymptotic stability, these elements are bounded within the unit circle (|𝜆 𝑖 | < 1). Marginally stable modes are placed exactly on the boundary ( |𝜆 𝑖 | = 1), and unstable modes are placed outside ( |𝜆 𝑖 | > 1). 
+
+Complex Blocks (Uppercase Λ𝑘 )
+
+For oscillatory modes, each complex conjugate pair is defined by a complex scalar 𝛾 𝑘 = 𝜎 𝑘 + 𝑗𝜔 𝑘 ∈ C (where 
+
+𝑗 = (− 1) 12 ). Each pair is mapped to a real-valued 2 × 2 sub-block Λ𝑘 via the rotation-scaling theorem [14]: 
+
+Λ𝑘 =
+
+[
+
+Re (𝛾 𝑘 ) Im (𝛾 𝑘 )−Im (𝛾 𝑘 ) Re (𝛾 𝑘 )
+
+]
+
+=
+
+[
+
+𝜎 𝑘 𝜔 𝑘 
+
+−𝜔 𝑘 𝜎 𝑘 
+
+]
+
+(A2) where the discrete-time pole magnitude 𝜌 = (𝜎 2 
+
+> 𝑘
+
++ 𝜔 2 
+
+> 𝑘
+
+) 12 dictates the system stability. For damped oscillations, 𝜌 < 1;for sustained marginal oscillations, 𝜌 = 1; and for unstable dynamics, 𝜌 > 1.
+
+Compute the Real System Matrix 
+
+The final system matrix is evaluated directly via the matrix triple product in Equation A1. Because Λ utilizes real-valued coordinate transformations ( Λ𝑘 ∈ R2×2), the resulting system matrix 𝐴 is guaranteed to be fully real-valued. 
+
+## Funding Sources 
+
+Portions of this work were funded by the Air Force Office of Scientific Research under award FA9550-24-1-0176. 8References 
+
+[1] Nesnas, I. A., Fesq, L. M., and Volpe, R. A., “Autonomy for space robots: Past, present, and future,” Current Robotics Reports ,Vol. 2, No. 3, 2021, pp. 251–263. https://doi.org/doi.org/10.1007/s43154-021-00057-. [2] Simon, D., Optimal State Estimation: Kalman, H Infinity, and Nonlinear Approaches , Wiley, 2006. [3] Yang, Y., “An efficient LQR design for discrete-time linear periodic system based on a novel lifting method,” Automatica ,Vol. 87, 2018, pp. 383–388. https://doi.org/https://doi.org/10.1016/j.automatica.2017.10.019. [4] Sågfors, M. F., Toivonen, H. T., and Lennartson, B., “H ∞ control of multirate sampled-data systems: A state-space approach,” 
+
+Automatica , Vol. 34, No. 4, 1998, pp. 415–428. https://doi.org/https://doi.org/10.1016/S0005-1098(97)00236-7. [5] Thrun, S., Burgard, W., and Fox, D., Probabilistic Robotics , Intelligent Robotics and Autonomous Agents series, MIT Press, 2005. [6] United States Space Force, “General Perturbations (GP) Element Sets,” https://space-track.org, 2026. Accessed: 2026-06-05. [7] Rhodes, B., “Skyfield: High precision research-grade positions for planets and Earth satellites generator,” Astrophysics Source Code Library, record ascl:1907.024, Jul. 2019. [8] Rhodes, B., “Skyfield: High-precision research-grade positions for planets and Earth satellites,” Astrophysics Source Code Library, Jul 2019. [9] Hoots, F. R., and Roehrich, R. L., “Models for Propagation of NORAD Element Sets,” Tech. Rep. Spacetrack Report No. 3, Office of Astrodynamics, Aerospace Defense Center, Peterson AFB, CO, 1980. https://doi.org/10.21236/ADA093554. [10] Vallado, D., Crawford, P., Hujsak, R., and Kelso, T. S., “Revisiting Spacetrack Report {\#}3,” AIAA/AAS Astrodynamics Specialist Conference and Exhibit , 2006, p. 6753. https://doi.org/10.2514/6.2006-6753, URL https://celestrak.org. [11] Curtis, H. D., Orbital mechanics for engineering students , Butterworth-Heinemann, 2019. [12] Petersen, K. B., Pedersen, M. S., et al., “The matrix cookbook,” Technical University of Denmark , Vol. 7, No. 15, 2008, p. 510. [13] Kreyszig, E., Advanced Engineering Mathematics, International Adaptation , john wiley & sons, 2025. [14] Margalit, D., Rabinoff, J., and Rolen, L., “Interactive linear algebra,” Georgia Institute of Technology , 2017, p. 18. 
+
+9

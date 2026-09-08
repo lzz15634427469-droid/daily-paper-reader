@@ -48,17 +48,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-09-07</span>
+      <span class="dpr-home-dashboard-kicker">2026-09-08</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 7 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 3 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>1</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>6</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>0</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>3</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-09-07 23:19:41 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-09-08 21:56:14 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,9 +69,9 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日聚焦7篇论文，精读1篇、速读6篇，核心锁定无人机视觉编队控制与视觉定位鲁棒性。</p>
-<p>最值得关注：GPS受限下基于视觉的无人机编队控制（8.0分），以及重力先验提升位姿估计效率（7.0分）。</p>
-<p>建议优先精读高分编队控制，并对比SLAM在真实与合成退化下的表现，判断实际部署风险。</p>
+<p>今日速读3篇论文，无精读，主题集中于传感器融合与点云配准算法。</p>
+<p>最值得关注的是卡尔曼滤波倾斜估计（7分）与协方差约束观测抽取的传感器融合（6分），均偏重工程效率与鲁棒性。</p>
+<p>后续可优先精读高分倾斜估计一文，并对比其与自适应深度图配准方法的适用场景。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -80,12 +80,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">精读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">1 篇</strong>
+    <strong class="dpr-home-dashboard-count">0 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Vision-Based Leader-Follower Formation Control for Cooperative UAVs in GPS-Degraded Environments">Vision-Based Leader-Follower Formation Control for Cooperative UAVs in GPS-Degraded Environments</span></li></ul>
+<p class="dpr-home-dashboard-empty">今日暂无推荐。</p>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>1</strong></span></div>
+
 </section>
 <section class="dpr-home-dashboard-card dpr-home-skim-card">
   <div class="dpr-home-dashboard-header">
@@ -93,12 +93,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">6 篇</strong>
+    <strong class="dpr-home-dashboard-count">3 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Efficient and Robust Absolute Pose Estimation via Gravity-Prior-Driven Transformation Decoupling and Pose Refinement">Efficient and Robust Absolute Pose Estimation via Gravity-Prior-Driven Transformation Decoupling and Pose Refinement</span></li><li><span class="dpr-home-dashboard-paper-title" title="Failure or Drift? Evaluating Monocular SLAM under Synthetic and Real-World Corruptions">Failure or Drift? Evaluating Monocular SLAM under Synthetic and Real-World Corruptions</span></li><li><span class="dpr-home-dashboard-paper-title" title="CrossFeat: Bridging Imaging Modalities in Feature Descriptor Space">CrossFeat: Bridging Imaging Modalities in Feature Descriptor Space</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Design and Implementation of a Kalman Filter-Infused Algorithm for Tilt Estimation">Design and Implementation of a Kalman Filter-Infused Algorithm for Tilt Estimation</span></li><li><span class="dpr-home-dashboard-paper-title" title="Adaptive Depth-Map-Guided Bundle Adjustment for Correspondence-Free Multi-View Point Cloud Registration">Adaptive Depth-Map-Guided Bundle Adjustment for Correspondence-Free Multi-View Point Cloud Registration</span></li><li><span class="dpr-home-dashboard-paper-title" title="Efficient Sensor Fusion Through Covariance-Constrained Observation Decimation (CCOD)">Efficient Sensor Fusion Through Covariance-Constrained Observation Decimation (CCOD)</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>6</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>3</strong></span></div>
 </section>
 </div>
 

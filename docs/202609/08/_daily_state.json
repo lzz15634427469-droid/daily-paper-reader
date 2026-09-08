@@ -1,0 +1,57 @@
+{
+  "date": "20260908",
+  "date_label": "",
+  "generated_at": "2026-09-08 21:56:14 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.00730v1",
+      "route": "202609/08/2609.00730v1-design-and-implementation-of-a-kalman-filter-infused-algorithm-for-tilt-estimation",
+      "title": "Design and Implementation of a Kalman Filter-Infused Algorithm for Tilt Estimation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "用卡尔曼滤波融合加速度计与陀螺仪估计倾斜角，适用于航天器基于惯性敏感器的姿态确定",
+      "first_seen_at": "2026-09-08 21:56:14 UTC",
+      "updated_at": "2026-09-08 21:56:14 UTC"
+    },
+    {
+      "paper_id": "2609.01089v1",
+      "route": "202609/08/2609.01089v1-adaptive-depth-map-guided-bundle-adjustment-for-correspondence-free-multi-view-point-cloud-registration",
+      "title": "Adaptive Depth-Map-Guided Bundle Adjustment for Correspondence-Free Multi-View Point Cloud Registration",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "深度图引导的无对应多视角配准估计传感器位姿，可用于相对定位与位姿确定",
+      "first_seen_at": "2026-09-08 21:56:14 UTC",
+      "updated_at": "2026-09-08 21:56:14 UTC"
+    },
+    {
+      "paper_id": "2609.02010v1",
+      "route": "202609/08/2609.02010v1-efficient-sensor-fusion-through-covariance-constrained-observation-decimation-ccod",
+      "title": "Efficient Sensor Fusion Through Covariance-Constrained Observation Decimation (CCOD)",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "降频量测更新下的通用卡尔曼协方差预测，可服务于相对位姿融合估计",
+      "first_seen_at": "2026-09-08 21:56:14 UTC",
+      "updated_at": "2026-09-08 21:56:14 UTC"
+    }
+  ]
+}

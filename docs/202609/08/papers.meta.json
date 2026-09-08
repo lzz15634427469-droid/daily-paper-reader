@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-08",
+  "date": "2026-09-08",
+  "generated_at": "2026-09-08T21:56:16",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/08/2609.00730v1-design-and-implementation-of-a-kalman-filter-infused-algorithm-for-tilt-estimation",
+      "section": "quick",
+      "title_en": "Design and Implementation of a Kalman Filter-Infused Algorithm for Tilt Estimation",
+      "authors": "Yuehan Ma, Hongji Dai",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.00730v1",
+      "score": "7.0",
+      "evidence": "用卡尔曼滤波融合加速度计与陀螺仪估计倾斜角，适用于航天器基于惯性敏感器的姿态确定",
+      "tldr": "针对低成本惯性传感器易受噪声和漂移影响的问题，提出基于MPU6050和RP2040的单轴倾角估计系统，利用Kalman滤波器融合加速度计与陀螺仪数据。仿真与硬件实验表明，该方法有效降低测量噪声、抑制长期漂移，同时保持动态响应，较单传感器输出更稳定准确。",
+      "tags": "query:pe",
+      "abstract_en": "Accurate tilt angle estimation is important in many engineering applications, such as robotics, motion tracking, and embedded control systems. However, measurements from low-cost inertial sensors are often degraded by noise and drift. This paper presents a single-axis tilt angle estimation system based on the MPU6050 inertial measurement unit, implemented on an RP2040 microcontroller platform, with sensor fusion achieved through a Kalman filter. The accelerometer provides a direct estimate of tilt angle from gravity but is sensitive to noise and short-term fluctuations. The gyroscope provides smooth angular rate measurements, but integration over time introduces drift. To overcome these limitations, a Kalman filter is used to combine measurements from both sensors, leveraging the long-term stability of the accelerometer and the short-term smoothness of the gyroscope. Both simulation and hardware experiments are performed. In simulation, sensor noise and drift are modeled to evaluate the filter performance under control conditions. In the hardware implementation, real-time MPU6050 data is acquired and processed by the RP2040 platform, and the estimated tilt angle is compared with accelerometer-only and gyroscope-only outputs. The results show that the proposed method effectively reduces noise measurements and suppresses long-term drift while preserving good dynamic response. Overall, the system provides more stable and accurate tilt estimation than either sensor alone, demonstrating a practical and accessible approach for Kalman filter based sensor fusion in embedded application.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/08/2609.01089v1-adaptive-depth-map-guided-bundle-adjustment-for-correspondence-free-multi-view-point-cloud-registration",
+      "section": "quick",
+      "title_en": "Adaptive Depth-Map-Guided Bundle Adjustment for Correspondence-Free Multi-View Point Cloud Registration",
+      "authors": "Yiran Zhou, Yingyu Wang, Shoudong Huang, Liang Zhao",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.01089v1",
+      "score": "6.0",
+      "evidence": "深度图引导的无对应多视角配准估计传感器位姿，可用于相对定位与位姿确定",
+      "tldr": "针对金属废料切割等工业场景中光滑表面、重复结构导致现有配准方法易错配的问题，提出一种免对应点的多视图点云配准框架。该框架采用自适应2.5D网格维护多个深度假设，将原始深度观测直接投影为约束，并通过softmax层分配处理多表面深度冲突，联合优化传感器位姿与分层深度图。在自采工业数据集上，该方法获得有竞争力的重建精度，并保持鲁棒性和低计算开销。已提供开源实现以供推广。",
+      "tags": "query:pe",
+      "abstract_en": "Robotic processing of irregular steel scrap requires dense 3-D measurement to replace manual visual assessment in hazardous cutting workcells. The reconstructed map is used to estimate piece dimensions, boundary geometry, feasible preheating and cutting regions, and collision-aware torch paths. The reconstruction errors therefore propagate directly to downstream measurement and planning. Existing multi-view registration methods commonly rely on feature extraction and data association to establish correspondences between views. In workcells with smooth metallic surfaces, repeated structures, occlusions, and partial overlaps, however, wrong correspondences may be established, leading to inaccurate pose estimation and distorted reconstruction. This paper presents an adaptive layered depth-map-guided bundle adjustment framework for correspondence-free multi-view point cloud registration. The scene is represented by a global 2.5-D grid, where each cell can adaptively maintain multiple depth hypotheses. Raw depth observations are directly projected into the global map to form depth constraints without explicit feature correspondences. At grid cells where multiple surfaces produce conflicting depths, a softmax-based layer assignment links each observation to compatible depth hypotheses. The resulting nonlinear least-squares formulation jointly refines sensor poses and the layered depth map, with correspondences implicitly induced by the depth-map representation and projection model. Experiments on self-collected industrial datasets show that the proposed method achieves consistently competitive reconstruction accuracy while maintaining robustness and low computational cost in challenging industrial scenarios. We release the open-source code implementation at: https://github.com/YiranZhou-Robotics/ADM-BA.git",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/08/2609.02010v1-efficient-sensor-fusion-through-covariance-constrained-observation-decimation-ccod",
+      "section": "quick",
+      "title_en": "Efficient Sensor Fusion Through Covariance-Constrained Observation Decimation (CCOD)",
+      "authors": "Andres Enriquez Fernandez, Erik Blasch, Angel Flores-Abad, John J. Bird",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.02010v1",
+      "score": "6.0",
+      "evidence": "降频量测更新下的通用卡尔曼协方差预测，可服务于相对位姿融合估计",
+      "tldr": "传感器观测降频可降低感知、通信与计算开销，但会增大估计不确定性。针对现有提升系统或周期Riccati方法复杂度高的问题，提出协方差约束的观测降频（CCOD）框架，用等效降频系统和过程噪声矩阵重写DARE输入，单次求解即可预测稳态误差协方差并求最大降频因子。在高维线性系统与空间目标跟踪中验证了精度与降频效果。",
+      "tags": "query:pe",
+      "abstract_en": "Observation decimation is frequently employed in state estimation to reduce sensing, communication, and computational requirements, but decreasing the measurement assimilation frequency increases estimation uncertainty. Selecting an appropriate observation decimation factor therefore requires accurately predicting the resulting estimator performance. While the discrete algebraic Riccati equation (DARE) provides the steady-state estimation-error covariance for standard linear time-invariant Kalman filters, it is not directly applicable to estimators employing decimated measurement updates. Existing approaches address this limitation through lifted system representations or periodic Riccati equation formulations, both of which incur additional computational complexity. This paper presents a covariance-constrained observation decimation (CCOD) framework that reformulates the DARE inputs using equivalent decimated system and process-noise matrices that capture covariance growth between measurement updates. The proposed reformulation enables direct prediction of the steady-state estimation-error covariance through a single DARE evaluation without increasing the system dimension or solving coupled periodic Riccati equations. The resulting covariance prediction is used to determine the maximum observation decimation factor that satisfies a prescribed estimation uncertainty bound. Validation using a high dimensional linear time-invariant system and a space object tracking application demonstrates that the proposed approach accurately predicts steady-state estimator performance while reducing the measurement assimilation frequency required to satisfy specified covariance constraints.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
