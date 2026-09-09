@@ -1,0 +1,923 @@
+Title: P^2Calib: Utilizing Pattern Priors for LiDAR-Camera Extrinsic Calibration
+
+URL Source: https://arxiv.org/pdf/2609.07516v1
+
+Published Time: Wed, 09 Sep 2026 02:23:26 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+> SUBMITTED TO IEEE/ASME TRANSACTIONS ON MECHATRONICS 1
+
+# P2Calib: Utilizing Pattern Priors for LiDAR-Camera Extrinsic Calibration 
+
+# Xiangcheng Hu 
+
+Abstract — Target-based LiDAR-camera extrinsic calibration is a prerequisite for multi-sensor fusion in robotics. However, in the widely adopted four-hole pipeline, calibration accuracy is bottle-necked by LiDAR-side hole-center extraction, which suffers from sparse angular coverage and mixed-pixel corruption. This paper presents P 2Calib, which exploits pattern priors , geometric con-straints specified by the CAD model of the target board, to improve calibration accuracy. First, we incorporate the known hole radius as a fitting constraint to prevent center estimates from degrading under sparse angular coverage. Building on the improved hole estimates, we further enforce the rigid rectangular layout of the four holes as a global consistency constraint to correct residual errors across holes. Both priors are integrated into an interac-tive calibration tool that provides a complete extrinsic calibration pipeline. Experiments on simulated and real datasets show that P2Calib lowers the joint registration residual by 90% and 82% and the held-out reprojection error by 96% and 77% over the baseline. Code 1 and data will be released to facilitate future research. 
+
+Index Terms — LiDAR-camera extrinsic calibration, target-based calibration, geometric prior, constrained estimation, solid-state LiDAR. 
+
+I. I NTRODUCTION 
+
+A. Motivation and Challenges 
+
+# EXTRINSIC calibration between LiDAR and camera es-timates the rigid transform that aligns their coordinate frames and is a prerequisite for multi-sensor fusion in robotics and mechatronics, supporting applications from autonomous navigation and dense mapping to industrial inspection and automated assembly [1]–[6]. In laboratory and production settings, target-based calibration remains the most widely adopted approach because correspondences are known a priori and outlier rates are low [7], [8], whereas targetless methods inherit their accuracy from whatever structure the environment happens to provide [9], [10]. Among existing target designs, the four-hole board with ArUco markers [7] has gained pop-ularity for its simplicity: a single co-registered LiDAR scan and image suffice to establish four 3D–3D correspondences for closed-form extrinsic estimation. In this pipeline, hole centers are extracted from the image via ArUco detection and PnP with high accuracy, and the subsequent singular value decomposition (SVD) registration is a closed-form solver that introduces no additional error. Calibration accuracy is therefore governed by how precisely hole centers are extracted from the LiDAR point cloud on the board surface. When sufficient point density is available, standard circle fitting yields estimates whose error is dominated by range noise. However, across a wide range of practical configurations, the 
+
+X. Hu is with the Department of Electronic and Computer Engineering, The Hong Kong University of Science and Technology, Clear Water Bay, Kowloon, Hong Kong SAR, China (Email: xhubd@connect.ust.hk ). 
+
+> 1
+
+https://github.com/JokerJohn/P2Calib.git 1.0 m, 14078 pts A 4.0 m, 1379 pts B
+
+Fig. 1. Hole extraction without the pattern priors on two scenes of one board, at 1.0 and 4.0 m, shown in the board plane. Mixed pixels (violet) and sparse boundary sampling (orange) displace the baseline centers (dashed) from the CAD rectangle, which P 2Calib (solid) recovers. 
+
+number of points that fall on a single hole boundary is small. A mechanical LiDAR with few scan lines, or any LiDAR placed at a long standoff distance, resolves the board with an angular sampling too coarse to trace hole boundaries densely, and a small board keeps the hole aperture near that sampling limit. Whatever the sensor, the resulting symptom is the same: each hole is observed as a short, unevenly covered arc (Fig. 1). Under such conditions, LiDAR hole-center extraction becomes the accuracy bottleneck of the entire calibration pipeline. We identify two challenges underlying this bottleneck: 1) Hole fitting degeneracy. Under sparse angular coverage, fitting a free circle to each hole is ill-conditioned: a radial shift of the center can be compensated by an equal change in radius [11], and mixed-pixel returns [12] bias the boundary inward along this same degenerate direction, amplifying center error well beyond the raw noise level (violet returns in Fig. 1). 2) Lack of inter-hole coupling. The four circles are es-timated independently with twelve free parameters, yet their centers must form a rigid placement of the machined rectangle [7], [8], [13]–[16]. Where this relationship is used at all it enters after the fit, as a combinatorial check [8], [13] or a rigid template overwrite [14], [17], never as a constraint within the estimation itself (dashed quadrilateral in Fig. 1). The calibration board is manufactured with known dimen-sions: the hole radius and the rectangular arrangement of the four centers are specified exactly by the CAD model of the board. These geometric constraints, which we collectively term 
+
+pattern priors , address the two challenges above yet remain arXiv:2609.07516v1 [cs.RO] 7 Sep 2026 2 SUBMITTED TO IEEE/ASME TRANSACTIONS ON MECHATRONICS 
+
+unexploited by current calibration pipelines. For the four-hole board, they take the form of a radius prior and a layout prior. P2Calib is built on this observation. 
+
+B. Contributions 
+
+We claim the following contributions:  
+
+> •
+
+We incorporate a radius prior (Section IV-B) that fixes the fitting radius to the CAD value, eliminating the center–radius degeneracy under sparse angular coverage.  
+
+> •
+
+Building on the hole estimates, we enforce a layout prior 
+
+(Section IV-C) that replaces the independence assumption across holes with a global rigidity constraint, reducing the degrees of freedom from twelve to four.  
+
+> •
+
+We integrate both priors into an interactive calibration tool (Section VI) and evaluate the full method on simu-lated and real data to demonstrate its effectiveness. 
+
+C. Organization 
+
+Section II reviews related calibration methods and Sec-tion III formulates the four-hole pipeline. Section IV presents the two pattern priors and Section V analyzes their effect on the estimation problem. Section VI describes the calibration tool, Section VII reports the experiments, and Section VIII concludes the paper. 
+
+II. R ELATED WORK 
+
+LiDAR–camera extrinsic calibration methods are commonly grouped into targetless, motion-based, and target-based cat-egories [7], [18], [19]. We briefly review the first two to motivate the target-based setting, then examine how target-based methods use the geometry of the calibration board, which is where this work is positioned. 
+
+A. Targetless and Motion-Based Methods 
+
+Targetless methods replace a physical target with signals harvested from the scene: statistical approaches maximize mutual information between LiDAR reflectivity and image intensity [9], while geometric approaches align depth dis-continuities with image edges [10], [20], [21]. Motion-based methods estimate extrinsics from ego-motion consistency across sensors, requiring trajectories that excite all rotational axes [18], [19], [22]. Learning-based regressors and matching models [23]–[26] amortize calibration into a network, but their accuracy is tied to the sensor configuration and scene statistics seen during training. Across all three families, calibration ac-curacy depends on whatever structure, motion, or appearance the environment provides. Target-based calibration removes this dependency by construction, which is why it remains the standard for laboratory and production settings [7], [8]. 
+
+B. Target-Based Calibration 
+
+Target-based methods differ mainly in the geometric prim-itive extracted from the LiDAR data. Planar checkerboards yield plane and edge constraints [27], [28], but a single board plane constrains only its normal direction, so multiple board poses are required to determine all six extrinsic parameters. Spherical targets provide a projection-invariant center [29] at the cost of a single correspondence per capture. Circular holes cut into a planar board were introduced to obtain four well-defined point correspondences from one view [8], [13]: four holes fix the full transform from a single capture. This design has since been extended with fiducial markers for camera-side pose recovery [7], [14] and combined with checkerboards for joint intrinsic–extrinsic estimation [15]. Orthogonal to the choice of target, globally optimal solvers remove the dependence on initialization [30], [31]; however, a global optimum of an unconstrained feature model still inherits the bias of that model, which the two priors remove. Since the calibration board is manufactured to specification, its dimensions are known exactly, and how a method exploits that knowledge distinguishes the present work from existing four-hole pipelines. In prior work, the known hole radius enters as a tolerance range that bounds the RANSAC circle model during fitting [8], [13], [14]: the radius remains a free parameter within that range, so the center–radius de-generacy under sparse angular coverage is left intact. The known rectangular layout is likewise used after estimation: as a combinatorial check that selects mutually consistent candidates [8], [13], or as an optional rigid template alignment applied to unconstrained circle-fit results [14], [17]. Because the template alignment operates on centers from unconstrained fits, it cannot recover a hole whose fit was already degenerate. Concurrently, Jiang et al. [16] jointly recover center, normal, and radius with a conformal-geometric-algebra estimator, but the radius is estimated rather than fixed and each circle is treated independently, leaving both priors unused. P2Calib is positioned on exactly this axis. Prior work bounds the radius within a tolerance; we fix it to the CAD value and estimate only the center together with a single shared mixed-pixel bias, so that the degenerate direction is removed from the fit. The rectangular layout is then enforced as a global rigidity constraint on centers that are already radius-constrained, accepted only when its residual indicates agreement with the observation. 
+
+III. P ROBLEM FORMULATION 
+
+This section formalizes the four-hole calibration pipeline (Section III-A) and analyzes the stage that determines the accuracy of the recovered extrinsic (Section III-B). 
+
+A. Four-Hole Calibration Pipeline 
+
+Let L, C, and B denote the LiDAR, camera, and board frames. A subscript pair specifies the direction of a transform: 
+
+RCL and tCL map from L to C, so that pC = RCL pL + tCL ,with RCL ∈ SO(3) and tCL ∈ R3. A hat denotes an estimate and a star denotes an optimum. Indices m = 1 , . . . , M and 
+
+k = 1 , . . . , 4 enumerate scenes and holes; m is omitted when a single scene is considered. The pipeline follows the two branches of Fig. 2: the camera branch recovers the board pose from the markers, the LiDAR branch extracts the hole centers from the board plane, and a closed-form registration combines them. The calibration board X. HU: P 2CALIB: UTILIZING PATTERN PRIORS FOR LIDAR-CAMERA EXTRINSIC CALIBRATION 3           
+
+> Images Tag extraction Board pose (1) Hole centers (1)
+> Point clouds Plane fitting (2) Radius prior (Sec. IV-B) Layout prior (Sec. IV-C)
+> Calibration (3)
+> R⋆
+> CL ,t⋆
+> CL
+> pC
+> k
+> pL
+> k
+
+## P2Calib      
+
+> Fig. 2. P2Calib pipeline with the data at each stage. The camera branch ( top ) detects the ArUco tags, recovers the board pose and obtains pC
+> k;the LiDAR branch ( bottom ) extracts the board plane and estimates pL
+> kunder the two priors contributed here, marked in orange; a closed-form registration returns the extrinsic.
+
+carries four circular holes of nominal radius r whose centers form a w ×h rectangle, together with four ArUco markers [7], [8], [13], [32]. Both the radius and the layout are specified by the CAD model, so the design centers cB 
+
+> k
+
+= ( ±w/ 2, ±h/ 2) ⊤,
+
+k = 1 , . . . , 4, are known exactly in the board plane. On the image, marker corners observed at pixels uj have known board coordinates qB 
+
+> j
+
+, and the board pose is obtained by minimizing the reprojection error 
+
+(R⋆
+
+> CB
+
+, t⋆
+
+> CB
+
+) = arg min  
+
+> R,t
+
+X
+
+> j
+
+π(K, d, R q B 
+
+> j
+
++ t) − uj
+
+> 2
+
+, (1) where K and d are the intrinsic and distortion parameters and 
+
+π(·) is the projection function. The camera-frame hole centers follow from the CAD layout as pC 
+
+> k
+
+= R⋆ 
+
+> CB
+
+[( cB 
+
+> k
+
+)⊤, 0] ⊤ +t⋆
+
+> CB
+
+,requiring no circle fitting on the image. In the point cloud, an ROI filter and RANSAC [33] extract the board plane with unit normal n, yielding the inlier set P.A rotation RBL aligns n with the z-axis and maps each inlier to board-plane coordinates xi ∈ R2 with intensity Ii and mean plane height ¯z. The four in-plane hole centers ck ∈ R2 are estimated from {xi, I i} and lifted back to the LiDAR frame as 
+
+pL 
+
+> k
+
+= R⊤ 
+
+> BL
+
+(c⊤ 
+
+> k
+
+, ¯z)⊤. (2) The two branches yield four correspondences pL 
+
+> k
+
+↔ pC 
+
+> k
+
+per scene. For M jointly calibrated scenes, the extrinsic is the closed-form absolute-orientation solution [34] 
+
+(R⋆
+
+> CL
+
+, t⋆
+
+> CL
+
+) = arg min  
+
+> R∈SO(3) ,t∈R3
+> M
+
+X
+
+> m=1 4
+
+X
+
+> k=1
+
+R p L 
+
+> mk
+
++ t − pC
+
+> mk
+> 2
+
+,
+
+(3) obtained from the SVD of the centered cross-covariance Σ.
+
+B. Accuracy Analysis 
+
+The three stages of the pipeline contribute unequally to the final extrinsic error. Equation (3) is closed-form and introduces no error of its own; it only propagates the error in its inputs. Plane segmentation aggregates every board point into three parameters, so individual range noise averages out and the stage is well conditioned. The camera-frame centers pC 
+
+> k
+
+are generated by one shared board pose (1), so they cannot deform relative to one another: an error in the board pose displaces all four centers consistently and is largely absorbed by the extrinsic. The LiDAR centers ck enjoy neither property. 
+
+Each is recovered from only those points that fall on one hole boundary, and each is estimated independently of the other three. The resulting errors are uncorrelated and enter (3) as cor-respondence noise. Calibration accuracy is therefore governed by this single stage, which is also where the board geometry is available but, as Section II discussed, left unused. This observation motivates the pattern-prior formulation developed in Section IV. 
+
+IV. P ATTERN -P RIOR EXTRINSIC CALIBRATION 
+
+This section develops the two geometric priors that address the fitting degeneracy and the lack of inter-hole coupling identified in Section III-B, as illustrated in Fig. 3. 
+
+A. Free-Circle Ambiguity 
+
+Let ¯vk be the normalized mean direction of the boundary samples of hole k seen from its center, and let ϕik be the polar angle of sample i about that direction, so that the samples occupy an angular span Φk = max i ϕik − min i ϕik . Under the free-circle parameterization, in which both the center ck
+
+and the radius rk are unknown, consider the joint perturbation that translates the center by ∆¯ vk and reduces the radius by 
+
+∆. With dik = ∥xi − ck∥, the distance to the displaced center is dik − ∆ cos ϕik + O(∆ 2), so the residual changes by 
+
+∆eik = ∆  1 − cos ϕik 
+
+ + O(∆ 2). (4) The change is first order in ∆ but quadratic in the angu-lar deviation. For samples confined to |ϕik | ≤ Φk/2 it is bounded by ∆Φ 2
+
+> k
+
+/8, so the squared residual perturbation scales as O(∆ 2Φ4
+
+> k
+
+), flattening as the fourth power of the angular span [11]. As shown in Fig. 3A, a short measured arc admits multiple center–radius pairs whose residuals differ by O(∆ 2Φ4
+
+> k
+
+), below the range noise for the spans observed here. This ambiguity has two effects. The center is weakly determined along ¯vk even when the range measurements are accurate, and mixed-pixel returns [12], which displace the observed boundary inward along the same direction, are absorbed by the estimator as an apparent reduction of radius. Fixing the radius to the CAD value removes (4) from the parameter space at no modeling cost, since the board is manufactured to specification. 4 SUBMITTED TO IEEE/ASME TRANSACTIONS ON MECHATRONICS Center drift        
+
+> A Freecircle ambiguity
+> r−δ
+> B Radius prior
+> Independent centers Rigid layout
+> C Layout prior
+> 1
+> Fig. 3. Two pattern priors. ( A) A short measured arc (blue) permits multiple center–radius pairs (orange); dark curve: reference circle. ( B)Sector samples constrain the center at radius r−δ; crosses mark rejected returns. ( C) A rigid CAD layout couples the four independent centers (orange), producing the projected centers (red).
+
+B. Radius Prior 
+
+Mixed pixels reduce the observed radius of every hole by a comparable amount, as the effect is governed by the beam footprint at a given range. A single bias δ ∈ [0 , δ max ] shared by all four holes captures this shrinkage, and each center is fitted against the effective radius r − δ (Fig. 3B). The residual of point i on hole k is 
+
+eik = dik − (r − δ), (5) reducing the unknowns of each hole from three to two and adding one scalar for the whole board. Candidates for hole k are drawn from the annulus Ak = {i :
+
+r−δ−bin ≤ dik ≤ r−δ+bout } and reduced to one boundary representative per azimuth sector, the innermost surviving point of that sector, which keeps a densely sampled arc from dominating the fit. The retained samples Ek update the hole only when they occupy at least ten of the S = 24 sectors with no empty run longer than S/ 4.The center of hole k minimizes P 
+
+> i∈E k
+
+ℓκ(eik ) under the Huber loss [35] ℓκ with threshold κ = 12 mm . With vik =(xi−ck)/d ik and weights wik = min(1 , κ/ |eik |), each Gauss– Newton step solves 
+
+Hk∆ck = gk, ck ← ck + ∆ ck, (6) where Hk = P 
+
+> i
+
+wik vik v⊤ 
+
+> ik
+
+and gk = P 
+
+> i
+
+wik eik vik . After updating every valid hole, the shared bias is refreshed from the weighted mean observed radii ˆrk = W −1
+
+> k
+
+P 
+
+> i
+
+wik dik (Wk =P 
+
+> i
+
+wik ): 
+
+δ ← min 
+
+
+
+δmax , max  0, r − |V| −1P 
+
+> k∈V
+
+ˆrk
+
+
+
+, (7) with δmax = 30 mm . Sharing one bias across holes avoids reintroducing four free radii; its identifiability depends on the diversity of boundary directions, as Section V-D analyzes. 
+
+Algorithm 1 Pattern-Prior Extrinsic Calibration 
+
+Require: Board pts {xi, I i}i∈P , CAD layout {cB 
+
+> k
+
+}, radius r
+
+Ensure: Extrinsic (R⋆
+
+> CL
+
+, t⋆
+
+> CL
+
+) 
+
+> 1:
+
+Initialize {ck, ˆrk} from the plane-raster circle candidates and δ by (7) 
+
+// Radius prior (Section IV-B)  
+
+> 2:
+
+for n = 1 to Nout = 5 do  
+
+> 3:
+
+for k = 1 to 4 do  
+
+> 4:
+
+Annulus selection, mixed-pixel rejection, sector sampling  
+
+> 5:
+
+if coverage test passed then  
+
+> 6:
+
+for m = 1 to Nin = 3 do  
+
+> 7:
+
+Update ck at fixed radius r − δ by (6)  
+
+> 8:
+
+end for  
+
+> 9:
+
+end if  
+
+> 10:
+
+end for  
+
+> 11:
+
+Update shared bias δ by (7)  
+
+> 12:
+
+end for 
+
+// Layout prior (Section IV-C)  
+
+> 13:
+
+Solve rigid rectangular projection (8) via (9)  
+
+> 14:
+
+if acceptance test (10) passed then  
+
+> 15:
+
+Snap ck ← c⋆k for all k 
+
+> 16:
+
+end if 
+
+// Registration  
+
+> 17:
+
+Lift ck to pL 
+
+> k
+
+by (2)  
+
+> 18:
+
+Solve extrinsic (3) 
+
+C. Layout Prior 
+
+Under the radius prior alone, the four holes remain inde-pendently parameterized, and their eight center coordinates are uncoupled. The layout prior removes this independence by constraining the four centers to a rigid placement of the CAD rectangle (Fig. 3C), ck = R(θ) cB 
+
+> k
+
++ t with R(θ) ∈ SO(2) 
+
+and t ∈ R2, collapsing the eight coordinates to three contin-uous degrees of freedom and projecting out five deformation directions. Given the radius-constrained estimates {ˆck}, the optimal rigid placement and corner assignment are 
+
+(θ⋆, t⋆, σ ⋆) = arg min  
+
+> θ, t, σ
+> 4
+
+X
+
+> k=1
+
+ˆck − R(θ) cB 
+
+> σ(k)
+
+− t 2, (8) where σ is a permutation assigning CAD corners to detected centers. For a fixed σ this is a planar Procrustes problem. With centered vectors ak = cB 
+
+> σ(k)
+
+− ¯cB and bk = ˆ ck − ¯c, the closed-form solution is 
+
+θ⋆ = atan2 
+
+ X
+
+> k
+
+ak × bk, X
+
+> k
+
+ak · bk
+
+
+
+,
+
+t⋆ = ¯ c − R(θ⋆) ¯ cB,
+
+(9) where ak × bk = ak,x bk,y − ak,y bk,x and the bars denote four-center means. All 4! = 24 assignments are enumerated; the relabeling symmetry of the rectangle resolves the mirror ambiguity implicitly. Because a rigid fit distributes a single gross error across all four centers, the projection is applied only when every hole passed the coverage test and the pro-jected centers satisfy 
+
+max  
+
+> 1≤k≤4
+
+∥ˆck − c⋆k∥ ≤ dmax , (10) X. HU: P 2CALIB: UTILIZING PATTERN PRIORS FOR LIDAR-CAMERA EXTRINSIC CALIBRATION 5
+
+with dmax = 35 mm ; otherwise the per-hole fits are kept. 
+
+D. Estimation Model and Solver 
+
+The two priors together describe the board by three pose parameters (θ, t) and one shared bias δ, estimated from the full set of boundary samples: 
+
+min  
+
+> θ, t, δ
+> 4
+
+X
+
+> k=1
+
+X
+
+> i∈E k
+
+ℓκ
+
+
+
+xi − R(θ) cB 
+
+> k
+
+− t − (r − δ)
+
+
+
+. (11) Equation (11) is the estimation model whose parameter count Section V-A analyzes. Because the sector assignment depends on the working centers, a joint minimization would re-select its own samples at every step. The solver therefore minimizes a nine-parameter relaxation, in which the four centers move freely under the shared bias, and projects the result onto the rigid rectangle by (8)–(9) under the acceptance test (10). Algorithm 1 summarizes the full process, and Section V analyzes the properties of the two priors. 
+
+V. A NALYSIS OF THE PATTERN PRIORS 
+
+This section establishes why the two priors of Section IV restore a well-posed estimate under sparse angular coverage. Section V-A counts the parameters they remove, Sections V-B and V-C quantify the conditioning and error effects, and Section V-D shows that the two priors are mutually dependent. 
+
+A. Degrees of Freedom 
+
+A free circle carries three continuous unknowns (an in-plane center and a radius), so the free-circle parameterization of the four holes has twelve. The radius prior (RP) replaces the four independent radii by the known r acted on by a single shared bias δ, and the layout prior (LP) collapses the eight center coordinates onto the rigid pose (θ, t) of the CAD rectangle: 
+
+4 × 3
+
+| {z } 
+
+> 12 RP
+
+−−−→ 4 × 2 + 1 
+
+| {z }
+
+> 9LP
+
+−−−→ 3 + 1 
+
+| {z } 
+
+> 4
+
+. (12) The number of measurements is unchanged by this reduction. Each hole contributes at most S sector samples, so a capture offers on the order of 4S boundary measurements whichever parameterization consumes them, and the measurement-to-parameter ratio rises from 4S/ 12 to 4S/ 4 without discarding a single measurement. What is removed are parameter directions the measurements cannot resolve: the radius direction identi-fied by (4), and the five deformation directions identified by the rectangle rigidity. 
+
+B. Conditioning under the Radius Prior 
+
+Consider one hole under the free-circle parameterization, with unknowns (ck, r k) and residual dik − rk. The Jacobian row of sample i is (−v⊤
+
+> ik
+
+, −1) , giving the normal matrix 
+
+˜Hk =
+
+Hk sk
+
+s⊤ 
+
+> k
+
+Wk
+
+
+
+, sk = X
+
+> i∈E k
+
+wik vik , (13) with Hk the scatter matrix of (6). By (4), the unit direction 
+
+(¯ v⊤ 
+
+> k
+
+, −1) ⊤/√2 produces a residual change bounded by Φ2
+
+> k
+
+/8
+
+for each sample, so 
+
+λmin ( ˜Hk) = O(WkΦ4
+
+> k
+
+). (14) Fixing the radius deletes the last row and column of (13), leaving Hk alone. Writing vik = (cos ϕik , sin ϕik )⊤, the eigenvalues of Hk admit the exact form 
+
+λmin ,max (Hk) = 12 Wk(1 ∓ Rk),Rk = W −1
+
+> k
+
+P 
+
+> i∈E k
+
+wik ej 2 ϕik ∈ [0 , 1] ,
+
+where the second-order circular resultant Rk measures the directional concentration of the retained boundary samples. For uniform sampling over a span Φk ≤ π, Rk = sin Φ k/Φk
+
+and λmin (Hk) ≈ WkΦ2
+
+> k
+
+/12 . Comparing with (14), 
+
+cond( ˜Hk) = O(Φ −4 
+
+> k
+
+), cond( Hk) = 1 + Rk
+
+1 − Rk
+
+= O(Φ −2 
+
+> k
+
+),
+
+(15) so the radius prior reduces the rate of conditioning loss from 
+
+O(Φ −4 
+
+> k
+
+) to O(Φ −2 
+
+> k
+
+) as the angular span narrows. The resultant 
+
+Rk also detects a second failure mode invisible to the span alone: samples concentrated at two diametrically opposite positions give Rk = 1 and a singular Hk, which is why the coverage test preceding (6) constrains both the sector count 
+
+Nk and the longest empty run Lk.
+
+C. Error Projection under the Layout Prior 
+
+Define the concatenated center vector ˆc = (ˆ c⊤ 
+
+> 1
+
+, . . . , ˆc⊤ 
+
+> 4
+
+)⊤ ∈
+
+R8. For a fixed assignment σ, the rigid placements of the CAD rectangle trace a three-dimensional manifold Mσ ⊂
+
+R8 generated by (θ, t), and (8) returns the closest point on S 
+
+> σ
+
+Mσ , with the closed form of (9) realizing the orthogonal projection for the selected assignment. Let ˆck = cgt  
+
+> k
+
++ ηk for the true rigid placement cgt  
+
+> k
+
+,and model ηk as independent, zero-mean, and isotropic with variance s2 in each coordinate. The tangent space of Mσ at 
+
+cgt is exactly three-dimensional, so to first order 
+
+E∥ˆc − cgt ∥2 = 8 s2, E∥c⋆ − cgt ∥2 ≃ 3s2, (16) since orthogonal projection onto a d-dimensional subspace of 
+
+Rn retains expected squared norm ds 2 from an isotropic input. Under this model and a correct assignment, the layout prior retains 3/8 of the expected squared center error, equivalently p3/8 ≈ 0.61 in root-mean-square. The isotropy assumption is an idealization, since the radius prior constrains the radial di-rection more tightly than the tangential one; 3/8 is accordingly a limiting value. The discarded five-dimensional component corresponds to the family of rectangle deformations no rigid board can produce, and its magnitude is what the acceptance test (10) thresholds. A component large enough to fail that test indicates an unreliable hole estimation. 
+
+D. Complementarity of the Two Priors 
+
+The two priors are not sequential refinements: each is necessary for the other to be well posed. The dependence of LP on RP is made explicit in Section IV-C: projection 6 SUBMITTED TO IEEE/ASME TRANSACTIONS ON MECHATRONICS 
+
+redistributes the residual across all four centers, so an input center whose own fit was degenerate contaminates the other three. RP bounds that input error through (15). The reverse dependence concerns the identifiability of δ.Under the fully constrained parameterization the Jacobian column of δ is constant while that of t is −v⊤
+
+> ik
+
+, so δ is unidentifiable whenever some unit u satisfies vik · u = const 
+
+over every retained sample, which is what a single hole on a narrow arc gives: there vik ≈ ¯vk and δ is indistinguishable from a translation along ¯vk. The rectangular layout breaks this condition, because the four holes present their boundary directions in four distinct global orientations, and rigidity is essential to it, because a rectangle free to scale would trade its scale factor against δ. Together, (15) and (16) account for the behavior of (11) under sparse angular coverage: RP keeps every hole-level normal matrix bounded away from singularity, LP removes the coordinate freedom that coverage alone cannot constrain and renders the shared bias identifiable, and the four surviving parameters are estimated from the full set of boundary samples. Section VII-B.2 probes this analysis directly by varying boundary coverage and standoff distance. 
+
+VI. S YSTEM IMPLEMENTATION 
+
+P2Calib is built on the FAST-Calib 2 [7] codebase, integrat-ing the radius prior and layout prior of Sections IV-B and IV-C into an interactive calibration tool. The tool is implemented in Python 3.10 with Open3D 0.19 for point cloud processing and OpenCV for image processing. All timings reported in Section VII-C.3 are measured on a desktop with an Intel i7-12700K processor using a single thread. The tool reports the intermediate result of each pipeline stage and reports both the layout disagreement (10) and the registration residual (3) for every capture, so that the operator can distinguish extraction quality from correspondence quality and can exclude a capture before the multi-scene solve. The annulus refinement, includ-ing the shared bias δ and the mixed-pixel rejection, is designed for sensors whose hole boundaries are eroded by mixed pixels, such as the area-array LiDAR evaluated in Section VII-C. On scanning LiDARs such as the Livox Avia and Mid-360, the raster-based extraction already provides dense hole candidates. The radius prior then fixes every fitted radius to r without δ,and the layout prior acts on the raster centers. 
+
+VII. E XPERIMENTS 
+
+We validate the two pattern priors on simulated boards with known ground truth (Section VII-B), which also tests the predictions of Section V, and on real sensor data across multiple LiDAR types (Section VII-C). 
+
+A. Experimental Setup 
+
+Data. A four-hole simulator, released with our code, gen-erates the simulated boards. It reproduces the CAD model of Section III-A, a 1.40 × 1.00 m plate with four r = 0 .12 mholes on a 0.50 × 0.40 m rectangle, and adds Gaussian range noise along the ray ( σ = 12 –14 mm, the robust plane-fit           
+
+> 2https://github.com/hku-mars/FAST-Calib Camera FS LiDAR abcd
+> ABCD
+> Fig. 4. Evaluation setup. Top : the mobile platform and calibration board, with the camera and LiDAR enlarged. Bottom : one data source per column, camera image ( a–d ) above the range-shaded LiDAR scan ( A– D), the holes appearing as white voids; ( a,A ) simulator, ( b,B ) Avia, ( c,C )Mid-360, ( d,D ) the area-array FS sensor.
+
+residual measured on the real FS boards), 2 mm quantization, and mixed-pixel returns intruding up to 20 mm into each hole. The acquisition protocol mirrors a real session: six standoff distances grouped as near at 1.5 and 2.0 m, mid at 2.5 and 3.2 m and far at 4.0 and 5.0 m; five placements per distance, left, center and right at mid-height and up and down on the center column, each on an image quarter point and clamped to both fields of view; and two frames per placement, 60 frames in all. A random tilt of up to ±5◦ sets the lateral placements to 37 .5◦ incidence and the vertical ones at 8◦–16 ◦. A wall 1 m behind the board, excluded by the operator ROI but kept by velo2cam as its edge test requires, completes every scene. Each frame is rendered at two sampling densities, a single frame (SF) at the sensor’s 0.3◦ pitch, 19.6 mm at 3.2 m and scaled with range, and an accumulated cloud (AC) at 5 mm; geometry and noise are fixed per frame, and the three detector seeds, which vary only the plane RANSAC, give identical inlier sets, so the reported values have zero spread across seeds. For the real-world evaluation, we collect two datasets (FS-B and FS-C) using a mobile platform equipped with an area-array solid-state LiDAR and a 1920 ×1080 camera, as shown in Fig. 4. The area-array LiDAR has a 120 ◦ × 50 ◦ field of view, 
+
+0.33 ◦ angular resolution in both axes, a range of 0.2–48 m, and a range noise of ±50 mm. FS-B contains 18 scenes at 1.5–4.3 m and FS-C contains 20 scenes at 1.0–4.2 m, both with the same board geometry and fixed camera–LiDAR mounting. To evaluate cross-sensor generality, we additionally use three scanning-LiDAR datasets provided by FAST-Calib [7]: one Livox Avia session (5 scenes, solid-state with non-repetitive scan), and two Livox Mid-360 sessions (4 and 3 scenes, hybrid solid-state with 360 ◦ horizontal coverage). Figure 4 shows representative inputs from each sensor. 
+
+Baselines. RP and LP denote the radius prior and the layout prior throughout, and we compare against X. HU: P 2CALIB: UTILIZING PATTERN PRIORS FOR LIDAR-CAMERA EXTRINSIC CALIBRATION 7A  
+
+> Images
+> B
+> Ours w/o RP + LP
+> C
+> Ours w/o LP
+> D
+> Ours (Full)
+> Fig. 5. Real-scene ablation in the FS-B dataset. ( A) Camera detections; (B) both priors off: fitted radii vary across holes; ( C) radius prior only: centers form a skewed quadrilateral; ( D) both priors: centers conform to the rectangular layout. Red lines join the four detected centers; blue cloud marks are thickened for legibility.
+> •
+
+velo2cam 3 [8]: the original four-hole detector. Its ring-wise edge test assumes organized scan rings and the background seen through the holes, which solid-state clouds do not provide, so we adapt its input by resampling the cloud into 128 elevation-binned virtual rings and raising the range threshold from 6 to 15 m; every detector parameter retains its default value.  
+
+> •
+
+FAST-Calib 4 [7]: the Livox adaptation of the four-hole board, which extracts the circles from a rasterization of the board plane. It is our primary baseline and differs from P 2Calib only in lacking both priors.  
+
+> •
+
+Ours w/o LP and Ours w/o RP : the radius prior and the layout prior in isolation. All variants share camera processing and SVD registration. 
+
+Metrics. In simulation the simulator provides the true hole centers and extrinsic. The first metric is the mean hole-center error [mm] of each frame, which counts as detected when four centers lie within 50 mm of the truth. The extrinsic is then fitted jointly on all detected frames and scored by its rotation [ ◦] and translation [mm] error against the truth, together with the registration residual of (3), a fitting residual reported for completeness. The last metric is a leave-one-out (LOO) reprojection error: the extrinsic is fitted on the remaining frames, and the centers of the held-out frame are projected and compared with the true pixel positions. On real data, without ground truth, the joint residual and the LOO error are measured against the detected ellipse centers. 
+
+B. Simulated Experiments 
+
+1) Overall results analysis: Table I reports the hole-center error of every variant by standoff group, and Table II the joint extrinsic fitted on all detected frames. Figure 5 shows the progression on one real capture: independently fitted circles,    
+
+> 3https://github.com/beltransen/velo2cam_calibration
+> 4https://github.com/hku-mars/FAST-Calib 10 40 70 100
+
+rim coverage [%]                                                
+
+> 0510 15 20 25 30
+> center error [mm]
+> FAST-Calib velo2cam Ours w/o RP Ours w/o LP Ours (Full)
+> A
+> Ours w/o LP Ours (Full) 02468
+> center error [mm]
+> 3 good holes corrupted hole
+> B
+> Fig. 6. Rim-coverage study on AC boards at 3.2 m. ( A): hole-center error as the covered fraction of each rim drops from 100% to 10%; each method is gated on its own success, and hollow markers denote partial success. ( B): error of the three fully covered holes (cyan) and of the hole reduced to 25% coverage (salmon). TABLE I HOLE -CENTER ERROR [MM ]↓IN SIMULATION BY STANDOFF GROUP .
+> Single frame (SF) Accumulated (AC) Variant Near Mid Far Near Mid Far velo2cam a6.5 6.9 19.0 5.1 8.3 11.8 FAST-Calib 7.0 14.7 –7.0 6.8 7.4 Ours w/o RP 5.1 5.4 10.4 b4.4 4.0 4.3 Ours w/o LP 2.3 2.8 5.1 b2.1 1.8 1.9 Ours (Full) 2.0 2.1 3.9 b1.9 1.6 1.6
+> Note: Mean over successful trials, 60 per group; a darker cell marks a lower error within a column, bold the best, “–” no detection. Deterministic, one run per frame; detects 18/6/1 (SF) and 17/8/3 (AC) of 20 frames in the near/mid/far groups. bOurs w/o RP, Ours w/o LP, Ours (Full): 57 of 60 trials (far, AC).
+
+radius-constrained circles, and the full pipeline with the layout projection. Where FAST-Calib recovers the board, the full pipeline reduces the hole-center error from 7.0–14.7 mm to 2.0–2.1 mm on SF and from 6.8–7.4 mm to 1.6–1.9 mm on AC frames, a 3.5–6.9× reduction. On the far group of SF frames FAST-Calib recovers no board at all, whereas the full pipeline detects 57 of 60 trials at 3.9 mm. The improvement propagates to the extrinsic: the LOO reprojection error falls from 2.61 to 0.40 px on SF and from 1.51 to 0.23 px on AC frames, and the rotation and translation errors of Table II fall by 3.6 and 4.7 times on SF frames and by 3.6 and 10 times on AC frames. Restricting the fit to the 40 SF frames that every variant detects leaves the ordering unchanged, at 0.36 against 2.61 px. This is also the set that FAST-Calib itself recovers. velo2cam, run on the same frames with its background wall, detects 25 and 28 of 60 frames and reaches 2.28 and 1.95 px. The two priors contribute in complementary regimes. The radius prior is the larger contributor: alone it reaches 2.3– 5.1 mm on SF and 1.8–2.1 mm on AC frames, 91 to 96% of the improvement of the full pipeline, which confirms that the center–radius degeneracy of Section IV-A, and not the range noise, dominates the baseline error. The layout prior alone yields 4.0–10.4 mm, and its contribution concentrates where the angular coverage is sparsest: it lowers the radius-only error of the far SF group from 5.1 to 3.9 mm, whereas on AC frames the radius prior alone is already within 0.3 mm of the full pipeline. This behavior follows the design of Section IV-C: the layout constraint corrects the residual cross-hole errors that remain after the fit of each hole, and those errors decrease as 8 SUBMITTED TO IEEE/ASME TRANSACTIONS ON MECHATRONICS 1.5 2 2.5 3.2 4 5
+
+standoff distance [m]      
+
+> 12510 20
+> center error [mm]
+> accumulated single frame
+> A
+> left center right up down
+
+board placement in the image      
+
+> B
+> 510 15 25 35 50
+
+range noise σ [mm]                                                                      
+
+> C
+> FAST-Calib velo2cam Ours w/o RP Ours w/o LP Ours (Full)
+> Fig. 7. Hole-center error on the simulated protocol against ( A) standoff distance, ( B) board placement in the image and ( C) range-noise σon the mid group, on a shared logarithmic scale; AC solid, SF dashed. A curve ends where the method recovers no board. TABLE II JOINT EXTRINSIC IN SIMULATION :ERROR AGAINST THE GROUND TRUTH ,FITTING RESIDUAL ,AND HELD -OUT REPROJECTION .
+> Rot. Trans. Joint LOO
+> Method Det. [◦][mm] [mm] [px]
+> SF
+> velo2cam 25/60 0.137 3.5 9.5 2.28 FAST-Calib 120/180 0.061 2.8 12.8 2.61 Ours w/o RP 177/180 0.031 4.7 8.6 1.09 Ours w/o LP 177/180 0.017 0.6 5.1 0.57 Ours (Full) 177/180 0.017 0.6 4.6 0.40
+> AC
+> velo2cam 28/60 0.066 1.9 8.8 1.95 FAST-Calib 180/180 0.018 3.0 6.9 1.51 Ours w/o RP 180/180 0.011 3.3 2.8 0.51 Ours w/o LP 180/180 0.005 0.3 2.2 0.29 Ours (Full) 180/180 0.005 0.3 2.0 0.23
+> Note: The extrinsic is fitted on the detected frames of each variant. Joint is a fitting residual, reported for completeness; LOO holds out one frame. Shading as in Table I.
+
+the angular coverage increases. Two controls on boards held at the center of the image, at 3.2 m and 5◦ incidence, confirm the attribution. Giving FAST-Calib the denser plane rasterization RP relies on, with neither prior, reaches only 5.0–6.3 mm. Under a violated prior, a radius error of ±1.5 mm on each hole with mixed-pixel intensities overlapping the rejection threshold, the full pipeline still reaches 3.4 mm against 7.3 mm for the baseline. 
+
+2) Coverage, standoff and noise analysis: The rim-coverage sweep tests the conditioning analysis of Section V-B directly: it shortens the measured arcs on an AC board at 3.2 m while everything else is held fixed (Fig. 6A). As the covered fraction drops from 100% to 10%, the full pipeline degrades from 1.7 to 3.2 mm, while the baseline ranges from 4.3 to 15.0 mm and is non-monotonic, because its error follows the mixed-pixel corruption that survives the mask and not the number of retained boundary samples; velo2cam remains between 11 and 22 mm, since the mask removes the edge returns its gradient test requires. The ablation curves separate the two priors: with full rims the radius prior alone matches the full pipeline, but as coverage drops its error grows to 6.8 mm while the full pipeline remains below 4.5 mm, so the layout prior contributes an increasing share of the improvement as the angular cover-age decreases. Figure 6B isolates that mechanism: with three full rims and one hole at 25% coverage, the radius prior alone yields 6.2 mm on the degraded hole against 1.5 mm on its neighbors, and the layout projection reduces it to 2.9 mm at a cost of 0.7 mm on the fully covered ones. The baseline gives up this inter-hole coupling by estimating each hole independently. Figure 7 resolves the protocol along its three operating variables. Against standoff distance (Fig. 7A), the SF baseline degrades from 7.3 mm at 1.5 m to 19.3 mm at 3.2 m and recovers no board at 4.0 and 5.0 m, where the 0.3◦ pitch spaces the returns 24 and 31 mm apart on the board; the full pipeline remains within 1.8–2.8 mm through 4.0 m and reaches 5.0 mm at 5.0 m, extending the usable range of the same board and sensor by more than 1.5×, as the conditioning improve-ment from O(Φ −4 
+
+> k
+
+) to O(Φ −2 
+
+> k
+
+) predicts. Against placement (Fig. 7B), the lateral positions meet the LiDAR at 37 .5◦, yet the SF full pipeline rises only from 2.4 to 3.7 mm while the baseline remains between 9.1 and 12.0 mm, so the ordering of the variants does not depend on where the board stands in the image; velo2cam detects 3 of 12 frames at either lateral placement. Against range noise (Fig. 7C), the full pipeline remains below the baseline at every σ on both densities, and on SF frames it still recovers the board at σ = 50 mm, where the baseline has failed from σ = 35 mm. 
+
+3) Stage-wise error analysis: We trace the hole-center error through the stages of Algorithm 1 on centered simulated boards at 3.2 m and measure, on the same samples, the condition numbers and error laws that Section V predicts. A free-circle refit on the retained sector samples Ek is inserted between the raster initialization and the radius-prior estimate, so that the effect of the fixed radius is separated from that of the curated samples. Figure 8A follows the four stages on SF and AC boards. Sector sampling provides the largest reduction relative to the raster initialization, 63% and 90%; the fixed radius does not increase the error at full coverage; and the layout projection removes a further 43 to 52% of it. The measured ratio of squared center error after and before the projection is 0.25 and 0.31, consistent with the 3/8 predicted by (16), and rises to 0.37 and 0.40 under 25% and 50% coverage, where the isotropy assumption weakens. The conditioning measurements in Fig. 8B follow the two scaling laws of (15) as each hole is restricted to n consecutive sectors: the free-circle condition number grows over four decades with a log-log slope of −4.0
+
+against the predicted O(Φ −4 
+
+> k
+
+), while the fixed-radius condition number stays below 22 and follows Φ−2 
+
+> k
+
+once the arc is short. X. HU: P 2CALIB: UTILIZING PATTERN PRIORS FOR LIDAR-CAMERA EXTRINSIC CALIBRATION 9sparse grid dense grid rim 50% rim 25% 
+
+condition    
+
+> 04812 16
+> center error [mm]
+> raster init free refit + RP + LP
+
+A   
+
+> 0.5 124
+
+arc span Φ k [rad] 
+
+> 110 2
+> 10 4
+> condition number
+> Φ−4
+> Φ−2
+
+free circle fixed radius 
+
+B   
+
+> 0.5 124
+
+arc span Φ k [rad] 
+
+> 110 100
+> center error [mm]
+
+free circle fixed radius 
+
+C
+
+Fig. 8. Error propagation on simulated boards. ( A): hole-center error after the four stages of Section VII-B.3, with 95% confidence intervals over 120 holes. ( B): condition numbers of ˜Hk and Hk as each hole is restricted to n consecutive sectors, SF solid and AC dashed, with the Φ−4 
+
+> k
+
+and 
+
+Φ−2 
+
+> k
+
+laws of (15) dotted. ( C): center error of the free-circle and fixed-radius estimates over the same sweep. velo2cam 
+
+Avia 
+
+> 4.0 px
+
+Mid-360 
+
+> 1.0 px
+
+FS-B 
+
+> 2.8 px
+
+FS-C       
+
+> 6.5 px
+> FAST-Calib
+> 5.1 px 1.3 px 35.0 px 18.8 px
+> Ours
+> 5.3 px 1.1 px 2.7 px 4.5 px
+
+Fig. 9. Whole-scene projections of the raw scan with the joint extrinsic of each method. Points are colored by range (viridis, near dark to far bright); white circles mark the camera-detected hole centers, red crosses the projected LiDAR centers, and labels the mean center reprojection error of the shown scene. The disc in the Avia column is the 70 ◦ conical field of view of the sensor. 
+
+Figure 8C also identifies the operating limit of the radius prior: on SF boards with one-sided arcs of 10–12 sectors the free fit is the more accurate, at 7.1 against 9.9 mm, because the free radius absorbs a radial bias that the shared δ cannot represent. The layout projection recovers the advantage in each such case, which is the complementarity that Section V-D argues. 
+
+C. Real-World Experiments 
+
+1) Area-array LiDAR calibration: Table III presents the main real-world comparison on the FS-B and FS-C datasets, which represent the sparse-observation regime where the two priors are most needed. Paired errors use scenes successfully detected by all variants: 15 in FS-B and 10 in FS-C. On FS-B, the full pipeline reduces joint residual from 217.7 to 22.3 mm and LOO error from 67.5 to 2.82 px, reductions of 90% and 96%. The radius-only variant reaches 24.0 mm and 3.35 px, and the layout-only variant reaches 22.2 mm and 2.87 px: both improve over the baseline but neither matches the full pipeline in both metrics simultaneously, mirroring the simulated ablation. On FS-C, joint residual drops from 191.5 to 35.1 mm and LOO error from 43.3 to 9.91 px, reductions of 82% and 77%. The FS-C LOO error is dominated by five scenes at 1 m standoff, where every variant including the baseline exceeds 13 px, with the centers sitting a consistent 
+
+≈ 15 mm from the joint extrinsic in the image plane. This systematic pattern indicates a range-dependent sensor incon-sistency; excluding these scenes, the full pipeline achieves 4.67 px on the five scenes at 2–4 m, consistent with the FS-B performance. Figure 9 shows representative whole-scene projections for all four sensors and all three methods. 10 SUBMITTED TO IEEE/ASME TRANSACTIONS ON MECHATRONICS                                                             
+
+> TABLE III JOINT RESIDUAL [MM ]↓AND LOO REPROJECTION ERROR [PX ]↓ON THE FS DATASETS .
+> FS-B (18 scenes) FS-C (20 scenes) Variant Det. Joint LOO Det. Joint LOO velo2cam a14/18 23.50 3.51 11/20 40.55 10.25 FAST-Calib 85/90 217.68 67.50 65/100 191.50 43.34 Ours w/o LP 90/90 24.02 3.35 85/100 36.82 10.61 Ours w/o RP 80/90 22.23 2.87 60/100 35.92 9.67
+> Ours (Full) 80/90 22.28 2.82 60/100 35.13 9.91
+> Note: Det. counts successful attempts over five seeds; errors use the 15 common scenes of FS-B and 10 common scenes of FS-C. Shading as in Table I.
+> aIts own 14 and 11 detected scenes, hence unshaded. Avia Mid-A Mid-B FS-B FS-C
+> 110 100
+> joint residual [mm]
+> Avia Mid-A Mid-B FS-B FS-C
+> 110 100
+> LOO reproj. [px]
+> FAST-Calib velo2cam Ours
+> Fig. 10. Joint residual ( left ) and LOO error ( right ) on Avia, two Mid-360 and FS datasets. FS errors use the common scene sets of Table III, velo2cam its own detected scenes.
+
+Two observations qualify these results. First, the shared bias 
+
+δ remains at its lower bound of zero on every real scene of both datasets: the weighted rim radius observed on the FS boards exceeds the nominal radius by 4–28 mm, so the radius prior acts through the fixed radius alone, a sensor-dependent behav-ior that Section VII-D revisits. Second, FAST-Calib, RP-only, LP-only, and the full pipeline detect four centers in 85, 90, 80, and 80 of 90 attempts on FS-B, and in 65, 85, 60, and 60 of 100 attempts on FS-C. The candidate screening of the layout prior rejects configurations that the baseline accepts: of the eight FS-C scenes the full pipeline loses, three provide fewer than four candidates and five fail the 50 mm layout check, so detection rate is traded for extraction quality. The paired results therefore support improved calibration consistency conditional on successful extraction. 
+
+2) Cross-sensor generality: We verify that the two priors generalize beyond the area-array sensor to scanning LiDARs with denser angular coverage. Figure 10 places the two FS datasets of Table III alongside Avia and the two Mid-360 sessions on a common scale. The full pipeline lowers joint residual from 13.2 to 12.4 mm on Avia, from 6.1 to 5.3 mm on Mid-360 A, and from 5.4 to 4.8 mm on Mid-360 B. LOO error decreases from 4.99 to 3.83 px on Avia and from 1.54 to 1.15 px on Mid-360 A, but increases slightly from 2.03 to 2.41 px on Mid-360 B, indicating that lower joint residual does not guarantee lower held-out error in every case. The improvements are smaller than on the FS sensor, as expected from the conditioning analysis of Section V-B: scanning LiDARs provide denser rim coverage, yielding larger Φk and a smaller gap between the O(Φ −4 
+
+> k
+
+) and O(Φ −2 
+
+> k
+
+) curves. The priors still improve                                                     
+
+> TABLE IV RUNTIME [MS ]↓OF THE CALIBRATION STAGES PER INPUT CLOUD .
+> Method Dataset nPlane RP LP Total
+> FAST-Calib FS-B 18 7.2 ––11.9
+> Ours 7.2 5.0 0.4 16.4 FAST-Calib FS-C 20 9.4 ––12.3
+> Ours 9.4 4.3 0.4 18.6 FAST-Calib Avia 5345.4 ––356.7
+> Ours 345.1 –0.4 360.1 FAST-Calib Mid-360 469.1 ––78.2
+> Ours 69.0 –0.4 81.0
+> Note: Median over the nscenes of five warm repeats, file loading excluded; Total also covers the shared raster initialization and book-keeping. Shading as in Table I; a dash marks a stage not executed.
+
+performance, but their marginal contribution diminishes as the measurement geometry improves, which is the expected behavior of a well-designed geometric constraint. With the adapted input, velo2cam recovers four centers on 14/18 FS-B, 11/20 FS-C, 2/5 Avia, and 4/4 Mid-360 scenes. On the detected scenes its joint and LOO errors exceed those of the full pipeline on both FS datasets (23.5 vs. 22.3 mm joint, 3.51 vs. 2.82 px LOO on FS-B) while covering fewer scenes. 
+
+3) Runtime: Table IV reports the feature-extraction time measured on a single thread. The full pipeline takes 16.4 and 18.6 ms on FS-B and FS-C, of which the layout projection accounts for less than 0.5 ms and the radius refinement for 4.3 to 5.0 ms, a 38 and 51% increase over the baseline total of 11.9 and 12.3 ms. On Avia and Mid-360 plane extraction dominates the total and that overhead is negligible. 
+
+D. Limitations 
+
+The current implementation is tailored to the four-hole calibration board with a rectangular layout. The radius prior applies to any target with circular features of known dimen-sion, and the layout prior generalizes to any rigid arrangement with a known geometric pattern; extending the implementation to other board designs (e.g., multi-circle or non-rectangular layouts) is a natural direction. The shared bias δ models inward rim erosion from mixed pixels; on sensors where the observed radius exceeds the nominal value, as the FS datasets show, the bias saturates at zero and the radius prior acts through the fixed radius alone. Allowing a signed bias or a sensor-specific erosion model may improve performance on such sensors. More broadly, the pattern-prior formulation is not limited to LiDAR–camera calibration: any target-based estimation problem in which the target geometry is known but underutilized during fitting can benefit from the same strategy of fixing known parameters and coupling independent features through their shared layout. 
+
+VIII. C ONCLUSION 
+
+This paper presented P2Calib, a target-based LiDAR– camera extrinsic calibration system that exploits board geom-etry priors to achieve accurate hole-center extraction under sparse point clouds. By incorporating the known hole radius as a fitting prior, the center–radius degeneracy under sparse X. HU: P 2CALIB: UTILIZING PATTERN PRIORS FOR LIDAR-CAMERA EXTRINSIC CALIBRATION 11 
+
+angular coverage is eliminated. By further enforcing the rect-angular layout of the four holes, residual errors across holes are corrected through a geometric constraint. Both priors are integrated into an interactive calibration tool that provides a complete extrinsic calibration pipeline. On two real solid-state LiDAR datasets, P 2Calib lowers the joint residual by 90% and 82% and the held-out reprojection error by 96% and 77% over the raster-circle baseline. Future work includes extending the pattern constraint to support boards with more layouts. 
+
+ACKNOWLEDGMENT 
+
+The authors thank Shenzhen Fushi Technology Co., Ltd. for providing the experimental equipment and data, and Shiyang Chen of X Square Robot for productive discussions. AI-assisted tools were used to polish the writing. 
+
+REFERENCES 
+
+[1] W. Xu, Y. Cai, D. He, J. Lin, and F. Zhang, “Fast-lio2: Fast direct lidar-inertial odometry,” IEEE Transactions on Robotics , vol. 38, no. 4, pp. 2053–2073, 2022. [2] J. Jiao, H. Ye, Y. Zhu, and M. Liu, “Robust odometry and mapping for multi-lidar systems with online extrinsic calibration,” IEEE Transactions on Robotics , vol. 38, no. 1, pp. 351–371, 2022. [3] J. Lv, X. Lang, J. Xu, M. Wang, Y. Liu, and X. Zuo, “Continuous-time fixed-lag smoothing for LiDAR-inertial-camera SLAM,” IEEE/ASME Transactions on Mechatronics , vol. 28, no. 4, pp. 2259–2270, 2023. [4] X. Hu, et al. , “Paloc: Advancing slam benchmarking with prior-assisted 6-dof trajectory generation and uncertainty estimation,” IEEE/ASME Transactions on Mechatronics , vol. 29, no. 6, pp. 4297–4308, 2024. [5] J. Wu, et al. , “Globally optimal symbolic hand-eye calibration,” 
+
+IEEE/ASME Transactions on Mechatronics , vol. 26, no. 3, pp. 1369– 1379, 2021. [6] J. Wu, M. Wang, Y. Jiang, B. Yi, R. Fan, and M. Liu, “Simultaneous hand-eye/robot-world/camera-IMU calibration,” IEEE/ASME Transac-tions on Mechatronics , vol. 27, no. 4, pp. 2278–2289, 2022. [7] C. Zheng and F. Zhang, “FAST-Calib: LiDAR-camera extrinsic calibra-tion in one second,” IEEE Robotics and Automation Practice , vol. 1, pp. 108–112, 2026. [8] J. Beltr´ an, C. Guindel, A. de la Escalera, and F. Garc´ ıa, “Automatic extrinsic calibration method for LiDAR and camera sensor setups,” IEEE Transactions on Intelligent Transportation Systems , vol. 23, no. 10, pp. 17 677–17 689, 2022. [9] G. Pandey, J. R. McBride, S. Savarese, and R. M. Eustice, “Automatic extrinsic calibration of vision and Lidar by maximizing mutual infor-mation,” Journal of Field Robotics , vol. 32, no. 5, pp. 696–722, 2015. [10] C. Yuan, X. Liu, X. Hong, and F. Zhang, “Pixel-level extrinsic self calibration of high resolution LiDAR and camera in targetless envi-ronments,” IEEE Robotics and Automation Letters , vol. 6, no. 4, pp. 7517–7524, 2021. [11] A. Al-Sharadqah and N. Chernov, “Error analysis for circle fitting algorithms,” Electronic Journal of Statistics , vol. 3, pp. 886–911, 2009. [12] J. Tuley, N. Vandapel, and M. Hebert, “Analysis and removal of artifacts in 3-D LADAR data,” in IEEE Intl. Conf. on Robotics and Automation (ICRA) , 2005, pp. 2203–2210. [13] C. Guindel, J. Beltr´ an, D. Mart´ ın, and F. Garc´ ıa, “Automatic extrinsic calibration for lidar-stereo vehicle sensor setups,” in IEEE Intl. Conf. on Intelligent Transportation Systems (ITSC) , 2017, pp. 1–6. [14] J. Domhof, J. F. P. Kooij, and D. M. Gavrila, “An extrinsic calibration tool for radar, camera and lidar,” in IEEE Intl. Conf. on Robotics and Automation (ICRA) , 2019, pp. 8107–8113. [15] G. Yan, F. He, C. Shi, P. Wei, X. Cai, and Y. Li, “Joint camera intrinsic and LiDAR-camera extrinsic calibration,” in IEEE Intl. Conf. on Robotics and Automation (ICRA) , 2023, pp. 11 446–11 452. [16] J. Jiang, X. Hu, W. Liu, and W. Jiang, “Accurate measurement of 3D and 2D circular centers with application to LiDAR-camera extrinsic calibration,” arXiv preprint arXiv:2511.06611 , 2025. [17] J. Domhof, J. F. P. Kooij, and D. M. Gavrila, “A joint extrinsic calibration tool for radar, camera and lidar,” IEEE Transactions on Intelligent Vehicles , vol. 6, no. 3, pp. 571–582, 2021. [18] Z. Taylor and J. Nieto, “Motion-based calibration of multimodal sensor extrinsics and timing offset estimation,” IEEE Transactions on Robotics ,vol. 32, no. 5, pp. 1215–1229, 2016. [19] J. Persic, L. Petrovic, I. Markovic, and I. Petrovic, “Spatiotemporal multisensor calibration via Gaussian processes moving target tracking,” 
+
+IEEE Transactions on Robotics , vol. 37, no. 5, pp. 1401–1415, 2021. [20] J. Levinson and S. Thrun, “Automatic online calibration of cameras and lasers,” in Robotics: Science and Systems (RSS) , 2013. [21] T. Ye, W. Xu, C. Zheng, and Y. Cui, “MFCalib: Single-shot and automatic extrinsic calibration for LiDAR and camera in targetless environments based on multi-feature edge,” in IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS) , 2024, pp. 864–871. [22] J. Lv, X. Zuo, K. Hu, J. Xu, G. Huang, and Y. Liu, “Observability-aware intrinsic and extrinsic calibration of LiDAR-IMU systems,” IEEE Transactions on Robotics , vol. 38, no. 6, pp. 3734–3753, 2022. [23] N. Schneider, F. Piewak, C. Stiller, and U. Franke, “RegNet: Multimodal sensor registration using deep neural networks,” in IEEE Intelligent Vehicles Symposium (IV) , 2017, pp. 1803–1810. [24] G. Iyer, R. K. Ram, J. K. Murthy, and K. M. Krishna, “CalibNet: Geo-metrically supervised extrinsic calibration using 3D spatial transformer networks,” in IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS) , 2018, pp. 1110–1117. [25] X. Lv, B. Wang, Z. Dou, D. Ye, and S. Wang, “LCCNet: LiDAR and camera self-calibration using cost volume network,” in IEEE/CVF Conf. on Computer Vision and Pattern Recognition Workshops (CVPRW) ,2021, pp. 2888–2895. [26] D. Cattaneo and A. Valada, “CMRNext: Camera to LiDAR matching in the wild for localization and extrinsic calibration,” IEEE Transactions on Robotics , vol. 41, pp. 1995–2013, 2025. [27] Q. Zhang and R. Pless, “Extrinsic calibration of a camera and laser range finder (improves camera calibration),” in IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS) , vol. 3, 2004, pp. 2301–2306. [28] L. Zhou, Z. Li, and M. Kaess, “Automatic extrinsic calibration of a camera and a 3D LiDAR using line and plane correspondences,” in 
+
+IEEE/RSJ Intl. Conf. on Intelligent Robots and Systems (IROS) , 2018, pp. 5562–5569. [29] T. T´ oth, Z. Pusztai, and L. Hajder, “Automatic LiDAR-camera calibra-tion of extrinsic parameters using a spherical target,” in IEEE Intl. Conf. on Robotics and Automation (ICRA) , 2020, pp. 8580–8586. [30] J. Jiao, F. Chen, H. Wei, J. Wu, and M. Liu, “LCE-Calib: Automatic LiDAR-frame/event camera extrinsic calibration with a globally optimal solution,” IEEE/ASME Transactions on Mechatronics , vol. 28, no. 5, pp. 2988–2999, 2023. [31] D. Zhu, H. Wu, T. Ding, and L. Hua, “Point cloud registration-enabled globally optimal hand-eye calibration,” IEEE/ASME Transactions on Mechatronics , vol. 30, no. 4, pp. 2586–2597, 2025. [32] S. Garrido-Jurado, R. Mu˜ noz-Salinas, F. J. Madrid-Cuevas, and M. J. Mar´ ın-Jim´ enez, “Automatic generation and detection of highly reliable fiducial markers under occlusion,” Pattern Recognition , vol. 47, no. 6, pp. 2280–2292, 2014. [33] M. A. Fischler and R. C. Bolles, “Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography,” Communications of the ACM , vol. 24, no. 6, pp. 381–395, 1981. [34] S. Umeyama, “Least-squares estimation of transformation parameters between two point patterns,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 13, no. 4, pp. 376–380, 1991. [35] P. J. Huber, “Robust estimation of a location parameter,” The Annals of Mathematical Statistics , vol. 35, no. 1, pp. 73–101, 1964. 
+
+Xiangcheng Hu (Student Member, IEEE) re-ceived a B.Sc. degree from the North University of China, Taiyuan, China, in 2017 and the M.S. degree from Beihang University, Beijing, China, in 2020. He is currently working toward a Ph.D. degree with the Department of Electronic and Computer Engineering, HKUST.

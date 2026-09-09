@@ -1,0 +1,137 @@
+{
+  "date": "20260909",
+  "date_label": "",
+  "generated_at": "2026-09-09 22:01:36 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.06726v1",
+      "route": "202609/09/2609.06726v1-back-to-the-feature-zero-shot-6dof-pose-estimation-via-dense-local-features",
+      "title": "Back to the Feature: Zero-Shot 6DoF Pose Estimation via Dense Local Features",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "利用预训练变换器提取稠密局部特征，实现RGB图像的零样本6自由度位姿估计",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    },
+    {
+      "paper_id": "2609.08949v1",
+      "route": "202609/09/2609.08949v1-prior-free-relative-6d-pose-estimation-of-multiple-object-instances",
+      "title": "Prior-free relative 6D pose estimation of multiple object instances",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "无需CAD模型或训练的、基于多模态基础特征的多未知物体相对6D位姿估计",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    },
+    {
+      "paper_id": "2609.07516v1",
+      "route": "202609/09/2609.07516v1-p2calib-utilizing-pattern-priors-for-lidar-camera-extrinsic-calibration",
+      "title": "P$^2$Calib: Utilizing Pattern Priors for LiDAR-Camera Extrinsic Calibration",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "基于模式先验的激光雷达-相机外参标定，是相机与激光雷达数据融合的前提",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    },
+    {
+      "paper_id": "2609.07231v1",
+      "route": "202609/09/2609.07231v1-generalizable-6d-pose-estimation-of-textureless-objects-with-planar-based-gaussian-splatting",
+      "title": "Generalizable 6D Pose Estimation of Textureless Objects with Planar-based Gaussian Splatting",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "面向无纹理物体的多视角RGB图像6D位姿估计，可迁移至单目非合作航天器位姿估计",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    },
+    {
+      "paper_id": "2609.03067v1",
+      "route": "202609/09/2609.03067v1-gpu-accelerated-astrodynamics-world-models-for-spacecraft-rendezvous-and-proximity-operations",
+      "title": "GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向航天器交会与抵近操作建立世界模型与GPU仿真，生成轨道和姿态动态数据，可为航天器位姿相关研究提供验证平台，但不包括位姿估计算法本身。",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    },
+    {
+      "paper_id": "2609.05523v1",
+      "route": "202609/09/2609.05523v1-infrastructure-based-monocular-3d-vehicle-localization-framework-with-experimental-validation",
+      "title": "Infrastructure-based Monocular 3D Vehicle Localization Framework with Experimental Validation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "利用单个路侧相机图像联合估计车辆地面位置、尺寸与偏航角的单目三维定位方法",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    },
+    {
+      "paper_id": "2609.06343v1",
+      "route": "202609/09/2609.06343v1-radiation-rotation-and-scale-invariant-feature-descriptor-for-multimodal-image-matching",
+      "title": "Radiation, Rotation and Scale Invariant Feature Descriptor for Multimodal Image Matching",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "适用于多传感器融合的多模态图像匹配的辐射、旋转与尺度不变特征描述符",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    },
+    {
+      "paper_id": "2609.09005v1",
+      "route": "202609/09/2609.09005v1-dxpr-depth-based-vision-lidar-cross-modal-place-recognition-using-vision-foundation-models",
+      "title": "DXPR: Depth-Based Vision-LiDAR Cross-Modal Place Recognition Using Vision Foundation Models",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "以深度图统一单目相机与LiDAR表示，实现跨模态匹配，可迁移到相机-LiDAR空间相对位姿估计",
+      "first_seen_at": "2026-09-09 22:01:36 UTC",
+      "updated_at": "2026-09-09 22:01:36 UTC"
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+Title: Generalizable 6D Pose Estimation of Textureless Objects with Planar-based Gaussian Splatting
+
+URL Source: https://arxiv.org/pdf/2609.07231v1
+
+Published Time: Wed, 09 Sep 2026 02:44:19 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+# Generalizable 6D Pose Estimation of Textureless Objects with Planar-based Gaussian Splatting 
+
+Jie Lu 1, Hengtan Zhang 1, Li Gong 1, Pengpeng Wang 2, Xianjia Yu 3, Jinxiang Deng 4,Tomi Westerlund 3, Zhongxue Gan 2, Lirong Zheng 1, and Zhuo Zou 1
+
+Abstract — Estimating the 6D pose of textureless objects without prior CAD models remains a critical challenge due to the lack of appearance features. While recent generaliz-able approaches alleviate the dependence on object-specific models, their performance on low-texture objects is often limited by insufficient geometric constraints in the underlying representations. In this work, we propose PG-Pose, a geometry-aware framework combining Planar-based Gaussian Splatting (PGS) reconstruction and Geometry-driven pose optimization. In the offline representation extraction stage, three distinct representations of the object are extracted from multi-view reference RGB images with known poses. PG-Pose reconstructs a 3D Gaussian representation and renders high-fidelity depth maps to generate 3D point clouds through back projection. In the online pose inference stage, the initial pose of the input image is estimated by 2D-3D correspondence matching between the input image and the reconstructed 3D point clouds, followed by a PGS-Refiner for iterative pose optimization. Evaluations on the OnePose-LowTexture datasets, PG-Pose achieves an average accuracy of 94.2% ADD(S)@0.1d, with a 2.1% improvement average accuracy compared with the state-of-the-art (SOTA) GS-based approach. To further demonstrate the effectiveness of PG-Pose for industrial robots in grasping tasks, we deploy it on a dual-arm industrial robot and successfully realize the grasping task on an unseen object. 
+
+I. INTRODUCTION 6D pose estimation aims to acquire the translation and rotation of a target object in 3D space. Accurate and robust algorithms for 6D object pose estimation are crucial in many robotic applications, such as grasping tasks and robotic manipulation [1] [2] [3] [4] [5]. Object-specific pose estimation methods [6] [7] [8] achieve high accuracy by training on pre-defined objects with CAD models or dense textures. However, these methods rely on specific instance data, which results in poor generalization to unseen objects. In contrast, category-level approaches [9] [10] leverage shape priors within a category to handle new instances, but their accuracy degrades when faced with significant intra-category variations in shape and scale, espe-cially for symmetric or geometrically ambiguous objects. Recently, several studies have made considerable progress in generalizable object pose estimation, aiming to elimi- 
+
+> *This work was supported in part by the National Key Research and Development Program of China under Grant 2023YFB4704100.
+> 1College of Future Information Technology, Fudan University, Shanghai, China.
+
+jlu24@m.fudan.edu.cn 
+
+> 2College of Intelligent Robotics and Advanced Manufacturing, Fudan University, Shanghai, China.
+> 3Turku Intelligent Embedded and Robotic Systems (TIERS) Lab, Uni-versity of Turku, 20014 Turku, Finland.
+> 4Jihua Laboratory, Guangdong, China.
+
+nate the dependence on CAD models or instance-specific training. Methods such as Gen6D [11] utilizes reference RGB images for pose initialization and refinement for pose initialization and refinement, thereby eliminating the need for CAD models. However, Gen6D heavily relies on accurate 2D bounding box detection and struggles with occlusions due to its template-matching mechanism. OnePose [12] and OnePose++ [13] further extend the generalizability by re-constructing sparse 3D point clouds from multi-view RGB inputs and solving poses by 2D-3D correspondences. Al-though OnePose++ reduces the reliance on key points for low-texture objects through detector-free feature matching, its sparse point cloud representation leads to instability in pose estimation due to geometric ambiguity in symmetric or textureless regions. To address these limitations, GS-Pose [14] pioneeringly introduces a framework based on 3D Gaussian Splatting (3DGS). By building a 3D Gaussian representation of the object and refining pose through differentiable rendering, GS-Pose achieves state-of-the-art (SOTA) performance. Nev-ertheless, there are two problems with GS-Pose, one is that GS-Pose uses a retrieval method to estimate the initial 6D pose of the object, resulting in a low precision of the initial pose. The other is that its reliance on photometric consistency for Gaussian parameter optimization remains vulnerable to textureless surfaces. To address these issues, we propose PG-Pose, a framework that focuses on enhancing the geometric expressiveness of 3D Gaussian representations for model-free 6D pose estima-tion. Instead of introducing a new pose estimation pipeline, PG-Pose operates within the widely adopted coarse-to-fine paradigm and improves its robustness by injecting Planar Gaussian priors into the reconstruction process and integrat-ing Geometry-driven initialization for online inference. In the offline stage, the proposed method reconstructs a planar-based 3D Gaussian representation from multi-view RGB images, where geometric regularization terms such as surface normal consistency and coplanarity constraints are integrated into the Gaussian parameter optimization. This results in a geometrically enhanced representation that enables the ren-dering of high-fidelity depth maps, which are back-projected to generate dense 3D point clouds with improved structural completeness compared to photometric-only reconstruction, particularly under low-texture conditions. In the online stage, benefiting from the improved geo-metric fidelity of the reconstructed representation, PG-Pose naturally supports explicit 2D-3D correspondence matching arXiv:2609.07231v1 [cs.RO] 7 Sep 2026 Fig. 1: Overall architecture of the proposed 6D pose estimation framework. and enables a Perspective-n-Point (PnP) based pose ini-tialization. Compared to retrieval-based initialization, this geometry-driven strategy provides a more stable starting point for symmetric and textureless objects. The initial pose is further refined using a PGS-Refiner module based on differentiable Gaussian rendering. Experimental results on textureless benchmark objects as well as deployment on a dual-arm industrial robot demonstrate that PG-Pose achieves superior accuracy and robustness compared to existing CAD-free approaches. The main contributions are listed as follows:  
+
+> •
+
+We propose PG-Pose, a robust 6D pose estimation frame-work driven by a geometrically enhanced 3D Gaussian representation that integrates planar priors, surface normal consistency, and coplanarity regularization into the Gaus-sian Splatting optimization process. This design substan-tially improves reconstruction robustness without relying on CAD models.  
+
+> •
+
+Built upon the enhanced representation, we demonstrate that geometry-driven pose initialization and Gaussian-based refinement can be reliably combined within a stan-dard coarse-to-fine framework. PG-Pose achieves 94.2% ADD(S)@0.1d on the OnePose-LowTexture dataset and robust real-world robotic grasping of unseen objects. Ablation studies further confirm that both planar priors and geometry-driven initialization are critical for handling textureless and symmetric objects. II. RELATED WORK 
+
+A. Textureless Pose Estimation 
+
+The evolution of 6D pose estimation for textureless objects has been driven by the need to overcome the absence of dis-criminative visual cues. Early methods predominantly relied on depth sensors or RGB-D data to explicitly capture object geometry. For instance, methods like Point Pair Features (PPF) [15] leverage depth maps to match geometric primi-tives such as point pairs against CAD models yet struggle un-der sensor noise and occlusions. With the rapid advancement of learning-based techniques, depth-based networks [16] have integrated geometric priors into neural architectures to enhance pose estimation. Despite their effectiveness, the strong reliance on high-quality depth measurements limits their applicability in RGB-only settings. A significant shift emerged with the development of multi-view RGB optimization frameworks. Early works such as [17] introduced correspondence-free formulations that directly regress object poses by optimizing the alignment between rendered and observed images. Building upon this paradigm, [18] proposed a two-stage decoupled optimization strategy, where 3D translation is first resolved using scale-aware keypoints, followed by rotation estimation enforced through geometric consistency. Although this design allevi-ates depth ambiguity inherent in single-view RGB inputs, it relies heavily on accurate keypoint detection, which is often unreliable for textureless objects. Subsequent approaches, exemplified by OnePose++ [13], replaced handcrafted key-points with detector-free feature matching techniques, en-abling the reconstruction of sparse 3D point clouds from multi-view RGB sequences. While these methods improve generalization across objects and scenes, their reliance on sparse geometric representations frequently fails to resolve pose ambiguities in symmetric or planar regions due to geometric ambiguity. Recently, the paradigm has shifted toward neural implicit representations and explicit Gaus-sian splatting to bridge the gap between geometry and appearance. However, despite their high-fidelity rendering capability, these approaches still require stronger underlying geometric constraints to fully resolve the pose ambiguities inherent to textureless objects. 
+
+B. Gaussian Splatting for Generalizable Pose Estimation 
+
+In generalizable object pose estimation, the evolution of 3D object representation has followed multiple exploratory pathways. Traditional methods typically rely on pre-defined 3D CAD models [6]–[8], [19] and 3D point clouds [12], [13] as object representations. The introduction of 3D Gaussian Splatting (3DGS) [20] revolutionized scene representation by offering explicit and high-fidelity rendering capabilities. Recent efforts have adapted 3DGS for pose estimation tasks. GS-Pose [14] was the first to leverage 3DGS for generalizable pose estimation, implicitly encoding objects as differentiable Gaussian distributions. However, this method relies on retrieval-based initialization, which often yields Fig. 2: Overview of the representation extraction process. inaccurate initial poses. GS2Pose [21] extended this line of work by introducing a two-stage architecture. It employs a lightweight U-Net for coarse pose estimation and a GS-Refiner that utilizes Lie algebra to enable pose-differentiable rendering. A key innovation of GS2Pose is its ability to selectively update spherical harmonics and opacity during refinement, enhancing robustness against lighting variations and occlusions. Concurrently, iG-6DoF [22] focuses on the initialization challenge for unseen objects. It constructs a multi-scale feature space using icosahedral group convolu-tions to generate robust pose hypotheses, which are then re-fined through an iterative render-and-compare strategy using 3DGS. Despite these advancements, existing 3DGS-based methods generally optimize Gaussian parameters primarily based on photometric loss. PG-Pose diverges from this trend by exploiting Planar-based Gaussian Splatting [23]. We parameterize Gaussians with planar priors, enforcing coplanarity constraints and normal alignment during the reconstruction phase. This geometric regularization ensures that the 3DGS model maintains structural integrity, providing a more reliable foundation for subsequent pose optimization. III. PROPOSED FRAMEWORK In this section, we present PG-Pose, a robust 6D pose estimation framework for 6D pose estimation. The PG-Pose consists of two stages: offline representation extraction and online pose inference. In the offline phase, three distinct representations are obtained sequentially from unseen objects with known poses and are performed offline once per object. During inference, PG-Pose estimates the initial pose and the refined pose from the input image using the pre-built object representations in a cascaded manner. The overall architecture of the proposed framework is shown in Fig. 1. 
+
+A. Offline Representation Extraction 
+
+Semantic Representation. Following GS-Pose [14], we adopt the same semantic representation extraction pipeline. While this part is identical to GS-Pose, we retain it to ensure fair comparison and compatibility with subsequent modules. To establish robust semantic priors for textureless object understanding, we extract object semantic tokens Fobj from multi-view reference images. We first select Nk (≪ Nr )
+
+keyframes using farthest point sampling (FPS) [13] from 
+
+Nr reference images. From these keyframes, we extract multi-view feature tokens Ff ps ∈ RNk ×L×C , which are reshaped into spatial feature maps ˆFf ps ∈ RNk ×L×C , where L and C denote the token number and feature dimension of each frame. Next Ff ps and ˆFf ps are sent to a Co-segmenter module. Co-segmenter sample frame-wise center tokens ˆF f ps c ∈ RNk ×C from the 2D centroids of ˆFf ps ∈
+
+RNk ×L×C to encapsulate global object semantics. These center tokens guide a transformer-like module that processes 
+
+Ff ps through Lm stacked self- and cross-attention layers, The process can be formulated as 
+
+Lm ×
+
+
+
+Ff ps = Self Attn ( Ff ps ) ∈ RNk ×L×C
+
+Ff ps = Reshape ( Ff ps ) ∈ R1×Nk L×C
+
+Ff ps = CrossAttn 
+
+
+
+Ff ps , ˆF f ps c
+
+
+
+Ff ps = SelfAttn ( Ff ps ) ∈ R1×Nk L×C
+
+Ff ps = Reshape ( Ff ps ) ∈ RNk ×L×C
+
+, (1) where Lm is the depth of the module. This hierarchical attention mechanism enhances intra-frame consistency and inter-frame alignment using the center tokens as semantic anchors. The refined tokens are then decoded by a mask consisting of two 3 × 3 convolutional layers and an upsam-pling layer to generate segmentation masks. Finally, Fobj 
+
+is extracted by masking ˆFf ps with the predicted regions, ensuring that only object-centric features are preserved for subsequent reconstruction. 
+
+3D Object Gaussian Representation. 
+
+Fig. 3: Rendered depth and normal images by Planar-based Gaussian splatting Object segmentation is performed for all reference im-ages using an Obj-Segmenter to obtain segmented reference images, which are utilized to build this 3DGO model. The PGS-based 3D object representation Gobj is constructed by integrating planar geometric constraints into the 3D Gaussian Splatting framework [20], addressing the fragility of vanilla 3DGS in textureless regions. Inspired by planar-based GS [23], we parameterize each planar-based Gaussian as Gobj =
+
+{μi, r i, s i, α i, h i}Ui=1 , where μi ∈ R3 denotes the position, 
+
+ri ∈ R4 the rotation quaternion aligned with detected planar normals, si ∈ R3 the anisotropic scale, αi ∈ R the opacity, and hi ∈ Rk the spherical harmonics coefficients. Since planar normals cannot be directly obtained without an initial geometry, we adopt an iterative strategy to avoid circular dependency. First, an initial object model G(0)  
+
+> obj
+
+is reconstructed using vanilla 3DGS without planar priors. Depth maps rendered from G(0)  
+
+> obj
+
+are then back-projected from multiple viewpoints into a 3D point cloud, on which planar regions are detected using a plane fitting procedure. Although a point cloud could in principle be sampled directly from the Gaussian parameters, using back-projected depth maps yields view-consistent and visibility-aware 3D points by implicitly handling occlusions and filtering out Gaussians with low opacity or negligible contribution from a given viewpoint. This results in cleaner and more geometrically reliable point clouds for subsequent plane detection and orientation initialization. For each inlier plane, the normal vector nP is computed as the eigenvector corresponding to the smallest eigenvalue of the covariance matrix of the inlier points. Each Gaussian rotation ri is initialized to align explicitly with the closest detected plane normal. During optimization, coplanarity regularization further constrains Gaussians within the same plane to share consistent orienta-tion. This process is repeated iteratively, alternating between plane detection and Gaussian refinement, until convergence is achieved. Each planar region corresponds to the inlier set of a detected plane obtained from the back-projected point cloud. As plane fitting is performed on spatially coherent neighborhoods, the resulting planar regions are mainly local. We do not explicitly enforce graph connectivity within a planar region. In this way, the construction of Gobj becomes a well-defined refinement procedure rather than a one-step dependency, ensuring both logical consistency and stability in low-texture regions. 
+
+3D Object Point Cloud Representation The 3D object point cloud Pobj is reconstructed through back-projection of depth maps rendered from the planar-based Gaussian representation Gobj . Given a depth map D of resolution 
+
+H × W , each pixel (u, v ) is transformed into a 3D point 
+
+Pi ∈ R3 by perspective projection: 
+
+pi = D(u, v ) · K−1 u v 1⊤ , (2) where K ∈ R3×3 is the camera intrinsic matrix. 
+
+B. Online Pose Inference 
+
+Fig. 4: The process of estimating the initial pose by pose estimator During inference, the goal is to estimate the 6D pose of a query object image using the representations constructed in the offline stage. The process begins by cropping the target object from the input image with the help of the pre-computed semantic mask. From the cropped query image, sparse keypoints and descriptors are extracted using Super-Point [24], a self-supervised keypoint detector and descriptor that has demonstrated robustness under low-texture condi-tions. Although SuperPoint is a learned feature extractor, it is class-agnostic and does not learn object-specific pose or geometry. In PG-Pose, it is only used to provide a sparse set of 2D-3D correspondences for Perspective-n-Point (PnP)-based pose initialization. In parallel, we render a set of RGB-D images from the planar-based Gaussian representation constructed offline. SuperPoint descriptors are computed on the rendered RGB images, and the corresponding depth maps are back-projected into 3D space to form a template point cloud, where each 3D point is associated with the descriptor of its 2D projection. Keypoint descriptors from the query image are then matched to the template descriptors using Fast Approximate Nearest Neighbor (FLANN) [25], establishing 2D-3D cor-respondences between the query image and the canonical 3D object representation. With these correspondences, an initial 6D pose is solved using a PnP algorithm with Random Sample Consensus (RANSAC) [26], which ensures robust-ness against outliers. This initialization provides a coarse but geometrically consistent estimate of the object pose. Finally, the initial pose is refined through the GS-Refiner, which performs differentiable rendering-based optimization. In this stage, the 3D Gaussian representation constructed offline remains fixed, while only the 6-DoF pose parameters are updated. The refiner minimizes photometric and geomet-ric consistency losses between the rendered and observed images, thereby correcting residual errors from the PnP ini-tialization. By focusing exclusively on pose refinement, this module ensures both computational efficiency and accurate convergence to the final pose estimate. IV. EXPERIMENTS 
+
+A. Datasets and Evaluation Metrics 
+
+The OnePose-LowTexture dataset is a standardized bench-mark dataset specifically designed for the 6D pose estimation of low-texture objects. It comprises 40 everyday objects with low or no texture, covering typical scenarios in industrial sorting and domestic service robotics. We evaluate pose estimation using ADD(S) that means the average distance between 3D points after being transformed by the ground truth and predicted poses. The formula for ADD(S) is defined as: 
+
+ADD(S) = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+min   
+
+> xj∈M
+
+∥(T xi − T ′xj )∥ (3) where N denotes the number of 3D model vertices, T and T ′
+
+represent the ground-truth and predicted rigid transformation matrices, xi is a 3D vertex from the object model, and M
+
+is the complete set of model vertices. The minimum oper-ator addresses object symmetry by calculating the smallest Euclidean distance between a transformed vertex under the predicted pose T ′ and any geometrically equivalent counter-part in the symmetric model under T . This metric quantifies pose estimation accuracy as the average deviation across all vertices, with lower values indicating better alignment. The recall rate ADD(S)@0.1d further evaluates ADD(S) within 10% of the object diameters. 
+
+B. Training Details 
+
+The proposed framework is trained in a unified manner to ensure both reliable reconstruction and accurate pose inference. In the offline stage, the planar-based Gaussian representation is optimized with a joint objective function consisting of photometric loss, normal alignment loss, and coplanarity regularization. The photometric loss enforces pixel-wise appearance consistency between the rendered im-age Irend and the ground-truth reference image Iref :
+
+Lphoto = 1
+
+|Ω|
+
+X
+
+> p∈Ω
+
+∥Irend (p) − Iref (p)∥22,
+
+where Ω denotes the foreground pixel set given by the seg-mentation mask. The normal alignment loss encourages ge-ometric consistency by aligning the surface normal nrend (p)
+
+derived from the rendered depth with the Gaussian-inferred local normal ngt (p):
+
+Lnorm = 1
+
+|Ω|
+
+X
+
+> p∈Ω
+
+ 1 − ⟨ nrend (p), n gt (p)⟩.
+
+Finally, the coplanarity regularization penalizes deviations from detected planar regions. For each plane P , the distance of points x ∈ P to the plane with normal nP and centroid 
+
+¯x is minimized: 
+
+Lplane = 1
+
+|P |
+
+X
+
+> x∈P
+
+ (x − ¯x)⊤nP
+
+2.
+
+For each planar region, the plane normal nP is estimated from the back-projected point cloud and serves as a ge-ometric reference. For an individual Gaussian, its local surface normal is implicitly defined by its rotation parameter 
+
+ri. During optimization, the coplanarity regularization does not directly constrain the full rotation but instead enforces consistency between the Gaussian-inferred normal and the plane normal. The gradient of Lplane is therefore propagated through the normal direction, which is a differentiable func-tion of the rotation quaternion ri, allowing the rotation to be updated via back-propagation. As a result, Gaussians as-signed to the same planar region gradually align their normal directions while retaining flexibility in in-plane rotation. The overall reconstruction loss is given by 
+
+Lrecon = λphoto Lphoto + λnorm Lnorm + λplane Lplane ,
+
+where λphoto , λ norm , λ plane are scalar weights balancing the objectives. The semantic segmentation network used to extract object masks is trained with a standard cross-entropy loss on annotated reference images. All networks and reconstruction components are optimized with the Adam optimizer, using an initial learning rate of 1 × 10 −3 and weight decay of 1 × 10 −4.During inference, the PGS-Refiner does not require any pre-training. Instead, it performs online optimization by min-imizing a combination of photometric consistency, silhouette alignment, and geometric losses between the rendered and query images. Only the 6-DoF pose parameters are updated, while the Gaussian representation remains fixed. TABLE I: 6D pose estimation results on OnePose-LowTexture datasets. ”init” indicates the initial pose esti-mation results                                                                        
+
+> Method Toy. Tea. Cat. Cam. Shin. Molie. David Marse. Avg. Gen6D [11] 55.5 40.0 70.0 42.2 62.7 16.6 15.8 8.1 38.9 OnePose [12] 65.6 89.0 39.7 90.9 87.9 31.2 42.7 30.4 59.7 OnePose++ [13] 89.5 99.1 97.2 92.6 98.5 79.5 97.2 57.6 88.9 GS-Pose init [14] 55.0 75.7 82.6 69.7 95.1 63.4 65.7 57.5 70 .6±0.7
+> GS-Pose [14] 89.3 86.7 100.0 90.2 99.3 95.9 91.7 83.6 92 .1±0.3
+> PG-Pose init 67.5 77.1 79.3 72.4 96.2 73.5 71.2 64.2 75 .1±0.6
+> PG-Pose 91.4 89.5 99.7 94.3 99.3 97.3 93.3 89.1 94 .2±0.2
+
+C. Object Pose Estimation Performance Evaluation 
+
+Table I compares the 6D pose estimation accu-racy of PG-Pose with prior methods on the OnePose-LowTexture dataset. Following the standard protocol, we report ADD(S)@0.1d for eight low-texture objects. For stochastic methods, including GS-Pose and PG-Pose, we repeat each experiment five times with different random seeds and report the mean and standard deviation. Overall, the proposed PG-Pose achieves the best performance across most categories, with an average ADD(S)@0.1d score of 94.2%. Gen6D [11] relies on accurate 2D bounding box and template-matching, making it unreliable for textureless objects in this dataset. OnePose++ [13] improves on OnePose [12] by significantly improving the results to 88.9%, but still does not exceed 90%. GS-Pose has a large gap between the accuracy of its initial and refined poses due to the retrieval method used to obtain the initial pose. In particular, the method demonstrates significant improve-ments on textureless and symmetric objects such as Cat, Cam, and Shin. For example, on the Cat object, PG-Pose improves the accuracy by 3.6% over the baseline, while on Cam and Shin the improvements are 5.1% and 4.8%, TABLE II: Ablation study on OnePose-LowTexture (ADD(S)@0.1d)                                                       
+
+> Variant Toy. Tea. Cat. Cam. Shin. Molie. David Marse. Avg.
+> w/o Planar Priors 88.6 86.7 96.1 89.2 96.5 92.3 90.4 82.5 90.8 w/o Coplanarity Reg. 87.2 85.5 91.7 86.9 95.8 91.1 88.3 80.6 88.4 w/o PnP Initialization 83.1 82.6 89.3 84.5 93.4 87.2 86.5 78.1 85.6 w/o GS-Refiner 79.3 80.7 85.6 81.2 91.5 84.1 83.7 75.9 82.7
+> PG-Pose (ours) 91.4 89.5 99.7 94.3 99.3 97.3 93.3 89.1 94.2
+
+respectively. These gains confirm the effectiveness of in-corporating planar constraints and coplanarity regularization, which provide additional geometric cues when appearance information is unreliable. On relatively textured objects such as Toy and Tea, PG-Pose achieves comparable accuracy to the baseline while still delivering modest improvements, showing that the method does not sacrifice performance in cases where photometric information is already sufficient. Moreover, the robustness of the PnP-based initialization is reflected in the reduced variance of results across different categories, as the retrieved initial pose in prior methods often fails under heavy occlusion or symmetry. It is also worth noting that PG-Pose achieves superior performance on David and Marse, which are challenging due to partial texture and strong self-occlusion. The results suggest that the integration of planar priors with Gaussian refinement provides more reliable convergence, enabling accurate alignment even in difficult viewing conditions. 
+
+Fig. 5: Robotic experiments on the real-world grasping scenarios with PG-Pose. 
+
+D. Real World Experiment on Grasp Tasks 
+
+As shown in Fig. 5, to validate the effectiveness of PG-Pose in real-world settings, we conduct robotic grasping experiments on an industrial collaborative dual-arm platform composed of two 6-DOF CR5 robotic arms, with an RGB camera mounted on the robot head. To ensure a fair eval-uation, we follow a standardized grasping protocol for all methods. The platform is equipped with a single parallel-jaw gripper, whose opening width is limited and whose contact stability is sensitive to the object geometry. Therefore, in this paper we restrict the real-world grasping evaluation to a single textureless object that is reliably graspable under our setup. The target object is an unseen plastic bottle placed randomly on a planar workspace without providing any CAD model or prior geometry. For each trial, the object pose is estimated from a single RGB image captured by the head camera, and a top-down parallel-jaw grasp is planned based on the predicted pose. A grasp is considered successful if the robot can hold it stably for more than 5 seconds without slipping or collision. Each method is evaluated over 50 independent trials with random object placements. We use OnePose++ [13] as the baseline method and the proposed PG-Pose for the tests. As a result, the manipulator successfully grasped the target objects with a success rate of 92.3%, compared to 78.5% for the baseline method. The results show that PG-Pose enables reliable grasp execution. The predicted poses remain consistent under partial occlu-sions, which are common in unstructured environments. We also observe that most failures are associated with unstable gripper contacts. 
+
+E. Ablation Study 
+
+To further clarify the contribution of each component in PG-Pose, we conduct ablation experiments on the OnePose-LowTexture dataset. Table II reports the results. 
+
+w/o Planar Priors. When removing planar constraints and only relying on photometric consistency as in GS-Pose, the average accuracy drops by 3.4%, confirming that planar priors are crucial for textureless surfaces. 
+
+w/o Coplanarity Regularization. Removing coplanarity terms decreases performance especially on symmetric ob-jects, showing the benefit of geometric structural constraints. 
+
+w/o PnP Initialization. Replacing PnP-based initialization with retrieval significantly reduces the accuracy of the initial pose, which propagates errors to the refinement stage. 
+
+w/o GS-Refiner. Without iterative refinement, the average accuracy drops to 82.7%, indicating that Gaussian-based refinement is essential for final pose alignment. V. CONCLUSIONS This work presents PG-Pose, a geometry-aware approach for CAD-free 6D pose estimation of textureless objects. Rather than introducing a new pose estimation pipeline, PG-Pose enhances the geometric expressiveness of 3D Gaussian representations through planar priors, alleviating photometric ambiguity in low-texture scenarios and providing reliable geometric cues for pose initialization and refinement with-out CAD models. Experiments on the OnePose-LowTexture dataset demonstrate state-of-the-art performance, achieving 94.2% ADD(S)@0.1d accuracy, with a 2.1% improvement over the SOTA GS-based method. Moreover, real-world deployment on a dual-arm industrial robot validates the practical applicability of PG-Pose. Despite its effectiveness, PG-Pose has several limitations. The current representation primarily exploits locally planar geometric structures, which may be less optimal for objects dominated by smoothly curved surfaces such as spheres or highly cylindrical shapes. In addition, our real-world robotic validation is currently limited to a single representative object due to the constraints of the employed end-effector, leaving broader generalization to more diverse object categories and manipulation tasks for future exploration. REFERENCES [1] H. Wang, S. Sridhar, J. Huang, J. Valentin, S. Song, and L. J. Guibas, “Gsnet: Model reconstruction network for category-level 6d object pose and size estimation,” in IEEE Int. Conf. Robot. Autom. (ICRA) , 2022, pp. 10 632–10 640, deployed on UR5 robotic platform for industrial grasping tasks. [2] L. Zhao, M. Sun, X. Zhang, and L. Zeng, “Tooleenet: Tool affordance 6d pose estimation for contact-based manipulation,” in IEEE/RSJ Int. Conf. Intell. Robots Syst. (IROS) , 2024, symmetry-aware pose estimation for robotic tool manipulation. [3] T. Cavallari, S. Golodetz, N. Lord, J. Valentin, V. Prisacariu, L. D. Stefano, and P. H. Torr, “Real-time rgb-d camera pose estimation in novel scenes using a relocalisation cascade,” in IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , 2019, pp. 2465– 2477. [4] T. Hodan, D. Barath, and J. Matas, “EPOS: Estimating 6d pose of objects with symmetries,” in IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR) , 2020, pp. 11 703–11 712, symmetry handling for robotic assembly applications. [5] D.-T. Huang, E.-T. Lin, L. Chen, L.-F. Liu, and L. Zeng, “Sd-net: Symmetric-aware keypoint prediction and domain adaptation for 6d pose estimation in bin-picking scenarios,” in 2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) .IEEE, 2024, pp. 2747–2754. [6] S. Peng, Y. Liu, Q. Huang, X. Zhou, and H. Bao, “Pvnet: Pixel-wise voting network for 6dof pose estimation,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,2019, pp. 4561–4570. [7] Z. Li, G. Wang, and X. Ji, “Cdpn: Coordinates-based disentangled pose network for real-time rgb-based 6-dof object pose estimation,” in 2019 IEEE/CVF International Conference on Computer Vision (ICCV) , Oct 2019. [Online]. Available: http://dx.doi.org/10.1109/iccv.2019.00777 [8] Y. Xiang, T. Schmidt, V. Narayanan, and D. Fox, “Posecnn: Aconvolutional neural network for 6d object pose estimation in cluttered scenes,” in Robotics: Science and Systems XIV , Aug 2018. [Online]. Available: http://dx.doi.org/10.15607/rss.2018.xiv.019 [9] H. Wang, S. Sridhar, J. Huang, J. Valentin, S. Song, and L. J. Guibas, “Normalized object coordinate space for category-level 6d object pose and size estimation,” in 2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , Jun 2019. [Online]. Available: http://dx.doi.org/10.1109/cvpr.2019.00275 [10] W. Chen, X. Jia, H. J. Chang, J. Duan, L. Shen, and A. Leonardis, “Fs-net: Fast shape-based network for category-level 6d object pose estimation with decoupled rotation mechanism,” in 2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , Jun 2021. [Online]. Available: http://dx.doi.org/10.1109/cvpr46437.2021.00163 [11] Y. Liu, Y. Wen, S. Peng, C. Lin, X. Long, T. Komura, and W. Wang, “Gen6d: Generalizable model-free 6-dof object pose estimation from rgb images,” in European Conference on Computer Vision . Springer, 2022, pp. 298–315. [12] J. Sun, Z. Wang, S. Zhang, X. He, H. Zhao, G. Zhang, and X. Zhou, “Onepose: One-shot object pose estimation without cad models,” in 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2022, pp. 6825–6834. [13] X. He, J. Sun, Y. Wang, D. Huang, H. Bao, and X. Zhou, “Onepose++: Keypoint-free one-shot object pose estimation without cad models,” 
+
+Advances in Neural Information Processing Systems , vol. 35, pp. 35 103–35 115, 2022. [14] D. Cai, J. Heikkil¨ a, and E. Rahtu, “Gs-pose: Generalizable segmentation-based 6d object pose estimation with 3d gaussian splat-ting,” arXiv preprint arXiv:2403.10683 , 2024. [15] B. Drost, M. Ulrich, N. Navab, and S. Ilic, “Model globally, match locally: Efficient and robust 3d object recognition,” in 2010 IEEE com-puter society conference on computer vision and pattern recognition .Ieee, 2010, pp. 998–1005. [16] E. Brachmann, A. Krull, F. Michel, S. Gumhold, J. Shotton, and C. Rother, “Uncertainty-driven 6d pose estimation of objects and scenes from a single rgb image,” in CVPR , 2016, pp. 3364–3372. [17] Y. Labb´ e, J. Carpentier, M. Aubry, and J. Sivic, “Cosypose: Consistent multi-view multi-object 6d pose estimation,” in European Conference on Computer Vision (ECCV) . Springer, 2020, pp. 570–588. [18] H. Yang, C. Li, and G. Wang, “Decoupled rotation and translation estimation for textureless objects from single rgb images,” in ICRA ,2023, pp. 1234–1241. [19] E. P. ¨Ornek, Y. Labb´ e, B. Tekin, L. Ma, C. Keskin, C. Forster, and T. Hodan, “Foundpose: Unseen object pose estimation with foundation features,” in European Conference on Computer Vision . Springer, 2024, pp. 163–182. [20] B. Kerbl, G. Kopanas, T. Leimk¨ uhler, and G. Drettakis, “3d gaussian splatting for real-time radiance field rendering.” ACM Trans. Graph. ,vol. 42, no. 4, pp. 139–1, 2023. [21] J. Mei, J. Li, and C. Meng, “Gs2pose: Two-stage 6d object pose estimation guided by gaussian splatting,” arXiv preprint arXiv:2411.03807 , 2024. [22] T. Cao, F. Luo, J. Qin, Y. Jiang, Y. Wang, and C. Xiao, “ig-6dof: Model-free 6dof pose estimation for unseen object via iterative 3d gaussian splatting,” in Proceedings of the Computer Vision and Pattern Recognition Conference , 2025, pp. 6436–6446. [23] D. Chen, H. Li, W. Ye, Y. Wang, W. Xie, S. Zhai, N. Wang, H. Liu, H. Bao, and G. Zhang, “Pgsr: Planar-based gaussian splatting for efficient and high-fidelity surface reconstruction,” IEEE Transactions on Visualization and Computer Graphics , 2024. [24] D. DeTone, T. Malisiewicz, and A. Rabinovich, “Superpoint: Self-supervised interest point detection and description,” in CVPR Work-shops , 2018. [25] M. Muja and D. G. Lowe, “Fast approximate nearest neighbors with automatic algorithm configuration.” VISAPP (1) , vol. 2, no. 331-340, p. 2, 2009. [26] M. A. Fischler and R. C. Bolles, “Random sample consensus: a paradigm for model fitting with applications to image analysis and automated cartography,” Communications of the ACM , vol. 24, no. 6, pp. 381–395, 1981.

@@ -1,0 +1,326 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-09T21:54:33.016374+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 5,
+    "quick_skim_target": 11,
+    "quick_selected": 5
+  },
+  "deep_dive": [
+    {
+      "id": "2609.06726v1",
+      "source": "arxiv",
+      "title": "Back to the Feature: Zero-Shot 6DoF Pose Estimation via Dense Local Features",
+      "abstract": "We present B2TFPose, a training-free zero-shot method for 6DoF pose estimation of unseen objects from RGB images. Using a single frozen DINOv3 vision transformer as its only pretrained component within the pose estimation pipeline, B2TFPose extracts dense patch-level features that generalize across the synthetic-to-real domain gap without any task-specific fine-tuning, revisiting the classical local feature matching paradigm through the lens of large-scale self-supervised foundation models. Three contributions advance the training-free state of the art. A geodesic non-maximum suppression strategy retrieves a viewpoint-diverse template set for coarse-to-fine correspondence matching. Render-guided Re-Correspondence (RRC) synthesizes object-specific views at the estimated pose and re-establishes dense 2D-3D correspondences to sharpen the initial estimate without additional learned parameters. A multi-mask hypothesis selection strategy jointly scores competing segmentation candidates to resolve segmentation ambiguity. On the seven core datasets of the BOP Benchmark, B2TFPose achieves 40.7 mean AR without refinement and 56.4 with refinement, establishing state-of-the-art performance among training-free RGB methods and outperforming trained counterparts including GigaPose and GenFlow, at competitive inference speed.",
+      "authors": [
+        "Ali Rafiaei",
+        "Michael Greenspan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-06T16:57:27+00:00",
+      "link": "https://arxiv.org/pdf/2609.06726v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Zero-shot 6DoF pose estimation from RGB images using dense local features from a pre-trained transformer",
+      "llm_evidence_cn": "利用预训练变换器提取稠密局部特征，实现RGB图像的零样本6自由度位姿估计",
+      "llm_evidence": "利用预训练变换器提取稠密局部特征，实现RGB图像的零样本6自由度位姿估计",
+      "canonical_evidence": "利用预训练变换器提取稠密局部特征，实现RGB图像的零样本6自由度位姿估计",
+      "llm_tldr_en": "Proposes B2TFPose, a training-free zero-shot method for 6DoF pose estimation from a single RGB image, using DINOv3 features and render-guided re-correspondence to generalize across the synthetic-to-real domain gap.",
+      "llm_tldr_cn": "该论文针对未见物体6自由度位姿估计需依赖CAD模型或大量标注数据、跨域泛化难的问题，提出零样本方法B2TFPose。它仅利用冻结的DINOv3视觉变换器提取稠密局部特征，通过测地非极大值抑制选取视角多样的模板，并用渲染引导重对应修正匹配。实验表明在合成到真实的跨域场景中无需任何训练或微调即可获得与有监督方法相当的精度。该工作为单目图像位姿估计（包括航天器交会场景）提供了无需目标先验的通用流程。",
+      "llm_tldr": "该论文针对未见物体6自由度位姿估计需依赖CAD模型或大量标注数据、跨域泛化难的问题，提出零样本方法B2TFPose。它仅利用冻结的DINOv3视觉变换器提取稠密局部特征，通过测地非极大值抑制选取视角多样的模板，并用渲染引导重对应修正匹配。实验表明在合成到真实的跨域场景中无需任何训练或微调即可获得与有监督方法相当的精度。该工作为单目图像位姿估计（包括航天器交会场景）提供了无需目标先验的通用流程。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.08949v1",
+      "source": "arxiv",
+      "title": "Prior-free relative 6D pose estimation of multiple object instances",
+      "abstract": "Object 6D pose estimation formulations have progressively reduced reliance on object-specific priors, evolving from explicit 3D models to multi-view object captures to single reference images. We take this progression to its extreme by introducing prior-free relative 6D pose estimation, which lifts the assumption of knowing which object is to be posed within the scene. This novel setting aims to estimate the relative poses of multiple instances of an unknown object within the same image, without requiring CAD models, templates, or reference images. We solve this by formulating a novel method (PROSE) that finds coarse correspondences between object instances using multimodal foundation features, thus requiring no training. We refine these correspondences by imposing cycle consistency across tuples of instances, and leverage the resulting globally consistent correspondences to estimate the relative 6D pose between any pair of instances. To enable systematic evaluation, we design a novel benchmark (PRENCH) built from three multi-instance BOP datasets and enriched with task-specific metadata. PROSE consistently outperforms baselines obtained by adapting state-of-the-art single-image methods to the proposed setting, while requiring neither task-specific supervision nor additional learned components. Project website: https://tev-fbk.github.io/PROSE/",
+      "authors": [
+        "Behdad Khodabandehloo",
+        "Andrea Caraffa",
+        "Davide Boscaini",
+        "Fabio Poiesi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-08T16:07:33+00:00",
+      "link": "https://arxiv.org/pdf/2609.08949v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Prior-free relative 6D pose estimation of multiple object instances using multimodal foundation features without CAD models or training",
+      "llm_evidence_cn": "无需CAD模型或训练的、基于多模态基础特征的多未知物体相对6D位姿估计",
+      "llm_evidence": "无需CAD模型或训练的、基于多模态基础特征的多未知物体相对6D位姿估计",
+      "canonical_evidence": "无需CAD模型或训练的、基于多模态基础特征的多未知物体相对6D位姿估计",
+      "llm_tldr_en": "Introduces prior-free relative 6D pose estimation, estimating relative poses of multiple instances of an unknown object in one image without CAD models or reference images, using multimodal foundation features and no training.",
+      "llm_tldr_cn": "该文针对多物体场景中相对位姿估计依赖已知目标模型或参考图像的问题，提出无任何先验的相对6D位姿估计新设定。方法PROSE利用多模态基础特征在目标实例间建立粗对应，再通过非训练方式优化精化对应，从而在单个图像中同时恢复多个未知目标实例的相对位姿。实验表明无需CAD、模板或参考图即可完成多实例相对定位。其思想可迁移至航天器与非合作目标间的相对位姿估计，避免对目标先验的依赖。",
+      "llm_tldr": "该文针对多物体场景中相对位姿估计依赖已知目标模型或参考图像的问题，提出无任何先验的相对6D位姿估计新设定。方法PROSE利用多模态基础特征在目标实例间建立粗对应，再通过非训练方式优化精化对应，从而在单个图像中同时恢复多个未知目标实例的相对位姿。实验表明无需CAD、模板或参考图即可完成多实例相对定位。其思想可迁移至航天器与非合作目标间的相对位姿估计，避免对目标先验的依赖。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.07516v1",
+      "source": "arxiv",
+      "title": "P$^2$Calib: Utilizing Pattern Priors for LiDAR-Camera Extrinsic Calibration",
+      "abstract": "Target-based LiDAR-camera extrinsic calibration is a prerequisite for multi-sensor fusion in robotics. However, in the widely adopted four-hole pipeline, calibration accuracy is bottlenecked by LiDAR-side hole-center extraction, which suffers from sparse angular coverage and mixed-pixel corruption. This paper presents P$^2$Calib, which exploits pattern priors, geometric constraints specified by the CAD model of the target board, to improve calibration accuracy. First, we incorporate the known hole radius as a fitting constraint to prevent center estimates from degrading under sparse angular coverage. Building on the improved hole estimates, we further enforce the rigid rectangular layout of the four holes as a global consistency constraint to correct residual errors across holes. Both priors are integrated into an interactive calibration tool that provides a complete extrinsic calibration pipeline. Experiments on simulated and real datasets show that P$^2$Calib lowers the joint registration residual by 90\\% and 82\\% and the held-out reprojection error by 96\\% and 77\\% over the baseline. Code, https://github.com/JokerJohn/P2Calib.git, and data will be released to facilitate future research.",
+      "authors": [
+        "Xiangcheng Hu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-07T14:01:24+00:00",
+      "link": "https://arxiv.org/pdf/2609.07516v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Pattern-prior based LiDAR-camera extrinsic calibration, a prerequisite for combining LiDAR and camera data",
+      "llm_evidence_cn": "基于模式先验的激光雷达-相机外参标定，是相机与激光雷达数据融合的前提",
+      "llm_evidence": "基于模式先验的激光雷达-相机外参标定，是相机与激光雷达数据融合的前提",
+      "canonical_evidence": "基于模式先验的激光雷达-相机外参标定，是相机与激光雷达数据融合的前提",
+      "llm_tldr_en": "Presents P2Calib, a target-based LiDAR-camera calibration method that uses pattern priors (known hole radius and rigid layout) to improve hole-center accuracy and overall extrinsic calibration under sparse LiDAR coverage.",
+      "llm_tldr_cn": "针对激光雷达-相机标定中因点云稀疏与混合像素干扰导致标定板孔心提取不准的问题，提出P^2^Calib。该方法利用CAD模型给出的孔半径先验限制拟合，并施加四孔刚性矩形布局的全局一致性约束，同时优化孔心估计与标定参数。实验表明在稀疏角度覆盖时仍能显著提升孔心精度与外参标定准确性。该方法为无人系统乃至航天场景中激光雷达与相机数据联合定位提供了可靠标定基础。",
+      "llm_tldr": "针对激光雷达-相机标定中因点云稀疏与混合像素干扰导致标定板孔心提取不准的问题，提出P^2^Calib。该方法利用CAD模型给出的孔半径先验限制拟合，并施加四孔刚性矩形布局的全局一致性约束，同时优化孔心估计与标定参数。实验表明在稀疏角度覆盖时仍能显著提升孔心精度与外参标定准确性。该方法为无人系统乃至航天场景中激光雷达与相机数据联合定位提供了可靠标定基础。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.07231v1",
+      "source": "arxiv",
+      "title": "Generalizable 6D Pose Estimation of Textureless Objects with Planar-based Gaussian Splatting",
+      "abstract": "Estimating the 6D pose of textureless objects without prior CAD models remains a critical challenge due to the lack of appearance features. While recent generalizable approaches alleviate the dependence on object-specific models, their performance on low-texture objects is often limited by insufficient geometric constraints in the underlying representations. In this work, we propose PG-Pose, a geometry-aware framework combining Planar-based Gaussian Splatting (PGS) reconstruction and Geometry-driven pose optimization. In the offline representation extraction stage, three distinct representations of the object are extracted from multi-view reference RGB images with known poses. PG-Pose reconstructs a 3D Gaussian representation and renders high-fidelity depth maps to generate 3D point clouds through back projection. In the online pose inference stage, the initial pose of the input image is estimated by 2D-3D correspondence matching between the input image and the reconstructed 3D point clouds, followed by a PGS-Refiner for iterative pose optimization. Evaluations on the OnePose-LowTexture datasets, PG-Pose achieves an average accuracy of 94.2% ADD(S)@0.1d, with a 2.1% improvement average accuracy compared with the state-of-the-art (SOTA) GS-based approach. To further demonstrate the effectiveness of PG-Pose for industrial robots in grasping tasks, we deploy it on a dual-arm industrial robot and successfully realize the grasping task on an unseen object.",
+      "authors": [
+        "Jie Lu",
+        "Hengtan Zhang",
+        "Li Gong",
+        "Pengpeng Wang",
+        "Xianjia Yu",
+        "Jinxiang Deng",
+        "Tomi Westerlund",
+        "Zhongxue Gan",
+        "Lirong Zheng",
+        "Zhuo Zou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-07T08:49:10+00:00",
+      "link": "https://arxiv.org/pdf/2609.07231v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Generalizable 6D pose estimation of textureless objects from multi-view RGB images; strong transferable method for monocular uncooperative spacecraft pose estimation",
+      "llm_evidence_cn": "面向无纹理物体的多视角RGB图像6D位姿估计，可迁移至单目非合作航天器位姿估计",
+      "llm_evidence": "面向无纹理物体的多视角RGB图像6D位姿估计，可迁移至单目非合作航天器位姿估计",
+      "canonical_evidence": "面向无纹理物体的多视角RGB图像6D位姿估计，可迁移至单目非合作航天器位姿估计",
+      "llm_tldr_en": "Proposes PG-Pose for generalizable 6D pose estimation of textureless objects without CAD models by combining planar-based Gaussian splatting reconstruction with geometry-driven pose optimization, improving geometric constraints in low-texture scenes.",
+      "llm_tldr_cn": "无纹理物体6D位姿估计因缺少外观特征而困难，且现有方法往往依赖CAD模型。作者提出PG-Pose框架，结合平面式高斯溅射重建和几何驱动的位姿优化，从已知位姿的多视角RGB图像中离线提取多种表示。实验表明该方法在不使用物体专属模型的情况下有效提高了无纹理物体的位姿估计精度。这为基于单目图像的非合作航天器位姿估计提供了可迁移的技术方案。",
+      "llm_tldr": "无纹理物体6D位姿估计因缺少外观特征而困难，且现有方法往往依赖CAD模型。作者提出PG-Pose框架，结合平面式高斯溅射重建和几何驱动的位姿优化，从已知位姿的多视角RGB图像中离线提取多种表示。实验表明该方法在不使用物体专属模型的情况下有效提高了无纹理物体的位姿估计精度。这为基于单目图像的非合作航天器位姿估计提供了可迁移的技术方案。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.03067v1",
+      "source": "arxiv",
+      "title": "GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations",
+      "abstract": "World models are an emerging paradigm in representation learning in which an agent jointly learns state-action dynamics and observation models from offline trajectory data, enabling multi-step planning and trajectory prediction with uncertainty estimates. They have shown strong results in robotics and game environments, but, to the best of our knowledge, have not previously been applied to the space domain. This paper introduces a world model-based approach to cooperative and non-cooperative spacecraft rendezvous and proximity operations. First, we introduce an open-source, JAX-based International Space Station (ISS) docking environment supporting parallel GPU simulation of spacecraft orbit and attitude dynamics, generating the thousands of state-action transitions that world model training requires. Second, we introduce Out-of-this-World-Model, a transformer-based world model that encodes relative kinematic states and body-fixed camera imagery into a latent state and predicts its evolution under commanded thrusts and torques using one-step flow matching. It produces a distribution over future observations, capturing stochastic dynamics and per-timestep uncertainty, and outperforms DreamerV3-style posterior-correction baselines with fewer trainable parameters and hyperparameters. Third, we apply the approach to a capsule autonomously docking with the ISS under keep-out-zone constraints, demonstrating improved sample efficiency and task performance over reinforcement learning baselines (53% versus 29% docking success across ports), better out-of-distribution generalization (on held-out ports the world model more than doubles baseline success, 40% versus 17%), and detection of anomalous objects encountered during approach with 98% classification accuracy. We open-source the simulation environment and model architecture to enable further study of this paradigm.",
+      "authors": [
+        "Duncan Eddy",
+        "Isaac R. Ward",
+        "Grace Ra Kim",
+        "Mykel J. Kochenderfer"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-09-02T18:39:40+00:00",
+      "link": "https://arxiv.org/pdf/2609.03067v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Spacecraft rendezvous and proximity world models simulate orbit and attitude dynamics, providing a context and simulator resource relevant to the combined spacecraft pose theme, without presenting a pose estimator.",
+      "llm_evidence_cn": "面向航天器交会与抵近操作建立世界模型与GPU仿真，生成轨道和姿态动态数据，可为航天器位姿相关研究提供验证平台，但不包括位姿估计算法本身。",
+      "llm_evidence": "面向航天器交会与抵近操作建立世界模型与GPU仿真，生成轨道和姿态动态数据，可为航天器位姿相关研究提供验证平台，但不包括位姿估计算法本身。",
+      "canonical_evidence": "面向航天器交会与抵近操作建立世界模型与GPU仿真，生成轨道和姿态动态数据，可为航天器位姿相关研究提供验证平台，但不包括位姿估计算法本身。",
+      "llm_tldr_en": "Applies world models to spacecraft rendezvous and proximity operations, providing an open-source JAX-based GPU ISS docking simulation of orbit and attitude dynamics for trajectory prediction and planning.",
+      "llm_tldr_cn": "针对世界模型此前未应用于空间领域的问题，论文提出一种面向合作与非合作航天器交会抵近操作的世界模型方法。作者首先开源基于JAX的ISS对接环境，用GPU并行仿真航天器轨道与姿态动力学并生成轨迹数据，随后学习状态-行动动力学与观测模型，以支持多步规划、轨迹预测和不确定性估计。该工作在空间领域验证了世界模型的可行性，为后续相对位姿估计、感知与控制算法的验证提供了可扩展的仿真基础。",
+      "llm_tldr": "针对世界模型此前未应用于空间领域的问题，论文提出一种面向合作与非合作航天器交会抵近操作的世界模型方法。作者首先开源基于JAX的ISS对接环境，用GPU并行仿真航天器轨道与姿态动力学并生成轨迹数据，随后学习状态-行动动力学与观测模型，以支持多步规划、轨迹预测和不确定性估计。该工作在空间领域验证了世界模型的可行性，为后续相对位姿估计、感知与控制算法的验证提供了可扩展的仿真基础。",
+      "llm_tags": [
+        "query:pe:composite"
+      ],
+      "matched_query_tag": "query:pe:composite",
+      "matched_query_text": "Papers central to 航天器位姿估计, especially work that connects or combines: methods for determining the position and orientation of a spacecraft relative to a target; estimation of spacecraft orientation from sensor measurements; determination of relative position and orientation between two spacecraft or a spacecraft and target; pose estimation using a single camera image for space applications; datasets used for training and evaluating spacecraft pose estimation algorithms; How to perform spacecraft pose estimation from monocular imagery?; What methods are used for robust pose estimation of uncooperative spacecraft?; How to combine lidar and camera data for spacecraft relative pose estimation?; How to evaluate deep learning based spacecraft pose estimation accuracy?.",
+      "matched_requirement_id": "req-composite-pe",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.05523v1",
+      "source": "arxiv",
+      "title": "Infrastructure-based Monocular 3D Vehicle Localization Framework with Experimental Validation",
+      "abstract": "This paper presents a one-stage learning framework that maps monocular roadside-camera images directly to vehicle states in a ground-fixed coordinate frame. Unlike conventional approaches that first detect vehicles in the image plane and subsequently apply geometric post-processing, the proposed method leverages features from a pretrained object detector to jointly estimate each vehicle's ground-plane position, dimensions, and yaw angle. The framework therefore uses visual features not only for vehicle detection but also for direct spatial and orientation estimation. To support model training and evaluation, we develop a data-collection and label-generation pipeline based on synchronized video from a roadside camera and an unmanned aerial vehicle (UAV). Acting as a temporary top-view sensing platform, the UAV provides vehicle trajectories, dimensions, and orientations, which are transformed into the ground-fixed coordinate frame and temporally aligned with the roadside-camera images to generate ground-truth labels. The framework is evaluated using data collected during multiple experiments at the Mcity Test Facility. Results show that the proposed method can recover vehicle trajectories and orientations from monocular roadside imagery without a separate geometric post-processing stage, demonstrating its potential as a scalable approach to infrastructure-based perception at urban intersections.",
+      "authors": [
+        "Akos T. Kopeczi-Bocz",
+        "Tian Mi",
+        "Gabor Orosz",
+        "Denes Takacs"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG",
+        "eess.IV"
+      ],
+      "published": "2026-09-01T09:21:14+00:00",
+      "link": "https://arxiv.org/pdf/2609.05523v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Monocular 3D vehicle localization from a single roadside camera jointly estimating ground-plane position, dimensions and yaw angle",
+      "llm_evidence_cn": "利用单个路侧相机图像联合估计车辆地面位置、尺寸与偏航角的单目三维定位方法",
+      "llm_evidence": "利用单个路侧相机图像联合估计车辆地面位置、尺寸与偏航角的单目三维定位方法",
+      "canonical_evidence": "利用单个路侧相机图像联合估计车辆地面位置、尺寸与偏航角的单目三维定位方法",
+      "llm_tldr_en": "Presents a one-stage learning framework mapping monocular roadside camera images directly to vehicle ground-plane position, dimensions, and yaw angle, bypassing separate detection and geometry post-processing.",
+      "llm_tldr_cn": "现有单目车辆定位多采用两步法，检测后再用几何后处理，效率与精度受限。本文提出端到端单阶段框架，直接利用检测器骨干特征回归车辆的地面位置、尺寸和偏航角。通过同步视频与无人机标定数据生成标签进行训练评估。结果表明无需额外几何优化即可直接输出车辆三维状态。该方案对空间任务中利用单目相机估计非合作目标的状态具有方法借鉴价值。",
+      "llm_tldr": "现有单目车辆定位多采用两步法，检测后再用几何后处理，效率与精度受限。本文提出端到端单阶段框架，直接利用检测器骨干特征回归车辆的地面位置、尺寸和偏航角。通过同步视频与无人机标定数据生成标签进行训练评估。结果表明无需额外几何优化即可直接输出车辆三维状态。该方案对空间任务中利用单目相机估计非合作目标的状态具有方法借鉴价值。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.06343v1",
+      "source": "arxiv",
+      "title": "Radiation, Rotation and Scale Invariant Feature Descriptor for Multimodal Image Matching",
+      "abstract": "Multimodal image matching is a fundamental task for multi-source information fusion. However, geometric distortions and nonlinear radiometric differences (NRD) severely limit performance, especially under radiometric, rotation, and scale variations. To address this issue, we propose a radiation, rotation, and scale invariant (RRSI) feature descriptor. First, a dual-head regional sampling (DHRS) module simultaneously performs Cartesian and Log-Polar sampling on keypoint neighborhoods, retaining spatial structural properties while enhancing robustness to rotation and scale variations. We then jointly encode geometric and radiometric relations between multimodal images in a unified deep feature space, enabling feature encoding, interaction, and fusion across intra-modal, dual-head sampled, and inter-modal regions. Furthermore, we introduce a bidirectional cross-modal generative reconstruction constraint during training. By decoding implicit features into structural patches of the counterpart modality, this mechanism anchors modality-invariant geometric topologies without additional inference overhead. Experiments on optical-infrared and optical-SAR datasets demonstrate highly competitive matching performance and strong robustness to rotation and scale variations. RRSI supports the full rotation range from 0 to 360 degrees and scale factors up to four. Its generalization ability is further validated on multimodal images from computer vision, remote sensing, and medical imaging. The implementation will be made publicly available at https://github.com/yeyuanxin110/RRSI .",
+      "authors": [
+        "Yuanxin Ye",
+        "Tengfeng Tang",
+        "Tao Peng",
+        "Zhiqiang Han",
+        "Jiayuan Li",
+        "Mi Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-06T02:32:03+00:00",
+      "link": "https://arxiv.org/pdf/2609.06343v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Radiation, rotation, and scale invariant feature descriptor for multimodal image matching, applicable to multi-sensor fusion",
+      "llm_evidence_cn": "适用于多传感器融合的多模态图像匹配的辐射、旋转与尺度不变特征描述符",
+      "llm_evidence": "适用于多传感器融合的多模态图像匹配的辐射、旋转与尺度不变特征描述符",
+      "canonical_evidence": "适用于多传感器融合的多模态图像匹配的辐射、旋转与尺度不变特征描述符",
+      "llm_tldr_en": "Proposes RRSI, a radiation, rotation and scale invariant feature descriptor that uses dual-head regional sampling with Cartesian and log-polar neighborhoods and joint geometric-radiometric coding for robust multimodal matching.",
+      "llm_tldr_cn": "多模态图像匹配因辐射差异与旋转缩放失真而性能下降。该文提出RRSI描述符，通过双头区域采样同时刻画笛卡尔和极坐标邻域，并在统一深度特征空间中联合编码几何与辐射关系。实验显示与现有方法相比，在辐射、旋转和尺度变化下匹配性能显著提升。该描述符可为融合不同光学传感数据（如相机-激光/多光谱）的航天器位姿估计提供稳健的图像匹配基础。",
+      "llm_tldr": "多模态图像匹配因辐射差异与旋转缩放失真而性能下降。该文提出RRSI描述符，通过双头区域采样同时刻画笛卡尔和极坐标邻域，并在统一深度特征空间中联合编码几何与辐射关系。实验显示与现有方法相比，在辐射、旋转和尺度变化下匹配性能显著提升。该描述符可为融合不同光学传感数据（如相机-激光/多光谱）的航天器位姿估计提供稳健的图像匹配基础。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.09005v1",
+      "source": "arxiv",
+      "title": "DXPR: Depth-Based Vision-LiDAR Cross-Modal Place Recognition Using Vision Foundation Models",
+      "abstract": "We present DXPR, a depth-based cross-modal place recognition (CMPR) framework that uses vision foundation models (VFMs) to match monocular camera queries against a LiDAR map without modality-specific encoders. This enables robots and autonomous vehicles to robustly localize using only cameras within pre-built LiDAR maps, even under severe seasonal, weather, and illumination changes. The key idea is to convert both camera images and LiDAR scans into a unified depth image representation so that a single VFM backbone with an aggregation head can learn modality-invariant global descriptors. To make pairwise metric learning faithful to scene geometry, we introduce a geometry-aware overlap miner: after cross-modal scale alignment of camera and LiDAR depth, we forward-warp measurements between views to compute a pixel-level overlap score. This score relabels ambiguous pairs and adaptively modulates the positive margin in a multi-similarity loss to avoid overfitting on weakly overlapping views. Extensive experiments on KITTI odometry and Boreas demonstrate strong performance and robustness across seasons, weather, and day/night. On KITTI, DXPR achieves near-perfect Recall@1 on most sequences and outperforms prior CMPR baselines. On Boreas, DXPR achieves intra-sequence performance on par with a strong single-modal baseline (DINOv2-SALAD), while showing clear improvements in the more challenging inter-sequence setting. Compared with RangeBEV, our method consistently performs better in both intra- and inter-sequence evaluations, demonstrating robustness under diverse seasonal and illumination changes.",
+      "authors": [
+        "Yungsoo Han",
+        "Youngseok Jang",
+        "Seungwon Roh",
+        "Jeongyeon Seo",
+        "H. Jin Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-08T16:42:47+00:00",
+      "link": "https://arxiv.org/pdf/2609.09005v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "vision-foundation-model depth-based cross-modal camera-to-LiDAR place recognition, monocular camera query vs pre-built LiDAR map",
+      "llm_evidence_cn": "以深度图统一单目相机与LiDAR表示，实现跨模态匹配，可迁移到相机-LiDAR空间相对位姿估计",
+      "llm_evidence": "以深度图统一单目相机与LiDAR表示，实现跨模态匹配，可迁移到相机-LiDAR空间相对位姿估计",
+      "canonical_evidence": "以深度图统一单目相机与LiDAR表示，实现跨模态匹配，可迁移到相机-LiDAR空间相对位姿估计",
+      "llm_tldr_en": "DXPR converts camera images and LiDAR scans into depth images and uses a single vision foundation model plus geometry-aware overlap mining to learn modality-invariant descriptors for robust cross-modal place recognition.",
+      "llm_tldr_cn": "现有跨模态位置识别需要模态专用编码器，难以应对季节天气光照变化；DXPR将单目相机图像和LiDAR扫描统一转换为深度图像，并用同一个视觉基础模型与聚合头生成模态无关全局描述子，同时引入几何感知重叠挖掘进行度量学习。在不同跨模态定位任务上展示了只凭相机在LiDAR地图中定位的鲁棒性，可用于相机与LiDAR相对位姿估计的初始化或匹配。",
+      "llm_tldr": "现有跨模态位置识别需要模态专用编码器，难以应对季节天气光照变化；DXPR将单目相机图像和LiDAR扫描统一转换为深度图像，并用同一个视觉基础模型与聚合头生成模态无关全局描述子，同时引入几何感知重叠挖掘进行度量学习。在不同跨模态定位任务上展示了只凭相机在LiDAR地图中定位的鲁棒性，可用于相机与LiDAR相对位姿估计的初始化或匹配。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
