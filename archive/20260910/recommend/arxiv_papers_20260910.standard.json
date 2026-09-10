@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-10T21:16:33.638096+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.03067v1",
+      "source": "arxiv",
+      "title": "GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations",
+      "abstract": "World models are an emerging paradigm in representation learning in which an agent jointly learns state-action dynamics and observation models from offline trajectory data, enabling multi-step planning and trajectory prediction with uncertainty estimates. They have shown strong results in robotics and game environments, but, to the best of our knowledge, have not previously been applied to the space domain. This paper introduces a world model-based approach to cooperative and non-cooperative spacecraft rendezvous and proximity operations. First, we introduce an open-source, JAX-based International Space Station (ISS) docking environment supporting parallel GPU simulation of spacecraft orbit and attitude dynamics, generating the thousands of state-action transitions that world model training requires. Second, we introduce Out-of-this-World-Model, a transformer-based world model that encodes relative kinematic states and body-fixed camera imagery into a latent state and predicts its evolution under commanded thrusts and torques using one-step flow matching. It produces a distribution over future observations, capturing stochastic dynamics and per-timestep uncertainty, and outperforms DreamerV3-style posterior-correction baselines with fewer trainable parameters and hyperparameters. Third, we apply the approach to a capsule autonomously docking with the ISS under keep-out-zone constraints, demonstrating improved sample efficiency and task performance over reinforcement learning baselines (53% versus 29% docking success across ports), better out-of-distribution generalization (on held-out ports the world model more than doubles baseline success, 40% versus 17%), and detection of anomalous objects encountered during approach with 98% classification accuracy. We open-source the simulation environment and model architecture to enable further study of this paradigm.",
+      "authors": [
+        "Duncan Eddy",
+        "Isaac R. Ward",
+        "Grace Ra Kim",
+        "Mykel J. Kochenderfer"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-09-02T18:39:40+00:00",
+      "link": "https://arxiv.org/pdf/2609.03067v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "world model for cooperative and non-cooperative spacecraft rendezvous and proximity operations with orbit and attitude dynamics",
+      "llm_evidence_cn": "面向合作与非合作航天器交会接近操作的世界模型",
+      "llm_evidence": "面向合作与非合作航天器交会接近操作的世界模型",
+      "canonical_evidence": "面向合作与非合作航天器交会接近操作的世界模型",
+      "llm_tldr_en": "The paper introduces world-model-based learning for cooperative and non-cooperative spacecraft rendezvous and proximity operations, plus an open-source JAX ISS docking environment with parallel GPU orbit and attitude simulation.",
+      "llm_tldr_cn": "针对航天器交会与接近操作中状态预测与规划难题，本文将世界模型引入空间领域，联合学习状态动作动力学与观测模型以支持多步规划与带不确定性的轨迹预测。作者构建了开源JAX国际空间站对接环境，可在GPU上并行仿真轨道与姿态动力学并生成轨迹数据。实验覆盖合作与非合作交会接近场景，验证了模型在状态估计与规划上的能力。该工作为航天器相对运动建模与接近操作提供了可复用框架。",
+      "llm_tldr": "针对航天器交会与接近操作中状态预测与规划难题，本文将世界模型引入空间领域，联合学习状态动作动力学与观测模型以支持多步规划与带不确定性的轨迹预测。作者构建了开源JAX国际空间站对接环境，可在GPU上并行仿真轨道与姿态动力学并生成轨迹数据。实验覆盖合作与非合作交会接近场景，验证了模型在状态估计与规划上的能力。该工作为航天器相对运动建模与接近操作提供了可复用框架。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

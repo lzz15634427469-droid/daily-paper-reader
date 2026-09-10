@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-10",
+  "date": "2026-09-10",
+  "generated_at": "2026-09-10T21:16:56",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/10/2609.03067v1-gpu-accelerated-astrodynamics-world-models-for-spacecraft-rendezvous-and-proximity-operations",
+      "section": "quick",
+      "title_en": "GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations",
+      "authors": "Duncan Eddy, Isaac R. Ward, Grace Ra Kim, Mykel J. Kochenderfer",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.03067v1",
+      "score": "6.0",
+      "evidence": "面向合作与非合作航天器交会接近操作的世界模型",
+      "tldr": "世界模型在机器人/游戏已展现规划能力，但未用于空间交会接近。本文提出JAX/GPU并行的ISS对接环境，并构建Transformer世界模型Out-of-this-World-Model，用一步流匹配预测潜在状态演化。在禁飞区自主对接中成功率达53%（基线29%），未见端口泛化40%（基线17%），异常检测准确率98%。作者开源环境与模型，推动航天世界模型研究。",
+      "tags": "query:pe",
+      "abstract_en": "World models are an emerging paradigm in representation learning in which an agent jointly learns state-action dynamics and observation models from offline trajectory data, enabling multi-step planning and trajectory prediction with uncertainty estimates. They have shown strong results in robotics and game environments, but, to the best of our knowledge, have not previously been applied to the space domain. This paper introduces a world model-based approach to cooperative and non-cooperative spacecraft rendezvous and proximity operations. First, we introduce an open-source, JAX-based International Space Station (ISS) docking environment supporting parallel GPU simulation of spacecraft orbit and attitude dynamics, generating the thousands of state-action transitions that world model training requires. Second, we introduce Out-of-this-World-Model, a transformer-based world model that encodes relative kinematic states and body-fixed camera imagery into a latent state and predicts its evolution under commanded thrusts and torques using one-step flow matching. It produces a distribution over future observations, capturing stochastic dynamics and per-timestep uncertainty, and outperforms DreamerV3-style posterior-correction baselines with fewer trainable parameters and hyperparameters. Third, we apply the approach to a capsule autonomously docking with the ISS under keep-out-zone constraints, demonstrating improved sample efficiency and task performance over reinforcement learning baselines (53% versus 29% docking success across ports), better out-of-distribution generalization (on held-out ports the world model more than doubles baseline success, 40% versus 17%), and detection of anomalous objects encountered during approach with 98% classification accuracy. We open-source the simulation environment and model architecture to enable further study of this paradigm.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

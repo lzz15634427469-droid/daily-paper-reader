@@ -48,17 +48,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-09-09</span>
+      <span class="dpr-home-dashboard-kicker">2026-09-10</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 8 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 1 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>3</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>5</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>0</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>1</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-09-09 22:01:36 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-09-10 21:16:55 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,9 +69,7 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日精读聚焦零样本6DoF姿态估计与多实例相对位姿，速读覆盖无纹理物体及车辆定位等方向。</p>
-<p>最值得关注2篇高分工作：基于密集局部特征的零样本6DoF位姿估计（9.0），以及无先验的多实例相对6D位姿估计（9.0）。</p>
-<p>建议普通读者优先把握两篇9.0分方法的特征匹配与多实例适应能力，再延伸至纹理less/泛化场景。</p>
+<p>今日仅速读1篇，聚焦GPU加速航天动力学世界模型用于航天器交会与近距操作。该方向值得关注的是用GPU加速提升空间交会与近距操作中动力学建模的效率。普通读者可留意这类&quot;世界模型+GPU加速&quot;思路在航天任务中的后续验证进展。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -80,12 +78,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">精读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">3 篇</strong>
+    <strong class="dpr-home-dashboard-count">0 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Back to the Feature: Zero-Shot 6DoF Pose Estimation via Dense Local Features">Back to the Feature: Zero-Shot 6DoF Pose Estimation via Dense Local Features</span></li><li><span class="dpr-home-dashboard-paper-title" title="Prior-free relative 6D pose estimation of multiple object instances">Prior-free relative 6D pose estimation of multiple object instances</span></li><li><span class="dpr-home-dashboard-paper-title" title="P$^2$Calib: Utilizing Pattern Priors for LiDAR-Camera Extrinsic Calibration">P$^2$Calib: Utilizing Pattern Priors for LiDAR-Camera Extrinsic Calibration</span></li></ul>
+<p class="dpr-home-dashboard-empty">今日暂无推荐。</p>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>3</strong></span></div>
+
 </section>
 <section class="dpr-home-dashboard-card dpr-home-skim-card">
   <div class="dpr-home-dashboard-header">
@@ -93,12 +91,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">5 篇</strong>
+    <strong class="dpr-home-dashboard-count">1 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Generalizable 6D Pose Estimation of Textureless Objects with Planar-based Gaussian Splatting">Generalizable 6D Pose Estimation of Textureless Objects with Planar-based Gaussian Splatting</span></li><li><span class="dpr-home-dashboard-paper-title" title="GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations">GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations</span></li><li><span class="dpr-home-dashboard-paper-title" title="Infrastructure-based Monocular 3D Vehicle Localization Framework with Experimental Validation">Infrastructure-based Monocular 3D Vehicle Localization Framework with Experimental Validation</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations">GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>5</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>1</strong></span></div>
 </section>
 </div>
 

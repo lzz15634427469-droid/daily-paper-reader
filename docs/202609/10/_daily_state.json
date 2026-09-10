@@ -1,0 +1,25 @@
+{
+  "date": "20260910",
+  "date_label": "",
+  "generated_at": "2026-09-10 21:16:55 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.03067v1",
+      "route": "202609/10/2609.03067v1-gpu-accelerated-astrodynamics-world-models-for-spacecraft-rendezvous-and-proximity-operations",
+      "title": "GPU-Accelerated Astrodynamics World Models for Spacecraft Rendezvous and Proximity Operations",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向合作与非合作航天器交会接近操作的世界模型",
+      "first_seen_at": "2026-09-10 21:16:55 UTC",
+      "updated_at": "2026-09-10 21:16:55 UTC"
+    }
+  ]
+}
