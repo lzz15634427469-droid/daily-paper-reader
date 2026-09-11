@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-11T21:29:54.365168+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.11821v1",
+      "source": "arxiv",
+      "title": "Acoustic-based Guidance for Automatic Docking of Holonomic AUVs",
+      "abstract": "This paper describes a system to automatically dock an AUV onto a docking station without precise knowledge of the position and orientation of the latter, in the presence of unknown ocean currents, using a fully acoustic sensing architecture. The system relies on a pair of Ultrashort Baseline sensors, one onboard the vehicle and one installed on a seabed-resident docking station, enabling operation in low-visibility environments where cameras are ineffective. Relative orientation is estimated by a nonlinear complementary filter on $SO(3)$, while an Extended Kalman Filter provides relative position, supplying pose estimates to a geometric controller on $SE(3)$ that executes the docking manoeuvre. The complete system is implemented in a dedicated software suite and validated in simulation and water trials.",
+      "authors": [
+        "Ravi Regalo",
+        "David Cabecinhas",
+        "António Pascoal"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-10T17:17:21+00:00",
+      "link": "https://arxiv.org/pdf/2609.11821v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "relative position and orientation estimation between vehicle and docking station",
+      "llm_evidence_cn": "载具与对接站之间的相对位置和姿态估计",
+      "llm_evidence": "载具与对接站之间的相对位置和姿态估计",
+      "canonical_evidence": "载具与对接站之间的相对位置和姿态估计",
+      "llm_tldr_en": "This paper presents an acoustic guidance system that docks an AUV onto a station of unknown pose, estimating relative orientation on SO(3) and relative position via EKF for SE(3) control.",
+      "llm_tldr_cn": "在低能见度水下环境中相机失效且对接站位姿未知，自动对接十分困难。本文提出全声学制导系统，利用一对超短基线传感器，用SO(3)上的非线性互补滤波器估计相对姿态，用扩展卡尔曼滤波估计相对位置，并驱动SE(3)几何控制器完成对接。系统在未知洋流下实现了可靠对接。该工作为相对位姿估计与目标接近控制提供了完整范例。",
+      "llm_tldr": "在低能见度水下环境中相机失效且对接站位姿未知，自动对接十分困难。本文提出全声学制导系统，利用一对超短基线传感器，用SO(3)上的非线性互补滤波器估计相对姿态，用扩展卡尔曼滤波估计相对位置，并驱动SE(3)几何控制器完成对接。系统在未知洋流下实现了可靠对接。该工作为相对位姿估计与目标接近控制提供了完整范例。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

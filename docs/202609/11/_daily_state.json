@@ -1,0 +1,25 @@
+{
+  "date": "20260911",
+  "date_label": "",
+  "generated_at": "2026-09-11 21:30:30 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.11821v1",
+      "route": "202609/11/2609.11821v1-acoustic-based-guidance-for-automatic-docking-of-holonomic-auvs",
+      "title": "Acoustic-based Guidance for Automatic Docking of Holonomic AUVs",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "载具与对接站之间的相对位置和姿态估计",
+      "first_seen_at": "2026-09-11 21:30:30 UTC",
+      "updated_at": "2026-09-11 21:30:30 UTC"
+    }
+  ]
+}

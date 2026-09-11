@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-11",
+  "date": "2026-09-11",
+  "generated_at": "2026-09-11T21:30:32",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/11/2609.11821v1-acoustic-based-guidance-for-automatic-docking-of-holonomic-auvs",
+      "section": "quick",
+      "title_en": "Acoustic-based Guidance for Automatic Docking of Holonomic AUVs",
+      "authors": "Ravi Regalo, David Cabecinhas, António Pascoal",
+      "date": "2026-09-10",
+      "pdf": "https://arxiv.org/pdf/2609.11821v1",
+      "score": "7.0",
+      "evidence": "载具与对接站之间的相对位置和姿态估计",
+      "tldr": "面向全驱动AUV在未知海流、且对接站位置姿态不精确已知条件下的自动对接难题，提出全声学传感架构。在AUV与海底对接站各装一台超短基线USBL，通过SO(3)非线性互补滤波估计相对姿态，EKF估计相对位置，并为SE(3)几何控制器提供位姿。系统在专用软件套件实现，经仿真和水试验证，可在低能见度环境中完成对接。",
+      "tags": "query:pe",
+      "abstract_en": "This paper describes a system to automatically dock an AUV onto a docking station without precise knowledge of the position and orientation of the latter, in the presence of unknown ocean currents, using a fully acoustic sensing architecture. The system relies on a pair of Ultrashort Baseline sensors, one onboard the vehicle and one installed on a seabed-resident docking station, enabling operation in low-visibility environments where cameras are ineffective. Relative orientation is estimated by a nonlinear complementary filter on $SO(3)$, while an Extended Kalman Filter provides relative position, supplying pose estimates to a geometric controller on $SE(3)$ that executes the docking manoeuvre. The complete system is implemented in a dedicated software suite and validated in simulation and water trials.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
