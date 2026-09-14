@@ -1,0 +1,41 @@
+{
+  "date": "20260914",
+  "date_label": "",
+  "generated_at": "2026-09-14 22:53:21 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.13094v1",
+      "route": "202609/14/2609.13094v1-an-equivariant-filter-for-spacecraft-nonlinear-relative-navigation-with-range-and-bearing-measurements",
+      "title": "An Equivariant Filter for Spacecraft Nonlinear Relative Navigation with Range and Bearing Measurements",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "估计追踪航天器与目标航天器间的相对位置与速度",
+      "first_seen_at": "2026-09-14 22:53:21 UTC",
+      "updated_at": "2026-09-14 22:53:21 UTC"
+    },
+    {
+      "paper_id": "2609.12557v1",
+      "route": "202609/14/2609.12557v1-drs-vpt-directly-relocalizing-in-a-scan-with-vision-point-transformers",
+      "title": "DRS-VPT: Directly Relocalizing in a Scan with Vision Point Transformers",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "图像到点云配准并预测扫描与相机位姿",
+      "first_seen_at": "2026-09-14 22:53:21 UTC",
+      "updated_at": "2026-09-14 22:53:21 UTC"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-14T22:50:38.420353+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2609.13094v1",
+      "source": "arxiv",
+      "title": "An Equivariant Filter for Spacecraft Nonlinear Relative Navigation with Range and Bearing Measurements",
+      "abstract": "Relative navigation is a fundamental task in space proximity operations and autonomous rendezvous. The nonlinear relative orbital dynamics are equivariant and admit a semidirect product Lie group symmetry. This property is used to design an Equivariant Filter (EqF). The filter estimates the relative position and velocity between a chaser spacecraft and a target by lifting the filter dynamics to the group, while respecting the underlying geometry of the problem. Simulations demonstrate the filter's performance and effectiveness.",
+      "authors": [
+        "Gil Serrano",
+        "Bruno J. Guerreiro",
+        "Pedro Lourenço",
+        "Rita Cunha"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-11T17:29:09+00:00",
+      "link": "https://arxiv.org/pdf/2609.13094v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "estimates relative position and velocity between chaser and target spacecraft",
+      "llm_evidence_cn": "估计追踪航天器与目标航天器间的相对位置与速度",
+      "llm_evidence": "估计追踪航天器与目标航天器间的相对位置与速度",
+      "canonical_evidence": "估计追踪航天器与目标航天器间的相对位置与速度",
+      "llm_tldr_en": "An equivariant filter is designed for spacecraft relative navigation, exploiting semidirect product Lie group symmetry of relative orbital dynamics to estimate chaser-target relative position and velocity from range and bearing measurements, with simulations validating performance.",
+      "llm_tldr_cn": "空间近距操作与自主交会中，追踪航天器对目标航天器的相对位置估计至关重要，但非线性相对轨道动力学使传统滤波方法精度受限。该文发现相对轨道动力学具有半直积李群对称性，据此设计了等变滤波器（EqF），将滤波动力学提升到群上以保持问题几何结构，并利用距离与方位测量估计相对位置与速度。仿真结果验证了滤波器在非线性相对导航中的性能与有效性。该工作为空间接近操作中的相对导航提供了一种几何一致、精度更高的估计框架。",
+      "llm_tldr": "空间近距操作与自主交会中，追踪航天器对目标航天器的相对位置估计至关重要，但非线性相对轨道动力学使传统滤波方法精度受限。该文发现相对轨道动力学具有半直积李群对称性，据此设计了等变滤波器（EqF），将滤波动力学提升到群上以保持问题几何结构，并利用距离与方位测量估计相对位置与速度。仿真结果验证了滤波器在非线性相对导航中的性能与有效性。该工作为空间接近操作中的相对导航提供了一种几何一致、精度更高的估计框架。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.12557v1",
+      "source": "arxiv",
+      "title": "DRS-VPT: Directly Relocalizing in a Scan with Vision Point Transformers",
+      "abstract": "We present DRS-VPT, a feed-forward transformer architecture for foundational image-to-scan registration. Given query images and a reference 3D point cloud, the model predicts the scan pose and point map alongside the poses and point maps of each camera, all expressed in the first camera's frame. It additionally predicts a coarse-to- fine pyramid of per-point and per-pixel features for direct reprojective alignment of the scan to the first image. This formulation unifies downstream tasks such as camera-LiDAR calibration in autonomous driving and indoor camera-to-map relocalization. A single DRS-VPT model achieves state-of-the-art performance for image-to-LiDAR registration in autonomous driving, competitive indoor relocalization without training map-specific weights, and strong zero-shot transfer to unseen environments. We also show qualitatively that the model learns complex scan-to-image projection properties such as occlusion of back-facing points.",
+      "authors": [
+        "Lanke Frank Tarimo Fu",
+        "Maurice Fallon"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO"
+      ],
+      "published": "2026-09-11T08:02:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.12557v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "image-to-scan registration predicting scan and camera poses",
+      "llm_evidence_cn": "图像到点云配准并预测扫描与相机位姿",
+      "llm_evidence": "图像到点云配准并预测扫描与相机位姿",
+      "canonical_evidence": "图像到点云配准并预测扫描与相机位姿",
+      "llm_tldr_en": "DRS-VPT is a feed-forward transformer that registers query images to a reference point cloud, predicting scan pose and camera poses in the first camera frame, unifying camera-LiDAR calibration and relocalization. It offers a transferable method for camera-LiDAR relative pose.",
+      "llm_tldr_cn": "针对图像与三维点云之间基础配准的难题，本文提出DRS-VPT前馈Transformer架构，给定查询图像与参考点云，直接预测扫描位姿、点图以及各相机位姿，均表达于首相机坐标系，并输出由粗到细的逐点逐像素特征用于重投影对齐。单一模型在自动驾驶图像-LiDAR配准上达到最优，并在室内重定位中具竞争力。该方法统一了相机-LiDAR标定与重定位，为融合相机与LiDAR的相对位姿估计提供了可迁移思路，但未涉及航天器场景。",
+      "llm_tldr": "针对图像与三维点云之间基础配准的难题，本文提出DRS-VPT前馈Transformer架构，给定查询图像与参考点云，直接预测扫描位姿、点图以及各相机位姿，均表达于首相机坐标系，并输出由粗到细的逐点逐像素特征用于重投影对齐。单一模型在自动驾驶图像-LiDAR配准上达到最优，并在室内重定位中具竞争力。该方法统一了相机-LiDAR标定与重定位，为融合相机与LiDAR的相对位姿估计提供了可迁移思路，但未涉及航天器场景。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

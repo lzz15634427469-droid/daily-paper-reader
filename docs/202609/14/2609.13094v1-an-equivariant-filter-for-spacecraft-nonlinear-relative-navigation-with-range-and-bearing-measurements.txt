@@ -1,0 +1,880 @@
+Title: An Equivariant Filter for Spacecraft Nonlinear Relative Navigation with Range and Bearing Measurements
+
+URL Source: https://arxiv.org/pdf/2609.13094v1
+
+Published Time: Mon, 14 Sep 2026 01:24:51 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+# An Equivariant Filter for Spacecraft Nonlinear Relative Navigation with Range and Bearing Measurements 
+
+Gil Serrano 1, Bruno J. Guerreiro 1,2, Pedro Lourenc ¸o 3, and Rita Cunha 1
+
+Abstract — Relative navigation is a fundamental task in space proximity operations and autonomous rendezvous. The non-linear relative orbital dynamics are equivariant and admit a semidirect product Lie group symmetry. This property is used to design an Equivariant Filter (EqF). The filter estimates the relative position and velocity between a chaser spacecraft and a target by lifting the filter dynamics to the group, while respecting the underlying geometry of the problem. Simulations demonstrate the filter’s performance and effectiveness. 
+
+I. INTRODUCTION Accurate and robust relative state estimation is an essential requirement for autonomous spacecraft proximity operations. In recent years, rendezvous and capture operations for fu-ture On-Orbit Servicing (OOS) and Active Debris Removal (ADR) missions have attracted significant interest, both in industry and academia, due to the increase in satellite deploy-ments [1], [2]. Although proximity missions have historically involved human operators, there has been a push for fully autonomous methods, which entail the development of more complex and precise solutions. In an OOS/ADR scenario, a chaser or servicer spacecraft needs to approach a possibly uncooperative target, for which it requires an estimate of the relative state between both. Even when applying simplifying assumptions, such as no perturbations or a circular target orbit, the relative orbital motion is governed by nonlinear equations. Typically, control and navigation methods for proximity operations in LEO use the Clohessy-Wiltshire (CW) equations [3] to model the system. The CW equations are derived by linearizing the rel-ative dynamics in the target’s local-vertical-local-horizontal (LVLH) frame, assuming that the target’s orbit is circular, the Earth is spherically symmetric, and the distance between the spacecraft is small with respect to the orbit radius. For elliptical orbits, the linear time-varying Tschauner-Hempel equations are commonly used [4], [5]. Despite the widespread use of these linear models [6]– [9], the nonlinear relative orbital dynamics exhibit a property                               
+
+> The work of G. Serrano was supported by the PhD Grant from MIT Portugal and Fundac ¸ ˜ ao para aCiˆ encia eaTecnologia (FCT) [DOI: 10.54499/PRT/BD/154275/2022]. This work was also supported by FCT, Portugal through LARSyS [DOI: 10.54499/LA/P/0083/2020 and 10.54499/UID/50009/2025]
+> 1The authors are with the Institute for Systems and Robotics, Laboratory of Robotics and Engineering Systems, Instituto Superior T´ ecnico, University of Lisbon, Portugal. (
+
+gil.serrano@tecnico.ulisboa.pt, rita@isr.tecnico.ulisboa.pt )          
+
+> 2B. J. Guerreiro is also with CTS/Uninova and LASI, School of Science and Technology, NOVA University Lisbon, Caparica, Portugal. (
+
+bj.guerreiro@fct.unl.pt )
+
+> 3P. Lourenc ¸o is with the GNC Division, Flight Segment and Robotics, GMV, Lisbon, Portugal. (
+
+palourenco@gmv.com )
+
+called equivariance, which can be advantageous for naviga-tion. The system admits a nontrivial symmetry structure that can be represented using a semidirect product Lie group. This property allows one to exploit the symmetry of the system, while respecting the underlying geometry, to design robust observers [10]. One such observer is the Equivariant Filter (EqF) [11]. The EqF works by expressing the observer state in the symmetry group and lifting the dynamics of the system, linearizing the error dynamics on the state manifold around the origin, and applying principles from EKF design [11], [12]. As such, the EqF leverages the inherent symmetry and equivariance of the system to obtain more consistent and robust estimates, compared to more traditional filters that may disregard the underlying geometry of the state space. This method has been successfully applied to several problems of interest in the control and robotics community, such as inertial navigation [13], VIO [14], and SLAM [15]. In the space domain, it has been applied to the estimation of relative attitude and angular velocity [16]. Despite these developments, the application of equivariant filtering to relative orbital navigation remains largely unex-plored. While the group structure we propose for this prob-lem has previously been considered for simpler dynamical systems [17], its use for nonlinear relative orbital dynamics introduces additional structure between the states. Thus, the main contributions of this work are: (i) the identification of an equivariant structure for nonlinear relative orbital dynamics; (ii) the derivation of the corresponding Equivariant Filter; (iii) the validation of the approach via simulation. The remainder of this letter is organized as follows: Section II describes the problem at hand; Section III details the equivariant structure, introducing the Lie group sym-metry, proving equivariance of the system and deriving the filter; Section IV presents numerical results that validate the approach; Section V examines the method and findings; and, finally, Section VI offers concluding remarks. II. PROBLEM STATEMENT Consider an unactuated target satellite and an actuated chaser satellite orbiting a central body. We denote the target’s position and the chaser’s position as rt, r c ∈ R3, respec-tively. The unperturbed Keplerian two-body equations of motion of each spacecraft, with respect to an Earth-centered inertial (ECI) frame {I} , are given by 
+
+¨rt = −μ rt
+
+∥rt∥3 , (1) 
+
+¨rc = −μ rc
+
+∥rc∥3 + uc, (2) arXiv:2609.13094v1 [eess.SY] 11 Sep 2026 xz yrt  
+
+> xzyrc
+> yzx
+> {I}{T}{C}
+> r
+
+Fig. 1: Relative navigation problem where μ is the geocentric gravitational constant and uc ∈ R3
+
+is the control acceleration applied on the chaser. The relative position between the target and the chaser is r = rc − rt. The nonlinear relative orbital dynamics, ex-pressed in the inertial frame, are given by 
+
+¨r = −μ
+
+ r + rt
+
+∥r + rt∥3 − rt
+
+∥rt∥3
+
+
+
++ uc. (3) If instead one expresses the motion in the target’s rotating LVLH frame, {T } , also known as the Euler-Hill frame, the dynamic equations become 
+
+˙r = v , 
+
+˙v = −S(α) r − S2(ω) r − 2 S(ω) v
+
+− μ
+
+ r + rt
+
+∥r + rt∥3 − rt
+
+∥rt∥3
+
+
+
++ uc , (4) where v ∈ R3 is the relative velocity, ω, α ∈ R3 are the target’s local frame angular velocity and acceleration, respec-tively, and S(·) is the skew-symmetric matrix operator, such that ∀x, y ∈ R3, S (x)y = x × y. Fig. 1 shows a diagram of the problem at hand. For a more detailed explanation of the equations of motion, see [4, Ch. 4]. All quantities in (4) are expressed in {T } , reusing notation but contrasting with (3), expressed in {I} , and these are the equations of motion that will be used throughout this work. Note, however, that the chaser’s actuator input is known in the chaser’s frame, {C} . For r ≪ rt, the angular difference between the target’s and the chaser’s LVLH frames due to the curvature of the orbit is typically within the accuracy of attitude measurement and onboard calculation [5, Ch. 7]. For example, with both spacecraft in the same LEO orbit, at a 10 3 km altitude, and r ∼ 10 3 m, the angular difference between the two frames is approximately 10 −4 rad. Since this difference is negligible, we will use uc expressed in {C} as if it were expressed in {T } . In addition, α, ω, and rt are assumed to be obtained from ground stations. We assume that the chaser measures the bearing and range to the target, given by 
+
+y1 = − r
+
+∥r∥ , y2 = ∥r∥. (5) Note that, since the bearing measurement is done by the chaser, y1 is the symmetric of the normalized relative po-sition vector, again assuming that the angular difference between {C} and {T } is negligible. III. EQUIVARIANT FORMULATION 
+
+A. Group Symmetry 
+
+For this problem, we propose using the Lie group G = (SO(3) × MR(1)) ⋉ R3, with Lie-algebra 
+
+g = ( so (3) × mr (1)) ⋉ r3. This group, also known as the similarity group, SIM(3) , is composed of SO(3) ,the special orthogonal group, MR(1) , the multiplicative real group of positive scalars, and R3, the additive real group of 3-dimensional vectors. An element of 
+
+G is denoted by X = ( R, s, z ), where R ∈ SO(3) is a rotation matrix, s ∈ MR(1) is a positive real scalar, and z ∈ R3 is a 3-dimensional real vector. Its inverse is X−1 = ( R, s, z )−1 =  RT, 1 
+
+> s
+
+, − 1 
+
+> s
+
+RTz and the group identity is id = ( I, 1, 0) . For any two elements X2, X 1 ∈ G,the group product is 
+
+X2 · X1 = ( R2, s 2, z 2) · (R1, s 1, z 1)= ( R2R1, s 2s1, z 2 + s2R2z1). (6) For an element of the Lie-algebra (Ω , τ, η ) ∈ g, the adjoint 
+
+Ad X (Ω , τ, η ) is 
+
+Ad X (Ω , τ, η ) = 
+
+
+
+RΩRT, τ, 1
+
+s RT ((Ω + τ I )z + η)
+
+
+
+. (7) This group is chosen for its compatibility with the assumed measurements of range and bearing, as will become clearer below, and because future work will pursue a bearing-only approach. 
+
+B. System Equivariance 
+
+We define the system state ξ = ( r, v ) ∈ M , the input u = ( α, ω, r t, u c, u v , u w) ∈ U , and the output 
+
+y = ( y1, y 2) ∈ Y , where 
+
+M = R3 × R3, (8) 
+
+U = R3 × R3 × R3 × R3 × R3 × R, (9) 
+
+Y = S2 × R+, (10) are the state, input, and output manifolds, respectively, and 
+
+S2 is the unit 2-sphere. Note that we have included uv ∈ R3
+
+and uw ∈ R, which are virtual inputs required to prove equivariance of the system [10]. The extended version of system (4), including the virtual inputs, ˙ξ = f (ξ, u ), is 
+
+˙r = v + uv ,
+
+˙v = −S(α) r − S2(ω) r − 2 S(ω) ( v + uv )
+
+− μ
+
+ r + rt
+
+∥r + rt∥3 − rt
+
+∥rt∥3
+
+
+
+uw + uc . (11) The original system (4) can be recovered from (11) by setting 
+
+uv = 0 and uw = 1 . For compactness, we will use the notation ˙r = fr (ξ, u ) and ˙v = fv (ξ, u ).A system is said to be equivariant if it satisfies the condition 
+
+Dϕ (X, ξ )[ f (ξ, u )] = f (ϕ(X, ξ ), ψ (X, u )) , (12) where ϕ : G × M → M and ψ : G × U → U are right tran-sitive actions that describe how the group acts on the state and input manifolds, respectively. The notation ϕX (ξ) will be used to indicate that the argument X is fixed and ϕ is evaluated with respect to ξ and vice-versa for ϕξ (X). The same logic applies to the input action ψ.
+
+Theorem 1: The right transitive state and input actions 
+
+ϕ (R, s, z ), (r, v ) =
+
+ 1
+
+s RTr, 1
+
+s RT(v − z)
+
+
+
+, (13) 
+
+ψ (( R, s, z ), (α, ω, r t, u c, u v , u w)) = 
+
+
+
+RTα, R Tω, 1
+
+s RTrt, 1
+
+s RTuc, 1
+
+s3 uw, 1
+
+s RT(uv + z)
+
+
+
+(14) satisfy condition (12). Therefore, the system (11) is equiv-ariant. 
+
+Proof: To prove equivariance of the system, we develop (12) with the proposed state action ϕ and input action ψ. This leads to 
+
+Dϕ (X, ξ )[ f (ξ, u )] =
+
+ 1
+
+s RT(v + uv ), − 1
+
+s RTS(α)r − 1
+
+s RTS2(ω)r
+
+− 2 1
+
+s RTS(ω)( v + uv ) − μ 1
+
+s RT r + rt
+
+∥r + rt∥3 uw
+
++ μ 1
+
+s RT rt
+
+∥rt∥3 uw + 1
+
+s RTuc
+
+
+
+= f (ϕ(X, ξ ), ψ (X, u )) . (15) 
+
+Remark 1: A group action is called transitive if it is surjective, i.e. ∀ξ, ˚ξ ∈ M , ∃X ∈ G : ϕX (˚ξ) = ξ. However, for ˚ξ = (0 ,˚v), this property does not hold. Therefore, the group action ϕX is not transitive on the entire R3 × R3, but rather on R3 \ { 0} × R3.
+
+C. Output Equivariance 
+
+The measurement function is y = h(ξ) = 
+
+
+
+− r 
+
+> ∥r∥
+
+, ∥r∥
+
+
+
+.We define the right output action ρ : G × Y → Y as 
+
+ρ (R, s, z ), (y1, y 2) =
+
+
+
+RTy1, 1
+
+s y2
+
+
+
+. (16) Since ρ(X, y ) = h(ϕ(X, ξ )) , we conclude that the output is equivariant [10]. 
+
+D. Equivariant Lift 
+
+Next, we derive an equivariant lift of the system. The lift Λ : M × U → g is a map that lifts the dynamics of the system from the state manifold to the Lie-algebra of the symmetry group [10], [12]. An equivariant lift must satisfy the conditions 
+
+D|X=id ϕξ (X)[Λ( ξ, u )] = f (ξ, u ), (17) 
+
+Ad X−1 (Λ( ξ, u )) = Λ( ϕX (ξ), ψ X (u)) . (18) For brevity, we will at times write the lift (and each of its components) without the arguments, i.e., Λ = Λ( ξ, u ).
+
+Theorem 2: The lift Λ = (Λ R, Λs, Λz ) given by 
+
+ΛR = −S
+
+ r × (v + uv )
+
+∥r∥2
+
+
+
+, (19a) 
+
+Λs = − rT(v + uv )
+
+∥r∥2 , (19b) 
+
+Λz = S
+
+ r × (v + uv )
+
+∥r∥2
+
+
+
+v + rT(v + uv )
+
+∥r∥2 v
+
++ S(α)r + S2(ω)r + 2 S(ω)( v + uv )+ μ
+
+ r + rt
+
+∥r + rt∥3 − rt
+
+∥rt∥3
+
+
+
+uw − uc (19c) is equivariant. 
+
+Proof: We need to analyze conditions (17) and (18) to verify that the lift is, in fact, equivariant. Let us start by developing condition (17), which results in 
+
+D|X=id ϕξ (X)[Λ( ξ, u )] = ( −ΛRr − Λsr, −Λz − ΛRv − Λsv)= S
+
+ r × (v + uv )
+
+∥r∥2
+
+
+
+r + rT(v + uv )
+
+∥r∥2 r, 
+
+− S
+
+ r × (v + uv )
+
+∥r∥2
+
+
+
+v − rT(v + uv )
+
+∥r∥2 v
+
+− S(α)r − S2(ω)r − 2S(ω)( v + uv )
+
+− μ
+
+ r + rt
+
+∥r + rt∥3 − rt
+
+∥rt∥3
+
+
+
+uw + uc
+
++ S
+
+ r × (v + uv )
+
+∥r∥2
+
+
+
+v + rT(v + uv )
+
+∥r∥2 v
+
+!
+
+=
+
+
+
+v + uv , −S(α)r − S2(ω)r − 2S(ω)( v + uv )
+
+− μ
+
+ r + rt
+
+∥r + rt∥3 − rt
+
+∥rt∥3
+
+
+
+uw + uc
+
+
+
+= f (ξ, u ). (20) As such, condition (17) is satisfied. Next, we analyze con-dition (18). The left-hand side is 
+
+Ad X−1 (Λ) = 
+
+
+
+RTΛRR, Λs, 1
+
+s RT(Λ R + Λ sI)z + 1
+
+s RTΛz
+
+
+
+(21) We analyze each component of the right-hand side of (18) separately. For ΛR, we have 
+
+ΛR(ϕX (ξ), ψ X (u)) = −S 
+
+> 1
+> s
+
+RTr ×   1 
+
+> s
+
+RT(v − z) + 1 
+
+> s
+
+RT(uv + z)
+
+∥ 1 
+
+> s
+
+RTr∥2
+
+!
+
+= −S
+
+
+
+RT r × (v + uv )
+
+∥r∥2
+
+
+
+= −RTS
+
+ r × (v + uv )
+
+∥r∥2
+
+
+
+R
+
+= RTΛRR. (22) For the next component, Λs, we find that 
+
+Λs(ϕX (ξ), ψ X (u)) = −
+
+  1 
+
+> s
+
+RTrT   1 
+
+> s
+
+RT(v − z) + 1 
+
+> s
+
+RT(uv + z)
+
+∥ 1 
+
+> s
+
+RTr∥2= − rT(v + uv )
+
+∥r∥2
+
+= Λ s. (23) For the third component, note that Λz = −(Λ R +Λ sI)v−fv .Then, by substituting the expression, it follows 
+
+Λz (ϕX (ξ), ψ X (u)) = −ΛR(ϕX (ξ), ψ X (u)) 1
+
+s RT(v − z)
+
+− Λs(ϕX (ξ), ψ X (u)) 1
+
+s RT(v − z) − fv (ϕX (ξ), ψ X (u)) = −(RTΛRR + Λ sI) 1
+
+s RT(v − z) − 1
+
+s RTfv
+
+= 1
+
+s RT(Λ R + Λ sI)z − 1
+
+s RT(Λ R + Λ sI)v − 1
+
+s RTfv
+
+= 1
+
+s RT (Λ R + Λ sI)z + Λ z
+
+. (24) Thus, conditions (17) and (18) are both met and we conclude that the proposed lift (19) is an equivariant lift of the system. One can gain intuition about the lift by noting that Λs is related to the time-derivative of the inverse of the range and that (r × v)/∥r∥2 is the bearing’s angular velocity, indicating that ΛR is related to the rotational kinematics. 
+
+E. Filter Derivation 
+
+The true state of the system on the group is denoted by 
+
+X = ( R, s, z ) and the filter state is ˆX = ( ˆR, ˆs, ˆz). The filter dynamics, on the group, are given by 
+
+˙ˆR = ˆRΛR(ϕ( ˆX, ˚ξ), u ) + ∆ R ˆR
+
+˙ˆs = ˆ sΛs(ϕ( ˆX, ˚ξ), u ) + δs ˆs
+
+˙ˆz = ˆ s ˆRΛz (ϕ( ˆX, ˚ξ), u ) + ∆ R ˆz + δs ˆz + δz ,
+
+(25) where ∆ = (∆ R, δ s, δ z ) ∈ g are correction terms that will be defined shortly. The estimate on the state manifold is 
+
+ˆξ = (ˆ r, ˆv) = ϕ( ˆX, ˚ξ) = 
+
+ 1ˆs ˆRT˚r, 1ˆs ˆRT (˚ v − ˆz)
+
+
+
+, (26) where ˚ξ = (˚ r, ˚v) is the origin of the coordinate system on the manifold, which is required to map the filter’s estimates from the group to the state manifold. Since ϕX is not transitive on the entire state manifold, as pointed out in Remark 1, the origin cannot be ˚ξ = (0 , 0) , as one might initially expect. As such, let the origin be (˚ r, ˚v) = ( γe3, 0) , where e3 = [0 0 1] T
+
+is the third canonical basis vector of R3 and γ ∈ R \ { 0}.To calculate the correction terms, we need to characterize the filter error. We begin by defining the filter error on the group, E = ( ER, E s, E z ), as 
+
+E = ( R, s, z ) · ( ˆR, ˆs, ˆz)−1 =
+
+
+
+R ˆRT, s
+
+ˆs , z − s
+
+ˆs R ˆRT ˆz
+
+
+
+.
+
+(27) Then, the error on the state manifold, e = ( er , e v ), is ob-tained using E and the state action ϕ as 
+
+e = ϕ(E, ˚ξ) = 
+
+ 1
+
+Es
+
+ET
+
+> R
+
+˚r, 1
+
+Es
+
+ET
+
+> R
+
+(˚ v − Ez )
+
+
+
+. (28) We also need to define the error on the tangent space at the origin ˚ξ. We fix a local coordinate chart ϑ : N˚ξ → T ˚ξ M,where N˚ξ ⊂ M is a neighborhood of the origin and 
+
+T˚ξ M ≡ R6 is the tangent space at the origin. The local coordinate chart is chosen to be the normal coordinates on 
+
+M, obtained by projecting exponentials from G onto the state manifold, around the origin, using the action ϕ. That is, with ε ∈ R6 being the error on the tangent space, we have that ε = ϑ(e) and e = ϑ−1(ε) = ϕ(exp( ε∧), ˚ξ), where 
+
+ε∧ ∈ g. The local coordinate chart is given by 
+
+ϑ(e) = 
+
+  eT
+
+> 2
+
+−eT
+
+> 1
+
+ er
+
+∥er ∥ , log 
+
+ ∥˚r∥∥er ∥
+
+
+
+, −ev
+
+
+
+, (29) where e1 = [1 0 0] T and e2 = [0 1 0] T are the first and second canonical basis vectors of R3, respectively. To design the EqF, we need to characterize the error dynamics of the system. The time derivative of the error on the state manifold is given by 
+
+˙e = Dϕ e(Λ( e, ˚u) − Λ( ˚ξ, ˚u)) − Dϕ e∆, (30) where ˚u = ψ( ˆX−1, u ). Assuming that ∀t, e (t) ∈ N ˚ξ and knowing that ε = ϑ(e), the dynamics of the error on the tangent space are 
+
+˙ε = Dϑ · Dϕ e(Λ( e, ˚u) − Λ( ˚ξ, ˚u)) − Dϑ · Dϕ e∆. (31) The pre-observer dynamics of the error on the tan-gent space are linearized around ε = 0 , resulting in 
+
+˙ε = ˚Atε + O(∥ε∥2). The matrix ˚At is given by 
+
+˚At = D|e=˚ξ ϑ(e)D|E=id ϕ˚ξ (E)D|e=˚ξ Λ( e, ˚u)D|ε=0 ϑ−1(ε).
+
+(32) The output residual ˜y = y − ˆy is also linearized around 
+
+ε = 0 . Since the output is equivariant, as seen in III-C, we have that ˜y = Ctε + O(∥ε∥3) and 
+
+Ctε = 12
+
+ D|E=id ρ(E, y ) + D|E=id ρ(E, ˆy) · Ad ˆX−1 (ε∧).
+
+(33) The explicit expressions for the matrices ˚At and Ct are presented in the Appendix. The correction terms also depend on the Riccati state, 
+
+Σ ∈ S6+, which evolves according to 
+
+˙Σ = ˚AtΣ + Σ ˚AT 
+
+> t
+
++ Mt − ΣCT 
+
+> t
+
+N −1 
+
+> t
+
+CtΣ, (34) with Σ(0) = Σ 0 and Σ0 ∈ S6+. The matrices Mt ∈ S6+ and 
+
+Nt ∈ S4+ are the state and output gain matrices, respectively, and Sn 
+
+> +
+
+is the set positive definite n × n matrices. Finally, the correction terms are calculated according to 
+
+∆ = D|E=id ϕ˚ξ (E)† · Dϑ −1ΣCT 
+
+> t
+
+N −1 
+
+> t
+
+(y − ˆy), (35) where (·)† denotes a right inverse and ˆy = h( ˆξ).
+
+F. Convergence Analysis 
+
+With range and bearing measurements, the problem of estimating the relative position and velocity between the two spacecraft is observable. Given this observability condition, the EqF can be shown to be locally exponentially stable. We refer the reader to [11], [16] for further details. IV. SIMULATIONS To verify the proposed Equivariant Filter’s performance, we conduct Monte Carlo simulations using MATLAB. 
+
+A. Simulation setup 
+
+We simulate two scenarios: a circumnavigation orbit and an r-bar approach, depicted in Fig. 2 in the LVLH frame. In both cases, the target is in a circular LEO orbit at an altitude of 1000 km, with orbital period T ≈ 105 min, and 
+
+ω, α and rt are assumed known from ground observation, as explained in Section II. For a circular orbit, ω and rt are constant, as they are expressed in {T } , and α = 0 . Though the method is not restricted to circular orbits, they are chosen for simplicity. Each trajectory is simulated 100 times. The Equivariant Filter is implemented in a prediction-update formulation. The prediction step is computed at every 0.01 s, while the update step is performed at every 1 s, as the measurements are assumed to be acquired synchronously at 1 Hz. Measurement noise is considered such that the bearing measurement has an angular deviation of θ from the true value, with θ ∼ N (0 , 0.01 2), and the range measurement is within 1 % of the true range. The initial filter estimates in the group are set to the identity, i.e., ( ˆR, ˆs, ˆz) = ( I, 1, 0) , with gain matrices Mt = 0 .1I and Nt = diag([1 1 1 10 4]) . The initial value of the Riccati state is Σ0 = I and the manifold origin is chosen to be ˚ξ = (10 2e3, 0) .-600 -400 -200 0200 400 600 
+
+xLVLH [m]           
+
+> -300 -200 -100 0100 200 300
+> zLVLH  [m]
+> Target
+> t= 0
+> t=T = 6t=T = 3
+> t=T = 2
+> t= 2 T = 3t= 5 T = 6
+> Chaser
+> xLVLH : along-track
+> zLVLH : radial
+
+(a) Circumnavigation orbit. -500 -400 -300 -200 -100 0100 200 300 400 500     
+
+> xLVLH [m]
+> 0100 200 300 400 500
+> zLVLH  [m]
+> Target
+> t= 0
+> t=T = 2
+> Chaser
+> xLVLH : along-track
+> zLVLH : radial
+
+(b) R-bar approach. 
+
+Fig. 2: Simulated proximity operation scenarios. 0 0.05 0.1 0.15 0.2 0.25   
+
+> time [period T]
+> -400 -200 0200 400 600
+> relative position [m]  rx
+> ry
+> rz
+> ^rx
+> ^ry
+> ^rz
+
+(a) Relative position. 0 0.05 0.1 0.15 0.2 0.25   
+
+> time [period T]
+> -1.5 -1 -0.5 00.5 1
+> relative velocity [m/s]
+> vx
+> vy
+> vz
+> ^vx
+> ^vy
+> ^vz
+
+(b) Relative velocity. 
+
+Fig. 3: Circumnavigation: estimated (solid) and true (dashed) relative states. 
+
+B. Circumnavigation 
+
+A circumnavigation orbit is an elliptical trajectory around the target that does not require active thrusting. It is often employed to keep the chaser in a passively safe, thrust-free trajectory looping around the target for inspections or mapping [18]. In the simulations, the ellipse that the chaser describes, in the xz -plane of the local frame, i.e. the orbital plane, has a semi-major axis of 500 m and a semi-minor axis of 250 m. The chaser takes one orbital period to circumnavigate the target. In Fig. 3, we show the filter estimates mapped onto the state manifold, i.e., ˆr and ˆv, in solid lines, along with the true values of the relative position and velocity, in dashed lines, for a representative Monte Carlo run. The norm of the manifold error, averaged across the Monte Carlo simulations, is plotted in Fig. 4, with the origin subtracted, since e → ˚ξ
+
+as the filter converges. The shaded areas represent the entire span of values in all simulations. We present the results up to one quarter of the orbit, as the filter converges within this time span. From the plots, one concludes that the filter converges in less than one-tenth of the orbital period. In the time interval [0 .1, 0.25] T , the mean of the position error norm is approximately 1.45 · 10 −1 m. In relative terms, the estimate of the position is on average within 0.05 % of the true value. The mean velocity error norm is 1.24 · 10 −3 m/s, corresponding to a mean relative error of 0.28 %. 
+
+C. R-bar approach 
+
+The second scenario is a straight line r-bar approach, from below the target, with constant velocity and continuous actuation, as described in [5]. The chaser starts at a distance of 500 m from the target and takes one orbital period to rendezvous. Again, we show the results up to one quarter of the orbital period, since the filter converges within this time interval. The filter estimates on the state manifold 0 0.05 0.1 0.15 0.2 0.25           
+
+> time [period T]
+> 10 -4
+> 10 -2
+> 10 0
+> 10 2
+> manifold errors 0 norm
+> ker!8rkkev!8vk
+
+Fig. 4: Circumnavigation: averaged manifold errors’ norm. 0 0.05 0.1 0.15 0.2 0.25   
+
+> time [period T]
+> -100 0100 200 300 400 500
+> relative position [m]  rx
+> ry
+> rz
+> ^rx
+> ^ry
+> ^rz
+
+(a) Relative position 0 0.05 0.1 0.15 0.2 0.25   
+
+> time [period T]
+> -0.1 00.1 0.2 0.3 0.4 0.5
+> relative velocity [m/s]
+> vx
+> vy
+> vz
+> ^vx
+> ^vy
+> ^vz
+
+(b) Relative velocity 
+
+Fig. 5: R-bar approach: estimated (solid) and true (dashed) relative states. are shown in Fig. 5, for a representative simulation, and the norm of the manifold error across the Monte Carlo simulations is presented in Fig. 6. On average, in the time interval [0 .1, 0.25] T , the position error norm is approxi-mately 1.48 · 10 −1 m, which corresponds to 0.04 % of the true relative position. The mean velocity error norm is 
+
+1.19 · 10 −3 m/s, i.e. 1.50 % of the true value. V. DISCUSSION The EqF was applied to two proximity operation scenarios which are relevant for OOS/ADR missions. The results show that the filter is able to accurately estimate the relative position and velocity between the target and the chaser spacecraft, given noisy bearing and range measurements, at 1 Hz frequency. The filter converges in less than one-tenth of the orbit. Despite the difference in the trajectories, the same tuning and filter initial conditions are used for both scenarios, yielding the aforementioned results. We also note that, while the system equations on the state manifold use a cartesian coordinates parametrization, the equations on the group are more akin to a polar coordinate parametrization, which is a consequence of the chosen symmetry group. Nevertheless, there are still some limitations that need to be addressed. In these simulations, we do not take into account orbital disturbances, such as those related to residual atmosphere or geopotential anomaly. As we do not 0 0.05 0.1 0.15 0.2 0.25           
+
+> time [period T]
+> 10 -4
+> 10 -2
+> 10 0
+> 10 2
+> manifold errors 0 norm
+> ker!8rkkev!8vk
+
+Fig. 6: R-bar approach: averaged manifold errors’ norm. consider what exact sensors are used, no sensor constraints, such as field-of-view, nor environmental perturbations, such as sunlight reflections, are examined. The assumption of synchronous range and bearing measurements might not always be valid and analyzing only one measurement rate, though within the typical interval for onboard sensors, is limiting. Complete knowledge of ω, α and rt is considered, while in reality there will be uncertainty associated with these quantities. The choice of the origin ˚ξ, particularly 
+
+˚r, has practical consequences beyond those explained in III-E. A disproportionate choice of ˚r, with respect to the distances at hand, especially at the initial time, may cause a large transient response and compromise numerical stability. There are terms dependent on 1/∥ˆr∥ which may also cause computational issues as ∥r∥ → 0 during the final moments of rendezvous. Nonetheless, adequate measures can be taken from an implementation standpoint, to avoid numerical prob-lems. For instance, the navigation system may use additional filtering algorithms running in parallel, both for usage at very small distances and to provide redundancy. As such, additional testing regarding these issues is necessary. Ultimately, despite further research being required, the results obtained are promising and validate the equivariant structure for the nonlinear relative orbital dynamics and the application of the filter to spacecraft relative navigation. VI. CONCLUSIONS In this letter, we presented an equivariant structure for the nonlinear relative orbital dynamics, with range and bearing measurements, and designed an Equivariant Filter. Simu-lations of a circumnavigation orbit and an r-bar approach demonstrated the filter’s performance. Future work will delve into the limitations regarding the measurements, different orbits and perturbations, and explore a bearing-only variant. APPENDIX To improve readability, we decompose the matrix ˚At into nine (different sized) components, as 
+
+˚At =
+
+
+
+˚A1,1 ˚A1,2 ˚A1,3
+
+˚A2,1 ˚A2,2 ˚A2,3
+
+˚A3,1 ˚A3,2 ˚A3,3
+
+ . (36) Each of the above components of the matrix is given by 
+
+˚A1,1 = 1
+
+∥˚r∥2
+
+eT
+
+> 1
+
+eT
+
+> 2
+
+
+
+S(˚ uv )S(˚ r) e1 e2
+
+ , (37) ˚A1,2 = − 1
+
+∥˚r∥2
+
+eT
+
+> 1
+
+eT
+
+> 2
+
+
+
+S(˚ r)˚ uv , (38) 
+
+˚A1,3 = 1
+
+∥˚r∥2
+
+eT
+
+> 1
+
+eT
+
+> 2
+
+
+
+S(˚ r), (39) 
+
+˚A2,1 = − 1
+
+∥˚r∥2 ˚uT 
+
+> v
+
+S(˚ r) e1 e2
+
+ , (40) 
+
+˚A2,2 = − 1
+
+∥˚r∥2 ˚rT˚uv , (41) 
+
+˚A2,3 = 1
+
+∥˚r∥2 ˚rT, (42) 
+
+˚A3,1 =
+
+
+
+S(˚ α) + S2(˚ ω) + μ 1
+
+∥˚r + ˚ rt∥3 ˚uw
+
+− 3μ (˚ r + ˚ rt)(˚ r + ˚ rt)T
+
+∥˚r + ˚ rt∥5 ˚uw
+
+
+
+S(˚ r) e1 e2
+
+ , (43) 
+
+˚A3,2 = −
+
+
+
+S(˚ α) + S2(˚ ω) + μ 1
+
+∥˚r + ˚ rt∥3 ˚uw
+
+− 3μ (˚ r + ˚ rt)(˚ r + ˚ rt)T
+
+∥˚r + ˚ rt∥5 ˚uw
+
+
+
+˚r, (44) 
+
+˚A3,3 = S
+
+
+
+−˚r × ˚uv
+
+∥˚r∥2
+
+
+
+− ˚rT˚uv
+
+∥˚r∥2 I − 2S(˚ uω ). (45) The matrix Ct is given by 
+
+Ct = 12
+
+S(y1 + ˆ y1) ˆRT e1 e2
+
+ 0 00 −(y2 + ˆ y2) 0
+
+
+
+. (46) REFERENCES [1] R. Biesbroek, L. Innocenti, A. Wolahan, and S. M. Serrano, “e.Deorbit – ESA’s Active Debris Removal mission,” in Proceedings of the 7th European Conference on Space Debris, vol. 7. ESA Space Debris Office, 2017. [2] I. Hatty, “Viability of On-Orbit Servicing Spacecraft to Prolong the Operational Life of Satellites,” Journal of Space Safety Engineering, vol. 9, no. 2, pp. 263–268, June 2022. [3] W. H. Clohessy and R. S. Wiltshire, “Terminal Guidance System for Satellite Rendezvous,” Journal of the Aerospace Sciences, vol. 27, no. 9, pp. 653–658, 1960. [4] K. Alfriend, S. Vadali, P. Gurfil, J. How, and L. Breger, Spacecraft Formation Flying: Dynamics, Control and Navigation, ser. Elsevier Astrodynamics Series. Butterworth-Heinemann, 2009. [5] W. Fehse, Automated Rendezvous and Docking of Spacecraft, ser. Cambridge Aerospace Series. Cambridge University Press, 2003. [6] J. Grzymisch and W. Fichter, “Optimal Rendezvous Guidance with Enhanced Bearings-Only Observability,” Journal of Guidance, Control, and Dynamics, vol. 38, no. 6, pp. 1131–1140, June 2015. [7] J. Luo, B. Gong, J. Yuan, and Z. Zhang, “Angles-only Relative Naviga-tion and Closed-Loop Guidance for Spacecraft Proximity Operations,” Acta Astronautica, vol. 128, pp. 91–106, 2016. [8] G. Napolano, C. Vela, A. Nocerino, R. Opromolla, and M. Grassi, “A Multi-sensor Optical Relative Navigation System for Small Satellite Servicing,” Acta Astronautica, vol. 207, pp. 167–192, 2023. [9] A. Nocerino, C. Vela, G. Fasano, M. Grassi, and R. Opromolla, “Navigation-aware Guidance and Control for Autonomous Spacecraft Operations near Non-cooperative Targets,” Acta Astronautica, vol. 238, pp. 780–796, 2026. [10] R. Mahony, P. v. Goor, and T. Hamel, “Observer Design for Nonlinear Systems with Equivariance,” Annual Review of Control, Robotics, and Autonomous Systems, vol. 5, pp. 221–252, May 2022. [11] P. van Goor, T. Hamel, and R. Mahony, “Equivariant Filter (EqF),” IEEE Transactions on Automatic Control, vol. 68, no. 6, pp. 3501– 3512, 2023. [12] R. Mahony and J. Trumpf, “Equivariant Filter Design for Kinematic Systems on Lie Groups,” IFAC-PapersOnLine, vol. 54, no. 9, pp. 253– 260, Jan. 2021. [13] A. Fornasier, Y. Ng, R. Mahony, and S. Weiss, “Equivariant Filter Design for Inertial Navigation Systems with Input Measurement Biases,” in 2022 International Conference on Robotics and Automation (ICRA), May 2022, pp. 4333–4339. [14] P. van Goor and R. Mahony, “EqVIO: An Equivariant Filter for Visual-Inertial Odometry,” IEEE Transactions on Robotics, vol. 39, no. 5, pp. 3567–3585, Oct. 2023. [15] Y. Ge, A. Pearce, P. Van Goor, and R. Mahony, “Equivariant Filter De-sign for Range-Only SLAM,” in 2025 IEEE International Conference on Robotics and Automation (ICRA), May 2025, pp. 5040–5046. [16] G. Serrano, B. J. Guerreiro, P. Lourenc ¸o, and R. Cunha, “Equivariant Filter for Relative Attitude and Target Angular Velocity Estimation,” IEEE Transactions on Aerospace and Electronic Systems, vol. 62, pp. 2965–2979, 2026. [17] Y. Ge, P. van Goor, and R. Mahony, “Equivariant Filter Design for Discrete-time Systems,” in 2022 IEEE 61st Conference on Decision and Control (CDC), Dec. 2022, pp. 1243–1250. [18] D. Woffinden, “Angles-Only Navigation for Autonomous Orbital Ren-dezvous,” Ph.D. dissertation, Utah State University, Dec. 2008.
