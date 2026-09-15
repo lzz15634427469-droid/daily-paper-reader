@@ -1,0 +1,773 @@
+THE ITERATIVE EQUIVARIANT FILTER
+PREPRINT⋆
+Pieter van Goor
+School of Aerospace, Mechanical, and Mechatronic Engineering
+The University of Sydney
+NSW 2006, Australia
+pieter.vangoor@sydney.edu.au
+James Richard Forbes
+Dept. of Mechanical Engineering
+McGill University
+Montreal, QC, Canada
+james.richard.forbes@mcgill.ca
+September 14, 2026
+ABSTRACT
+This paper presents the iterative equivariant filter (IterEqF). The iterative extended Kalman filter (IterEKF)
+replaces the standard EKF correction step with an iterative correction step that is the Gauss-Newton solution
+to a nonlinear weighted least squares problem. The standard equivariant filter (EqF) exploits and respects
+the underlying symmetry of state estimation problems posed on homogeneous spaces and Lie groups. The
+motivation behind the IterEqF is to combine the features of both the IterEKF and the EqF, thus leading to
+a high-performance state estimation solution that is well suited to navigation problems. This paper derives
+the iteration procedure for the IterEqF update step and shows how the intrinsic nonlinearity of the approach
+naturally results in a ‘reset’ of the filter’s covariance into new coordinates. Monte-Carlo simulations of range-
+based localisation for a mobile robot demonstrate the improvement in performance relative to a standard EqF,
+especially during the transient convergence.
+1
+Introduction
+Mobile robotic systems such as uncrewed ground, underwater, and aerial vehicles, move in three-dimensional space as they
+execute tasks including material handling, inspection of infrastructure, mapping, and other missions. To execute these tasks
+reliably, the robot must be able to reliably estimate states of interest, such as position, velocity, and attitude.
+The state of a robotic system is often naturally represented by a Lie group element. For example, SO(3) elements represent
+attitude, SE(3) elements represent position and attitude, and SE2(3) elements represent position, velocity, and attitude. Re-
+cently, there has been a focused effort on deterministic observer design for mobile robotic systems, where the observer state
+is an element of SO(3) [1, 2], SE(3) [3–5], SE2(3) [6], SE5(3) [7], or SE3+n(3) [8]. Observers solving the simultaneous
+localization and mapping (SLAM) problem have also been considered [9, 10], again exploiting the geometry of the SLAM
+problem. In parallel, the application of Lie group tools within the extended Kalman filter (EKF) has also been an active area of
+research. The aerospace community has long promoted quaternion-based variants of the EKF, such as the multiplicative EKF
+(MEKF) [11, 12] and norm-constrained EKF [13, 14]. Within the robotics community, MEKFs that work directly with Lie
+group representations of the state, such as SE(3) [15, § 10], have become common due to their well-documented performance
+advantages over EKFs based on Euclidean coordinates.
+The invariant EKF (InEKF) is a particular type of MEKF that, when interpreted as an observer, possesses desirable conver-
+gence properties [16, 17]. The advantage of the InEKF is that, when interpreted as an observer, the Jacobians associated with
+linearization are independent of the state estimate, and the resulting domain of convergence is independent of the system state.
+However, these results rely on a group affine process model and right- or left-invariant measurements. The equivariant filter
+(EqF) is a different extension of the MEKF applicable to systems on homogeneous spaces with a Lie group state symmetry
+[18, 19]. The keys to applying the EqF are defining a symmetry group, a transitive group action, and a lift. These enable the
+filter’s mean to evolve on the Lie group while its covariance equations can be posed on the original system state space. In the
+context of inertial navigation system (INS) symmetries, the EqF framework can recover the classic MEKF, InEKF, “imperfect”
+InEKF, two-frame group IEKF, and others, depending on the choice of symmetry group [20]. A well-chosen symmetry can
+significantly enhance EqF performance compared to classic and standard EKFs [20].
+EKF variants are generally executed in a predict-correct sequence, where the process model is used to predict the state, and the
+measurement model is used to correct the state. The iterative EKF (IterEKF) is yet another variant of the EKF that maintains
+⋆Under review
+arXiv:2609.12328v1  [eess.SY]  11 Sep 2026
+
+
+The Iterative Equivariant Filter
+PREPRINT
+the standard prediction step of the EKF, but modifies the correction step by iteratively updating the corrected state until a
+convergence criterion is met, leading to enhanced filter performance and robustness [21–23]. The IterEKF correction step can
+be derived by posing and solving a nonlinear weighted least-squares problem using the Gauss-Newton algorithm [21]. Iteration
+of the correction step has been considered in the context of a matrix Lie group EKF in [22, 23] and an InEKF in [24].
+This paper presents the iterative EqF (IterEqF). The motivation is to incorporate iteration into the EqF framework, thus com-
+bining the advantages of symmetry-based EKFs with the improved transient performance and robustness of the iterative update
+step. The correction step of the IterEqF is the Gauss-Newton solution of a nonlinear weighted least-squares problem weighing
+information from the prediction step and the measurement, lifted from the homogeneous state space to the chosen symmetry
+group. Special care is taken to define the iteration on the Lie group while accounting for degenerate directions associated
+with the lifting, and it is shown that the “reset step” [12, 25–28] is a natural consequence of the IterEqF correction. This
+is an important extension of prior work [22, 23] that showed the reset step appears for iterative EKFs posed directly on Lie
+groups, and contrasts with [29] where the reset step is applied after iteration as an ad-hoc addition similarly to the standard
+EqF [26]. Monte-Carlo simulations of a range-based localization problem demonstrate that the IterEqF has superior transient
+performance, in both the error and covariance, relative to the standard EqF.
+The remainder of this paper is as follows. Section 2 provides the requisite mathematical foundation relevant to equivariance.
+The standard EqF is reviewed in Section 3. The main contribution, the IterEqF, is derived in Section 4. Simulation results are
+presented in Section 5. Conclusions are drawn in Section 6
+2
+Preliminaries
+For an introduction to smooth manifolds and Lie groups, the authors recommend [30].
+Consider a smooth (C∞) manifold M. The tangent space at ξ ∈M is denoted TξM, and the tangent bundle is denoted TM.
+For a smooth map h : M →N, where N is another manifold, the differential of h at a point ξ ∈M is written
+dh(ξ) : TξM →Th(ξ)N.
+The base point may also be omitted, in which case we regard dh : TM →TN as a map between the tangent bundles. For a
+map h : M1 × M2 →N, we write the partial maps
+hξ : M2 →N,
+hζ : M1 →N,
+hξ(ζ) = h(ξ, ζ) = hζ(ξ),
+for all ξ ∈M1 and ζ ∈M2.
+A Lie group G is a smooth manifold equipped with a smooth group structure. We write the identity as I ∈G. The product of
+X, Y ∈G is written as XY , and the inverse of X is written as X−1. The Lie algebra of G is written as g and may be identified
+with the tangent space of G at the identity. The exponential exp : g →G is a smooth map from the Lie algebra to the Lie
+group, and it is locally invertible. Over the neighbourhood U ⊂G of the identity where exp is invertible, its inverse is written
+log : U →g. The group and algebra adjoint actions are written as Ad : G × g →g and ad : g × g →g, respectively. The
+wedge and vee maps are linear isomorphisms ·∧: Rdim g →g and ·∨: g →Rdim g obtained by selecting a basis for g.
+A (right1) group action is a smooth map ϕ : G × M →M, where G is a Lie group and M a smooth manifold, satisfying
+ϕ(I, ξ) = ξ,
+(1)
+ϕ(X2, ϕ(X1, ξ)) = ϕ(X1X2, ξ),
+(2)
+for all X1, X2 ∈G and ξ ∈M. If the partial map ϕξ : G →M is injective for all ξ ∈M, then we say that ϕ is free. If the
+partial map ϕξ : G →M is surjective for some ξ ∈M, then it is necessarily surjective for all ξ ∈M, and we say that ϕ is
+transitive, and we say that M is a homogeneous space.
+The space of m×m symmetric positive definite matrices is written as Sym+(m) ⊂Rm×m. The normal distribution with mean
+µ ∈Rm and covariance Σ ∈Sym+(m) is written as N(µ, Σ).
+3
+Equivariant Filtering
+This section reviews the Equivariant Filter design methodology for systems with continuous dynamics and discrete measure-
+ments. Consider the following system evolving on a state space manifold M of dimension m, with inputs in Rl and outputs in
+Rn,
+˙ξ = fu(ξ),
+(3a)
+y = h(ξ).
+(3b)
+1We consider only right group actions in this paper.
+2
+
+
+The Iterative Equivariant Filter
+PREPRINT
+Here, ξ ∈M is the state, u ∈Rl is the input, f : Rl →X(M) is the system function, y is the output, and h : M →Rn is the
+measurement function. The system dynamics (3a) are considered to flow continuously for all time, while the measurements y
+are considered to arrive only at a discrete sequence of times labelled t1, t2, . . . ∈R satisfying tk+1 > tk for all k ∈N.
+Equivariant filter design requires a choice of a transitive right group action ϕ : G × M →M. This selection then defines
+the relationship between the group G and the underlying state space M. The next step is to choose a map Λ : M × Rl →g,
+satisfying
+dϕξ(I)Λ(ξ, u) = fu(ξ),
+(4)
+for all ξ ∈M and all u ∈Rl. This is termed the lift and defines how trajectories of the system are replicated on the group. The
+lift condition (4) constrains Λ(ξ, u) except for the values it takes along the Lie algebra of the stabiliser of ϕ at ξ, meaning that
+any two lifts Λ1 and Λ2 must satisfy
+Λ1(ξ, u) −Λ2(ξ, u) ∈stabϕ(ξ),
+for all ξ ∈M and u ∈Rl. In particular, if ϕ is a free group action, then stabϕ(ξ) = {0} and the lift Λ is uniquely determined
+by (4).
+Choose a fixed origin ξ0 ∈M and define the observer state ˆX ∈G to have dynamics
+˙ˆX = ˆXΛ(ϕ( ˆX, ξ0), um),
+(5)
+ˆX(t+
+k ) = exp(∆k) ˆX(t−
+k ),
+(6)
+where um ∈Rl is the measured input, ∆k ∈g is a correction term that remains to be designed, and t−
+k and t+
+k represent the
+times instantaneously before and after receiving a measurement at time tk. Then the state estimate is given by ˆξ = ϕ( ˆX, ξ0),
+and satisfies
+˙ˆξ = fu(ˆξ),
+ˆξ(t+
+k ) = ϕ
+ˆξ(exp(Ad ˆ
+X−1 ∆k)).
+If ∆k = 0, then the dynamics of ˆξ are exactly those of the original system (3a).
+The equivariant error is defined as
+e = ϕ( ˆX−1, ξ) ∈M.
+(7)
+Choose ϑ : U0 ⊆M →Rm to be a chart of M in a neighbourhood U0 of ξ0, then the local error coordinates are given by
+ε = ϑ(e). If there is a map Θ : Rm →g such that ϑ−1(ε) = ϕ(exp(Θε), ξ0) and g = im Θ ⊕stabϕ(ξ0), then we say that ϑ is
+a normal chart. In the case where M is isomorphic to G (the group action is free), then the normal charts are exactly the charts
+given through the Lie group logarithm, differing only by a choice of Lie algebra basis. We will assume that ϑ is a normal chart.
+The Equivariant filter directly estimates the distribution of the local error coordinates ε as a zero-mean Gaussian with covariance
+Σ ∈Sym+(m). The continuous dynamics of e are directly seen to be
+˙e = d
+dtϕ( ˆX−1, ξ)
+= dϕ ˆ
+X−1(ξ)[fu(ξ)] −dϕξ( ˆX−1)[Λ(ϕ( ˆX, ξ0), um) ˆX−1]
+= dϕ ˆ
+X−1(ξ)dϕξ(I)Λ(ξ, u)
+−dϕϕ( ˆ
+X−1,ξ)(I)[ ˆXΛ(ϕ( ˆX, ξ0), um) ˆX−1]
+= dϕϕ( ˆ
+X−1,ξ)(I) Ad ˆ
+X Λ(ξ, u) −dϕe(I) Ad ˆ
+X Λ(ˆξ, um)
+= dϕe(I) Ad ˆ
+X[Λ(ϕ ˆ
+X(e), u) −Λ(ˆξ, um)].
+The dynamics of ε are then simply the dynamics of e expressed in local coordinates and linearised about ε ≈0 and u ≈um.
+Specifically,
+˙ε = Atε + Bt(u −um),
+(8a)
+At = dϑdϕξ0(I) Ad ˆ
+X dΛum(ˆξ)dϕ ˆ
+Xdϑ−1,
+(8b)
+Bt = dϑdϕξ0(I) Ad ˆ
+X dΛˆξ(um).
+(8c)
+Based on this linearisation, the covariance Σ of the EqF is assigned the dynamics
+˙Σ = AtΣ + ΣA⊤
+t + BtQtB⊤
+t ,
+where Qt ∈Sym+(l) represents the noise associated with the measurement of um, typically u −um ∼N(0, Qt).
+3
+
+
+The Iterative Equivariant Filter
+PREPRINT
+4
+Iterative Updates for Equivariant Filters
+The measurement update for discrete time measurements in an EqF was first described in [26], where a single step is computed
+to update the filter’s estimated state and covariance. This paper instead takes an iterative approach to the update step, framing
+it as an optimization procedure that aims to find the optimal state estimate and covariance, given all the information available
+at the time. Upon receiving a new measurement, the EqF possesses two independent pieces of information about the state ξ.
+First, according to the filter’s own state and covariance,
+ϑ(ϕ( ˇX−1, ξ)) ∼N(0, ˇΣ),
+where ˇX = ˆX(t−
+k ) ∈G and ˇΣ = Σ(t−
+k ) ∈Sym+(m) capture the filter’s information state immediately prior to the receipt of
+a new measurement. Second, according to the new measurement,
+y −h(ξ) ∼N(0, R),
+where R ∈Sym+(n) is the covariance of the noise associated with the measurement process. These two items can be combined
+into a cost function S : M →R+ for the unknown state ξ, defined by
+S(ξ) := 1
+2r(ξ)⊤diag(ˇΣ−1, R−1)r(ξ),
+(9)
+r(ξ) :=
+
+ϑ(ϕ( ˇX−1, ξ))
+y −h(ξ)
+
+,
+(10)
+where r : M →Rm+n is termed the residual. Unlike a classical, extended, or invariant Kalman filter, the EqF state belongs to
+the group G rather than the state space M. This means that, to optimise over a group element, the cost function and residual
+definitions have to be lifted to ˜S : G →R+ and ˜r : G →Rm+n, defined by
+˜S(X) := S(ϕ(X, ξ0))
+= 1
+2 ˜r(X)⊤diag(ˇΣ−1, R−1)˜r(X),
+(11)
+˜r(X) := r(ϕ(X, ξ0))
+=
+
+ϑ(ϕ(X ˇX−1, ξ0))
+y −h(ϕ(X, ξ0))
+
+.
+(12)
+The following theorem details how to compute each iteration of a Gauss-Newton algorithm to estimate ˆX that optimises ˜S.
+Upon receiving a measurement, the IterEqF computes the Gauss-Newton iterations described below until convergence or until
+a maximum number of iterations is reached.
+Theorem 4.1. Let ˆX0 = ˇX ∈G and ˆΣ0 = ˇΣ ∈Sym+(m) be initial estimates of the optimum and inverse Hessian of the cost
+function ˜S as defined in (11). Then the Gauss-Newton iterations are defined for each j = 0, 1, ... by
+εj = ϑ(ϕ( ˆXj ˇX−1, ξ0))
+(13a)
+ˇΣj = J−1
+j
+ˇΣJ−⊤
+j
+(13b)
+Kj = ˇΣjC⊤
+j
+ Cj ˇΣjC⊤
+j + R
+−1
+(13c)
+δj = Kj(y −h(ϕ( ˆXj, ξ0)) + CjJ−1
+j
+εj) −J−1
+j
+εj
+(13d)
+ˆXj+1 = exp(αjΘδj) ˆXj
+(13e)
+ˆΣj+1 = (Im −KjCj)ˇΣj,
+(13f)
+where Jj ∈Rm×m and Cj ∈Rn×m are defined by
+Jj = dϑ · dϕ ˆ
+Xj ˇ
+X−1 · dϕξ0 · Θ,
+(14)
+Cj = dh · dϕ ˆ
+Xj · dϕξ0 · Θ,
+(15)
+and αj > 0 is a step size that may be determined by a chosen line search method.
+Proof. First note that any perturbation ∆ˆXj with ∆∈stabϕ(ξ0) leaves the residual ˜r unchanged. Therefore, it suffices to
+consider perturbations of the form ∆= Θδ, where δ ∈Rm. Fix j ∈N, then the residual for a perturbation ∆j = Θδj ∈g
+4
+
+
+The Iterative Equivariant Filter
+PREPRINT
+about the current value ˆXj is given by
+˜r( exp(Θδj) ˆXj)
+=
+
+ϑ(ϕ(exp(∆j) ˆXj ˇX−1, ξ0))
+y −h(ϕ(exp(∆j) ˆXj, ξ0))
+
+=
+
+ϑ(ϕ( ˆXj ˇX−1, ϕ(exp(∆j), ξ0)))
+y −h(ϕ ˆ
+Xj(ϕξ0(exp(∆j))))
+
+=
+ϑ ◦ϕ ˆ
+Xj ˇ
+X−1 ◦ϕξ0 ◦exp(∆j)
+y −h ◦ϕ ˆ
+Xj ◦ϕξ0(exp(∆j))
+
+= ˜r( ˆXj) +
+ 
+dϑ · dϕ ˆ
+Xj ˇ
+X−1 · dϕξ0
+−dh · dϕ ˆ
+Xj · dϕξ0
+!
+∆j + O(|∆j|2)
+= ˜r( ˆXj) +
+
+Jj
+−Cj
+
+δj + O(|δj|2).
+The Gauss-Newton update is therefore given by
+Wδj = −
+
+Jj
+−Cj
+⊤
+diag(ˇΣ−1, R−1)˜r( ˆXj)
+= −
+ J⊤
+j ˇΣ−1
+−C⊤
+j R−1 
+ϑ(ϕ( ˆXj ˇX−1, ξ0))
+y −h(ϕ( ˆXj, ξ0))
+
+= −J⊤
+j ˇΣ−1ϑ(ϕ( ˆXj ˇX−1, ξ0))
++ C⊤
+j R−1(y −h(ϕ( ˆXj, ξ0)))
+= −J⊤
+j ˇΣ−1εj + C⊤
+j R−1(y −h(ϕ( ˆXj, ξ0))),
+where W ∈Sym+(m) is the approximate Hessian along the image of Θ in g, given by
+W :=
+
+Jj
+−Cj
+⊤
+diag(ˇΣ−1, R−1)
+
+Jj
+−Cj
+
+= J⊤
+j ˇΣ−1Jj + C⊤
+j R−1Cj
+= ˇΣ−1
+j
++ C⊤
+j R−1Cj,
+where ˇΣj is defined in (13b). Using the matrix inversion lemma [31, Corollary 2.8.8],
+W −1C⊤
+j = (ˇΣj −ˇΣjC⊤
+j (R + Cj ˇΣjC⊤
+j )−1Cj ˇΣj)C⊤
+j
+= ˇΣjC⊤
+j −ˇΣjC⊤
+j (R + Cj ˇΣjC⊤
+j )−1Cj ˇΣjC⊤
+j
+= ˇΣjC⊤
+j + ˇΣjC⊤
+j (R + Cj ˇΣjC⊤
+j )−1R
+−ˇΣjC⊤
+j (R + Cj ˇΣjC⊤
+j )−1(R + Cj ˇΣjC⊤
+j )
+= ˇΣjC⊤
+j (R + Cj ˇΣjC⊤
+j )−1R
+= KjR.
+Therefore, the update δj is computed as
+δj = W −1(−J⊤
+j ˇΣ−1εj + C⊤
+j R−1(y −h(ϕ( ˆXj, ξ0))))
+= −W −1(ˇΣ−1
+j J−1
+j
+εj −C⊤
+j R−1(y −h(ϕ( ˆXj, ξ0))))
+= −W −1
+(ˇΣ−1
+j
++ C⊤
+j R−1Cj)J−1
+j
+εj
+−C⊤
+j R−1(y −h(ϕ( ˆXj, ξ0)) + CjJ−1
+j
+εj)
+
+= −J−1
+j
+εj + W −1C⊤
+j R−1(y −h(ϕ( ˆXj, ξ0)) + CjJ−1
+j
+εj)
+= −J−1
+j
+εj + Kj(y −h(ϕ( ˆXj, ξ0)) + CjJ−1
+j
+εj),
+This verifies the formula for the update ∆j = Θδj, so all that remains is to verify the updated covariance ˆΣj+1. The covariance
+ˆΣj+1 is simply found as the inverse of the approximate Hessian of the cost; that is,
+ˆΣj+1 = (ˇΣ−1
+j
++ C⊤
+j R−1Cj)−1 = (I −KjCj)ˇΣj,
+where the last equality follows once more from the matrix inversion lemma [31, Corollary 2.8.8].
+5
+
+
+The Iterative Equivariant Filter
+PREPRINT
+The proposed iteration addresses a cost ˜S that has been lifted to the Lie group from a cost S that was posed on a (possibly lower-
+dimensional) homogeneous space, in contrast to existing works [22, 24, 29] that address costs directly posed on the Lie group.
+The resulting procedure appears similar to prior solutions on the surface, but special care is taken to ensure that the perturbation
+on the Lie group at each step is a descent direction, and that the degenerate directions in the cost function (associated with
+lifting) do not cause instability. Additionally, the final covariance (inverse Hessian) ˆΣj is deliberately computed in the local
+coordinates of the manifold, rather than in the Lie algebra of the group, to ensure that the final approximation of the cost
+function is also well-defined on the homogeneous space.
+In (13b), the covariance of the prior information is explicitly modified by the nonlinear change of coordinates associated with
+the changing posterior ˆXj. This corresponds exactly to the reset step that is often applied to improve performance of geometric
+filters, and is likewise associated with nonlinear modification of filter error coordinates [12, 25–28]. The appearance of the
+reset step as a byproduct of the Gauss-Newton formulation is similarly recovered by [22, 23], although these prior works only
+addressed systems with Lie-group state spaces. In contrast, the iterative IEKF by Goffin et al. [24] deliberately omits the reset
+step to preserve compatibility properties of the IEKF for systems with unobservability. The present work is the first to derive
+the IterEqF for systems on homogeneous spaces (not just Lie groups) and confirms the reset step as a natural consequence of
+the Gauss-Newton formulation of the update step.
+5
+Example: Range-based Localisation
+To demonstrate the IterEqF, we conducted simulations of a kinematic robot equipped with a Ultra-Wide Band (UWB) range
+sensor, providing distances of the robot to beacons at known locations. Formally, the state of the robot is (θ, p) ∈SO(2) × R2,
+where θ denotes the angle of the robot and p denotes the position of the robot, both with respect to some chosen stationary
+reference frame. For simplicity, the state space SO(2) × R2 is identified with the Lie group SE(2), and the robot’s pose is
+written as P = (R, p) ∈SE(2), where R ∈SO(2) is the rotation matrix associated with the angle θ. The kinematics of the
+robot are then given by
+˙P = f(ω,v)(P) = PU,
+U =
+
+ω×
+ve1
+01×2
+0
+
+∈se(2),
+where ω ∈R is the angular velocity of the robot, and v ∈R is the forward translational velocity of the robot, both expressed
+in the body-fixed frame, and e1 ∈R2 is the first basis vector. Given a UWB beacon located at ℓi in the reference frame, the
+measured range from the robot to the beacon is given by
+yi = hi(P) = ∥p −ℓi∥.
+Here, yi ∈R is the measured range and hi : SE(2) →R is the measurement function corresponding to beacon i.
+5.1
+EqF Construction
+The first step in developing an EqF for the problem is to select a transitive group action on the state space. We choose to use
+ϕ : SE(2) × SE(2) →SE(2) given by
+ϕ(X, P) = PX.
+It is easily verified that this is indeed a transitive group action. Consider the map Λ : SE(2) × R2 →se(2) given by
+Λ(P, (ω, v)) :=
+
+ω×
+ve1
+01×2
+0
+
+.
+Then Λ is clearly a lift as it satisfies (4), and, in particular, it is the only lift for the system considered since ϕ is free as well as
+transitive. Notably, Λ is independent of its first argument, which greatly simplifies the computation of the EqF matrices At and
+Bt. Next, we choose the normal coordinates ϑ : SE(2) →R3 to be given by
+ϑ(P) := log(P)∨,
+ϑ−1(ε) := exp(ε∧),
+where the wedge map ·∧: R3 →se(2) is defined by
+ ω
+u1
+u2
+!∧
+:=
+ 0
+−ω
+u1
+ω
+0
+u2
+0
+0
+0
+!
+,
+and the vee map ·∨: se(2) →R3 is its inverse. The origin ξ0 = ϑ−1(0) is simply the identity in SE(2).
+Implementation of the EqF requires computing formulas for the matrices At, Bt, Cj, Jϑ(ε). For the matrix At given by (8b),
+the fact that Λ is independent of the state means that dΛu ≡0, and thus At ≡0 also. The matrix Bt is given as
+Bt =
+
+1
+01×2
+−1×ˆp
+ˆR
+ 
+1
+0
+02×1
+e1
+
+=
+
+1
+0
+−1×ˆp
+ˆRe1
+
+,
+6
+
+
+The Iterative Equivariant Filter
+PREPRINT
+where ˆR ∈SO(2) and ˆp ∈R2 are the rotation and translation components of ˆX, respectively, and
+q× =
+
+0
+−q
+q
+0
+
+,
+for all q ∈R. For a given ˆXj = ( ˆRj, ˆpj) ∈SE(2), the matrix Cj corresponding to beacon i is given by
+Cj = (ˆpj −ℓi)⊤
+∥ˆpj −ℓi∥
+ 1×ˆpj
+I2
+
+.
+For multiple beacons, the individual Cj matrices may be vertically stacked. Finally, the matrix Jϑ is given by
+Jϑ(ε)[δ] = d log(exp(ε))[δ exp(ε)]
+= I3 −1
+2 adε +β(εθ) ad2
+ε,
+β(θ) := 1
+θ2 −1 + cos(θ)
+2θ sin(θ) .
+This is the inverse of what is referred to as the left Jacobian of SE(2) [15].
+5.2
+Simulation Results
+−10
+−5
+0
+5
+10
+15
+20
+Position x [m]
+−5
+0
+5
+Position y [m]
+Example 3-Landmark Lissajous Trajectory
+True
+Standard EqF
+Iterated EqF
+Landmarks
+0
+10
+20
+30
+40
+50
+60
+70
+80
+Time [s]
+10−2
+10−1
+100
+position error [m]
+Position Error Mean and 95% Bounds
+Standard EqF
+Iterated EqF
+0
+10
+20
+30
+40
+50
+60
+70
+80
+Time [s]
+10−1
+101
+heading error [deg]
+Heading Error Mean and 95% Bounds
+0
+10
+20
+30
+40
+50
+60
+70
+80
+Time [s]
+5
+10
+# Iterations
+Iterations per Measurement Update
+Mean
+95% bounds
+0
+10
+20
+30
+40
+50
+60
+70
+80
+Time [s]
+100
+101
+NEES
+Mean NEES Over N=100 Trials
+Standard EqF
+Iterated EqF
+95% consistency region
+Expected NEES = 3
+Figure 1: The results of a simulation comparing the IterEqF with a standard (single update) EqF. The first subplot shows the
+evolutions of example trajectories compared to the ground truth. The second and third show the evolution of position errors
+and heading errors over 100 trials. The fourth subplot shows the distribution of the number of iterations used by the IterEqF at
+each time. The last subplot shows the average NEES of the filters over time.
+To compare the IterEqF with the standard EqF, we simulated a mobile robot travelling along a figure-eight Lissajous curve with
+its position determined by p(t) = (6 sin( 2πt
+40 ), 4 sin( 4πt
+40 )) and its angle θ(t) determined such that the robot’s heading remains
+7
+
+
+The Iterative Equivariant Filter
+PREPRINT
+tangent to the path. The period of the Lissajous is 40 s, and the simulation was run for 80 s using 50 Hz Euler integration
+for continuous-time processes. The forward and angular velocities were corrupted with zero-mean Gaussian noise of standard
+deviations 0.01 m/s and 0.01 rad/s, respectively. We simulated 3 landmarks located at
+ℓ1 = (4, 0),
+ℓ2 = (−7, 5),
+ℓ3 = (−7, −5).
+The range measurements were provided at 2 Hz and were corrupted with zero-mean Gaussian noise of standard deviation
+0.1 m. The initial filter covariance was set to Σ(0) = diag(( π
+2 )2, 2.02, 2.02), and the initial pose estimate was given by
+ˆX(0) = exp(ε∧
+0 )P(0), where P(0) ∈SE(2) is the true initial pose and ε0 ∼N(0, Σ(0)). The simulation was implemented in
+Python, and the code is publicly available2.
+Figure 1 shows the result of the simulation repeated over 100 trials. The top subplot shows example trajectories of the iterative
+and standard EqF compared to the ground truth. The heading angle of the standard EqF converges slowly, leading to increasing
+position errors between measurements, while the IterEqF heading angle converges quickly. The second and third subplot show
+that the mean position and heading angle both converge significantly more quickly for the IterEqF as compared to the standard
+EqF, which corresponds to the high number of iterations (shown in the fourth subplot) during the initial 5 s of the simulation.
+Around 30 s, both the iterative and standard EqF have completely converged, and their accuracy is matched from this point
+on. The fluctuations in the estimation errors are associated with regions where the position and heading are less easily inferred
+from the range measurements. The bottom subplot shows the filters’ Normalised Estimation Error Squared (NEES) ε⊤Σ−1ε
+over time, which demonstrates that the IterEqF is significantly more statistically consistent than the standard EqF during the
+transient phase. In summary, while the IterEqF necessarily incurs a greater computational cost, it is able to converge far more
+rapidly than a standard EqF thanks to these iterations, which is especially relevant to problems like range-based localisation
+where observability may be challenging.
+6
+Conclusion
+This paper presents the IterEqF. The motivation behind deriving the IterEqF is to exploit the features of both iteration and
+equivariance thereby leading to a high-performance filter well suited to navigation problems. The IterEqF correction step is
+found by solving a weighted nonlinear least squares problem using the Gauss-Newton algorithm. Interestingly, the reset step
+naturally appears in the iterative correction, circumventing any justification for why the reset step is or is not needed. Monte-
+Carlo simulation results verify that the proposed IterEqF realizes superior convergence properties, in terms of both estimation
+error and covariance, relative to the standard EqF.
+References
+[1]
+J. C. Kinsey and L. L. Whitcomb, “Adaptive Identification on the Group of Rigid-Body Rotations and Its Application to Underwater
+Vehicle Navigation,” IEEE Trans. Robotics, vol. 23, no. 1, pp. 124–136, 2007.
+[2]
+R. Mahony, T. Hamel, and J.-M. Pflimlin, “Nonlinear complementary filters on the special orthogonal group,” IEEE Trans. Automatic
+Control, vol. 53, no. 5, pp. 1203–1218, 2008.
+[3]
+M.-D. Hua, M. Zamani, J. Trumpf, R. Mahony, and T. Hamel, “Observer Design on the Special Euclidean Group SE(3),” in Proc. of
+the IEEE Conference on Decision and Control and European Control Conference, 2011, pp. 8169–8175.
+[4]
+M.-D. Hua, T. Hamel, R. Mahony, and J. Trumpf, “Gradient-Like Observer Design on the Special Euclidean Group SE(3) with System
+Outputs on the Real Projective Space,” in Proc. of the IEEE Conference on Decision and Control, 2015, pp. 2139–2145.
+[5]
+D. E. Zlotnik and J. R. Forbes, “Higher Order Nonlinear Complementary Filtering on Lie Groups,” IEEE Trans. Automatic Control,
+vol. 64, no. 5, pp. 1772–1783, 2019.
+[6]
+S. Berkane, “Tutorial on Aided Inertial Navigation Systems: A Modern Treatment Using Lie-Group Theoretical Methods,” arXiv,
+2026, arXiv:2603.07143v2.
+[7]
+S. Benahmed, S. Berkane, and T. Hamel, “A Geometric Approach For Pose and Velocity Estimation Using IMU and Inertial/Body-
+Frame Measurements,” in Proc. of the IEEE Conference on Decision and Control, 2025.
+[8]
+M. Boughellaba, A. Tayebi, J. R. Forbes, and S. Berkane, “Nonlinear Observer Design for Visual-Inertial Odometry,” arXiv, 2026,
+arXiv:2601.07156v1.
+[9]
+R. Mahony and T. Hamel, “A Geometric Nonlinear Observer for Simultaneous Localisation and Mapping,” in Proc. of the IEEE
+Conference on Decision and Control, 2017, pp. 2408–2415.
+[10]
+D. E. Zlotnik and J. R. Forbes, “Gradient-Based Observer for Simultaneous Localization and Mapping,” IEEE Trans. Automatic
+Control, vol. 63, no. 12, pp. 4338–4344, 2018.
+[11]
+E. J. Lefferts, F. L. Markley, and M. D. Shuster, “Kalman Filtering for Spacecraft Attitude Estimation,” Journal of Guidance, Control,
+and Dynamics, vol. 5, no. 5, pp. 417–429, 1982.
+[12]
+F. L. Markley, “Attitude Error Representations for Kalman Filtering,” Journal of Guidance, Control, and Dynamics, vol. 26, no. 2,
+pp. 311–317, 2003, doi:10.2514/2.5048.
+[13]
+R. Zanetti, M. Majji, R. H. Bishop, and D. Mortari, “Norm-Constrained Kalman Filtering,” AIAA Journal of Guidance, Control, and
+Dynamics, vol. 32, no. 5, pp. 1458–1465, 2009.
+2github.com/pvangoor/iterative equivariant filter
+8
+
+
+The Iterative Equivariant Filter
+PREPRINT
+[14]
+J. R. Forbes, A. de Ruiter, and D. E. Zlotnik, “Continuous-Time Norm-Constrained Kalman Filtering,” Automatica, vol. 50, no. 10,
+pp. 2546–2554, 2014.
+[15]
+J. Sol`a, J. Deray, and D. Atchuthan, “A Micro Lie Theory for State Estimation in Robotics,” arXiv, 2021, arXiv:1812.01537.
+[16]
+A. Barrau and S. Bonnabel, “The Invariant Extended Kalman Filter as a Stable Observer,” IEEE Trans. Automatic Control, vol. 62,
+no. 4, pp. 1797–1812, 2017.
+[17]
+A. Barrau and S. Bonnabel, “Invariant Kalman Filtering,” Annual Review of Control, Robotics, and Autonomous Systems, vol. 1,
+no. 521, pp. 1–5, 2018.
+[18]
+P. van Goor, T. Hamel, and R. Mahony, “Equivariant Filter (EqF): A General Filter Design for Systems on Homogeneous Spaces,” in
+Proc. of the IEEE Conference on Decision and Control, 2020, pp. 5401–5408.
+[19]
+R. Mahony, P. van Goor, and T. Hamel, “Observer Design for Nonlinear Systems with Equivariance,” Annual Review of Control,
+Robotics, and Autonomous Systems, vol. 5, pp. 221–252, 2022.
+[20]
+A. Fornasier, Y. Ge, P. van Goor, R. Mahony, and S. Weiss, “Equivariant Symmetries for Inertial Navigation Systems,” Automatica,
+vol. 181, p. 112 495, 2025.
+[21]
+B. M. Bell and F. W. Cathey, “The Iterated Kalman Filter Update as a Gauss-Newton Method,” IEEE Trans. Automatic Control, vol. 38,
+no. 2, pp. 294–297, 1993.
+[22]
+G. Bourmaud, R. Megret, A. Giremus, and Y. Berthoumieu, “From Intrinsic Optimization to Iterated Extended Kalman Filtering on
+Lie Groups,” Journal of Mathematical Imaging and Vision, vol. 55, pp. 284–303, 2016.
+[23]
+B. Liu, H. Chen, and W. Zhang, “A General Iterative Extended Kalman Filter Framework for State Estimation on Matrix Lie Groups,”
+in Proc. of the IEEE Conference on Decision and Control, 2023, pp. 1177–1182.
+[24]
+S. Goffin, A. Barrau, S. Bonnabel, O. Br¨uls, and P. Sacr´e, “Iterated Invariant Extended Kalman Filter (IterIEKF),” IEEE Trans. Auto-
+matic Control, vol. 71, no. 5, pp. 3380–3387, 2026.
+[25]
+M. W. Mueller, M. Hehn, and R. D’Andrea, “Covariance Correction Step for Kalman Filtering with an Attitude,” Journal of Guidance,
+Control, and Dynamics, vol. 40, no. 9, pp. 2301–2306, 2017.
+[26]
+Y. Ge, P. van Goor, and R. Mahony, “Equivariant Filter Design for Discrete-Time Systems,” in Proc. of the IEEE Conference on
+Decision and Control, 2022, pp. 1243–1250.
+[27]
+Y. Ge, P. van Goor, and R. Mahony, “A Geometric Perspective on Fusing Gaussian Distributions on Lie Groups,” IEEE Control
+Systems Letters, vol. 8, pp. 844–849, 2024.
+[28]
+Y. Ge et al., “The Difference Between the Left and Right Invariant Extended Kalman Filter,” Control Engineering Practice, vol. 167,
+p. 106 656, 2026.
+[29]
+W. Lu, Y. Luo, C. Guo, and W. Jiang, “An Iterated Equivariant Filter and Its Application in Tightly Coupled SINS/GNSS Integrated
+Navigation,” IEEE Trans. Instrumentation and Measurement, vol. 74, pp. 1–14, 2025.
+[30]
+J. M. Lee, Introduction to Smooth Manifolds (Graduate Texts in Mathematics), 2nd ed. New York: Springer, 2012.
+[31]
+D. S. Bernstein, Matrix Mathematics: Theory, Facts, and Formulas. Princeton university press, 2009.
+9

@@ -48,7 +48,7 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-09-14</span>
+      <span class="dpr-home-dashboard-kicker">2026-09-15</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
     <strong class="dpr-home-dashboard-count">共 2 篇</strong>
@@ -58,7 +58,7 @@
     <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>1</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>1</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-09-14 22:53:21 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-09-15 22:11:54 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,7 +69,9 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日精读1篇、速读1篇，重点聚焦航天器相对导航与视觉重定位。最值得看的是9.0分的等变滤波器方案，用距离与方位测量提升航天器非线性相对导航精度。普通读者可优先了解航天器自主导航，再按兴趣浏览6.0分的视觉点变换重定位速读。</p>
+<p>今日精选 2 篇，精读 1 篇、速读 1 篇，主打 AI 位姿估计与滤波方法两条线。</p>
+<p>最值得看的是 9.0 分的《DreamSat-Bench》，它搭建并初步测试了基于 3D 重建做 AI 位姿估计的测试平台，值得关注该方向的评测基准建设；6.0 分的《The Iterative Equivariant Filter》可作为滤波类方法的速读补充。</p>
+<p>普通读者可先读 DreamSat-Bench 摘要了解位姿估计评测思路，若对滤波感兴趣再翻后一篇，不必逐字精读。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -81,7 +83,7 @@
     <strong class="dpr-home-dashboard-count">1 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="An Equivariant Filter for Spacecraft Nonlinear Relative Navigation with Range and Bearing Measurements">An Equivariant Filter for Spacecraft Nonlinear Relative Navigation with Range and Bearing Measurements</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="DreamSat-Bench: Development and Initial Testing of a Testbed for AI-Based Pose Estimation from 3D Reconstruction">DreamSat-Bench: Development and Initial Testing of a Testbed for AI-Based Pose Estimation from 3D Reconstruction</span></li></ul>
   </div>
   <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>1</strong></span></div>
 </section>
@@ -94,7 +96,7 @@
     <strong class="dpr-home-dashboard-count">1 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="DRS-VPT: Directly Relocalizing in a Scan with Vision Point Transformers">DRS-VPT: Directly Relocalizing in a Scan with Vision Point Transformers</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="The Iterative Equivariant Filter">The Iterative Equivariant Filter</span></li></ul>
   </div>
   <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>1</strong></span></div>
 </section>

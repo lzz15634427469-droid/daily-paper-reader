@@ -1,0 +1,41 @@
+{
+  "date": "20260915",
+  "date_label": "",
+  "generated_at": "2026-09-15 22:11:54 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.14183v1",
+      "route": "202609/15/2609.14183v1-dreamsat-bench-development-and-initial-testing-of-a-testbed-for-ai-based-pose-estimation-from-3d-reconstruction",
+      "title": "DreamSat-Bench: Development and Initial Testing of a Testbed for AI-Based Pose Estimation from 3D Reconstruction",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "面向AI相对导航与位姿估计的基准测试平台，支持仿真到现实评估",
+      "first_seen_at": "2026-09-15 22:11:54 UTC",
+      "updated_at": "2026-09-15 22:11:54 UTC"
+    },
+    {
+      "paper_id": "2609.12328v1",
+      "route": "202609/15/2609.12328v1-the-iterative-equivariant-filter",
+      "title": "The Iterative Equivariant Filter",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向导航状态与姿态估计的李群等变滤波器",
+      "first_seen_at": "2026-09-15 22:11:54 UTC",
+      "updated_at": "2026-09-15 22:11:54 UTC"
+    }
+  ]
+}

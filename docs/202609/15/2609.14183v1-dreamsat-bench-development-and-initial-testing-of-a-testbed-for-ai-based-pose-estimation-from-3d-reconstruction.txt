@@ -1,0 +1,1054 @@
+DreamSat-Bench: Development and Initial Testing of a Testbed for AI-Based Pose
+Estimation from 3D Reconstruction
+Alex Posadas-Nava1, August Berne2, Giovanni Lavezzi3, Kareena Shah4, Alejandro
+Carrasco5, Josiane Uwumukiza6
+Massachusetts Institute of Technology
+Giacomo Battaglia7, Paolo Panicucci8
+Politecnico di Milano
+Minduli C. Wijayatunga9
+University of Illinois Urbana-Champaign
+Victor Rodriguez-Fernandez10,
+Universidad Polit´ecnica de Madrid
+Richard Linares11
+Massachusetts Institute of Technology
+ABSTRACT
+This paper presents the development and initial testing of DreamSat-Bench, a modular rendezvous and proximity
+operation testbed designed to benchmark AI-based relative navigation techniques. By integrating a software- and
+hardware-in-the-loop robotic pipeline, the platform enables a seamless transition from digital simulation to physical
+reality. DreamSat-Bench unifies state-of-the-art robotic learning tools such as MuJoCo, Isaac Lab, and LeRobot into
+a single benchmarking platform, utilizing robotic arms to trace 3D trajectories. The platform allows for extensive
+customization of orbital environments and lighting to evaluate the simulation-to-reality gap. We demonstrate the
+testbed’s utility by evaluating an end-to-end vision-based navigation pipeline that pairs DreamSat, a generative AI
+framework for single-view 3D reconstruction, with FoundationPose for zero-shot 6-DoF tracking of unseen spacecraft.
+Initial testing explores mission-representative orbital segments, including fixed-point station-keeping and fly-around
+characterization. Through a series of parametric studies, we quantify the impacts of reconstruction latency, mesh
+resolution, orbital range, and illumination geometry on pose estimation accuracy. Finally, a preliminary hardware-
+in-the-loop campaign qualitatively validates the physical deployment of the pipeline, identifying target symmetry and
+accumulated tracking drift as critical factors for robust navigation. DreamSat-Bench provides a rigorous framework
+for maturing autonomous navigation with unprepared space assets in the absence of prior geometric models.
+1Graduate Student, Department of Aeronautics and Astronautics, aposadas@mit.edu
+2Undergraduate Student, Department of Aeronautics and Astronautics, adberne@mit.edu
+3Research Scientist, Department of Aeronautics and Astronautics, glavezzi@mit.edu
+4Undergraduate Student, Department of Aeronautics and Astronautics, kareenas@mit.edu
+5Graduate Student, Department of Aeronautics and Astronautics, acarra@mit.edu
+6Intern, Department of Aeronautics and Astronautics, josianeu@mit.edu
+7Ph.D. Student, Department of Aerospace Science and Technology, giacomo.battaglia@polimi.it
+8Assistant Professor, Department of Aerospace Science and Technology, paolo.panicucci@polimi.it
+9Assistant Professor, Department of Aerospace Engineering, minduli@illinois.edu
+10Associate Professor, Department of Computer Systems Engineering, victor.rfernandez@upm.es
+11Associate Professor, Department of Aeronautics and Astronautics, linaresr@mit.edu
+The authors A. Posadas-Nava and A. Berne have equally contributed to this work.
+Research was sponsored by the Department of the Air Force Artificial Intelligence Accelerator and was accomplished under Cooperative Agreement Number
+FA8750-19-2-1000. The views and conclusions contained in this document are those of the authors and should not be interpreted as representing the official policies,
+either expressed or implied, of the Department of the Air Force or the U.S. Government. The U.S. Government is authorized to reproduce and distribute reprints for
+Government purposes notwithstanding any copyright notation herein. DO NOT USE ANY MARKINGS THAT APPEAR BELOW THIS LINE.
+arXiv:2609.14183v1  [cs.RO]  12 Sep 2026
+
+
+1.
+INTRODUCTION
+As the density of resident space objects (RSOs) in Low Earth Orbit continues to grow, the requirements for Space
+Situational Awareness (SSA) and Space Domain Awareness (SDA) have shifted from simple tracking to complex
+characterization. Future missions involving Active Debris Removal (ADR) and on-orbit servicing require the ability
+to perform Rendezvous and Proximity Operations (RPO) with unprepared or non-cooperative objects, targets for which
+no prior 3D model or cooperative markers exist.
+Although software-only simulations provide scalability, physical validation is essential to address the simulation-to-
+reality gap. To this end, several world-class facilities have been established, such as the Testbed for Rendezvous and
+Optical Navigation (TRON) at Stanford SLAB, which has produced pose estimation datasets like SPEED+ [1], and the
+European Space Agency’s (ESA) Rendezvous, Approach and Landing Simulator (GRALS) facility used for validating
+Guidance, Navigation, and Control (GNC) algorithms on scaled mockups [2]. Other researchers have utilized planar
+air-bearing testbeds for contact dynamics and adaptive control, including Carleton’s Spacecraft Proximity Operations
+Testbed (SPOT) [3, 4, 5] and Caltech’s Center for Autonomous Systems and Technologies (CAST) Multi-Spacecraft
+Testbed for Autonomy Research (M-STAR) facility [6]. Furthermore, laboratories like Florida Tech’s Orbital Robotic
+Interaction, On-Orbit Servicing and Navigation (ORION) [7] and KTH’s Space Robotics Lab [8] have expanded these
+capabilities into the realms of neural 3D reconstruction and modular, multi-agent autonomy. Notably, the Proxim-
+ity Operation of Spacecraft: Experimental hardware-In-the-loop DYNamic Simulator (POSEIDYN) testbed at the
+Naval Postgraduate School [9] has established a long-standing baseline for validating planar proximity maneuvers and
+robotic interaction with non-cooperative targets using floating simulators. Recent efforts have focused on bridging
+high-fidelity astrodynamics frameworks like Basilisk [10] with modular robotics middleware such as Robot Operat-
+ing System (ROS) 2 to enable a unified autonomy pipeline and seamless transitions between orbital simulation and
+hardware-in-the-loop (HITL) testing [11]. Comprehensive validation frameworks have been proposed that utilize a
+multi-layered approach, employing software-based simulation for high-level mission autonomy, arm-mounted optical
+testbeds for verifying perception algorithms with physical scale models, and planar air-bearing tables to emulate the
+contact-rich dynamics of robotic docking and manipulation, to simulate in-orbit servicing scenarios [12]. End-to-end
+frameworks like CORTEX have successfully integrated convex-based trajectory optimization with modular hardware-
+in-the-loop testbeds to demonstrate safe and precise guidance for close-range rendezvous and docking maneuvers
+[13].
+Spacecraft pose estimation is progressing from direct convolutional neural network (CNN) regression [14] and the
+identification of mission-specific structural markers [15] to zero-shot primitive-based abstractions [16] that utilize di-
+verse datasets like SPE3R [17] to generalize across unseen spacecraft geometries. These methods have been further
+enhanced by ambiguity-aware loss functions to mitigate shape-pose inconsistencies in symmetric targets [18]. To move
+beyond these geometric primitives, recent work has adopted 3D Gaussian Splatting (3DGS) for high-fidelity recon-
+struction [19], specifically leveraging primitive-based initializations to accelerate convergence and provide a geometric
+prior for unknown targets [20]. However, while these abstraction-based methods generalize to novel classes, they often
+produce coarse models that require high-quality initialization to avoid local minima during high-fidelity refinement.
+To address this, foundation models and generative synthesis are of great interest. NVIDIA’s FoundationPose (FP) [21]
+provides a unified framework for six-degree-of-freedom (6-DoF) pose estimation and tracking that generalizes to novel
+objects by leveraging large-scale synthetic data. Generative frameworks like DreamSat [22, 23] utilize diffusion-based
+priors to reconstruct 3D satellite geometries from single-view monocular observations. Building on these reconstruc-
+tions, DreamSat-Pose [24] enables single-shot 6-DoF pose estimation of unknown spacecraft by matching dense 2D
+image features with 3D geometric descriptors through a dual-stream transformer[24]. Together, these advancements
+move spacecraft navigation away from rigid geometric priors toward flexible, high-fidelity architectures capable of
+characterizing non-cooperative targets in real-time.
+This paper presents the preliminary development and initial testing of an RPO simulator testbed, DreamSat-Bench,
+that integrates generative AI-based 3D reconstruction with vision-based pose estimation to enable autonomous prox-
+imity maneuvers. The RPO simulator testbed, DreamSat-Bench, is a simulation suite designed to test and evaluate
+physical AI algorithms. DreamSat-Bench unifies state-of-the-art tools like MuJoCo [25], MuJoCo Menagerie [26],
+Isaac Lab [27], and LeRobot [28] into a single, cohesive benchmarking platform for robotic learning. MuJoCo excels
+at articulated, contact-rich robotic simulation, which allows us to create RPO mission scenarios using robotic arms.
+We attach spacecraft models to the robots’ end effectors to trace out trajectories in 3D space. The DreamSat-Bench en-
+
+
+vironment enables the emulation of RPO scenarios on physical hardware, effectively facilitating Software-in-the-loop
+(SITL) and Hardware-in-the-loop (HITL) simulations. We leverage the Relative Orbital Elements (ROE) [29] to de-
+sign a suite of mission-representative relative motion paths; while the platform is capable of simulating full-proximity
+approaches, this initial study focuses on characterizing navigation performance during fixed-point observations and
+fly-around trajectories. These trajectories are then converted into the Hill-Clohessy-Wiltshire (HCW) [30] frame to
+provide precise Cartesian relative states, which serve as the ground truth (GT) for our camera pointing and simulation
+logic. The 6-DoF pose estimation pipeline is built upon DreamSat [22, 23], a generative AI framework capable of
+reconstructing the 3D geometry of a target from a single monocular observation. While this architecture is designed
+to eventually utilize DreamSat-Pose [24], a concurrent effort focused on learned 2D-3D feature matching, this study
+adopts NVIDIA’s FoundationPose [21] as a state-of-the-art representative baseline for pose tracking. This allows for a
+rigorous evaluation of the testbed’s utility while the specialized DreamSat-Pose pipeline undergoes further refinement.
+For the initial testing of DreamSat-Bench, we evaluate the end-to-end pipeline across a suite of mission-representative
+orbital segments, focusing on fixed-point observations and fly-around characterizations. In SITL simulations, the
+framework is quantitatively benchmarked by comparing FP estimates against simulation GT across varying recon-
+struction times, mesh resolutions, orbital ranges, and illumination geometries. These assessments characterize the
+fundamental trade-offs between computational latency and tracking precision. Finally, a preliminary HITL campaign
+qualitatively validates the physical deployment of the pipeline, identifying the impact of target symmetry and accu-
+mulated tracking drift as key factors for future autonomous navigation refinement.
+2.
+FUNDAMENTALS
+In this section, fundamentals related to relative motion paths, 3D reconstruction, and pose estimation are introduced.
+2.1 Relative Motion Paths
+To design a suite of mission-representative relative motion paths, including fixed-point observations and fly-around
+characterizations, we leverage the ROE framework [29]. This parameterization is particularly suited for near-circular
+orbits as it provides a geometrically intuitive representation of the relative trajectory while avoiding mathematical
+singularities. The state of the deputy (or chaser) satellite relative to the chief (or target) is defined by the dimensionless
+ROE vector δα [31]:
+δα =
+
+
+δa
+δλ
+δex
+δey
+δix
+δiy
+
+
+=
+
+
+(ad −a)/a
+(ud −u)+(Ωd −Ω)cosi
+ed cosωd −ecosω
+ed sinωd −esinω
+id −i
+(Ωd −Ω)sini
+
+
+,
+(1)
+where the subscripts d and no subscript denote the deputy and chief satellites, respectively. Here, a is the semi-major
+axis, i the inclination, Ωthe right ascension of the ascending node (RAAN), and u the mean argument of latitude.
+The relative geometry is further characterized by the eccentricity vector δe = [δex,δey]T and the inclination vector
+δi = [δix,δiy]T, which can be expressed in polar form to describe the amplitude and phase of the relative motion:
+δe = δe
+
+cosφ
+sinφ
+
+,
+δi = δi
+
+cosθ
+sinθ
+
+,
+(2)
+where δe and δi represent the relative orbit’s size, while the phases φ (relative perigee) and θ (relative ascending
+node) determine the orientation of the relative ellipse. The Cartesian relative states are retrieved by converting the
+ROEs into the HCW frame. For a chief in a near-circular orbit, the first-order mapping between the ROEs and the
+Cartesian relative position (x: radial, y: along-track, z: cross-track) as a function of the argument of latitude u is:
+x(u) = a(δa−δex cosu−δey sinu)
+y(u) = a(δλ −3
+2δa(u−u0)+2δex sinu−2δey cosu)
+z(u) = a(δix sinu−δiy cosu)
+.
+(3)
+
+
+where u0 is the initial argument of latitude (set to zero at trajectory initialisation). This mapping constitutes the
+closed-form solution to the HCW equations of relative motion [30]:
+¨x = 3n2x+2n˙y
+¨y = −2n˙x
+¨z = −n2z
+,
+(4)
+where n =
+p
+µ/a3 is the mean motion of the chief orbit and µ is the standard gravitational parameter of the central
+body. Rather than integrating (4) numerically, the simulation evaluated (3) directly over a discrete set of argument-of-
+latitude values u ∈[0,2π), producing a sequence of waypoints that the deputy spacecraft tracks. This approach is exact
+under the linearization assumptions (near-circular chief orbit, small relative separations) and avoids accumulation of
+numerical integration error over the orbital period. Within the MuJoCo simulation environment, coordinates of target
+and chaser are expressed in the Radial-Transverse-Normal (RTN) Frame. This is the coordinate frame in which the
+radial direction is oriented directly out of the center of the Earth’s simulated location. The Transverse direction is
+in the direction of the target satellites simulated motion. The Normal is orthogonal to both in a right-handed sense,
+consequently pointing in the direction of the spacecraft’s angular momentum about the Earth.
+2.2 3D Reconstruction Models
+DreamSat [22, 23] enables the generation of novel viewpoints from a single scene, which is particularly valuable in
+the space domain for synthesizing 3D models of unprepared assets (e.g., derelict satellites or asteroids) from limited
+observational data. Previous benchmarking of several state-of-the-art 3D reconstruction models on custom spacecraft
+and asteroid datasets established that Hunyuan3D-2.0 [32] consistently outperforms alternative models across both 2D
+perceptual and 3D geometric metrics. Consequently, we adopt Hunyuan3D-2.0 as well as its lighter, faster variant,
+Hunyuan3D-mini-turbo, to generate the reconstructed object geometries that serve as the 3D representations for our
+pose estimation pipeline.
+2.3 Pose Estimation
+To evaluate the navigational performance of the DreamSat-Bench testbed, we utilize NVIDIA’s FoundationPose (FP)
+[21]. While the platform is designed to be model-agnostic and will eventually incorporate the custom DreamSat-Pose
+[24] pipeline, which focuses on monocular learned 2D-3D matching, FP currently serves as a robust, state-of-the-art
+baseline for 6-DoF tracking. FP is a generalist 6-DoF pose estimator and tracker trained on large-scale synthetic
+data from diverse 3D object repositories with domain randomization, demonstrating strong zero-shot generalization
+to unseen objects without fine-tuning. The method utilizes a transformer-based architecture to establish an iterative
+pose refinement process, where a neural network predicts the relative transformation required to align a 3D model
+with the observed image features [24]. For each pose, FoundationPose takes as input an RGB image, an object mask,
+a depth map, a normalized 3D mesh (.obj), and camera intrinsics. In our setup, all required inputs are provided by
+DreamSat-Bench. The method of retrieving these inputs is described in Section 3.2.1.
+3.
+DREAMSAT-BENCH: TESTBED
+In this section we present the DreamSat-Bench testbed, which is comprised of two primary components: a high-fidelity
+software simulation environment and a corresponding robotic hardware setup. The software component integrates
+orbital mechanics with a physics-based rendering engine to simulate both absolute Earth orbits and relative proximity
+operations between two spacecraft. Within this environment, the chaser spacecraft’s trajectory is traced by a virtual
+robotic arm whose base is maintained at a fixed relative distance from the target. By utilizing scaled orbits within the
+simulation, the platform enables a seamless transition of these trajectories to physical robotic hardware, allowing any
+relative orbit generated in software to be replicated and validated in a HITL setting.
+3.1 Software Setup
+The simulation environment is built on top of tooling developed in [33]. In this setup we target spacecraft RPO.
+DreamSat-Bench integrates several robotics and machine learning frameworks. MuJoCo [25] and serves as the under-
+lying physics engine; MuJoCo Menagerie [26] provides calibrated robot assets (a 7-DOF xArm7 manipulator in the
+present work). EnvRAANironments are exposed through the standard Gymnasium interface [34], enabling compati-
+bility with a broad range of policy architectures, or in our case, a computer vision pipeline.
+
+
+Fig. 1: DreamSat-Bench simulation environment. The red dots are the planned robotic motion that trace out a relative
+orbit around the target spacecraft.
+The software is modular. This means we are able to specify the Classical Orbital Elements (COEs) and ROEs used for
+different mission scenarios. The robotic arm’s end-effector represents the chaser spacecraft. Any target body, provided
+a 3D model is available, can be rendered and fixed in the RTN frame. The simulation decouples orbital dynamics from
+the physics engine through a two-stage process. In the first stage, orbital mechanics are propagated analytically.
+For circular orbits, the target spacecraft’s true anomaly advances at the constant mean motion. For elliptical orbits,
+Kepler’s equation is solved at each timestep to obtain the true anomaly and radius. In the relative-motion case, Gauss’s
+variational equations cast in ROEs with Hill dynamics generate a pre-computed waypoint sequence in the chief’s
+local RTN frame. In the second stage, the resulting positions and orientations are kinematically imposed onto the
+simulation by writing directly to MuJoCo’s joint position array, bypassing actuator dynamics entirely, and propagating
+the updated generalized coordinates to Cartesian body poses. This architecture cleanly separates trajectory fidelity
+(governed by the orbital propagator) from rendering and sensing fidelity (governed by the physics engine), allowing
+the orbital period to be time-scaled arbitrarily without destabilizing the simulator’s integrator. Because the orbital
+propagator is isolated, a perturbed propagator can be included to model perturbative forces such as J2, drag, and
+solar radiation pressure. The chaser always points its camera toward the target throughout the relative orbit to isolate
+pose estimation accuracy from relative dynamics. Earth’s rotation and a physically-motivated directional sun light
+(positioned at 1 AU) produce time-varying illumination conditions, while a high-resolution Earth cubemap texture and
+a black background provide a realistic visual context [35]. Figure 1 shows a rendering of the simulation environment.
+Note that we render the robotic arm as well as the planned relative orbit, but both can be visually hidden if desired.
+The simulation environment consists of a chaser and target spacecraft within a realistic orbital setting (e.g., Earth
+and celestial backgrounds with varying solar illumination conditions), utilizing a simulated camera with configurable
+intrinsics (focal length, resolution, and field-of-view). Depth information and segmentation masks of objects are
+accessible via MuJoCo. Trajectories and object sizes are scaled proportionally to fit within the robotic manipulator’s
+workspace while preserving the geometric relationship between the camera and the target spacecraft. Observation
+noise is independently configurable: Gaussian noise may be applied to 2-D keypoint detections (σpx) and to the camera
+orientation (σθ), allowing evaluation under clean or degraded sensing conditions. Two independent scale factors
+govern the scene: a global orbital scale (sorb = 10−7) maps physical distances to MuJoCo world coordinates, keeping
+large celestial bodies near the numerical origin to avoid floating-point precision loss at large coordinate magnitudes;
+and a workspace scale, sws, which maps the relative trajectory into the arm’s reachable volume:
+sws = α darm
+rorbit
+,
+(5)
+where darm is the XArm7 practical reach and α is a workspace fill fraction calibrated to the simulation geometry.
+Because the arm is never rescaled, sws must map rorbit such that the scaled trajectory falls within the arm’s kinematically
+feasible region, avoiding singularities near the base and near full extension. The value α was determined empirically
+to ensure Inverse Kinematics (IK) convergence [36, 37] during the relative motion of the arm around the target. Note
+that because the chaser’s relative orbit around the target is simulated with a robotic arm, the chaser cannot perform an
+
+
+Table 1: Modular simulation parameters configurable in DreamSat-Bench.
+Group
+Parameter
+Default
+Description
+Chief Orbit
+(ECI / COEs)
+a
+26,578km
+Chief semi-major axis
+e
+0
+Eccentricity
+i
+51.6◦
+Inclination
+Ω
+0◦
+RAAN
+ω
+0◦
+Argument of perigee
+ν0
+270◦
+Initial true anomaly
+ROEs
+δa
+0
+ROE semi-major axis
+δλ
+0
+ROE mean longitude
+δey
+0
+ROE eccentricity
+δix
+0
+ROE inclination
+δex = δiy
+rorbit/a
+In-plane ROE magnitude
+Relative Trajectory
+rorbit
+50–1000m
+Nominal relative orbit size
+Scaling
+sorb
+10−7
+Global orbital scale (sim-m / real-m)
+darm
+0.7m
+Arm workspace radius (maximum reach)
+α
+0.11
+Workspace utilisation factor
+sws
+α darm/rorbit
+Workspace scale (derived per preset)
+Time
+τ
+500×
+Simulation time scale (real-time multiplier)
+Earth rotation
+off
+Toggle kinematic Earth spin
+Orbital motion
+off
+Toggle Keplerian orbit propagation
+Sensor Noise
+σpx
+0 px (std. dev.)
+2D keypoint translation noise
+σθ
+0◦(std. dev.)
+Camera orientation noise
+Table 2: Simulated camera presets. Both share the same sensor resolution and principal point.
+Preset
+f [px]
+Resolution
+FOVy
+(cx,cy)
+Intended range
+Narrow field-of-view (NFOV)
+7315
+1280×1024
+≈8.0◦
+(640,512)
+100 m to 1000 m
+Wide field-of-view (WFOV)
+1545
+1280×1024
+≈36.5◦
+(640,512)
+< 100m
+arbitrary number of orbits around the target in the same direction due to the physical limits of the robot’s joints. To
+overcome this windup issue, the direction of the relative orbit is alternated after each full revolution (e.g., after the first
+revolution, the direction of the orbit changes from Counter-Clockwise (CCW) to Clockwise (CW) around the target,
+then after the second revolution, it changes from CW to CCW, and so on). Even if unphysical, this allows continuous
+frame extraction to test pose estimation when using hardware. Table 1 summarizes the configurable parameters for the
+simulation environment. The chief spacecraft orbit is specified by the six COEs in the Earth-Centered Inertial (ECI)
+frame: semi-major axis a, eccentricity e, inclination i, RAAN Ω, argument of perigee ω, and initial true anomaly
+ν0. Experiments are composed by pairing a camera preset with an orbit preset and a noise level. The camera preset
+determines the field-of-view (FOV) of the sensor, the focal length (f), and the principal points (cx,cy) reflecting
+different operational phases of an RPO mission. Table 2 lists the two available camera configurations.
+3.2 Perception Pipeline
+The perception pipeline transforms observation sequences produced by the simulation environment into per-frame
+6-DoF pose estimates of the target spacecraft. It consists of three sequential stages: dataset recording, single-image
+3D reconstruction, and pose tracking. Each stage is implemented such that any 3D reconstruction or pose tracking
+model can be substituted without modifying the experiment or evaluation code. In this investigation, Hunyuan3D is
+used for 3D reconstruction. Hunyuan3D requires only images as input, and capably reconstructs from single views.
+FP is used for pose tracking and offers zero-shot tracking on novel objects and includes model-based and model-free
+modes. Together, the system results in a training-free, deployment-ready pipeline with operational generalizability.
+
+
+3.2.1 Dataset Recording
+During simulation, the program writes observations to disk in the LeRobot dataset format [28]. Each episode stores
+the following data at a configurable frame rate:
+1. RGB video frames encoded as videos.
+2. A binary segmentation mask video for the target spacecraft.
+3. Rendered depth maps stored as per-frame compressed NPZ arrays at full sensor resolution.
+4. GT 6-DoF state: target position and quaternion in the world frame, and the 4×4 camera-to-world transform.
+5. Camera intrinsics saved as a matrix.
+6. A metadata file encoding the orbital parameters, camera preset, target physical size, and the scaling factor used
+to convert simulated-meter coordinates back to real-world meters at evaluation time.
+Recording is handled asynchronously: rendered frames are placed onto a queue and written to disk by a background
+thread, so saving data never pauses the simulation. Depth images, which are substantially larger than RGB frames (up
+to ∼1.3 GB per camera at 1280×1024 resolution), are stored in a memory-mapped file. This is a file on disk that the
+operating system exposes as if it were RAM, loading only the portions actively being written rather than holding the
+entire array in memory at once.
+3.2.2 3D Reconstruction
+Given a recorded dataset, a single RGB frame from the stored video is extracted (defaulting to the middle frame if
+none is specified) and passed to a reconstruction model. The input frame undergoes automatic background removal,
+as implemented in Hunyuan3D, before being submitted to the model. The reconstructed mesh is then post-processed
+in two steps:
+1. Scale normalization: Hunyuan3D outputs in its own internal normalized coordinate space (vertices roughly
+within [−1,1]), so the mesh is centered at its bounding-box midpoint and uniformly scaled so that its maximum
+absolute vertex extent matches that of the GT Computer-Aided Design (CAD) reference mesh in real meters.
+This preserves the physical aspect ratio of the spacecraft.
+2. Mesh decimation: If the face count exceeds a target threshold, the mesh is decimated using Open3D quadric dec-
+imation [38]. Trimesh’s built-in decimation is intentionally avoided here, as it silently corrupts non-watertight
+meshes by collapsing vertices while barely reducing face count, which causes the downstream pose estimator to
+return degenerate poses. Decimation reduces the memory required to store and transmit the mesh.
+The reconstruction stage supports single-view input as well as multi-view input, in which case frames are extracted
+at configurable indices, and the model is automatically switched to its multi-view variant. Only single-view recon-
+struction is considered in this work and only a single reconstructed mesh is used per dataset. The pipeline is backend-
+agnostic.
+3.2.3 Pose Tracking
+Pose estimation is performed frame-by-frame, which coordinates the following steps for each frame in the sequence:
+1. Frame extraction: The RGB frame is extracted from the stored video. Depth is loaded from the pre-indexed
+NPZ arrays; the entire compressed array is decompressed into RAM on first access, and subsequent frames are
+served from the in-memory buffer.
+2. Coordinate frame conversion: GT poses stored in the dataset use MuJoCo’s OpenGL camera convention (X
+right, Y up, Z backward). The pose estimator, FP, expects the OpenCV convention (X right, Y down, Z forward).
+The conversion is applied by flipping the Y and Z axes (Tcv = diag(1,−1,−1,1)·Tgl).
+3. Mesh scale computation: The mesh is scaled to physical real-world meters using the target’s known physical
+size from the metadata:
+sreal = dtarget/2
+max|v|
+(6)
+where dtarget is the target’s physical diameter in meters and max|v| is the maximum absolute vertex extent of the
+normalized mesh. The pose estimator, therefore, operates entirely in real-world meters.
+
+
+4. Global registration: On the first frame, the pose estimator performs a global registration by generating a rotation
+hypothesis grid, rendering the mesh from each candidate pose, and scoring matches against the observed RGB
+and depth using the scorer network. The top hypothesis is then refined iteratively by the refiner network.
+5. Sequential tracking: Once initialized, subsequent frames use a lightweight tracking update conditioned on the
+previous frame’s pose. If tracking fails (identity matrix returned), the estimator resets and re-triggers global
+registration on the next frame. Optionally, periodic re-registration can prevent long-term drift.
+6. Depth normalization: FP’s internal renderer has a hardcoded zfar = 100 m, and its XYZ normalization assumes
+tabletop-scale scenes. For orbital ranges beyond ∼50 m, a normalization operation rescales the depth and mesh
+values so that the median object depth maps to 1 m before calling the estimator, then unscales the translation on
+output. The rescaling is mathematically exact.
+Because FP’s nvdiffrast [39] renderer has a hardcoded far-clip plane, it fails when placing targets beyond close range.
+To operate at orbital distances up to 500 m, a similarity rescaling is applied before every FP call. Given the median
+target depth ¯d over the masked region, a normalizer k =
+¯d
+1 m is computed and applied simultaneously to the depth
+map and the mesh scale factor: d′ = d/k, s′ = s/k. This is a uniform scaling of the entire scene about the camera
+origin. Because angular subtense is scale-invariant, θ = s
+d = s/k
+d/k = s′
+d′ , the object occupies the same pixel footprint
+before and after rescaling (i.e., FP’s render-and-compare cost function sees an identical matching problem). Rotation
+is unaffected. The translation FP returns is in the normalized frame; multiplying by k recovers the real-world value
+exactly: treal = k × t′. The rescaling is mathematically lossless. It does not improve the information content of the
+depth signal; pixel resolution, and depth noise are range-dependent regardless, but it is a prerequisite for the far-range
+conditions in RQ2 to produce any tracking output at all.
+3.2.4 Evaluation Metrics
+Pose accuracy is measured as tracking error: The deviation of the estimated pose from GT relative to a first-frame
+calibration offset. On the first frame, the calibration offset ∆T = ˆT−1
+0 Tgt
+0 is computed to account for any systematic
+misalignment between the reconstructed mesh coordinate frame and the GT pose. This is only necessary because the
+pose error is evaluated with respect to a GT pose. However, in a real-world scenario, pose tracking depends on the
+last registered reference frame. For all subsequent frames k, the corrected estimate is defined as Tcorr
+k
+= ˆTk∆T, with
+translation tcorr
+k
+and rotation Rcorr
+k
+extracted from Tcorr
+k
+, and compared against Tgt
+k :
+e(k)
+t
+=
+tcorr
+k
+−tgt
+k
+
+2 ,
+e(k)
+r
+=
+log
+
+(Rcorr
+k
+)⊤Rgt
+k
+
+(7)
+where et is expressed in real-world meters and er is expressed in degrees.
+3.3 Hardware Setup
+The hardware suite is comprised of one 7-DoF xArm manipulator, a workstation equipped with AMD Ryzen 9 9900X
+CPU 4.40 GHz processor, an NVIDIA GeForce RTX 4090, 32.0 GB of RAM, running a 64-bit Windows 11 oper-
+ating system, an Orbbec 305g Stereo-Vision Camera, a Amaran Ray 120c light source with Amaran Mini Fresnel
+attachment, and a camera tripod interacting with 3D-printed models of the chaser and target spacecraft. To prepare the
+hardware testing environment a frame was constructed (8’ long x 4’ wide x 4’ tall) out of extruded aluminum rails.
+Black-out curtains were then used to enclose the frame and reduce light entering the enclosure. Within the enclosure,
+the xArm7 robotic manipulator was installed with the Orbbec 305g Camera on the end-effector. The camera tripod
+was placed in the enclosure so as to align closely with the simulated position of the target spacecraft. This is where
+the physical, 3D printed spacecraft models were placed during testing. Finally, the Amaran Ray 120c lightsource with
+fresnel lens attachment was mounted within the enclosure so as to illuminate the target in a similar manner as the sun
+illuminates an on-orbit spacecraft.
+4.
+EXPERIMENTAL CAMPAIGNS
+This section details the experimental methodology used to benchmark the proposed navigation framework, encom-
+passing a multi-parameter SITL study and a preliminary HITL validation.
+
+
+Fig. 2: Hardware test enclosure.
+4.1 Experiment Test Campaign
+Five spacecraft models are evaluated using datasets generated in the MuJoCo simulation environment. These models
+were taken from the Dreamsat-2.0 [23] validation dataset used in a previous work . Table 4 shows the selected space-
+craft models, chosen for varying geometries and degree of symmetry. Specifically, models 3, 4, and 5 have two planes
+of symmetry, model 2 has 1 plane of symmetry and model 1 exhibits no symmetry. Each dataset contains synchronized
+RGB images, depth maps, segmentation masks, and simulated GT target poses. FP is used to estimate the target pose
+from either a reconstructed mesh or the corresponding GT mesh. Performance is quantified using translational and
+rotational pose error relative to the simulated GT. Unless otherwise stated, each experimental condition is evaluated
+over a 150-frame sequence, and the GT mesh is evaluated as a baseline.
+4.1.1 Research Question 1 (RQ1): Reconstruction Time
+How does pose-estimation accuracy vary with reconstruction time, and at what point do additional reconstruction
+steps produce diminishing returns? For each spacecraft model, a one-orbit dataset is generated with a nominal 50
+m separation between the chaser and target. The trajectory is defined by the COEs and ROEs described in Table 1.
+ROEs have been chosen such that there is no drift in the relative orbit. It should be noted that the relative orbit itself
+is elliptical, and thus the 50 m range is non-constant throughout the orbital period. A single image corresponding to
+an oriented Sun phase angle of 68.0° is selected from each dataset for reconstruction, ensuring consistent illumination
+across the spacecraft models. Throughout this work, a phase angle of 0◦represents the chaser located directly between
+the Sun and target while a phase angle of 180◦represents the target located directly between the Sun and chaser.
+For the purposes of plotting data, a full 360◦range is used rather than the conventional 0◦−180◦. Values 0◦−180◦
+signify the region where the spacecraft approaches occultation while values 180◦−360◦signify the region where the
+spacecraft leaves occultation.
+Reconstructions are generated using both the Hunyuan3D-2.0 full model and the Hunyuan3D mini-turbo model. Six
+inference-step settings are evaluated for each model architecture. During each inference step, the diffusion transformer
+predicts a velocity in latent shape space, and an Euler scheduler uses that prediction to update the latent representation
+toward an image-conditioned 3D shape. After the final step, the latent representation is decoded and its surface
+extracted as a mesh. Increasing the number of inference steps provides a finer approximation of this generative
+trajectory while increasing the computation time. The measured reconstruction time is recorded for every generated
+mesh. FP then evaluates each reconstruction over the same 150-frame interval, corresponding to an oriented Sun phase
+angle change from approximately 68.0° to 23.2°. The resulting pose estimates are compared with the simulated target
+poses to calculate translational and rotational error. The GT mesh is also used for pose estimation with FP to establish
+a baseline independent of reconstruction error.
+
+
+4.1.2 Research Question 2 (RQ2): Mesh Resolution
+How does reconstructed-mesh resolution affect pose-estimation accuracy?
+For each spacecraft model, the best-
+performing reconstruction identified in RQ1 is selected for evaluation. Each selected reconstruction is decimated
+to target face counts of 50,000, 10,000, 5,000, 1,000, and 100 faces. This approach varies mesh complexity while
+holding the underlying reconstructed geometry and evaluation sequence constant. Each decimated mesh is supplied
+to FP and evaluated using the corresponding 50 m dataset and 150-frame sequence from RQ1. The original GT mesh
+is evaluated under the same conditions as a baseline. Translational and rotational pose errors are calculated rela-
+tive to the simulated target pose and aggregated for each target face count, allowing the effect of mesh resolution on
+pose-estimation accuracy to be evaluated.
+4.1.3 Research Question 3 (RQ3): Orbital Range
+How does chaser–target range affect the accuracy of the reconstruction-based pose-estimation pipeline? For each
+spacecraft model, one-orbit datasets are generated at chaser–target separations of 5, 10, 25, 50, 100, 150, 200, and 250
+m. The target size is held constant at 2 m. The orbital parameters associated with each range are provided in Table
+1. A wide-field-of-view camera configuration is used at ranges of 5–50 m, while a narrow-field-of-view configuration
+is used at ranges of 100–250 m. The corresponding camera intrinsics are provided in Table 2. The same best-
+performing reconstruction selected from RQ1 is used at every range for a given spacecraft, thereby isolating the effect
+of observation distance and camera configuration. FP is used to evaluate pose estimates over the same 150-frame
+orbital interval at each nominal range. Both the reconstructed and GT meshes are tested, allowing reconstruction-
+induced error to be distinguished from the range-dependent behavior of the pose-estimation system. Translational and
+rotational pose errors are calculated relative to the simulated target pose and aggregated for each orbital condition.
+4.1.4 Research Question 4 (RQ4): Illumination Condition
+How does pose-estimation accuracy vary with on-orbit illumination geometry? The 50 m one-orbit datasets are divided
+into five non-overlapping 150-frame evaluation intervals spanning different illumination conditions. Sun phase angle
+is represented as an oriented angle from 0° to 360°, where 0° places the chaser on the target-to-Sun direction, with
+the chaser between the Sun and target, and 180° places the target between the Sun and chaser. For each spacecraft
+model, FP is used to evaluate both the best-performing reconstruction identified in RQ1 and the corresponding GT
+mesh. Each phase-angle interval is treated as an independent tracking run so that initialization and tracking behavior
+can be evaluated consistently across illumination conditions. Pose estimates are compared with the simulated target
+poses to calculate translational and rotational errors as functions of Sun phase angle.
+4.2 Hardware
+The hardware test campaign is primarily a preliminary test to establish the environment, configuration, and control
+software for further tests using physical hardware rather than a simulated environment. The following section describes
+the established test procedure, current limitations, and future plans for the hardware testbed.
+4.2.1 Hardware Test Procedure
+The hardware test environment is configured as described in Section 3.3. During testing, first, we use the Mujoco
+simulation environment to generate a trajectory NPZ file that encodes the joint movements resulting in a path that is
+physically representative of orbital dynamics and still achievable by the constraints of the xArm7’s range and obstacles
+imposed by the enclosure and tripod mount. The trajectories currently describe a partial ellipse around the target
+model, with the end-effector camera oriented such that it is always pointing towards the target. Once the trajectory
+file is generated, a python script is run that simultaneously moves the arm through the trajectory and records both
+RGB images and depth data using the Gemini 305g camera. Optionally, the Mujoco simulation can run concurrently
+to gather GT information of the simulated model, for later comparison to the physical captured data. After the data
+collection phase is complete, one or more frames are selected to use for the image-to-3D model reconstruction. The
+primary reconstruction model used is the Hunyuan3D-2.0 as well as the mini-turbo variant. The reconstructed model
+as well as the RGB image and depth information are given to FP for the pose estimation phase. Optionally, the GT 3D
+
+
+model can be used for the pose estimation step, to get a baseline for performance using real image/depth inputs. After
+pose estimation, that data is compiled and the hardware test pipeline is complete.
+4.2.2 Limitations and Future Work
+The first limitation to the current pipeline is the lack of a GT pose with which to compare the estimates and deter-
+mine pose error. Currently, the pose estimates are evaluated qualitatively to see how well the pose estimate tracks
+visually. This is because the pose of the physical target object is not yet accurately calibrated to match the simulation
+environment. There are two approaches to how this calibration can be accomplished in future work. The first is to
+use a second robotic manipulator that can be controlled precisely using the same Mujoco environment. If the target is
+accurately mounted to the second robotic manipulator, then the target’s GT pose can be retrieved from the simulation
+environment and used to calculate pose error. The alternative strategy is to use high-fidelity optical tracking devices,
+such as OptiTrack cameras. Markers would be placed onto the target model, and the OptiTrack cameras could provide
+a high-accuracy pose estimate that is used as an approximate GT pose for comparison. The second limitation is the
+spacecraft models used. While 3D printed models can provide a wide variety of geometries quickly and cheaply,
+they are limited in how accurately they can simulate a real on-orbit spacecraft. In future work, custom or commercial
+scale-model spacecraft can be used to increase the level of realism in these hardware tests.
+5.
+SIMULATION AND HARDWARE RESULTS
+This section evaluates DreamSat-Bench through four SITL experiments and a preliminary hardware demonstration.
+Across five spacecraft models, the simulation campaign examines how reconstruction time, mesh resolution, chaser–
+target range, and illumination geometry affect FP tracking, using the corresponding GT meshes as baselines. The
+hardware campaign qualitatively validates the physical RGB-D acquisition, reconstruction, and pose-tracking pipeline;
+quantitative errors are not yet reported because the physical target pose has not been calibrated in 6-DoF. Together,
+these experiments characterize the principal accuracy–computation trade-offs and tracking failure modes of the pro-
+posed pipeline.
+5.1 Simulation Experiment: Reconstruction Time
+(a) Hunyuan3D-2.0 Full.
+(b) Hunyuan3D-2.0 Mini-Turbo.
+Fig. 3: Mean translational and rotational pose-estimation error as a function of reconstruction time for the Hunyuan3D-
+2.0 Full and Mini-Turbo reconstruction models.
+Figure 3a shows the measured pose error as a function of reconstruction time for each of the five spacecraft models
+for the Hunyuan3D Full reconstruction model. At the 100-step setting, which requires approximately 17.5–17.9 s per
+
+
+reconstruction on the computing hardware described in 3.3, all five models achieve mean translational errors below
+0.341 m and mean rotational errors below 4.63◦. Relative to the 5-step condition, the average translational and rota-
+tional errors across the five models decrease by 97.3% and 95.4%, respectively. At the 50-step setting, corresponding
+to reconstruction times of approximately 9.3–9.7 s, four of the five models achieve errors below 0.30 m and 5◦. All
+five models simultaneously achieve errors below 0.5 m and 5◦only at the 100-step setting. Increasing the number of
+inference steps beyond this point does not consistently improve pose-estimation accuracy, indicating diminishing and
+non-monotonic returns from additional reconstruction time. The Hunyuan3D-Mini-Turbo model is evaluated using
+the same reconstruction and pose-estimation pipeline and results are shown in Figure 3b. The Mini-Turbo model en-
+foreces a maximum inference step count of 100 steps. At the 100-step maximum, Mini-Turbo requires approximately
+7.1–7.3 s per reconstruction, compared with 17.5–17.9 s for the full model. This represents an approximately 59%
+reduction in reconstruction time, or a speedup of approximately 2.4×. This computational advantage is accompanied
+by substantially higher downstream pose-estimation error. At 100 steps, Mini-Turbo produces average translational
+and rotational errors of 5.34 m and 55.8◦, respectively, compared with 0.212 m and 3.75◦for the full model. The Mini-
+Turbo errors are therefore approximately 25 times larger in translation and 15 times larger in rotation. Furthermore,
+its lowest cross-model mean translational error is 3.32 m at 10 steps, whereas its lowest cross-model mean rotational
+error was 39.7◦at 50 steps. The occurrence of these minima at different step counts demonstrates that increasing
+the number of inference steps does not consistently improve both error metrics. None of the 30 tested Mini-Turbo
+model–step combinations simultaneously achieved mean errors below 0.5 m and 5◦. These results indicate that, for
+the spacecraft and viewing conditions evaluated, Mini-Turbo’s reduction in reconstruction time came at the cost of
+substantially less reliable downstream pose estimation. Figure 4 below shows a comparison of the input images taken
+from the MuJoCo simulation environment, the reconstructed 3D models itself, and the GT 3D models used for this
+test.
+Model 1
+Model 2
+Model 3
+Model 4
+Model 5
+Input Images
+Full Model
+Mini-Turbo
+Ground Truth
+Fig. 4: Comparison of simulation input images, Hunyuan3D-2.0 Full reconstructions, Hunyuan3D-2.0 Mini-Turbo
+reconstructions, and corresponding ground-truth models.
+Inspection of the reconstructed meshes revealed two geometric failure modes associated with poor pose-estimation
+performance. First, reconstructions of long, slender spacecraft, particularly the Mini-Turbo reconstructions of Models
+
+
+3 and 4, were sensitive to errors in the target’s overall proportions. These discrepancies reduced overlap between
+the reconstructed geometry and the depth measurements supplied to FP, making the estimated pose ambiguous and
+unstable. Second, the reconstruction model did not reliably infer symmetry in unobserved regions. For Model 5, Mini-
+Turbo introduced unsupported geometry on the occluded side of the spacecraft, increasing the reconstructed volume.
+The resulting mismatch with the measured depth data led to poor alignment and rapid divergence of the pose estimate.
+5.2 Simulation Experiment: Mesh Resolution
+The effect of reconstructed mesh resolution on pose-estimation accuracy is evaluated using five spacecraft models. For
+each spacecraft, the selected full-model reconstruction is decimated to nominal face-count targets of 50,000, 10,000,
+5,000, 1,000, and 100 faces. FP is then used to evaluate pose estimates over the same 150-frame orbital segment
+using each reconstructed mesh. The native GT mesh is also evaluated as a baseline. Because the GT meshes are not
+decimated, their face counts varied between 4,735 and 58,126. Table 3 summarizes the results across all five spacecraft.
+Each reported value is the mean of the five spacecraft-level tracking errors, while the accompanying standard deviation
+describes variation between spacecraft models. The temporal variation within each individual test is shown by the error
+bars in Fig. 5. Dotted lines show the corresponding GT-mesh baselines.
+Table 3: Across-model pose error by mesh resolution. Values are mean ± sample standard deviation; the GT mesh
+retains its native resolution.
+Metric
+GT
+50k
+10k
+5k
+1k
+100
+¯et ±smodel (m) 0.268±0.127 0.396±0.490 0.406±0.507 0.420±0.507 0.326±0.373 0.356±0.169
+¯er ±smodel (◦)
+2.46±0.86
+3.17±0.87
+3.16±1.20
+3.33±1.03
+2.93±0.80
+10.36±14.22
+Fig. 5: Mean translational and rotational pose-estimation errors as functions of reconstructed mesh face count.
+The results do not indicate a simple proportional relationship between face count and pose-estimation accuracy. The
+
+
+aggregate performance is relatively similar between the 1k- and 50k-face conditions, with mean translational errors
+between 0.326-m and 0.420 m and mean rotational errors between 2.93◦and 3.33◦. Moreover, the optimal resolution
+varies between spacecraft models. The 50k condition produced the lowest reconstructed-mesh error for spacecraft
+model 5, whereas other spacecraft achieve their lowest errors at 100, 1,000, or 10,000 faces. Increasing the face count
+therefore does not consistently improve tracking accuracy. An aggressive decimation is less reliable. At the nominal
+100-face setting, Models 1 and 2 produce mean rotational errors of 7.77◦and 35.47◦, respectively. These failures
+increase the five-model average to 10.36 ± 14.22◦, despite the condition performing substantially better for several
+other spacecraft. The large between-model deviation demonstrates that sensitivity to decimation depends strongly
+on target geometry. On average, the native GT meshes produced lower translational and rotational errors than any
+reconstructed-mesh condition, despite often containing fewer faces than the 50k reconstructions. This result indicates
+that geometric fidelity is more important than polygon count alone. Increasing the resolution of a reconstruction
+cannot correct inaccurate surfaces, missing geometry, topological artifacts, or geometry inferred incorrectly from the
+single input view. The 50k variant is retained for the subsequent range experiment as a standardized, high-resolution
+operating point. This choice preserves as much reconstructed geometry as permitted by the pose-estimation pipeline
+and avoids the severe failures observed under aggressive decimation; it should not, however, be interpreted as the
+optimal resolution for every spacecraft.
+5.3 Simulation Experiment: Orbital Range
+Orbital-range performance are evaluated using five spacecraft models, each scaled such that its greatest dimension has
+a real-scale length 2 m. In reality, each spacraft would have differently sized greatest dimensions, but to isolate for
+spacecraft geometry, each model has be scaled to a standard size. For each spacecraft, the RQ1-selected Hunyuan3D-
+2.0 reconstruction is normalized, decimated to 50,000 faces, and used at every range. The WFOV camera is evaluated
+from 5 m to 50 m, while the NFOV camera is evaluated from 100 m to 250 m. Both reconstructed and GT meshes are
+tested over the same 150-frame orbital segment. Table 4 reports the mean and between-spacecraft standard deviation
+of the five spacecraft-level results.
+Table 4: Pose-estimation error across spacecraft models at each orbital range. Values are the mean and sample standard
+deviation of the five spacecraft-level mean errors.
+GT mesh
+Reconstructed mesh
+Range Camera
+¯et ±smodel (m)
+¯er ±smodel (◦)
+¯et ±smodel (m)
+¯er ±smodel (◦)
+5 m
+WFOV
+0.022±0.009
+1.53±0.52
+0.020±0.010
+2.40±0.97
+10 m
+WFOV
+0.021±0.008
+1.78±0.41
+0.029±0.026
+3.11±2.61
+25 m
+WFOV
+0.023±0.010
+1.79±0.30
+0.030±0.024
+3.48±2.96
+50 m
+WFOV
+0.033±0.018
+3.07±0.78
+0.044±0.024
+5.97±3.52
+100 m
+NFOV
+0.024±0.007
+1.66±0.28
+0.069±0.099
+3.17±1.88
+150 m
+NFOV
+0.029±0.014
+1.87±0.49
+0.026±0.007
+3.22±1.91
+200 m
+NFOV
+0.044±0.029
+2.52±1.37
+0.039±0.018
+4.19±2.45
+250 m
+NFOV
+1.549±3.387
+12.36±22.18
+2.851±6.273
+22.45±26.61
+Figure 6 shows mean translational and rotational pose estimation errors across orbital range for the five spacecraft
+models. Error bars denote temporal standard deviation, and dotted lines denote GT-mesh baselines. Within the WFOV
+regime, reconstructed-mesh error generally increased with range. From 5 m to 50 m, mean translational error increased
+from 0.020 m to 0.044 m, while mean rotational error increased from 2.40◦to 5.97◦. Performance improved at the
+transition from 50 m WFOV to 100 m NFOV. Median reconstructed-mesh translation and rotation errors decrease by
+45.0% and 42.8%, respectively. Although the physical range doubled, the longer NFOV focal length produced an
+approximately 2.37-times-larger projected target. This suggests that apparent target size may influence pose accu-
+racy more strongly than range alone. However, because range and camera FOV changed simultaneously, their effects
+cannot be isolated conclusively. The mean translation error at 100 m is elevated by Model 3, which develops a per-
+sistent 0.23 m–0.28 m translational offset while maintaining moderate rotational error. Excluding this outlier, mean
+reconstructed-mesh translation error decreased from 0.038 m at 50 m to 0.025 m at 100 m. Reliability declines most
+noticeably at 250 m. Model 4 diverged with both mesh types, while Model 1 experienced a reconstructed-mesh ro-
+
+
+tational failure. Consequently, the mean errors are substantially larger than the median reconstructed-mesh errors of
+0.054 m and 3.74◦. Thus, the longest range does not cause overall failure, but it increases the likelihood of severe track-
+ing errors. In general, the pose error does not vary monotonically with physical range. Performance instead depends
+on the combined effects of range, camera intrinsics, apparent target size, spacecraft geometry, and mesh accuracy.
+Fig. 6: Mean translational and rotational pose estimation errors across orbital range for five spacecraft models. Error
+bars show temporal standard deviation, and dotted lines denote GT-mesh baselines. The translation axis is limited to
+0.30 m for clarity; Model 4’s 250 m results lie outside the displayed range.
+5.4 Simulation Experiment: Illumination Condition
+Pose-estimation performance is evaluated over five independently initialized 150-frame intervals spanning different
+Sun phase angles. Both the best-performing reconstruction selected in RQ1 and the corresponding GT mesh are
+evaluated. Table 5 reports the mean and sample standard deviation across the five spacecraft-level mean errors.
+Table 5: Mean pose-estimation error across the five spacecraft for each illumination region. Bold values indicate the
+lowest across-region mean for each mesh and error metric.
+GT mesh
+Reconstructed mesh
+Region
+Oriented phase interval
+¯et ±σsc (m)
+¯er ±σsc (◦)
+¯et ±σsc (m)
+¯er ±σsc (◦)
+Region 1
+211.6◦–257.7◦
+0.201±0.123
+1.36±0.31
+0.619±0.753
+7.34±10.73
+Region 2
+292.2◦–337.3◦
+0.260±0.112
+2.47±0.86
+0.192±0.078
+3.52±0.85
+Region 3
+356.0◦–360◦/0◦–23.8◦
+1.261±2.447
+17.38±32.79
+0.526±0.854
+4.71±2.92
+Region 4
+44.2◦–89.9◦
+0.381±0.398
+18.66±34.46
+2.814±5.611
+14.58±20.89
+Region 5
+165.8◦–194.4◦
+0.843±1.287
+21.97±33.25
+1.433±1.203
+31.05±33.35
+Region 2 produces the most consistent reconstructed-mesh performance, with across-spacecraft mean translational
+and rotational errors of 0.192 m and 3.52◦, respectively. By contrast, Region 5, which spans the near-opposition
+geometry around 180◦, produces the broadest increase in reconstructed-mesh rotational error. Its mean rotational
+error was 31.05◦, approximately 4.1 times the average across Regions 1–4. Region 5 produces the highest rotational
+error for Models 1–4, although Model 5 remained comparatively stable at 3.42◦. The translational response is less
+consistent. Region 5 produces the largest translational error for only two spacecraft, while the aggregate maximum
+
+
+occurs in Region 4 because of a substantial Model 2 tracking failure. GT-mesh failures also occur outside Region 5,
+indicating that illumination alone does not explain the observed behavior. Because illumination and viewing direction
+vary simultaneously along the orbit, and each interval is initialized independently, the experiment demonstrates an
+association between near-opposition geometry and rotational tracking instability rather than an isolated causal effect
+of illumination.
+Fig. 7: Visualization of Orbit with nominal separation 50 m. Phase angle regions highlighted.
+In Figure 7 above, it should be noted that the recorded arm path is not exactly aligned with the simulated orbital path.
+To facilitate the translation of simulation environment to hardware, the MuJoCo simulation uses the same xArm7
+model used in hardware testing, which is subject to physical joint limits. The physical joint limits result in the slight
+divergence from the ideal orbital path, particularly as the arm arrives to its initial position because the xArm7 begins
+to coil about itself.
+5.5 Hardware Preliminary Experiment
+The preliminary hardware campaign is conducted to validate the physical test environment, sensing components, and
+end-to-end reconstruction and pose-tracking pipeline described in Section 3.3. Because the pose of the physical tar-
+get is not calibrated in 6-DoF relative to the camera and robot reference frames, translational and rotational pose
+errors cannot be calculated reliably. The results are therefore evaluated qualitatively by examining recorded RGB
+sequences overlaid with the pose estimated by FP. Two 3D-printed spacecraft targets with different degrees of ge-
+ometric symmetry were evaluated under multiple orientations and directional illumination intended to approximate
+on-orbit lighting. Representative targets and pose overlays are shown in Fig. 8. In most of the examined sequences,
+the estimated pose remains visually aligned with the target for approximately 10–15 s. The estimate then typically
+exhibits gradual drift followed by more rapid divergence. More frequent pose re-registration appears to reduce the
+accumulation of this drift, suggesting that periodic or adaptive re-registration may improve tracking robustness during
+future hardware experiments. Pose estimates determined using the nominal GT mesh rather than a reconstruction
+exhibit a significantly reduced degree of drift, implying that the reconstruction quality is a large determiner of pose
+accuracy. In the examined sequences, tracking with the GT mesh remains visually aligned over a larger portion of
+the recorded trajectory. Tracking with a reconstructed mesh is generally most stable when the camera viewpoint re-
+mained close to that of the image used for reconstruction. As the observation direction changes, previously occluded
+
+
+(a) Printed models.
+(b) Aligned estimates.
+(c) Drifted estimates.
+Fig. 8: Representative targets and pose-estimation overlays from the preliminary hardware experiment.
+or inaccurately reconstructed surfaces become visible, reducing the correspondence between the observed target and
+the reconstructed geometry and eventually destabilizing the pose estimate. Because the evaluation is qualitative, the
+respective contributions of reconstruction error, sensor noise, segmentation accuracy, and pose registration could not
+yet be isolated. Target symmetry also appears to influence tracking stability. The nearly cylindrically symmetric target
+exhibits greater apparent rotational ambiguity about its symmetry axis, whereas the target with only a single plane of
+symmetry generally retains a more stable orientation estimate throughout the recorded sequence. However, only two
+physical targets are evaluated and differ in characteristics other than symmetry. This observation should therefore be
+treated as preliminary. A calibrated GT pose and a larger collection of controlled target geometries will be required
+to quantify the effects of symmetry, reconstruction quality, and re-registration frequency. Overall, the preliminary
+campaign successfully demonstrates operation of the complete hardware pipeline using physical RGB and depth mea-
+surements under controlled directional illumination. It also identifies pose calibration, reconstruction completeness,
+target symmetry, and accumulated tracking drift as important subjects for subsequent quantitative hardware evaluation.
+6.
+CONCLUSIONS
+This paper presents the development and initial testing of DreamSat-Bench, a modular RPO testbed designed to bridge
+the gap between AI-driven 3D reconstruction and autonomous spacecraft navigation. By unifying high-fidelity orbital
+mechanics with robotic physics engines and physical manipulators, the platform provides a seamless pathway for
+transitioning vision-based algorithms from software simulation to HITL validation. The core significance of this work
+lies in its ability to facilitate navigation with unprepared or non-cooperative assets, moving away from a reliance on
+prior CAD models or cooperative markers and toward a framework capable of characterizing unknown objects in
+real-time. The experimental campaigns conducted via the SITL pipeline revealed trade-offs between computational
+latency and navigational precision. We identified that while generative reconstruction models like Hunyuan3D-v2.0
+can produce high-fidelity geometry sufficient for precise 6-DoF tracking, there is a non-linear relationship between
+reconstruction time and accuracy. Faster, lightweight variants like the Mini-Turbo model demonstrated a significant
+reduction in inference time but lacked the geometric fidelity required for stable pose estimation. Furthermore, our
+investigation into mesh resolution suggests that the accuracy of inferred topological features is more vital for tracking
+stability than raw polygon density, as decimated meshes maintained performance as long as the underlying spacecraft
+geometry remained intact. Environmental factors, particularly illumination and orbital range, were also shown to
+have a profound impact on the reliability of the perception pipeline. Our findings highlighted that near-opposition
+geometries, where the target is positioned between the chaser and the Sun, induce significant rotational instability,
+likely due to the lack of distinct shadow-based features and saturated lighting conditions. While transitioning between
+camera fields-of-view helped maintain performance across varying ranges, the study confirms that the robustness of
+AI-based navigation is heavily dependent on the interplay between sensor configurations and the dynamic orbital
+environment. The preliminary HITL campaign qualitatively validated the end-to-end deployment of the software
+
+
+stack on physical robotic hardware. Although current calibration limits prevent quantitative error reporting in the
+physical enclosure, the experiments successfully identified key challenges for future work, including the rotational
+ambiguities presented by symmetric targets and the accumulation of tracking drift over extended trajectories. Future
+iterations of DreamSat-Bench will focus on the integration of the specialized monocular DreamSat-Pose pipeline
+and the implementation of high-precision optical tracking systems to provide GT pose data for hardware validation.
+Ultimately, DreamSat-Bench establishes a standardized benchmarking environment that enables the rapid maturation
+of the autonomous vision systems necessary for future active debris removal and on-orbit servicing missions.
+CODE AVAILABILITY
+The code for this work can be accessed on GitHub (https://github.com/ARCLab-MIT-X/beavr-bench-dreamsat.git).
+COMPETING INTERESTS
+The authors declare no competing interests.
+ACKNOWLEDGMENTS
+From the MIT side, the research was sponsored by the Department of the Air Force Artificial Intelligence Accelerator
+and was accomplished under Cooperative Agreement Number FA8750-19-2-1000. The views and conclusions con-
+tained in this document are those of the authors and should not be interpreted as representing the official policies, either
+expressed or implied, of the Department of the Air Force or the U.S. Government. The U.S. Government is authorized
+to reproduce and distribute reprints for Government purposes notwithstanding any copyright notation herein.
+This work has been partially supported by the Spanish Agencia Estatal de Investigacion (AEI) under grant PID2024-
+161963OB-C22 (ACTIVATION project). This work has also been supported by the Madrid Government (Comunidad
+de Madrid-Spain) under the Multiannual Agreement 2023-2026 with Universidad Polit´ecnica de Madrid in the Line
+A, Emerging PhD researchers.
+7.
+REFERENCES
+[1] Taewon H. Park, Marcus M¨artens, Guillaume L´ecuyer, Dario Izzo, and Simone D’Amico. SPEED+: Next-
+generation dataset for spacecraft pose estimation across domain gap.
+In 2022 IEEE Aerospace Conference
+(AERO), pages 1–15, 2022.
+[2] Lorenzo Pasqualetto Cassinis, Alessandra Menicucci, Eberhard Gill, Ingo Ahrns, and Manuel Sanchez-Gestido.
+On-ground validation of a cnn-based monocular pose estimation system for uncooperative spacecraft: Bridging
+domain shift in rendezvous scenarios. Acta Astronautica, 196:123–138, 2022.
+[3] Francis Thomas Despond and Steve Ulrich. Real-time stereovision-based spacecraft pose determination using
+convolutional neural networks. Journal of Spacecraft and Rockets, 62(1):269–279, 2025.
+[4] Natasha Reid, Ryan Goodridge, Parker Stewart, Shae Simonson, Austin Dahlseide, Kristian Delaney,
+Alexis Valdez Cascajares, Courtney Savytska, Alexander Crain, and Steve Ulrich. Computer-vision-driven arti-
+ficial potential function guidance and adaptive control for spacecraft proximity operations. Journal of Aerospace
+Information Systems, 22(8):716–729, 2025.
+[5] Abin Alex Pothen, Alexander Crain, and Steve Ulrich. Pose tracking control for spacecraft proximity operations
+using the udwadia–kalaba framework. Journal of Guidance, Control, and Dynamics, 45(2):296–309, 2022.
+[6] Yashwanth Nakka, Rebecca Foust, Elena Lupu, David Elliott, Irene Crowell, Soon-Jo Chung, and Fred Hadaegh.
+Six degree-of-freedom spacecraft dynamics simulator for formation control research. In AAS/AIAA Astrodynam-
+ics Specialist Conference, 08 2018.
+[7] B. Caruso, T. Mahendrakar, V. M. Nguyen, R. T. White, and T. Steffen. 3D Reconstruction of Non-Cooperative
+Resident Space Object using Instant NeRF and D-NeRF. In 33rd AAS/AIAA Space Flight Mechanics Meeting,
+2023.
+[8] Pedro Roque, Sujet Phodapol, Elias Krantz, Jaeyoung Lim, Joris Verhagen, Frank J. Jiang, David D¨orner, Huina
+Mao, Gunnar Tibert, Roland Siegwart, Ivan Stenius, Jana Tumova, Christer Fuglesang, and Dimos V. Dimarogo-
+
+
+nas. Toward open-source and modular space systems with atmos. IEEE Transactions on Field Robotics, 3:141–
+161, 2026.
+[9] Marcello Romano, David A. Friedman, and Tracy J. Shay. Laboratory experimentation of autonomous spacecraft
+approach and docking to a collaborative target. Journal of Spacecraft and Rockets, 44(1):164–173, 2007.
+[10] Patrick W. Kenneally, Scott Piggott, and Hanspeter Schaub. Basilisk: A flexible, scalable and modular astrody-
+namics simulation framework. Journal of Aerospace Information Systems, 17(9):496–507, 2020.
+[11] Elias Krantz, Ngai Nam Chan, Gunnar Tibert, Huina Mao, and Christer Fuglesang. Bridging the basilisk astro-
+dynamics framework with ros 2 for modular spacecraft simulation and hardware integration, 2025.
+[12] Julian Guinane, Saad Alshammari, Tim Bailey, Xianliang Chen, Donald Dansereau, Viorela Ila, Jasprabhjit
+Mehami, Salah Sukkarieh, Will Thorp, Nathan Wallace, Minduli Wijayatunga, Jiashu Wu, Zhicheng Xie, Andrew
+Barton, and Xiaofeng Wu. System design and hardware in the loop testbed development for an australian isam
+demonstrator mission. In The 76th International Astronautical Congress, Sydney, Australia, 10 2025.
+[13] Minduli C. Wijayatunga, Julian Guinane, Nathan D. Wallace, and Xiaofeng Wu. An autonomous, end-to-end,
+convex-based framework for close-range rendezvous trajectory design and guidance with hardware testbed vali-
+dation, 2026.
+[14] Sumant Sharma, Connor Beierle, and Simone D’Amico. Pose estimation for non-cooperative spacecraft ren-
+dezvous using convolutional neural networks. In 2018 IEEE Aerospace Conference, pages 1–12, 2018.
+[15] Batu Candan and Simone Servadio. Relative pose estimation of an uncooperative target with camera marker
+detection. Aerospace, 12(5), 2025.
+[16] Tae Ha Park, Emily Bates, and Simone D’Amico. Improving zero-shot abstraction of unknown spacecraft 3d
+shape as primitive assembly. In International Workshop on Satellite Constellations and Formation Flying, 2024.
+[17] Stanford University. SPE3R: Synthetic Dataset for Satellite Pose Estimation and 3D Reconstruction. https:
+//purl.stanford.edu/pk719hm4806.
+[18] Emily Bates and Simone D’Amico. Removing ambiguities in concurrent monocular single-shot spacecraft shape
+and pose estimation using a deep neural network. In 2025 AAS GNC conference (Feb 2025), 2025.
+[19] V. M. Nguyen, E. Sandidge, T. Mahendrakar, and R. T. White. Characterizing Satellite Geometry via Accelerated
+3D Gaussian Splatting. arXiv preprint arXiv:2401.02588, Jan 2024.
+[20] Pol Francesch Huc, Emily Bates, and Simone D’Amico. Fast learning of non-cooperative spacecraft 3d models
+through primitive initialization. In AAS/AIAA Astrodynamics Specialist Conference, Boston, MA, 2025.
+[21] Bowen Wen, Wei Yang, Jan Kautz, and Stan Birchfield. Foundationpose: Unified 6d pose estimation and tracking
+of novel objects. In 2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pages
+17868–17879, 2024.
+[22] Nidhi Mathihalli, Audrey Wei, Giovanni Lavezzi, Peng Mun Siew, Victor Rodriguez-Fernandez, Hodei Urrutxua,
+and Richard Linares. Dreamsat: Towards a general 3d model for novel view synthesis of space objects. In 75th
+International Astronautical Congress 2024, Milan, Italy, 10 2024. International Astronautical Federation.
+[23] Santiago Diaz, Xinghui Hu, Josiane Uwumukiza, Giovanni Lavezzi, Victor Rodriguez-Fernandez, and Richard
+Linares. Dreamsat-2.0: Towards a general single-view asteroid 3d reconstruction. In 2025 AAS/AIAA Astrody-
+namics Specialist Conference, Boston, MA, USA, 08 2025.
+[24] Josiane Uwumukiza, Jocelyn Zhao, Giovanni Lavezzi, Giacomo Battaglia, Paolo Panicucci, Minduli C. Wijay-
+atunga, Victor Rodriguez-Fernandez, and Richard Linares. Dreamsat-pose: Spacecraft pose estimation from
+single-view 3d reconstructions and learned 2d-3d feature matching, 2026.
+[25] Emanuel Todorov, Tom Erez, and Yuval Tassa. Mujoco: A physics engine for model-based control. In 2012
+IEEE/RSJ International Conference on Intelligent Robots and Systems, pages 5026–5033. IEEE, 2012.
+[26] Kevin Zakka, Yuval Tassa, and MuJoCo Menagerie Contributors. MuJoCo Menagerie: A collection of high-
+quality simulation models for MuJoCo, September 2022.
+[27] NVIDIA. Isaac lab: A gpu-accelerated simulation framework for multi-modal robot learning, 2025.
+[28] Remi Cadene, Simon Aliberts, Francesco Capuano, Michel Aractingi, Adil Zouitine, Pepijn Kooijmans, Jade
+Choghari, Martino Russi, Caroline Pascal, Steven Palma, Mustafa Shukor, Jess Moss, Alexander Soare, Dana
+Aubakirova, Quentin Lhoest, Quentin Gallou´edec, and Thomas Wolf. Lerobot: An open-source library for end-
+to-end robot learning, 2026.
+[29] Simone D’Amico. Autonomous Formation Flying in Low Earth Orbit. PhD thesis, 01 2010.
+[30] W. H. CLOHESSY and R. S. WILTSHIRE. Terminal guidance system for satellite rendezvous. Journal of the
+Aerospace Sciences, 27(9):653–658, 1960.
+[31] Takahiro Sasaki, Toru Yamamoto, Nicola Baresi, Giovanni Lavezzi, and Richard Linares. Predictive guidance
+
+
+for noncooperative rendezvous using onboard differential drag estimation and forecasting. In 2026 AAS/AIAA
+Astrodynamics Specialist Conference, Whistler, Canada, 07 2026.
+[32] Tencent Hunyuan3D Team. Hunyuan3d 2.0: Scaling diffusion models for high resolution textured 3d assets
+generation, 2025.
+[33] Alejandro Posadas-Nava, Alejandro Carrasco, and Richard Linares. Beavr: Bimanual, multi-embodiment, ac-
+cessible, virtual reality teleoperation system for robots, 2025.
+[34] Mark Towers, Ariel Kwiatkowski, Jordan K Terry, John U. Balis, Gianluca de Cola, Tristan Deleu, Manuel
+Goul˜ao, Andreas Kallinteris, Markus Krimmel, Arjun KG, Rodrigo Perez-Vicente, Andrea Pierr´e, Sander Schul-
+hoff, Jun Jet Tai, Hannah Jin Shen Tan, and Omar G. Younis. Gymnasium: A Standard Interface for Reinforce-
+ment Learning Environments.
+[35] Solar System Scope Team. Solar system textures. https://www.solarsystemscope.com/textures/, 2024.
+Accessed: 2024-05-20.
+[36] Jesse Haviland and Peter Corke. Manipulator differential kinematics: Part i: Kinematics, velocity, and applica-
+tions [tutorial]. IEEE Robotics & Automation Magazine, 31(4):149–158, December 2024.
+[37] Jesse Haviland and Peter Corke. Manipulator differential kinematics: Part 2: Acceleration and advanced appli-
+cations. IEEE Robotics & Automation Magazine, 31(4):159–169, December 2024.
+[38] Qian-Yi Zhou, Jaesik Park, and Vladlen Koltun. Open3d: A modern library for 3d data processing, 2018.
+[39] Samuli Laine, Janne Hellsten, Tero Karras, Yeongho Seol, Jaakko Lehtinen, and Timo Aila. Modular primitives
+for high-performance differentiable rendering, 2020.
