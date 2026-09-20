@@ -1,0 +1,25 @@
+{
+  "date": "20260920",
+  "date_label": "",
+  "generated_at": "2026-09-20 21:39:33 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.16727v1",
+      "route": "202609/20/2609.16727v1-priorpose-reference-guided-joint-deformation-and-alignment-for-category-level-object-pose-estimation",
+      "title": "PriorPose: Reference-Guided Joint Deformation and Alignment for Category-Level Object Pose Estimation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "参考引导联合形变与对齐实现鲁棒6自由度位姿估计",
+      "first_seen_at": "2026-09-20 21:39:33 UTC",
+      "updated_at": "2026-09-20 21:39:33 UTC"
+    }
+  ]
+}

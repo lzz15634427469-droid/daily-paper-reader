@@ -1,0 +1,57 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-20T21:38:41.630051+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.16727v1",
+      "source": "arxiv",
+      "title": "PriorPose: Reference-Guided Joint Deformation and Alignment for Category-Level Object Pose Estimation",
+      "abstract": "Category-level object pose estimation seeks to recover a similarity transform $(R,t,s)$ for unseen instances without instance-specific CAD models. Most competitive methods are correspondence-based: prior-free variants regress canonical (NOCS) coordinates directly from local observations and implicitly memorize the canonical frame in the weights, which ties the parameters to category-typical orientations and hurts generalization under distribution shift; prior-based variants introduce a category prior but typically follow a serial deform-then-align pipeline, where underconstrained canonical completion can corrupt correspondences and induce error cascades in pose. We propose PriorPose, a reference-guided correspondence framework that keeps the category prior explicit and solves canonicalization and alignment jointly in a shared feature space. A reference-guided seeded transformer embeds the partial observation and the category prior as token sets and fuses them via geometry-aware seeds, from which the network jointly predicts a per-point NOCS field for visible points and a canonical deformation of the prior that reconstructs a full canonical instance, while a deep pose head regresses $(R,t,s)$ from the induced correspondences. A two-part shape consistency objective, with canonical-space and camera-space consistency losses, couples correspondence, deformation, and pose, reducing reliance on memorized canonical orientations and avoiding deform-then-align error cascades. Experiments on standard and larger-category benchmarks demonstrate that PriorPose sets new state-of-the-art results on most evaluated metrics, especially under strict pose thresholds, while remaining competitive on relaxed pose and IoU metrics and showing improved robustness under shape variation and domain shift.",
+      "authors": [
+        "Yihan Chen",
+        "Huan Ren",
+        "Wenfei Yang",
+        "Hang Du",
+        "Tianzhu Zhang",
+        "Feng Wu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-15T06:57:34+00:00",
+      "link": "https://arxiv.org/pdf/2609.16727v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "reference-guided joint deformation and alignment for robust 6-DoF pose estimation",
+      "llm_evidence_cn": "参考引导联合形变与对齐实现鲁棒6自由度位姿估计",
+      "llm_evidence": "参考引导联合形变与对齐实现鲁棒6自由度位姿估计",
+      "canonical_evidence": "参考引导联合形变与对齐实现鲁棒6自由度位姿估计",
+      "llm_tldr_en": "Addresses category-level object pose estimation without instance CAD models, where prior-free methods memorize canonical frames and prior-based serial deform-then-align pipelines suffer error cascades. Proposes PriorPose, a reference-guided correspondence framework jointly performing deformation and alignment to suppress error propagation and improve generalization.",
+      "llm_tldr_cn": "类别级物体位姿估计需在无实例CAD模型下恢复未见实例的相似变换。现有对应方法或隐式记忆规范坐标系导致分布偏移下泛化差，或采用串行先形变后对齐流程易产生误差级联。作者提出参考引导的对应框架PriorPose，联合进行形变与对齐以抑制误差传播。实验表明该方法在分布偏移下具有更强泛化与更高位姿精度，为鲁棒位姿估计提供了新范式。",
+      "llm_tldr": "类别级物体位姿估计需在无实例CAD模型下恢复未见实例的相似变换。现有对应方法或隐式记忆规范坐标系导致分布偏移下泛化差，或采用串行先形变后对齐流程易产生误差级联。作者提出参考引导的对应框架PriorPose，联合进行形变与对齐以抑制误差传播。实验表明该方法在分布偏移下具有更强泛化与更高位姿精度，为鲁棒位姿估计提供了新范式。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
