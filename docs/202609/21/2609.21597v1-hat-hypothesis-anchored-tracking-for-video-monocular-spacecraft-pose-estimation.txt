@@ -1,0 +1,419 @@
+Title: HAT: Hypothesis-Anchored Tracking for Video Monocular Spacecraft Pose Estimation
+
+URL Source: https://arxiv.org/pdf/2609.21597v1
+
+Published Time: Mon, 21 Sep 2026 00:48:11 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# HAT: Hypothesis-Anchored Tracking for Video Monocular Spacecraft Pose Estimation 
+
+Andr´ e Lopo, Atabak Dehban, and Rodrigo Ventura 
+
+ISR, Instituto Superior T´ ecnico, Universidade de Lisboa, Portugal 
+
+{andre.lopo,rodrigo.ventura }@tecnico.ulisboa.pt; dehban@isr.tecnico.ulisboa.pt  
+
+> Calibrated RGB sequence
+> Stage 1: detection and segmentation
+> detection box, instance mask
+> CAD Stage 2: scored pose hypotheses at keyframes
+> Stage 3: causal Viterbi basin selection
+> appearance and motion, forward-only
+> DROID-SLAM on the masked target
+> Stage 4: Sim(3) +SE(3) pose-graph fusion, then gap fill
+> current pose emitted, past outputs fixed
+
+(A) (B) (C) (D) (E)  
+
+> relative rotation metric anchors relative motion
+
+Fig. 1. Shared causal spacecraft-pose framework on PROBA-2 sequence RT542, using the settings in Sec. V-B. (A) RGB detection and segmentation. (B) CAD-based hypotheses at scheduled keyframes. In this example, appearance rank 1 is a 161 ◦ near-symmetric error. The selected pose is rank 2 ( 32 ◦). (C) Masked-target DROID estimates relative motion. (D) Size-weighted forward selection retains a consistent orientation basin. (E) Fusion and causal DROID produce a pose at every frame. 
+
+Abstract —Monocular 6-DoF pose estimation of non-cooperative targets is important for on-orbit servicing and debris removal. A single-image estimator can confuse near-symmetric spacecraft orientations, and tracking can preserve an incorrect pose. We present Hypothesis-Anchored Tracking (HAT), a causal framework that uses inter-frame motion to select among competing CAD-based pose hypotheses before alignment and fusion. Rather than independently choosing the highest-scoring hypothesis in each image, HAT retains competing orientation histories and selects a pose to anchor the relative trajectory estimated by monocular SLAM. Sparse anchors and pose fusion provide per-frame estimates after initialization without revising past outputs. The method requires only a calibrated RGB sequence, a metric CAD model, and target image regions, which can be supplied by detection or segmentation. The pretrained pose and SLAM networks require no target-specific training or fine-tuning. We evaluate two versions, Mega-HAT and Pico-HAT, using MegaPose and PicoPose, on SPARK-2024, SwissCube and SHIRT, with YCB-Video assessing performance outside the space domain. Using one temporal configuration per method, the arithmetic means of the four dataset-wise comparisons show 9.4% lower mean pose error and 3.76 × the sustained input FPS for Mega-HAT relative to independent MegaPose, and 23 .9% lower mean pose error and 2.42 × the 
+
+FPS for Pico-HAT relative to independent PicoPose. Mega-HAT ablations on SPARK and an offline reference examine component contributions and the effect of revising past estimates. 
+
+Index Terms —Spacecraft pose estimation, 6-DoF, monocular, novel-object pose, visual SLAM, pose fusion, near-symmetry, Viterbi, causal estimation. 
+
+I. I NTRODUCTION 
+
+On-orbit servicing and active debris removal require the pose of a target spacecraft relative to an approaching chaser. We consider a non-cooperative target observed by a calibrated monocular camera, without fiducials or telemetry. A single camera reduces sensing mass, power and system complexity compared with stereo or active ranging [1]. Spacecraft pose estimation is hard under harsh illumination, with deep shadows and bright reflections obscuring surface details. At long range, the target covers few pixels, making these details harder to distinguish. Near-symmetric structures can then look similar at very different orientations. Asingle-image estimator may select a plausible but incorrect orientation. Independent frame-wise decisions discard motion evidence, while local tracking can continue following the incorrect orientation. Our framework, HAT, retains competing orientation histo-ries and uses inter-frame motion to select an absolute pose before alignment and fusion. The selected poses anchor a arXiv:2609.21597v1 [cs.CV] 18 Sep 2026 relative trajectory estimated by monocular SLAM. A metric CAD model supplies the scale that monocular imagery alone cannot determine. We implement two versions using MegaPose [2] or PicoPose [3] as the absolute-pose estimator, named Mega-HAT and Pico-HAT, respectively. Both use the same temporal framework, with separate parameter settings and no target-specific training or fine-tuning of the pretrained networks. This work presents three main contributions:  
+
+> •
+
+Causal multi-hypothesis selection before fusion. Our main contribution is to retain competing orientation histories and use relative motion to select the current absolute-pose anchor before alignment and fusion. The decoder retains a score for each current candidate rather than committing to a single orientation history. Fusion then combines the selected anchor with relative motion. This ordering addresses incorrect orientations that local tracking alone can preserve.  
+
+> •
+
+Evaluation across datasets and absolute estima-tors. We evaluate both versions on three spacecraft benchmarks and YCB-Video [4], using one temporal configuration per version across datasets.  
+
+> •
+
+Component ablations and online/offline controls. We use component ablations on Mega-HAT and SPARK to identify the contribution of selection before fusion and the smaller, configuration-dependent effect of size weighting. Online/offline controls examine the effect of future observations and retained state. II. R ELATED WORK 
+
+Monocular spacecraft pose estimation. The dominant approach regresses predefined 3D landmarks and solves PnP against known geometry [5]. Such methods have achieved leading results on the SPEED, SPEED+, and SPARK-2024 benchmarks [6, 7], but require landmarks and training images from the target spacecraft and remain sensitive to the synthetic-to-real gap [8, 9]. 
+
+Temporal and sequence-based methods. Prior work uses navigation filters [10], sequence networks [11], and cross-domain tracking [8]. Sosa et al. [12] add optical flow to a target-trained ViT to localize spacecraft keypoints. Zhang et al. [13] iteratively refine a reconstructed keypoint model and a multi-task prediction network, then impose motion consistency. Our method explicitly retains competing orientation hypotheses before fusion, and Sec. V-C compares discrete selection with continuous-state filters. 
+
+Novel-object pose. MegaPose [2] uses render-and-compare networks for coarse pose ranking and iterative refinement of unseen objects. PicoPose [3] instead establishes pixel correspondences with rendered templates, aligns them through a global affine estimate, and refines local correspondence offsets before PnP/RANSAC. We use its public implemen-tation and pretrained models in Pico-HAT. GigaPose [14] retrieves template orientations and estimates the remaining pose parameters from patch correspondences. GenFlow uses render-to-image flow [15]. The closest spacecraft system, CroSpace6D [16], combines Mask2Former, MegaPose, ORB-SLAM3 and similarity alignment, but reconstructs a target mesh from training images. In contrast, our framework uses causal selection among competing absolute orientations before similarity alignment and pose fusion. 
+
+RGB video tracking. SRT3D [17] estimates pose from sparse contour correspondence lines and fore-ground/background appearance. It provides a classical region-based control with an automatic pose initializer. RGB-Track [18] builds on FoundationPose, estimates initial depth from a metric CAD model and mask, and combines XMem with Kalman-based recovery. We evaluate its public RGB-only initialization and recovery paths. 
+
+Visual SLAM. DROID-SLAM [19] uses dense correspon-dences and a differentiable factor graph. We combine its motion estimates with discrete SO(3) hypotheses through Viterbi decoding [20]. III. M ETHODOLOGY 
+
+A. Framework Overview 
+
+We estimate the pose of a rigid target spacecraft in the ob-serving camera frame. The inputs are calibrated RGB images, a metric CAD model, and target boxes or masks obtained without future observations. Stage 1 supplies these image regions to the absolute and relative branches (Fig. 1). The pose and SLAM networks use pretrained weights without target-specific training or fine-tuning. The absolute branch proposes metric target-in-camera poses at scheduled keyframes; SLAM estimates relative motion in its own coordinate frame and scale. Stage 3 uses appearance and motion to select a pose, called an anchor. Stage 4 uses these anchors to align SLAM with metric target coordinates and combines both estimates. At frame t, every stage uses only frames ≤ t, and no pose already returned as an output for a processed frame is revised. 
+
+B. Stage 2: Keyframe Pose Hypothesis Generation 
+
+At keyframe j, a single-image pose estimator returns up to 
+
+K hypotheses {(Mj,k , ℓ j,k )}Kk=1 : metric poses Mj,k ∈ SE(3) 
+
+in a common object frame and max-centered appearance scores ℓj,k . The estimator may use render-and-compare infer-ence, correspondences, or another CAD-based procedure. Any internal refinement precedes temporal selection. Keyframes follow a fixed cadence or minimum spacing among available detections, with invalid candidates excluded. Stage 4 supplies inter-anchor poses. 
+
+C. Target-Relative Motion Estimation 
+
+We run DROID-SLAM [19] incrementally with local optimization, without global trajectory optimization, and keep each per-frame estimate fixed once emitted. SPARK and SwissCube use entire frames with the background suppressed. YCB-Video uses unmasked images because the evaluated objects and background form a largely static scene viewed by a moving camera. SHIRT’s predominantly black background needs no additional masking. When tracking a rigid target or a scene containing a stationary target, the states T Si = ( RSi , t Si )
+
+place the camera in a target-fixed SLAM frame, opposite to the absolute-pose convention. Stage 4 therefore inverts them. Both implementations use the rotation increment defined in Eq. (2) for selection. Absolute SLAM orientation is not used directly because its gauge is arbitrary and it can drift. Background suppression encourages the relative branch to follow the target. Its effect is evaluated in Sec. V-D. 
+
+D. Stage 3: Causal Orientation Basin Selection 
+
+Near-symmetric spacecraft admit competing orientation basins, or groups of nearby orientations. The decoder evalu-ates candidate orientation histories using appearance scores and inter-keyframe motion consistency. For each current candidate, it retains the highest cumulative score among all histories whose final pose is that candidate. The candidate with the highest cumulative score is proposed as the current anchor. This can recover a mis-ranked pose, but not one absent from the candidate set. Let j index scheduled keyframes, ij their frame indices, and 
+
+k the available candidates. Pose Mj,k ∈ SE(3) maps target to camera coordinates, with rotation Rj,k and appearance score ℓj,k , supplied by the single-image estimator (higher is better). The methods use the scaled appearance score 
+
+˜ℓj,k = α
+
+
+
+ℓj,k − max  
+
+> h
+
+ℓj,h 
+
+
+
+, (1) where α > 0 is a scaling factor chosen for each method to bring MegaPose and PicoPose appearance scores to similar ranges. Both configurations use equal size weights; Sec. V defines the size-dependent extension. SLAM rotations map camera coordinates into a target-fixed frame. The increment 
+
+∆Sj = ( RSij+1 )⊤RSij (2) left-multiplies Rj,k to predict the next orientation. With d
+
+the smallest rotation angle in degrees and μ > 0 the motion weight, a candidate path π = ( π0, . . . , π J ) through observed keyframes maximizes 
+
+> J
+
+X
+
+> j=0
+
+˜ℓj,π j − μ
+
+> J−1
+
+X
+
+> j=0
+
+d Rj+1 ,π j+1 , ∆Sj Rj,π j
+
+ . (3) The forward Viterbi recurrence [20] is 
+
+Vj (k) = ˜ℓj,k + max 
+
+> h
+
+Vj−1(h)
+
+− μd  Rj,k , ∆Sj−1Rj−1,h 
+
+ , (4) with V0(k) = ˜ℓ0,k and no motion penalty for a missing increment. The proposal is kj = arg max k Vj (k). Selecting this anchor does not discard the other endpoint scores: they can support a different orientation history at a later keyframe. 
+
+E. Stage 4: Pose Fusion and Gap Handling 
+
+Stage 4 first aligns SLAM to metric target coordinates, then estimates the current pose from absolute and relative measure-ments. Let i index fusion updates, Mi = ( RMi , t Mi ) denote an available target-in-camera anchor, and T Si = ( RSi , t Si )
+
+place the camera in the SLAM frame. 
+
+Metric alignment. The similarity A = ( s, R A, t A) con-verts SLAM distances to meters with s > 0, rotates SLAM axes into target axes with RA ∈ SO(3) , and locates the SLAM origin at tA ∈ R3. The aligned camera pose (RFi , t Fi )
+
+and its target-in-camera inverse Si(A) = ( RSi , t Si ) are 
+
+RFi = RARSi , tFi = sR AtSi + tA,RSi = ( RFi )⊤, tSi = −(RFi )⊤tFi . (5) For any target-in-camera pose Z = ( RZ , t Z ), define the anchor discrepancy ri(Z). Alignment fits the retained an-chor/SLAM observations It available by update t with uniform confidence: 
+
+ri(Z) = 
+
+λ log  RMi R⊤
+
+> Z
+
+ ∨
+
+tMi − tZ
+
+
+
+,
+
+ˆAt = arg min 
+
+> A
+
+X
+
+> i∈I t
+
+ri
+
+ Si(A) 22. (6) Here [log( R)] ∨ denotes the rotation vector corresponding to the rotation matrix R, with angle in radians. The factor 
+
+λ = 1 m /rad balances angular and positional disagree-ment. Umeyama alignment [21] of stored translation vectors provides a provisional initialization, followed by nonlinear refinement with initial outlier rejection. Later fits start from the previous alignment. 
+
+Causal fusion. With alignment fixed, adjacent available SLAM poses give ∆Si−1,i = SiS−1
+
+> i−1
+
+. At zero lag, only the current pose Xi = ( RXi , t Xi ) is free; the previous output 
+
+ˆXi−1 is fixed. The absolute and relative residuals are 
+
+eui (Xi) = gi ri(Xi),ebi (Xi) = w
+
+λ [log( REi )] ∨
+
+tEi
+
+
+
+, (7) where Ei = ∆ Si−1,i ˆXi−1X−1 
+
+> i
+
+has rotation REi and transla-tion tEi , and w > 0 weights relative motion. The multiplier 
+
+gi = 0 .05 when the angle between RMi and RSi exceeds D,and gi = 1 otherwise. This weakens, but retains, a disagreeing absolute constraint without identifying which branch is wrong. Missing anchors omit unary residuals; binary residuals require a previous pose and SLAM at both endpoints. Collecting the available scalar components in Ri(Xi), we solve 
+
+ˆXi = arg min 
+
+> Xi
+
+X
+
+> r∈R i(Xi)
+
+hδ (r). (8) Here hδ is the componentwise Huber loss with δ = 0 .3 m ,reducing the influence of outliers; weights multiply residuals before the loss. IV. E XPERIMENTAL EVALUATION 
+
+We summarize benchmark results before examining SPARK-specific diagnostics. Section V isolates component effects; Sec. VI discusses results and limitations across datasets. 
+
+A. Experimental Setup and Evaluation Metric 
+
+We evaluate on the SPARK-2024 Stream-2 public split [22, 23], which contains synthetic Unity renders of PROBA-2 at Tz = 3–12 m . MegaPose, PicoPose and DROID-SLAM use public pretrained checkpoints without target-specific training or fine-tuning of their network parameters. Temporal parameters are set separately, as described below. SPARK detection uses the Mask2Former COCO instance-segmentation release [24]. The other input conditions are TABLE I SHARED TEMPORAL CONFIGURATIONS FOR THE FOUR -DATASET BENCHMARK . E ACH METHOD USES THE SAME SETTINGS ACROSS DATASETS .                    
+
+> Parameter group Mega-HAT Pico-HAT Absolute anchors gap 4, K= 10 , five refiner iterations gap 6, K= 5 , PicoPose stages 1–3, no MegaPose refiner Decoder α= 3 ,μ= 0 .3α= 100 ,μ= 0 .3
+> Fusion w= 0 .002 ,D= 75 ◦
+> warm-up 4, Huber scale 0.3
+> w= 0 .1,D= 30 ◦
+> warm-up 4, Huber scale 0.3
+
+specified in Sec. VI. We report the SPARK-2024 metric unchanged, consistent with the definitions used by both comparison methods [12, 16]: 
+
+Et = ∥ ˆT − T ∥2, Eq = 2 arccos ⟨ˆq, q ⟩ , (9) 
+
+Ep = Eq + Et
+
+∥T ∥ , (10) with Et in meters and Eq in radians, computed per frame and averaged within each dataset. Ep is the primary pose error (lower is better), and tables report Eq in degrees. The symmetry-aware BOP metrics score a 180 ◦ flip as ≈ 0 for a symmetric object and would obscure the failure studied here. We report the (Et, E q ) decomposition alongside Ep
+
+throughout, and use Ep on YCB-Video as well, over its non-symmetric objects (Sec. VI-A). Mega-HAT uses MegaPose coarse ranking and five re-finement iterations on K = 10 candidates. Pico-HAT uses the three native PicoPose correspondence stages and PnP/RANSAC to produce K = 5 candidates, without a MegaPose refiner at inference. Template poses are converted to the evaluation CAD frame before temporal processing. Each method uses one temporal configuration across all four datasets. Table I gives the shared benchmark settings for both methods. Anchors are queried only at available detection opportunities, and dataset-specific input preparation follows Sec. III-C. The different α values account for the frontends’ candidate-score scales when balancing appearance against motion consistency: MegaPose uses pose logits, whereas PicoPose uses correspondence/PnP inlier scores. PicoPose’s generally higher pose accuracy and longer anchor gap also motivate separate tuning of w, balancing relative-motion consistency against anchor-based drift correction. Both methods retain all temporal stages on every dataset, with gap handling as specified in Sec. III-E. 
+
+Alignment updates. Fusion starts after the anchor/SLAM warm-up in Table I. Alignment is normally refitted every ten fusion updates using only observations received so far. It is reset when four successive anchors disagree with the aligned SLAM orientations by more than D, yet agree with each other within D after SLAM rotation propagation. The new alignment applies from the triggering frame onward; past outputs remain fixed. These shared benchmark configurations are distinct from the SPARK-tuned Mega-HAT configuration used for ablations, range diagnostics and offline comparisons. Its settings and sensitivity checks are given in Sec. V-B.                            
+
+> TABLE II CAUSAL AND OFFLINE HAT ON SYNTHETIC SPARK, WITH TUNED TEMPORAL SETTINGS .Configuration Et(m) E◦
+> qEp
+> Mega-HAT , causal 0.442 10.82 0.2355
+> Mega-HAT , all stages offline 0.430 9.66 0.2125
+> Mega-HAT , offline + dense refinement 0.348 9.52 0.2016
+> Pico-HAT , causal, tuned 0.123 4.19 0.0886
+> Pico-HAT , offline, tuned 0.104 2.81 0.0618
+> Motion-aware ViT [12], offline 0.137 4.69 0.0990
+
+B. Pose Accuracy, Error Dispersion, and Throughput 
+
+The shared benchmark Mega-HAT configuration reduces mean pose error relative to independent MegaPose on all four datasets (Table IV): 21 .3% , 6.2% , 7.3% and 2.9% on SPARK, YCB-Video, SwissCube and SHIRT, respectively. Pico-HAT reduces mean pose error relative to PicoPose on SPARK, SwissCube and YCB-Video, but increases it on SHIRT. Both versions improve throughput and reduce error SD relative to their independent estimators on every dataset. SD measures error dispersion, not temporal jitter. SHIRT’s remaining Pico-HAT mean-error regression and SwissCube’s candidate limitations are examined in Sec. VI. Table II compares causal and offline configurations of both HAT implementations with the motion-aware ViT on SPARK. 
+
+C. Causal and Offline Performance Comparison 
+
+The causal SPARK-tuned Mega-HAT configuration achieves Ep = 0 .2355 , versus 0.2125 offline (Table II): 
+
+10 .8% higher mean pose error without future frames or revisions to past outputs. Fresh hypotheses can correct the current orientation at later keyframes when a suitable candidate becomes available. The offline reference uses two global bundle-adjustment passes in DROID, a decoder backtrace with a whole-sequence gate, and joint optimization of all frame poses in Stage 4. Additional dense refinement from the selected anchors reduces the error to Ep = 0 .2016 (Et = 0 .348 m , Eq = 9 .52 ◦). This pass re-acquires coarse poses when rendered and detected silhouettes diverge and rejects candidates more than 90 ◦ from the anchor basin. Both Pico-HAT variants in Table II achieve lower transla-tion, rotation and pose errors than the published motion-aware ViT results [12]. This offline keypoint method is trained on the target spacecraft, PROBA-2, using SPADES-RGB and requires a future frame at inference. Pico-HAT uses fixed pretrained networks in both its causal and offline variants. 
+
+D. Range-Dependent Rotation and Depth Errors 
+
+Beyond ∼ 7 m , coarse rotation and depth errors increase together (Fig. 2). Depth contributes 95 .5% of translation-error energy, with a −1.49 m bias at 11 –13 m . The > 90 ◦
+
+coarse-pose share rises from 1.9% below 7 m to 34 .1% at long range. Off-basin hypotheses have median depth error 
+
+−1.34 m versus −0.06 m in-basin. Smaller projections also erase the details distinguishing near-symmetric orientations. These observations motivate the size weight in Eq. (11). TABLE III CUMULATIVE COMPONENT ABLATIONS OF MEGA -HAT ON SPARK,                         
+
+> CAUSAL THROUGHOUT .Configuration Et(m) E◦
+> qEp
+> MegaPose tracking 0.471 28.13 0.5387 Keyframe anchors +SLAM fusion 0.490 18.77 0.3788
+> +Viterbi basin selection (Stage 3) 0.469 12.20 0.2619
+> +size-weighted unary 0.451 11.63 0.2504
+> +disagreement gate ( D=75 ◦)0.442 10.82 0.2355
+
+V. A BLATION STUDIES 
+
+Unless otherwise stated, ablations use the SPARK-tuned configuration of Mega-HAT, which achieves Ep = 0 .2355 
+
+on SPARK, compared with 0.3254 for its shared benchmark configuration. This provides a well-performing reference for assessing each component’s effect on accuracy, in a setting with useful pose candidates and observable relative motion. Size weighting reduces appearance influence for small projections. For box area aj in pixels squared and apparent size sj = √aj ,
+
+wj = clip(( sj /s 0)γ , w min , 1) ,
+
+˜ℓj,k = αw j
+
+
+
+ℓj,k − max  
+
+> h
+
+ℓj,h 
+
+
+
+. (11) Here s0 = 500 px sets unit weight, γ = 2 its decrease, and 
+
+wmin = 0 .05 its floor; sj = 250 px gives wj = 0 .25 . This heuristic favors motion when details occupy fewer pixels; it is not a calibrated probability. Shared benchmark configurations use wj = 1 . This selection weight is distinct from detection-area fusion confidence; Sec. V-B specifies the loss, warm-up, and fallback settings. 
+
+A. Component Contributions 
+
+Table III starts with tracking and then adds components to keyframe-based fusion. The improvement is predominantly rotational. Basin selection gives the largest proportional reduction between successive rows, 30 .9% , followed by gains from size weighting and the disagreement gate. The size weight is most relevant when the decoder must maintain the selected basin throughout the far-range segment.        
+
+> Fig. 2. Rotation error and signed depth error ˆTz−Tzof appearance-selected MegaPose hypotheses on SPARK-2024, after refinement and before temporal selection. Markers show medians in 2 m bins of ground-truth depth, and shading shows interquartile ranges. Negative depth errors indicate underestimated depth.
+
+B. Hyperparameter Sensitivity 
+
+Unless varied below, settings are stride 10, K = 10 , five refinement iterations, α = 1 , μ = 0 .3, w = 0 .1, D = 75 ◦
+
+and selection/fusion warm-ups of five/three observations. Size weights follow Eq. (11). The running selection gate uses a 
+
+15 ◦ neighborhood, minimum median count two and 70% 
+
+override limit. Fusion uses detection-area confidence, squared loss and zero lag. Gaps propagate SLAM rotation and hold translation. At fixed K = 5 , anchor strides 5/10 /20 /40 give Ep =0.2802 /0.2843 /0.2820 /0.3639 . Strides 5–20 have similar errors at K = 5 , while stride 40 loses accuracy. Increasing K
+
+from 5 to 10 at stride 10 reduces Ep from 0.2843 to 0.2355 :the decoder needs the correct basin at enough keyframes to form a path. For size weighting, references s0 = 300 /400 /500 /600 
+
+give Ep = 0 .2399 /0.2377 /0.2355 /0.2371 , versus 0.2402 
+
+without size weighting. Its independent effect with the fusion gate is small. Without the gate it reduces Ep by 
+
+0.011 , and at anchors it reduces the > 90 ◦ share from 
+
+2.83% to 2.40% . Gate thresholds D = 45 ◦/75 ◦/120 ◦ and off give 0.2802 /0.2355 /0.2358 /0.2504 : overly tight gates downweight useful anchors, while 75 ◦ and 120 ◦ perform similarly. Fusion weights w = 0.05 /0.1/0.25 /0.5 give Ep =0.2447 /0.2355 /0.2868 /0.3745 . Non-anchor poses have only relative edges, so w controls the balance where absolute anchors are present. Excessive weight propagates SLAM drift, motivating dataset-specific operating points. 
+
+C. Continuous-State Filters and Dynamics Priors 
+
+We replace the discrete decoder with a particle filter on 
+
+SO(3) , which can retain competing orientation basins, and a UKF, whose single-Gaussian representation does not explicitly retain separate modes. Both propagate with the same SLAM increments, update using the same candidate scores, and emit a candidate index, leaving the downstream stages unchanged. For each filter, we report the best-performing configuration found through hyperparameter search on SPARK. Over 3,000 keyframes, the discrete forward decoder achieves a mean rotation error of 11 .68 ◦, with 2.40% of selections above 90 ◦, compared with 11 .97 ◦ and 2.93% 
+
+for the particle filter and 14 .63 ◦ and 4.73% for the UKF. Even with their best tested settings, neither filter improves candidate selection on SPARK. The hypotheses form a discrete set regenerated at each keyframe, and the output must be one of those candidates; the results therefore favor explicit selection among the available alternatives, without establishing a general limitation of continuous-state filtering. A Stage-4 inertial prior penalizing translational second differences and changes in world-frame incremental rotation leaves Ep = 0 .2355 unchanged at the reported precision. These penalties encourage local smoothness, which is already constrained by the SLAM chain, but do not resolve absolute orientation ambiguity: a smooth trajectory in a consistently incorrect basin can remain compatible with the prior. Thus, adding a dynamics prior does not replace selection among competing orientation hypotheses. 
+
+D. Effect of Background Masking on SLAM 
+
+Using raw frames instead of masked targets increases Ep
+
+from 0.2355 to 0.3481 . Causal DROID fails to recover a trajectory more often without masking. The textured Earth limb can improve relative rotation on recovered tracks, but background suppression improves trajectory recovery across the evaluated sequences. VI. C ROSS -D ATASET EVALUATION 
+
+Table IV and Fig. 3 compare both implementations on three spacecraft datasets and YCB-Video. Video methods process the intervening frames and retain temporal state. Independent image methods estimate each evaluation image separately. On YCB-Video, video methods consume the full sequence, while independent methods run only at the designated BOP target images. SwissCube images come from its official test split, and SHIRT includes both trajectories in synthetic and lightbox conditions. We report means and sample SDs for each dataset. Independent MegaPose restarts coarse inference at each evaluated image with ten hypotheses and five refinement iterations. GigaPose supplies five hypotheses to the same refiner, as indicated by its label. PicoPose selects the highest-scoring valid native hypothesis without temporal processing or external refinement, matching the initialization used by Pico-HAT. SRT3D uses automatic MegaPose initialization. RGBTrack uses RGB-only initialization and mask-based recovery. All template poses use the verified CAD-frame conversion. SwissCube and SHIRT use annotation-derived regions and therefore do not evaluate automatic detection. Timing uses NVIDIA A100 GPUs ( 80 GB ) and an Intel Xeon Gold 6330 CPU. Input FPS counts RGB frames per wall-clock interval after loading, initialization and warm-up. Models remain resident; detector generation and offline template preparation are excluded. Each rate is one sustained pass on a separate stream subset, with fresh pose inference and all temporal stages executed by both HAT variants. Both HAT variants exceed their independent frontends’ input FPS on all four datasets. DROID-SLAM largely determines rate variation through dense image matching, repeated geometric optimization and per-frame causal pose readout. Higher input resolution raises SwissCube’s cost, while larger image motion triggers more frequent internal SLAM keyframe updates on SHIRT. 
+
+A. Temporal Fusion on SPARK and YCB-Video 
+
+SPARK provides the clearest combination of useful ab-solute alternatives and observable relative motion. Mega-HAT lowers both mean error and SD relative to independent MegaPose, while querying the absolute estimator sparsely improves throughput. Pico-HAT achieves lower error and dispersion still, with higher input FPS . This supports using the temporal framework with different absolute estimators. YCB-Video [4, 25] tests the same temporal framework on everyday objects outside the spacecraft domain. We evaluate non-symmetric objects with shared CNOS detections [26]. Mega-HAT improves mean error and dispersion relative to independent MegaPose. Pico-HAT likewise reduces mean error and dispersion relative to independent PicoPose, while increasing throughput. It also outperforms the shared bench-mark Mega-HAT configuration on these three measures. 
+
+B. Candidate Recall Limitations on SwissCube 
+
+SwissCube [27] tests a small CubeSat against an Earth background. A dense MegaPose best-of-ten candidate di-agnostic quantifies the remaining orientation ambiguity: even an oracle selecting the lowest-error hypothesis has a median rotation error of 65 .7◦, and only 22 .8% of images contain a candidate within 30 ◦ of ground truth. Temporal selection therefore has limited scope to correct the absolute estimates. The Mega-HAT configuration improves mean error and dispersion relative to independent MegaPose. With sparse anchors and uniform confidence, sustained throughput increases from 0.76 to 2.02 FPS . Mean pose error remains high at 1.959 , consistent with the limited orientation accuracy of the absolute hypotheses. Pico-HAT improves on PicoPose on SwissCube. Mean pose error falls from 1.937 to 0.480 , SD from 5.195 to 0.681 , and throughput rises from 3.35 to 4.44 FPS .
+
+C. Rapid-Rotation Challenges on SHIRT 
+
+SHIRT [10] exposes a limitation of the DROID-SLAM motion estimates under rapid spacecraft rotation. The median change in object orientation between consecutive frames is 
+
+4.1◦ on SHIRT, 1.627 ◦ on SwissCube, 0.41 ◦ on SPARK and 
+
+0.12 ◦ on YCB-Video. Larger inter-frame rotations challenge correspondence estimation and can cause DROID to underes-timate motion, weakening the temporal constraints used for basin selection and fusion. As summarized in Table IV, Mega-HAT provides only a modest accuracy gain on SHIRT, while Pico-HAT increases mean pose error despite reducing dispersion. Smoother estimates can therefore remain in an incorrect orientation basin when relative motion is poorly observed, highlighting the need for more reliable motion estimation under rapid tumbling. VII. C ONCLUSION 
+
+This paper presents HAT, a method for monocular space-craft pose estimation that uses relative motion to select among competing absolute-pose hypotheses before alignment and fusion, without revising past outputs. Its two versions use MegaPose or PicoPose with a metric CAD model and require no target-specific training or fine-tuning of the pretrained networks. Using one temporal configuration per version, both increase sustained input FPS and reduce error dispersion relative to their independent estimators on all four datasets. Both also reduce mean pose error, with the sole exception of Pico-HAT on SHIRT. The ablations identify basin selection before fusion as a principal source of the accuracy gain. 
+
+Limitations and future work. Absolute orientation dis-crimination degrades at long range as target details occupy TABLE IV MEANS AND SAMPLE SD SUMMARIZE EACH DATASET . B OLD DENOTES THE BEST RESULT IN EACH COLUMN PER DATASET (LOWEST ERRORS AND SD, 
+
+HIGHEST FPS). I TALICS DENOTE VIDEO BASELINES ; OUR METHODS APPEAR BELOW THE DIVIDER . “+ REF .” ADDS FIVE MEGA POSE REFINEMENT ITERATIONS . FPS INCLUDES DECODING AFTER WARM -UP AND EXCLUDES DETECTOR GENERATION AND LOADING . M EGA -HAT USES THE SHARED TEMPORAL CONFIGURATION . E VALUATION AND TIMING PROTOCOLS ARE SPECIFIED IN SEC . VI. 
+
+SPARK-2024 
+
+Method Ep SD Et (m) Eq (◦) FPS 
+
+MegaPose (per frame) 0.413 0.808 0.469 21.0 0.82 PicoPose 0.098 0.344 0.112 4.8 2.74 GigaPose + ref. 0.410 0.811 0.333 21.5 1.66 
+
+RGBTrack 2.169 1.065 1.804 111.0 2.34 SRT3D + init. 0.650 0.943 1.311 29.1 131.61 
+
+Mega-HAT 0.325 0.648 0.463 15.9 2.27 Pico-HAT 0.089 0.224 0.123 4.2 7.03 
+
+YCB-Video 
+
+Method Ep SD Et (m) Eq (◦) FPS 
+
+MegaPose (per frame) 0.371 0.837 0.078 16.3 0.85 PicoPose 0.364 0.837 0.053 17.4 3.55 GigaPose + ref. 0.286 0.770 0.064 12.4 1.87 
+
+RGBTrack 1.426 1.335 0.068 77.4 5.57 SRT3D + init. 0.722 0.938 0.083 36.2 94.69 
+
+Mega-HAT 0.348 0.761 0.083 14.7 7.07 Pico-HAT 0.295 0.669 0.051 13.6 14.81 
+
+SwissCube 
+
+Method Ep SD Et (m) Eq (◦) FPS 
+
+MegaPose (per frame) 2.113 1.027 0.160 111.1 0.76 PicoPose 1.937 5.195 0.413 70.0 3.35 GigaPose + ref. 2.096 1.290 0.281 101.0 1.69 
+
+RGBTrack 2.553 0.724 0.185 126.8 2.78 SRT3D + init. 2.631 0.742 0.369 126.2 50.79 
+
+Mega-HAT 1.959 0.965 0.169 101.7 2.02 Pico-HAT 0.480 0.681 0.057 22.1 4.44 
+
+SHIRT 
+
+Method Ep SD Et (m) Eq (◦) FPS 
+
+MegaPose (per frame) 1.684 1.155 1.394 83.8 0.79 PicoPose 1.829 1.144 1.306 93.5 2.95 GigaPose + ref. 2.151 1.182 1.671 108.0 1.68 
+
+RGBTrack 2.733 1.259 4.122 112.7 1.68 SRT3D + init. 2.248 0.949 1.487 110.2 109.79 
+
+Mega-HAT 1.636 1.077 1.537 79.8 1.06 Pico-HAT 1.974 0.847 1.058 103.8 4.82 Mega PicoPose Giga + ref.         
+
+> RGBTrack SRT3D
+> Mega-HAT Pico-HAT
+> Mega PicoPose Giga + ref.
+> RGBTrack SRT3D
+> Mega-HAT Pico-HAT
+> Mega PicoPose Giga + ref.
+> RGBTrack SRT3D
+> Mega-HAT Pico-HAT
+> Mega PicoPose Giga + ref.
+> RGBTrack SRT3D
+> Mega-HAT Pico-HAT
+> 01234Mean  Ep + sample SD ↓
+> SPARK-2024 YCB-Video
+> 7.13
+> SwissCube SHIRT
+> 0510 15 20 Sustained input FPS ↑
+> 131.6 FPS 94.7 FPS 50.8 FPS 109.8 FPS
+> Baselines Mega-HAT Pico-HAT Sustained FPS
+
+Fig. 3. Mean Ep (bars), one sample SD (upper whiskers), and sustained input FPS (diamonds). Our implementations are colored, with larger outlined diamonds. Baselines are gray. Numerical labels mark whiskers above 4 and rates above 20 FPS . Throughput is measured on separate stream subsets. Table IV specifies labels and evaluation scope. 
+
+fewer pixels, while rapid rotation can degrade SLAM and invalidate the relative-motion constraints, as SHIRT demon-strates. Improved basin discrimination for small target projec-tions and relative-motion estimation robust to rapid tumbling are therefore priorities for future work. The framework requires a metric CAD model, useful absolute-pose candidates and inter-frame motion that SLAM can observe. SwissCube highlights the candidate-recall limitation: temporal selection cannot recover an orientation absent from the candidate set. REFERENCES 
+
+[1] L. Pauly, W. Rharbaoui, C. Shneider, A. Rathinam, V. Gaudilli` ere, and D. Aouada, “A survey on deep learning-based monocular spacecraft pose estimation: Current state, limitations and prospects,” Acta Astronau-tica , 2023. [2] Y. Labb´ e, L. Manuelli, A. Mousavian, S. Tyree, S. Birch-field, J. Tremblay, J. Carpentier, M. Aubry, D. Fox, and J. Sivic, “MegaPose: 6D pose estimation of novel objects via render & compare,” in Conference on Robot Learning (CoRL) , 2022. [3] L. Liu, J. Lin, Z. Liu, and K. Jia, “PicoPose: Progressive pixel-to-pixel correspondence learning for novel object pose estimation,” in Conference on Robot Learning (CoRL) , 2025. [4] Y. Xiang, T. Schmidt, V. Narayanan, and D. Fox, “PoseCNN: A convolutional neural network for 6D object pose estimation in cluttered scenes,” in Robotics: Science and Systems (RSS) , 2018. [5] B. Chen, J. Cao, A. Parra, and T.-J. Chin, “Satellite pose estimation with deep landmark regression and nonlinear pose refinement,” in IEEE/CVF International Conference on Computer Vision Workshops (ICCVW) , 2019. [6] M. Kisantal, S. Sharma, T. H. Park, D. Izzo, M. M¨ artens, and S. D’Amico, “Satellite pose estimation challenge: Dataset, competition design, and results,” IEEE Trans-actions on Aerospace and Electronic Systems , 2020. [7] T. H. Park, M. M¨ artens, G. Lecuyer, D. Izzo, and S. D’Amico, “SPEED+: Next-generation dataset for spacecraft pose estimation across domain gap,” in IEEE Aerospace Conference , 2022. [8] K. Liu and Y. Yu, “Revisiting the domain gap issue in non-cooperative spacecraft pose tracking,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), AI4Space , 2024. [9] T. H. Park and S. D’Amico, “Robust multi-task learning and online refinement for spacecraft pose estimation across domain gap,” Advances in Space Research , 2024. [10] ——, “Adaptive neural-network-based unscented Kalman filter for robust pose tracking of noncooperative spacecraft,” Journal of Guidance, Control, and Dynamics , 2023. [11] D. Rondao, N. Aouf, and M. A. Richardson, “ChiNet: Deep recurrent convolutional learning for multimodal spacecraft pose estimation,” IEEE Transactions on Aerospace and Electronic Systems , 2022. [12] J. Sosa, D. Pineau, A. Rathinam, A. Shabayek, and D. Aouada, “Motion aware ViT-based framework for monocular 6-DoF spacecraft pose estimation,” arXiv preprint arXiv:2509.06000 , 2025. [13] Y. Zhang, L. You, L. Yang, Z. Zhang, X. Nie, and B. Zhang, “Monocular 6-DoF pose estimation of space-crafts utilizing self-iterative optimization and motion consistency,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), AI4Space , 2024. [14] V. N. Nguyen, T. Groueix, M. Salzmann, and V. Lepetit, “GigaPose: Fast and robust novel object pose estimation via one correspondence,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024. [15] S. Moon, H. Son, D. Hur, and S. Kim, “GenFlow: Generalizable recurrent flow for 6D pose refinement of novel objects,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024. [16] J. Zuo, S. Zhang, Q. Zhang, Y. Zhao, B. Liu, A. Wu, X. Wan, L. Shu, and G. Kang, “CroSpace6D: Lever-aging geometric and motion cues for high-precision cross-domain 6dof pose estimation for non-cooperative spacecrafts,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), AI4Space , 2024. [17] M. Stoiber, M. Pfanne, K. H. Strobl, R. Triebel, and A. Albu-Sch¨ affer, “SRT3D: A sparse region-based 3D object tracking approach for the real world,” Interna-tional Journal of Computer Vision , 2022. [18] T. Guo and J. Yu, “RGBTrack: Fast, robust depth-free 6D pose estimation and tracking,” in IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) ,2025. [19] Z. Teed and J. Deng, “DROID-SLAM: Deep visual SLAM for monocular, stereo, and RGB-D cameras,” in Advances in Neural Information Processing Systems (NeurIPS) , 2021. [20] A. Viterbi, “Error bounds for convolutional codes and an asymptotically optimum decoding algorithm,” IEEE Transactions on Information Theory , 1967. [21] S. Umeyama, “Least-squares estimation of transfor-mation parameters between two point patterns,” IEEE Transactions on Pattern Analysis and Machine Intelli-gence , 1991. [22] SnT, University of Luxembourg, “SPARK 2024 chal-lenge: Spacecraft semantic segmentation and trajectory estimation (Stream-2),” AI4Space Workshop, CVPR, 2024. [23] A. Rathinam, H. Qadadri, and D. Aouada, “SPADES: A realistic spacecraft pose estimation dataset using event sensing,” in IEEE International Conference on Robotics and Automation (ICRA) , 2024. [24] B. Cheng, I. Misra, A. G. Schwing, A. Kirillov, and R. Girdhar, “Masked-attention mask transformer for universal image segmentation,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,2022. [25] T. Hodaˇ n, M. Sundermeyer, Y. Labb´ e et al. , “BOP challenge 2023 on detection, segmentation and pose es-timation of seen and unseen rigid objects,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW) , 2024. [26] V. N. Nguyen, T. Groueix, G. Ponimatkin, V. Lepetit, and T. Hodan, “CNOS: A strong baseline for CAD-based novel object segmentation,” in IEEE/CVF International Conference on Computer Vision Workshops (ICCVW) ,2023. [27] Y. Hu, S. Speierer, W. Jakob, P. Fua, and M. Salzmann, “Wide-depth-range 6D object pose estimation in space,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2021.

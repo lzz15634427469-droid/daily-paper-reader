@@ -1,0 +1,1694 @@
+Title: Velocity-free Attitude Synchronization Using Vector Measurements
+
+URL Source: https://arxiv.org/pdf/2609.14752v1
+
+Published Time: Tue, 15 Sep 2026 01:36:38 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Velocity-free Attitude Synchronization Using Vector Measurements 
+
+Melika Afshari, Mouaad Boughellaba and Abdelhamid Tayebi 
+
+Abstract— This paper addresses the velocity-free leader-less and leader–follower distributed attitude synchronization of a network of rigid body systems, with inertial vector measurements, under an undirected communication graph topology. In the leaderless case all agents achieve consensus on a common constant orientation. In the leader–follower case, all agents synchronize with a prescribed constant orientation available to only one agent. The proposed schemes require neither attitude reconstruction nor angular-velocity, avoid unwinding, and achieve almost-global asymptotic stability of the desired synchronization sets. Numerical simulations illustrate their effectiveness. 
+
+I. Introduction Attitude synchronization is a fundamental coordina-tion problem in networked multi-agent systems, with ap-plications such as spacecraft formations and cooperative aerial vehicles [1]. Depending on the availability of a reference attitude, synchronization may be leaderless, in which the agents converge to a common but unspecified attitude, or leader–follower, in which they converge to a prescribed reference attitude. The formulation of at-titude synchronization depends on the adopted attitude representation. Common representations include Euler angles (EA), modified Rodrigues parameters (MRP), rotation matrices, and unit quaternions [2]. The first two provide minimal three-parameter descriptions but are not globally nonsingular. Rotation matrices provide a global and unique representation on SO (3) but require nine scalar entries, whereas unit quaternions provide a compact four-parameter and globally nonsingular rep-resentation with reduced computational burden. These properties make unit quaternions an attractive represen-tation for attitude analysis. However, unit quaternions provide a double cover of SO (3) , which may give rise to the unwinding phenomenon [3], [4] if this ambiguity is not properly addressed. Beyond attitude representation, practical implementa-tion also depends on the available feedback information. Many attitude-control and synchronization schemes rely on both attitude and angular-velocity measurements, which increases the sensing and estimation require-ments. To eliminate angular-velocity measurements, [4] introduced a dynamic output-feedback scheme using an auxiliary quaternion system, while [5] extended this  
+
+> This work was supported by the Natural Sciences and Engi-neering Research Council of Canada (NSERC), under the grant RGPIN-2026-06037. The authors are with the Department of Electrical and Computer Engineering, Lakehead University, Thunder Bay, ON P7B 5E1, Canada. (e-mail:
+
+mafshari,mboughel,atayebi@lakeheadu.ca ). 
+
+idea to distributed attitude synchronization. A related velocity-free approach based on MRP was developed in [6]. Communication delays were later considered in [7] for both leaderless and leader–follower synchronization. Further developments considered finite-time velocity-free synchronization and leader–follower tracking [8], [9]. Global finite-time synchronization and leader–follower tracking without angular-velocity measurements were subsequently obtained using hybrid quaternion-based methods in [10], while event-triggered velocity-free syn-chronization was studied in [11], [12]. Despite eliminating angular-velocity measurements, many velocity-free approaches still rely on attitude infor-mation. This limitation motivated the direct use of body-frame measurements of inertial vectors in the feedback law. In [13], a velocity-free attitude stabilization scheme was developed using only inertial-vector measurements, without explicit attitude reconstruction. This approach was further developed in [14], while [15] proposed a global hybrid velocity-free solution based on inertial-vector measurements. The use of vector measurements has also been extended to distributed attitude synchro-nization. In [16], inertial-vector measurements were used directly in distributed control laws for both leaderless synchronization and synchronization to a prescribed reference attitude, without explicit attitude reconstruc-tion. However, angular-velocity measurements were still required. Recent work has strengthened the stability guarantees for distributed synchronization based on vector measurements. In [17], leaderless attitude syn-chronization was addressed using locally expressed vector measurements, with almost-global asymptotic stability guarantees. The subsequent extension in [18] additionally considered the leader–follower problem, where reference vector measurements associated with the desired attitude are available only to a single designated agent, and established almost-global asymptotic stability for both synchronization settings. Nevertheless, for the dynamic problem, each agent is still assumed to have access to its angular-velocity measurements. These observations motivate the development of distributed velocity-free synchronization schemes that use vector measurements directly while retaining almost-global asymptotic sta-bility. In this paper, we propose distributed velocity-free control laws for both leaderless and leader–follower attitude synchronization. The controllers are constructed directly from locally available vector measurements and require neither explicit attitude reconstruction nor angular-velocity measurements. In the leader–follower arXiv:2609.14752v1 [eess.SY] 13 Sep 2026 configuration, only one designated agent requires access to the reference vector measurements. Almost-global asymptotic stability of the desired synchronization sets is established for both configurations. The control design accounts for the antipodal quaternion representations of the same physical attitude, thereby avoiding unwinding. II. Preliminaries A. Communication Graph Consider a network consisting of N agents. The com-munication structure among the agents is represented by an undirected graph G = ( V, E), where E ⊆ V × V 
+
+is the set of edges. Each vertex represents one agent in the network. For an undirected graph, an edge (i, j ) ∈ E 
+
+means that agents i and j can exchange information with each other. The adjacency matrix of the graph is denoted by A = [ aij ] ∈ RN ×N . The element aij = 1 if (i, j ) ∈ E ,otherwise, aij = 0 . The neighbor set of agent i is defined as Ni = {j ∈ V : ( i, j ) ∈ E} . A path in an undirected graph is an ordered sequence of edges that connects one vertex to another. The graph is called connected if there exists at least one path between every two different vertices. A cycle is a path that starts and ends at the same vertex. If a connected graph has no cycles, then it is called a tree. Equivalently, an undirected tree is a connected acyclic graph in which every two vertices are connected by exactly one path. An oriented graph is obtained by assigning an arbitrary orientation to each edge of an undirected graph. Suppose that each edge is assigned an index. Let M = |E| be the total number of edges, and let M = {1, . . . , M } be the set of edge indices. The incidence matrix of the oriented graph is denoted by H = [ hik ] ∈ RN ×M and its entries are defined by [19] 
+
+hik =
+
+
+
++1 k ∈ M +
+
+> i
+
+−1 k ∈ M −
+
+> i
+
+0, otherwise (1) where M+ 
+
+> i
+
+⊂ M is the set of edges for which agent 
+
+i is the head of the edge, and M− 
+
+> i
+
+⊂ M is the set of edges for which agent i is the tail of the edge. For a connected undirected graph, the incidence matrix satisfies H⊤1N = 0 and rank (H) = N − 1. Moreover, when the graph is an undirected tree, the columns of H
+
+are linearly independent. B. Notations and Attitude Representation Let R, Rn and C denote the sets of real numbers, 
+
+n-dimensional real vectors, and complex numbers, re-spectively. Let In denote the n × n identity matrix. For a symmetric matrix A, the notation A ≻ 0 denotes positive definiteness, while A ⪰ 0 denotes positive semi-definiteness. For a symmetric matrix A ∈ R3×3, define 
+
+E(A) := {u ∈ S2 : Au = λu for some λ ∈ R}. We denote by λmin (M ) and λmax (M ), the minimum and maximin eigenvalues of a matrix M . The Euclidean norm of a vector y is defined by ∥y∥ = √y⊤y and the induced Euclidean norm of a matrix M is defined by ∥M ∥ = √λmax (M ⊤M ). The symbol ⊗ denotes the Kronecker product. The attitude of each rigid body, from the body-fixed frame Bi to the inertial frame Ii,is represented by the unit-quaternion Qi = [ q⊤ 
+
+> i
+
+, η i]⊤ ∈
+
+S3, where qi ∈ R3 and ηi ∈ R, and S3 is the unit sphere in R4. For any a ∈ R3, let a× denote the skew-symmetric matrix associated with a, defined such that 
+
+a×b = a × b, ∀b ∈ R3, where × denote the vector cross product in R3. The composition of two unit-quaternions 
+
+Qi = [ q⊤ 
+
+> i
+
+, η i]⊤ and Qj = [ q⊤ 
+
+> j
+
+, η j ]⊤ is defined as Qi ⊙Qj =(ηiqj +ηj qi +q× 
+
+> i
+
+qj , η iηj −q⊤ 
+
+> i
+
+qj
+
+). For any unit quaternion 
+
+Qi = [ q⊤ 
+
+> i
+
+, η i]⊤ its inverse is given by Q−1 
+
+> i
+
+= [ −q⊤ 
+
+> i
+
+, η i]⊤.
+
+Therefore, Qi ⊙ Q−1 
+
+> i
+
+= Q−1 
+
+> i
+
+⊙ Qi = [0 ⊤
+
+> 3×1
+
+, 1] ⊤.Another representation of the attitude of rigid body i is given by the rotation matrix Ri := R(Qi) ∈ SO (3) where 
+
+SO (3) := {Ri ∈ R3×3 | R⊤ 
+
+> i
+
+Ri = RiR⊤ 
+
+> i
+
+= I3, det( Ri) = 1}. The map R : S3 → SO (3) is defined by the Rodrigues formula Ri = R(Qi) = ( η2 
+
+> i
+
+− q⊤ 
+
+> i
+
+qi)I3 + 2 qiq⊤ 
+
+> i
+
++ 2 ηiq× 
+
+> i
+
+.III. Problem Formulation A. Rigid-Body Dynamics and Vector Measurements Consider a network of N agents. The rotational dynamics of the i-th rigid body are given by 
+
+˙Qi = 12 Qi ⊙ ¯ωi (2) 
+
+Ji ˙ωi = −ω× 
+
+> i
+
+Jiωi + τi, (3) where Qi = [q⊤ 
+
+> i
+
+, η i]⊤ ∈ S3 is the unit quaternion representing the orientation of the body-fixed frame 
+
+Bi relative to the inertial frame I. The vector and scalar part of Qi are denoted by qi ∈ R3 and ηi ∈ R,respectively, and satisfy q⊤ 
+
+> i
+
+qi + η2 
+
+> i
+
+= 1 . Moreover, ¯ωi =[ω⊤ 
+
+> i
+
+, 0] ⊤, where ωi ∈ R3 denotes the angular velocity of the rigid body expressed in Bi. The matrix Ji = J⊤ 
+
+> i
+
+≻ 0
+
+is the constant inertia matrix of agent i, expressed with respect to Bi, and τi ∈ R3 is the applied control torque. Each agent is assumed to measure a set of common set of fixed inertial unit-vectors aℓ in its body-fixed frame. Let 
+
+aℓ ∈ S2, ℓ = 1 , . . . , m , denote these constant vectors expressed in the inertial frame I. The corresponding measurement available to agent i ∈ V is 
+
+bℓi = R⊤ 
+
+> i
+
+aℓ, (4) where ℓ = 1, . . . , m . Vectors aℓ are assumed to be known to all agents. As will be shown in the proposed feedback control design, each agent relies on its own measurements bℓi together with the corresponding mea-surements received from its neighboring agents according to the communication graph G = ( V, E). Throughout this paper, we make the following assumptions: Assumption 1. The set of inertial vectors aℓ ∈ S2,
+
+ℓ = 1 , 2, . . . , m , with m ≥ 2, contains at least two non-collinear vectors. Assumption 2. The communication graph G = ( V, E) is an undirected tree. Two velocity-free attitude synchronization problems are considered. Problem 1 (Velocity-free leaderless synchronization): Un-der Assumptions 1-2, design velocity-free distributed control torques τi, using only the available vector mea-surements, such that, for almost all initial conditions, 
+
+lim  
+
+> t→∞
+
+Qj ⊙ Q−1 
+
+> i
+
+= QI , lim  
+
+> t→∞
+
+ωi(t) = 0 , ∀i ∈ V , ∀j ∈ N i,
+
+(5) where QI := [0 ⊤
+
+> 3×1
+
+, ±1] ⊤.Problem 2 (Velocity-free leader-follower synchroniza-tion): Let Qd = [¯ q⊤ 
+
+> d
+
+, ¯ηd]⊤ denote a unit quaternion representing a reference attitude available only to one agent (agent 1) referred to as the leader. Let Rd := 
+
+R(Qd) ∈ SO (3) be its corresponding rotation matrix. The reference vector measurements associated with the reference attitude are only available to the leader and can be constructed as follows: 
+
+bℓd = R⊤ 
+
+> d
+
+aℓ, ℓ = 1 , . . . , m. (6) Under Assumptions 1-2, design a velocity-free dis-tributed control torques, using only the available vector measurements, such that, for almost all initial conditions, 
+
+lim 
+
+> t→∞
+
+(Qd ⊙ Q−1 
+
+> i
+
+) = QI , lim  
+
+> t→∞
+
+ωi(t) = 0 , i ∈ V .
+
+IV. Preliminary Results This section introduces the relative-attitude error vari-ables and establishes some preliminary results used in the subsequent sections. Since the communication graph is undirected, an arbitrary virtual orientation is assigned to each edge. This orientation is introduced only for analysis and does not change the undirected communication structure of G. For an edge k ∈ M + 
+
+> i
+
+∩M − 
+
+> j
+
+, oriented from agent j to agent i, define the relative quaternion between agents Qj and Qi as ˜Qk := Qj ⊙ Q−1 
+
+> i
+
+= [˜ q⊤ 
+
+> k
+
+, ˜ηk]⊤,governed by 
+
+˙˜qk = 12 (˜ ηkI3 + ˜ q× 
+
+> k
+
+)˜ ωk (7) 
+
+˙˜ηk = − 12 ˜q⊤ 
+
+> k
+
+˜ωk,
+
+where ˜ωk = Ri(ωj − ωi), with Ri := R(Qi), for every 
+
+(i, j ) ∈ E . For any pair of agents (i, j ) ∈ E , the set 
+
+M+ 
+
+> i
+
+∩ M − 
+
+> j
+
+identifies the oriented edges whose tail is 
+
+j and whose head is i. Hence, if the edge between j
+
+and i is oriented from j to i, then there exists a unique edge index k such that M+ 
+
+> i
+
+∩ M − 
+
+> j
+
+= {k}. Otherwise, no edge with this orientation exists and, consequently, 
+
+M+ 
+
+> i
+
+∩ M − 
+
+> j
+
+= ∅. Let ˜ω := [˜ ω⊤ 
+
+> 1
+
+, ˜ω⊤ 
+
+> 2
+
+, . . . , ˜ω⊤ 
+
+> M
+
+]⊤ ∈ R3M and 
+
+ω := [ ω⊤ 
+
+> 1
+
+, ω ⊤ 
+
+> 2
+
+, . . . , ω ⊤ 
+
+> N
+
+]⊤ ∈ R3N . One can verify that 
+
+˜ω = − ¯H⊤Rω, (8) where R := diag (R1, R 2, . . . , R N ) ∈ R3N ×3N . The block matrix ¯H is given as follows 
+
+¯H(t) = [ ¯hik ] ∈ R3N ×3M , ¯hik =
+
+
+
+I3 k ∈ M +
+
+> i
+
+− ˜Rk k ∈ M −
+
+> i
+
+0, otherwise (9) where ˜Rk := R( ˜Qk) = Rj R⊤ 
+
+> i
+
+. With the introduction of the relative orientation between neighboring agents, based on the virtual orientation, it follows that attitude synchronization is achieved when lim t→∞ ˜Qk(t) = QI for 
+
+k = 1 , . . . , M . Next, we define the weighting matrices used in the proposed feedback control schemes. Let 
+
+K := {ρ, γ, d } and, for each κ ∈ K, define Mκ := ∑mℓ=1 cκℓ aℓa⊤ 
+
+> ℓ
+
+, and Wκ := tr (Mκ)I3 − Mκ. Under As-sumption 1, Wκ ≻ 0 and the gains cκℓ are chosen such that Wκ has distinct eigenvalues. Now, let us state the following useful lemmas: Lemma 1. Consider any two unit quaternions Qx, Q y ∈
+
+S3, with the corresponding rotation matrices Rx := 
+
+R(Qx), Ry := R(Qy ), and vector measurements bℓx := 
+
+R⊤ 
+
+> x
+
+aℓ, bℓy := R⊤ 
+
+> y
+
+aℓ, for ℓ = 1 , . . . , m . Define σxy := 2 (ηxy I3 − q×
+
+> xy
+
+) Wκqxy where Qxy := Qx ⊙ Q−1 
+
+> y
+
+=[q⊤ 
+
+> xy
+
+, η xy ]⊤. Then 
+
+> m
+
+∑
+
+> ℓ=1
+
+cκℓ 
+
+(bℓx × bℓy
+
+) = R⊤ 
+
+> y
+
+σxy . (10) Proof. The proof is similar to [13, Lemma 1] and hence omitted here. Lemma 2. [13, Lemma 3] let Q = [ q⊤, η ]⊤ ∈ S3 and let 
+
+Wκ = W ⊤ 
+
+> κ
+
+≻ 0. Define 
+
+χ(Q, W κ) := 2 (ηI 3 − q×) Wκq. (11) Then, χ(Q, W κ) = 0 if and only if either Q = QI := [0 ⊤
+
+> 3×1
+
+, ±1] ⊤ or Q = [u⊤, 0] ⊤ with u being a unit eigenvector of Wκ.Lemma 3. Let W = W ⊤ ≻ 0 have distinct eigenvalues, and let u ∈ S2 be an eigenvector of W , associated with the eigenvalue μ > 0. Then, ϕ(W, u, μ ) := −2( μI 3 +
+
+u×W u ×) is nonsingular and has at least one negative eigenvalue −2μ.Proof. We prove the nonsingularity of ϕ(W, u, μ ) by contradiction. Assume that ϕ(W, u, μ ) is singular, which means that u×W u × has an eigenvalue equal to −μ < 0
+
+with the associated eigenvector x̸ = 0 , i.e., u×W u ×x =
+
+−μx . Premultiplying u×W u ×x = −μx by u× and using 
+
+(u×)2 = uu ⊤ − I3 yields uu ⊤W u ×x − W u ×x = −μu ×x. 
+
+Using the fact that W = W ⊤ and W u = μu , one has 
+
+W (u×x) = μ(u×x), which implies that μ is an eigenvalue of W with the associated eigenvector u×x. Consequently, 
+
+u×x = ±u which implies that u = 0 , which is a contra-diction since u ∈ S2. Therefore, ϕ(W, u, μ ) is nonsingular. Finally, since u×u = 0 , one has −2( μI 3 + u×W u ×)u =
+
+−2μu . Hence, −2μ is an eigenvalue of ϕ(W, u, μ ) with the associated unit eigenvector u. Therefore, ϕ(W, u, μ )
+
+has at least one negative eigenvalue. V. Velocity-free Leaderless Attitude Synchronization This section addresses the velocity-free leaderless syn-chronization problem formulated in Problem 1. Motivated by the approach in [4], an auxiliary system is associated with each agent i ∈ V to compensate for the lack of angular-velocity measurements. The auxiliary systems are governed by 
+
+˙Pi = 12 Pi ⊙ ¯βi, (12) where Pi(0) ∈ S3 and ¯βi = [ β⊤ 
+
+> i
+
+, 0] ⊤, with βi ∈ R3 being the input to the auxiliary system (12), which will be designed later. Define the attitude error between the auxiliary attitude and the actual attitude of agent i as 
+
+˜Pi := Pi ⊙ Q−1 
+
+> i
+
+= [˜ p⊤ 
+
+> i
+
+, ˜ϵi]⊤. The corresponding error dynamics are given by 
+
+˙˜pi = 12
+
+(˜ϵiI3 + ˜ p×
+
+> i
+
+) Ωi
+
+˙˜ϵi = − 12 ˜p⊤ 
+
+> i
+
+Ωi,
+
+(13) where Ωi = Ri(βi − ωi) with Ri := R(Qi). Further-more, let Ω = [Ω ⊤ 
+
+> 1
+
+, Ω⊤ 
+
+> 2
+
+, . . . , Ω⊤ 
+
+> N
+
+]⊤ ∈ R3N and β =[β⊤ 
+
+> 1
+
+, β ⊤ 
+
+> 2
+
+, · · · , β ⊤ 
+
+> N
+
+]⊤ ∈ R3N . One can verify that 
+
+Ω = R(β − ω), (14) where R := diag( R1, R 2, . . . , R N ) ∈ R3N ×3N . Now, let 
+
+Rpi := R(Pi) denote the rotation matrix associated with the unit-quaternion Pi. The corresponding auxiliary vector measurements are defined as 
+
+˜bℓi := ( Rpi )⊤aℓ, (15) for ℓ = 1, . . . , m . Since the inertial vectors aℓ are known to all agents, the auxiliary vectors ˜bℓi can be generated locally from the auxiliary attitude Pi. Based on the preceding development, we propose the following distributed feedback control torque for each agent i ∈ V :
+
+τi = kQ
+
+∑
+
+> j∈N i
+> m
+
+∑
+
+> ℓ=1
+
+cρℓ (bℓj × bℓi ) + kPm∑
+
+> ℓ=1
+
+cγℓ (˜bℓi × bℓi ). (16) The control torque (16) is implemented together with the auxiliary system (12), whose input is designed as 
+
+βi = −
+
+> m
+
+∑
+
+> ℓ=1
+
+cγℓ (˜bℓi × bℓi ), (17) where kQ > 0, kP > 0, and the positive gains cρℓ 
+
+and cγℓ are chosen such that Wρ and Wγ have distinct eigenvalues. Next, we analyze the stability of the closed-loop system consisting of (3), (7), and (13), under the control law (16) and the auxiliary input (17). Before stating the main result, define the following two sets: 
+
+Qρπ := {[u⊤, 0] ⊤ ∈ S3 : u ∈ E (Wρ)}, (18) 
+
+Qγπ := {[u⊤, 0] ⊤ ∈ S3 : u ∈ E (Wγ )}. (19) Furthermore, let xQ := ( ˜Q1, ˜Q2, . . . , ˜QM , ˜P1, ˜P2, . . . , ˜PN , ω ) ∈ SQ, where 
+
+SQ := ( S3)M × (S3)N × R3N . The desired equilibrium set is defined as: ΓQ := {xQ ∈ S Q : ˜Qk ∈ { QI }, ˜Pi ∈{Q I }, ω = 0 3N , ∀k ∈ M , ∀i ∈ V} . The undesired one is defined as: ¯ΓQ := {xQ ∈ S Q : ˜Qk ∈ {Q I }, ∀k ∈MI , ˜Qk ∈ Qρπ , ∀k ∈ Mπ , ˜Pi ∈ {Q I }, ∀i ∈ VI , ˜Pi ∈Qγπ , ∀i ∈ V π , ω = 0 3N } where MI ∪ M π = M and 
+
+VI ∪ V π = V, with Mπ̸ = ∅ or Vπ̸ = ∅. The stability properties of the resulting closed-loop system are established in the following theorem. Theorem 1. Consider a network of N agents governed by (2)-(3) under the proposed control law (16), together with the auxiliary system (12) and the auxiliary input (17). Let Assumptions 1-2 hold. Then, the following statements hold: (i) All solutions of (3), (7), and (13), under the control law (16) and the auxiliary input (17) converge to the equilibrium set UQ := Γ Q ∪ ¯ΓQ.(ii) The set of all undesired equilibrium points ¯ΓQ is unstable. (iii) The desired equilibrium set ΓQ is almost globally asymptotically stable 1.Define 
+
+σk := 2(˜ ηkI3 − ˜q× 
+
+> k
+
+)Wρ ˜qk, (20) for all k ∈ M , and define si := kQ
+
+∑
+
+> j∈N i
+
+∑mℓ=1 cρℓ (bℓj ×
+
+bℓi ). It follows from Lemma 1 that 
+
+si = kQ R⊤
+
+> i
+
+∑
+
+> j∈N i
+
+σji ,
+
+for each i ∈ V . Moreover, for each agent i ∈ V , partition the neighbor set as Ni = N in  
+
+> i
+
+∪ N out  
+
+> i
+
+such that N in  
+
+> i
+
+∩N out  
+
+> i
+
+= ∅ where N in  
+
+> i
+
+contains the neighbors associated with edges oriented toward agent i, and N out  
+
+> i
+
+contains the neighbors associated with edges oriented away from agent i. Then, one can verify that 
+
+si =kQR⊤
+
+> i
+
+ ∑ 
+
+> j∈N in
+> i
+
+σji + ∑ 
+
+> j∈N out
+> i
+
+σji 
+
+ (21a) 
+
+= kQR⊤
+
+> i
+
+ ∑ 
+
+> j∈N in
+> i
+
+σji − ∑ 
+
+> j∈N out
+> i
+
+RiR⊤ 
+
+> j
+
+σij 
+
+ (21b) 
+
+= kQR⊤
+
+> i
+
+ ∑
+
+> k∈M +
+> i
+
+σk − ∑
+
+> k∈M −
+> i
+
+˜Rkσk
+
+ (21c) 
+
+= kQR⊤
+
+> iM
+
+∑
+
+> k=1
+
+¯hik σk, (21d) where ¯hik is given in (9). In the above derivations, we used the identity RiR⊤ 
+
+> j
+
+σij = −σji to obtain (21b) from (21a). Define J := diag [J1, J 2, . . . , J N ] ∈
+
+R3N ×3N , τ := [τ ⊤ 
+
+> 1
+
+, τ ⊤ 
+
+> 2
+
+, . . . , τ ⊤ 
+
+> N
+
+]⊤ ∈ R3N , and W := 
+
+diag ([ ω1]×, [ω2]×, . . . , [ωN ]×) ∈ R3N ×3N . Stacking the angular velocity dynamics of all agents yields 
+
+J ˙ω = −W Jω + τ. (22) Consider the following Lyapunov function candidate: 
+
+V (xQ) := 2 kQM∑
+
+> k=1
+
+˜q⊤ 
+
+> k
+
+Wρ ˜qk + 2 kPN∑
+
+> i=1
+
+˜p⊤ 
+
+> i
+
+Wγ ˜pi + 12 ω⊤Jω, 
+
+(23) which is positive definite on SQ with respect to ΓQ.Taking the time derivative of (23) along the trajectories   
+
+> 1The set ΓQis almost globally asymptotically stable if it is stable and attractive from all initial conditions except for a set of zero Lebesgue measure.
+
+of (7), (13) and (22) yields 
+
+˙V (xQ) = kQM∑
+
+> k=1
+
+σ⊤ 
+
+> k
+
+˜ωk + kPN∑
+
+> i=1
+
+ψ⊤ 
+
+> i
+
+Ωi + ω⊤τ, (24) where σk is defined in (20) and 
+
+ψi := 2 (˜ϵiI3 − ˜p×
+
+> i
+
+) Wγ ˜pi. (25) Furthermore, it follows from Lemma 1 that the control torque (16) and the auxiliary input (17) can be expressed in the following compact form: 
+
+τ = kQR⊤ ¯Hσ + kP R⊤ψ (26) 
+
+β = −R⊤ψ, (27) where ψ := [ ψ⊤ 
+
+> 1
+
+, ψ ⊤ 
+
+> 2
+
+, . . . , ψ ⊤ 
+
+> N
+
+]⊤ ∈ R3N . In view of (8) and (14), one can verify that 
+
+˙V (xQ) = −kQσ⊤ ¯H⊤Rω + kP ψ⊤(Rβ − Rω) + ω⊤τ. 
+
+(28) Substituting (26)-(27) into (28) yields 
+
+˙V (xQ) = −kP ∥ψ∥2, (29) which is negative semi-definite. Thus, V is non-increasing and has a finite limit. Hence, the equilibrium set ΓQ is stable. Therefore ω is bounded which in turn implies that ˙ψ is also bounded. Consequently, ¨V is bounded, and hence ˙V is uniformly continuous. By Barbalat’s lemma, lim t→∞ ˙V (t) = 0 , which, in view of (29), implies that lim t→∞ ψ(t) = 0 . Then, by (25) and Lemma 2, 
+
+˜Pi(t) converges to the set {Q I } ∪ Q γπ , when t tends to infinity, where Qγπ is defined in (19). Moreover, the boundedness of ω and τ implies from (22) that ˙ω is bounded. Since ωi, and ˙ωi are bounded, it follows that ˙Ωi
+
+is bounded. Consequently, ¨˜Pi is bounded, and hence ˙˜Pi is uniformly continuous, and by Barbalat’s lemma one has 
+
+lim t→∞ ˙˜Pi(t) = 0 . It follows that lim t→∞ Ωi(t) = 0 which implies that lim t→∞ ω(t) = 0 . Moreover, since ω, ˙ω, and 
+
+˙τ are bounded, ¨ω is bounded. Hence, ˙ω is uniformly continuous, and consequently lim t→∞ ˙ω(t) = 0 . Then using the fact that ¯H has full column rank and from Lemma 2, one can conclude that ˜Qk(t) convergence to the set {Q I } ∪ Q ρπ when t tends to infinity. Therefore, every closed-loop solution tends to the equilibrium set 
+
+UQ when t tends to infinity. Next, to prove items (ii) and (iii), we derive the Jacobian matrix of the closed-loop dynamics (7), (13), and (22) evaluated at an undesired equilibrium, and show that it possesses at least one eigenvalue with positive real part. Let x∗ 
+
+> Q
+
+∈ ¯ΓQ be an arbitrary undesired equilibrium. For each edge k ∈ M 
+
+and each agent i ∈ V , define δ ˜Qk := ( ˜Q∗
+
+> k
+
+)−1 ⊙ ˜Qk =[δρ ⊤ 
+
+> k
+
+, δη k]⊤ and δ ˜Pi := ( ˜P ∗ 
+
+> i
+
+)−1 ⊙ ˜Pi = [ δ ˜p⊤ 
+
+> i
+
+, δ ˜ϵi]⊤, where 
+
+˜Q∗ 
+
+> k
+
+∈ {Q I } for k ∈ M I , ˜Q∗ 
+
+> k
+
+∈ Q ρπ for k ∈ M π and 
+
+˜P ∗ 
+
+> i
+
+∈ {Q I } for i ∈ V I , ˜P ∗ 
+
+> i
+
+∈ Q γπ for i ∈ V π . Since 
+
+˜Q∗ 
+
+> k
+
+and ˜P ∗ 
+
+> i
+
+are constant, one has δ ˙˜Qk = 12 δ ˜Qk ⊙ ¯ωk and 
+
+δ ˙˜Pi = 12 δ ˜Pi ⊙ ¯Ωi, where ¯ωk = [˜ ω⊤ 
+
+> k
+
+, 0] ⊤ and ¯Ωi = [Ω ⊤ 
+
+> i
+
+, 0] ⊤.In a neighborhood of ˜Q∗ 
+
+> k
+
+and ˜P ∗ 
+
+> i
+
+, one has δη k ≈ 1 and 
+
+δ˜ϵi ≈ 1. Using ˜Qk = ˜Q∗ 
+
+> k
+
+⊙ δ ˜Qk together with the local approximation δη k ≈ 1, one obtains σk ≈ B∗ 
+
+> k
+
+δρ k, where 
+
+B∗ 
+
+> k
+
+= 2 Wρ for k ∈ M I , and B∗ 
+
+> k
+
+= −2( μI 3 + u×Wρu×)
+
+for k ∈ M π . Similarly, using ˜Pi = ˜P ∗ 
+
+> i
+
+⊙ δ ˜Pi together with δ˜ϵi ≈ 1 yields ψi ≈ D∗ 
+
+> i
+
+δ ˜pi, where D∗ 
+
+> i
+
+= 2 Wγ for 
+
+i ∈ V I , and D∗ 
+
+> i
+
+= −2( μI 3 + u×Wγ u×) for i ∈ V π .Letting δρ := [δρ ⊤ 
+
+> 1
+
+δρ ⊤ 
+
+> 2
+
+· · · δρ ⊤ 
+
+> M
+
+]⊤ ∈ R3M and δ ˜p := [δ ˜p⊤ 
+
+> 1
+
+· · · δ ˜p⊤ 
+
+> N
+
+]⊤ ∈ R3N , the first-order approximation of the closed-loop system about x∗ 
+
+> Q
+
+is given by 
+
+δ ˙ρ = − 12 C⊤ω, (30) 
+
+δ ˙˜p = − 12 (D∗δ ˜p + R∗ω) , (31) 
+
+J ˙ω = kQCB∗δρ + kP ¯Cδ ˜p, (32) where ¯C = (R∗)⊤D∗, C := (R∗)⊤ ¯H∗, with R∗ := diag( R∗
+
+> 1
+
+, . . . , R ∗ 
+
+> N
+
+), and ¯H∗ denotes ¯H evaluated at ˜R∗ 
+
+> k
+
+=
+
+R( ˜Q∗
+
+> k
+
+). Moreover, B∗ := diag( B∗ 
+
+> 1
+
+, B ∗ 
+
+> 2
+
+, . . . , B ∗ 
+
+> M
+
+) and 
+
+D∗ := diag( D∗ 
+
+> 1
+
+, D ∗ 
+
+> 2
+
+, . . . , D ∗ 
+
+> N
+
+). It follows from (30)–(32) that the Jacobian matrix of the closed-loop dynamics, evaluated at an undesired equilibrium, is given by 
+
+¯J ∗ =
+
+
+
+0 0 − 12 C⊤
+
+0 − 12 D∗ − 12 R∗
+
+kQJ−1CB∗ kP J−1 ¯C 0
+
+ . (33) We first show that zero is not an eigenvalue of ¯J ∗.Since B∗ and D∗ are block diagonal, their nonsingu-larity follows from the nonsingularity of their diagonal blocks. For k ∈ M I , B∗ 
+
+> k
+
+= 2 Wρ is nonsingular since 
+
+Wρ ≻ 0, whereas for k ∈ M π , Lemma 3 implies that 
+
+B∗ 
+
+> k
+
+= ϕ(Wρ, u, μ ) is nonsingular. An analogous argument shows that D∗ is nonsingular. Suppose, by contradiction, that zero is an eigenvalue of ¯J ∗ with a corresponding eigenvector Z = col( vρ, v ˜p, v ω )̸ = 0 , where vρ ∈ R3M and 
+
+v˜p, v ω ∈ R3N . It follows that ¯J ∗Z = 0 , which, from (33), yields 
+
+C⊤vω = 0 (34a) 
+
+D∗v˜p + R∗vω = 0 (34b) 
+
+kQJ−1CB∗vρ + kP J−1 ¯Cv ˜p = 0 . (34c) Using ¯C = ( R∗)⊤D∗, it follows from (34b) that ¯Cv ˜p =
+
+−vω . Substituting this relation into (34c) and multiply-ing by J yields kQCB∗vρ −kP vω = 0 . Premultiplying this equation by C⊤ and using (34a) yields C⊤CB∗vρ = 0 .
+
+Since C has full column rank, C⊤C is nonsingular. Together with the nonsingularity of B∗, this implies 
+
+vρ = 0 , and consequently vω = 0 . Furthermore, (34b) and the nonsingularity of D∗ imply v˜p = 0 , contradicting 
+
+Z̸ = 0 . Therefore, zero is not an eigenvalue of ¯J ∗. Next, we show that ¯J ∗ has at least one eigenvalue with positive real part. Let λ ∈ C and Z = col( vρ, v ˜p, v ω )̸ = 0 satisfy 
+
+¯J ∗Z = λZ , where vρ ∈ C3M and v˜p, v ω ∈ C3N . It follows from (33) that 
+
+λv ρ = − 12 C⊤vω (35a) 
+
+λv ˜p = − 12 D∗v˜p − 12 R∗vω (35b) 
+
+λv ω = kQJ−1CB∗vρ + kP J−1 ¯Cv ˜p. (35c) Since ¯J ∗ is nonsingular, one has λ̸ = 0 . Hence, from (35a) and (35b), it follows that vρ = − 12λ C⊤vω and 
+
+v˜p = −(2 λI +D∗)−1R∗vω , for any λ satisfying det(2 λI +
+
+D∗)̸ = 0. Substituting these expressions into (35c) and multiplying the resulting equation by 2λJ yields 
+
+P (λ)vω = 0 , where 
+
+P (λ) := λ2A + ¯B + λ ¯D(λI + ¯D)−1, (36) with A := 1 
+
+> kP
+
+J, ¯D := 12 (R∗)⊤D∗R∗, ¯B := kQ 
+
+> 2kP
+
+Ξ∗,
+
+and Ξ∗ := CB∗C⊤. Since J ≻ 0, B∗ = ( B∗)⊤, and 
+
+D∗ = ( D∗)⊤, it follows that A ≻ 0, ¯B = ¯B⊤, ¯D =¯D⊤. Moreover, for every real λ such that λI + ¯D is nonsingular, P (λ) is symmetric. Thus, to show that ¯J ∗
+
+possesses an eigenvalue with positive real part, it suffices to find a real λ∗ > 0 such that λ∗I + ¯D is nonsingular and P (λ∗) is singular. We first show that P (λ) is positive definite for all sufficiently large real λ > 0. Since ¯D is symmetric, ¯D ⪰ −∥ ¯D∥I. Thus, for every λ ≥ 2∥ ¯D∥,
+
+λI + ¯D ⪰ (λ − ∥ ¯D∥)I ⪰ λ 
+
+> 2
+
+I ≻ 0. Consequently, 
+
+∥(λI + ¯D)−1∥ ≤ 2 
+
+> λ
+
+, and hence ∥λ ¯D(λI + ¯D)−1∥ ≤ 2∥ ¯D∥.
+
+Therefore, 
+
+λmin (P (λ)) ≥ λ2λmin (A) − ∥ ¯B∥ − 2∥ ¯D∥. (37) Since A ≻ 0, the right-hand side of (37) tends to +∞ as 
+
+λ → +∞. Hence, there exists λL ≥ 2∥ ¯D∥ such that 
+
+P (λ) ≻ 0, ∀ λ ≥ λL. (38) We have shown that λmin (P (λ)) > 0 for all sufficiently large real λ. We now consider the different undesired equilibrium cases and show the existence of some λ∗ > 0
+
+such that λmin (P (λ∗)) = 0 .
+
+Case 1: Mπ̸ = ∅ and Vπ = ∅. We first show that P (λ) is defined and continuous for all λ ≥ 0. Since Vπ = ∅, one has D∗ ≻ 0, and therefore ¯D ≻ 0. Hence, λI + ¯D ≻ 0
+
+for all λ ≥ 0, which implies that P (λ) is continuous on [0 , ∞). Next, we show that P (0) has at least one negative eigenvalue. Since Mπ̸ = ∅, Lemma 3 implies that λmin (B∗) < 0. Hence, there exists y ∈ R3M \ { 0}
+
+such that y⊤B∗y < 0. Since C has full column rank, 
+
+C⊤C is nonsingular. Choosing x = C(C⊤C)−1y gives 
+
+C⊤x = y. Therefore, x⊤Ξ∗x = (C⊤x)⊤B∗(C⊤x) =
+
+y⊤B∗y < 0. Thuse, λmin (Ξ ∗) < 0. Since kQ, k P > 0,it follows that λmin ( ¯B) < 0. Moreover, P (0) = ¯B, and therefor λmin (P (0)) < 0, on the other hand (38) gives 
+
+λmin (P (λL)) > 0. Since P (λ) is symmetric and contin-uous on [0 , λ L], the function λmin (P (λ)) is continuous on this interval. Hence, there exists λ∗ ∈ (0 , λ L) such that λmin (P (λ∗)) = 0 . Therefore, P (λ∗) is singular. Since 
+
+λ∗ > 0 and, in this case, ¯D ≻ 0, one has λ∗I + ¯D ≻ 0.Hence, by the preceding eigenvalue relations, λ∗ is an eigenvalue of ¯J ∗ with positive real part. Cases (2): (Vπ̸ = ∅, and Mπ = ∅) or (Vπ̸ = ∅
+
+and Mπ̸ = ∅). Since Vπ̸ = ∅, Lemma 3 implies that 
+
+λmin (D∗) < 0. Then it follows that λmin ( ¯D) < 0. Define 
+
+d := λmin ( ¯D) < 0, and λp := −d > 0, and let ud be the corresponding unit eigenvector, i.e., ¯Du d = du d. For every λ > λ p, λmin (λI + ¯D) > 0. Hence, λI + ¯D ≻ 0, for all 
+
+λ > λ p and P (λ) is continuous on (λp, ∞). We now show that P (λ) has a negative eigenvalue. Since ¯Du d = du d,for λ > λ p, one has (λI + ¯D)−1ud = 1 
+
+> λ+d
+
+ud, and hence 
+
+¯D(λI + ¯D)−1ud = dλ+d ud. Therefore, the quadratic form of P (λ) along ud is 
+
+u⊤ 
+
+> d
+
+P (λ)ud = λ2u⊤ 
+
+> d
+
+Au d + u⊤ 
+
+> d
+
+¯Bu d + λd λ + d . (39) As λ → λ+ 
+
+> p
+
+, one has λ + d → 0+ and λd → − d2 < 0.Hence, λd λ+d → −∞ . Since the first two terms in (39) remain finite, u⊤ 
+
+> d
+
+P (λ)ud → −∞ as λ → λ+ 
+
+> p
+
+. Hence, there exists λ1 > λ p such that u⊤ 
+
+> d
+
+P (λ1)ud < 0. By (38), λmin (P (λL)) > 0. Since P (λ) is symmetric and continuous on [λ1, λ L], λmin (P (λ)) is continuous on this interval. Therefore, there exists λ∗ ∈ (λ1, λ L) such that 
+
+λmin (P (λ∗)) = 0 . Hence, P (λ∗) is singular. Moreover, 
+
+λ∗ > λ 1 > λ p > 0 and λ∗I + ¯D ≻ 0. Therefore, by the preceding eigenvalue relations, λ∗ is a positive real eigenvalue of ¯J ∗. Consequently, the undesired equilibria in ¯ΓQ are unstable. Since the Jacobian matrix J ∗ has at least one eigenvalue with positive real part, one can conclude, by virtue of the center manifold theorem [20], that the stable manifold associated with the undesired equilibria in ¯ΓQ has zero Lebesgue measure. VI. Velocity-free Leader-Follower Attitude Synchronization This section addresses the velocity-free leader–follower synchronization problem formulated in Problem 2. Build-ing upon the leaderless design developed in the previous section, an additional term is introduced for agent 1. The proposed distributed control torque is given by 
+
+τi =kQ
+
+∑
+
+> j∈N i
+> m
+
+∑
+
+> ℓ=1
+
+cρℓ (bℓj × bℓi ) + kPm∑
+
+> ℓ=1
+
+cγℓ (˜bℓi × bℓi )+ kim∑
+
+> ℓ=1
+
+cdℓ (bℓd × bℓi ),
+
+(40) where cdℓ > 0, k1 > 0 and ki = 0 for all i ∈ V \ { 1}. The first two terms correspond to the velocity-free leaderless design, while the last term incorporates the prescribed reference attitude through agent 1. Since the interaction graph is connected, convergence of the neighboring relative attitude errors to QI , together with convergence of agent 1 to the desired attitude, ensures convergence of all agents to the prescribed attitude. Defining the attitude error of agent 1 with respect to the desired attitude as ¯Q1 := Qd ⊙ Q−11 = [¯ q⊤ 
+
+> 1
+
+, ¯η1]⊤, one has 
+
+˙¯q1 = − 12 (¯ η1I3 + ¯ q× 
+
+> 1
+
+)R1ω1 (41) 
+
+˙¯η1 = 12 ¯q⊤ 
+
+> 1
+
+R1ω1.
+
+We next investigate the stability properties of the closed-loop system described by (3), (7), (13), and (41), under the control law (40) and the auxiliary input (17). To this end, we introduce the following set: 
+
+Qdπ := {[u⊤, 0] ⊤ ∈ S3 : u ∈ E (Wd)}. (42) Moreover, let xd := ( ˜Q1, . . . , ˜QM , ˜P1, ˜P2, . . . , ˜PN , ¯Q1, ω ) ∈Sd, where Sd := (S3)M × (S3)N × S3 × R3N .The desired equilibrium set is defined as: 
+
+Γd := {xd ∈ Sd : ˜Qk ∈ {QI }, ˜Pi ∈ {Q I }, ¯Q1 ∈{Q I }, ω = 03N , ∀k ∈ M, ∀i ∈ V} . The undesired equilibrium set is defined as: ¯Γd := {xd ∈ S d : ˜Qk ∈{Q I }, ∀k ∈ M I , ˜Qk ∈ Q ρπ , ∀k ∈ M π , ˜Pi ∈ {Q I }, ∀i ∈VI , ˜Pi ∈ Q γπ , ∀i ∈ V π , ¯Q1 ∈ {Q I } ∪ Q dπ , ω = 0 3N }, where 
+
+MI ∪ M π = M and VI ∪ V π = V, with Mπ̸ = ∅,or Vπ̸ = ∅, or ¯Q1 ∈ Qdπ . The following theorem characterizes the stability properties of the resulting closed-loop system described by (3), (7), (13), and (41), under the control law (40) and the auxiliary input (17). Theorem 2. Consider the setup of Problem 2 with the control law (40), together with the auxiliary system (12) and its corresponding input (17). Let Assumptions 1-2 hold. Then, the following statements hold: (i) All solutions of (2), (7), (13) and (41) under control law (40) and auxiliary input (17) converge to the equilibrium set Ud := Γ d ∪ ¯Γd.(ii) The set of all undesired equilibrium points ¯Γd is unstable. (iii) The desired equilibrium set Γd is almost globally asymptotically stable. Proof. Using the stacked vectors σ and ψ defined in the previous section, the control law (40) can be expressed in the following compact form: 
+
+τ = kQR⊤ ¯Hσ + kP R⊤ψ + k1R⊤A⊤σd1, (43) where A := [I3 03×3( N −1) 
+
+] ∈ R3×3N and σd1 := 2 (¯η1I3 − ¯q×
+
+> 1
+
+) Wd ¯q1. Consider the following Lyapunov function candidate: 
+
+V (xd) :=2 kQM∑
+
+> k=1
+
+˜q⊤ 
+
+> k
+
+Wρ ˜qk + 2 kPN∑
+
+> i=1
+
+˜p⊤ 
+
+> i
+
+Wγ ˜pi
+
++ 2 k1 ¯q⊤ 
+
+> 1
+
+Wd ¯q1 + 12 ω⊤Jω, (44) which is positive definite on Sd with respect to Γd. The time derivative of (44) along the trajectories of (7), (13), (22), and (41) is given by 
+
+˙V (xd) = kQM∑
+
+> k=1
+
+σ⊤ 
+
+> k
+
+˜ωk + kPN∑
+
+> i=1
+
+ψ⊤ 
+
+> i
+
+Ωi (45) 
+
+− k1σ⊤
+
+> d1
+
+R(Q1)ω1 + ω⊤τ. 
+
+From (8), (14) and (43), one has 
+
+˙V (xd) = − kQσ⊤ ¯H⊤Rω + kP ψ⊤(Rβ − Rω) (46) 
+
+− k1(A⊤σd1)⊤Rω + ω⊤τ. 
+
+Furthermore, substituting (27) and (43) into (46), one obtains 
+
+˙V (xd) = −kP ∥ψ∥2. (47) It follows from (47) that V is non-increasing and has a finite limit. Hence, the desired equilibrium set Γd is stable and ω is bounded. Following the same arguments as in the proof of Theorem 1, one can verify that ¨V
+
+is bounded, and hence ˙V is uniformly continuous. By Barbalat’s lemma, it follows that lim t→∞ ˙V (t) = 0,which, in view of (47), implies that lim t→∞ ψ(t) = 0 .Then, by (25) and Lemma 2, ˜Pi(t) converges to the set {Q I } ∪ Q γπ as t → ∞ . Moreover, σd1 and ˙σd1 are bounded. Since σ, ψ, and σd1 are bounded, one can conclude from (43) that τ is bounded. Together with the boundedness of ω, this implies that ˙ω is bounded. Following the same arguments used in the proof of Theorem 1, it follows that both ˙Ωi and ¨˜Pi are bounded. Hence, ˙˜Pi is uniformly continuous, and Barbalat’s lemma yields lim t→∞ ˙˜Pi(t) = 0 . Consequently, lim t→∞ Ωi(t) = 0 
+
+for all i ∈ V which implies that lim t→∞ ω(t) = 0.Furthermore, since ω, ˙ω, and ˙τ are bounded, it follows that ¨ω is bounded. Hence, ˙ω is uniformly continu-ous. Since lim t→∞ ω(t) = 0 , Barbalat’s lemma yields 
+
+lim t→∞ ˙ω(t) = 0 . Using lim t→ ω(t) = 0 , lim t→ ˙ω(t) = 0 ,and lim t→ ψ(t) = 0 in (22) and (43), and premultiplying by R, yields lim t→∞ 
+
+(kQ ¯Hσ + k1A⊤σd1
+
+) = 0 . Partition-ing ¯H according to the block row associated with agent 1 as ¯H = [ ¯H⊤ 
+
+> 1
+
+¯H⊤
+
+> 2
+
+]⊤ gives 
+
+lim 
+
+> t→∞
+
+(kQ ¯H1σ(t) + k1σd1(t)) = 0 , (48) 
+
+lim  
+
+> t→∞
+
+kQ ¯H2σ(t) = 0 . (49) By [21, Lemma 2], ¯H2 is nonsingular, and hence 
+
+lim t→∞ σ(t) = 0 . Substituting this result into (48) yields 
+
+lim t→∞ σd1(t) = 0 . Finally, Lemma 2 implies that ˜Qk(t)
+
+and ¯Q1(t) converge, respectively, to the sets {Q I } ∪ Q ρπ
+
+and {Q I } ∪ Q dπ . Therefore, every closed-loop solution converges to the equilibrium set Ud, this proves item (i). To prove item (ii) and item (iii), we analyze the lineariza-tion of the closed-loop system at the undesired equilibria in ¯Γd and show that the corresponding Jacobian matrix has an eigenvalue with positive real part. Let x∗ 
+
+> d
+
+∈ ¯Γd
+
+be an arbitrary undesired equilibrium. Define δ ¯Q1 := ( ¯Q∗
+
+> 1
+
+)−1 ⊙ ¯Q1 = [ δ ¯q⊤ 
+
+> 1
+
+, δ ¯η1]⊤, where ¯Q∗ 
+
+> 1
+
+∈ {Q I } ∪Q dπ .Since ¯Q∗ 
+
+> 1
+
+is constant, δ ˙¯Q1 = − 12 δ ¯Q1 ⊙ ¯ωd, where ¯ωd =[( R1ω1)⊤, 0] ⊤. In a neighborhood of x∗
+
+> d
+
+, δ ¯η1 ≈ 1. Using 
+
+¯Q1 = ¯Q∗ 
+
+> 1
+
+⊙ δ ¯Q1, one obtains σd1 ≈ F ∗ 
+
+> d
+
+δ ¯q1, where F ∗ 
+
+> d
+
+=2Wd for ¯Q∗ 
+
+> 1
+
+∈ {Q I } and F ∗ 
+
+> d
+
+= −2 ( μI 3 + u×Wdu×) for 
+
+¯Q∗ 
+
+> 1
+
+∈ Q dπ . Using σ ≈ B∗δρ , ψ ≈ D∗δ ˜p, and σd1 ≈ F ∗ 
+
+> d
+
+δ ¯q1,the additional leader–follower first-order approximation is given by 
+
+δ ˙¯q1 = − 12 AR∗ω (50) 
+
+J ˙ω = kQCB∗δρ + kP ¯Cδ ˜p + k1Cdδ ¯q1 (51) where C and ¯C are defined as in the proof of Theorem 1, and Cd := ( R∗)⊤A⊤F ∗ 
+
+> d
+
+. Combining (30), (31), (50), and (51), the linearized closed-loop system can be written as δ ˙x = J ∗ 
+
+> d
+
+δx , with δx := col (δρ, δ ˜p, δ ¯q1, ω ), where 
+
+J ∗ 
+
+> d
+
+=
+
+
+
+0 0 0 − 12 C⊤
+
+0 − 12 D∗ 0 − 12 R∗
+
+0 0 0 − 12 AR∗
+
+kQJ−1CB∗ kP J−1 ¯C k1J−1Cd 0
+
+
+
+.
+
+(52) We first show that zero is not an eigenvalue of J ∗ 
+
+> d
+
+.The nonsingularity of D∗ and B∗ has already been established in the proof of items (ii) in Theorem 1. Similarly, F ∗ 
+
+> d
+
+is nonsingular. Suppose, by contradiction, that λ = 0 is an eigenvalue of J ∗ 
+
+> d
+
+with a corresponding nonzero eigenvector ¯Z := col (vρ, v ˜p, v d, v ω )̸ = 0 , where 
+
+vρ ∈ R3M , v˜p, v ω ∈ R3N , and vd ∈ R3. Then J ∗ 
+
+> d
+
+¯Z = 0 ,which, from (52), yields 
+
+C⊤vω = 0 , (53a) 
+
+D∗v˜p + R∗vω = 0 , (53b) 
+
+AR∗vω = 0 , (53c) 
+
+kQCB∗vρ + kP ¯Cv ˜p + k1Cdvd = 0 . (53d) Peremultiplying (53b) by (R∗)⊤ gives ¯Cv ˜p = −vω . Pre-multiplying (53d) by v⊤ 
+
+> ω
+
+, the first term vanishes by (53a), while v⊤ 
+
+> ω
+
+Cdvd = ( AR∗vω )⊤F ∗ 
+
+> d
+
+vd = 0 by (53c). Hence, 
+
+−kP ∥vω ∥2 = 0 , and therefore vω = 0 . Equation (53b), together with the nonsingularity of D∗, gives v˜p = 0 .Consequently, (53d) reduces to kQCB∗vρ + k1Cdvd =0. Premultiplying by R∗ and using C = (R∗)⊤ ¯H∗,
+
+Cd = ( R∗)⊤A⊤F ∗ 
+
+> d
+
+, and ¯H∗ = [( ¯H∗
+
+> 1
+
+)⊤ ( ¯H∗
+
+> 2
+
+)⊤]⊤ , yields 
+
+kQ
+
+[ ¯H∗
+
+> 1
+
+B∗
+
+¯H∗
+
+> 2
+
+B∗
+
+]
+
+vρ + k1
+
+[ F ∗
+
+> d
+
+03( N −1) ×3
+
+]
+
+vd = 0 . Thus, 
+
+kQ ¯H∗
+
+> 1
+
+B∗vρ + k1F ∗ 
+
+> d
+
+vd = 0 , (54a) 
+
+kQ ¯H∗
+
+> 2
+
+B∗vρ = 0 . (54b) Since ¯H∗ 
+
+> 2
+
+and B∗ are nonsingular, (54b) implies vρ = 0 .Equation (54a) and the nonsingularity of F ∗ 
+
+> d
+
+then imply 
+
+vd = 0 . Hence, ¯Z = 0 , which contradicts the assumption that ¯Z is a nonzero eigenvector. Therefore, zero is not an eigenvalue of J ∗ 
+
+> d
+
+. It remains to show that J ∗ 
+
+> d
+
+has at least one eigenvalue with positive real part. To do this we define δz d := col (δρ, δ ¯q1) ∈ R3N and C∗ 
+
+> d
+
+:= [C (AR∗)⊤] , B∗ 
+
+> d
+
+:= diag (kQB∗, k 1F ∗ 
+
+> d
+
+). Using (30) and (50), the corresponding linearized dynamics are written as 
+
+δ ˙zd = − 12 (C∗ 
+
+> d
+
+)⊤ω, (55) 
+
+J ˙ω = C∗ 
+
+> d
+
+B∗ 
+
+> d
+
+δz d + kP ¯Cδ ˜p. (56) Proceeding as in the proof of item (ii) of Theorem 1, let 
+
+λ ∈ C be an eigenvalue of J ∗ 
+
+> d
+
+with corresponding nonzero eigenvector ¯Z := col( vρ, v ˜p, v d, v ω ), where vρ ∈ C3M ,
+
+v˜p, v ω ∈ C3N , and vd ∈ C3. Define vz := col (vρ, v d) ∈
+
+C3N . Then, from (55), (56), and (31), 
+
+λv z = − 12 (C∗ 
+
+> d
+
+)⊤vω , (57) 
+
+λv ˜p = − 12 (D∗v˜p + R∗vω ), (58) 
+
+λJv ω = C∗ 
+
+> d
+
+B∗ 
+
+> d
+
+vz + kP ¯Cv ˜p. (59) Since J ∗ 
+
+> d
+
+is nonsingular, λ̸ = 0 . For det(2 λI + D∗)̸ = 0 ,(57) and (58) give vz = − 12λ (C∗ 
+
+> d
+
+)⊤vω , v ˜p = −(2 λI +
+
+D∗)−1R∗vω . Substituting these expressions into (59) yields Pd(λ)vω = 0 , where 
+
+Pd(λ) = λ2Ad + ¯Bd + λ ¯D(λI + ¯D)−1, (60) with Ad = 1 
+
+> kP
+
+J, ¯Bd = 12kP C∗ 
+
+> d
+
+B∗ 
+
+> d
+
+(C∗ 
+
+> d
+
+)⊤, ¯D = 
+
+> 12
+
+(R∗)⊤D∗R∗. Thus, it suffices to find a real λ∗ > 0
+
+such that λ∗I + ¯D is nonsingular and Pd(λ∗) is singular. Since Ad ≻ 0 and ¯Bd and ¯D are symmetric, Pd(λ) has the same structure as P (λ) in (36). In particular, by the same argument leading to (38), Pd(λ) ≻ 0 for all sufficiently large real λ > 0. The undesired equilibria are divided into the following cases: Case (1): Vπ = ∅
+
+and (Mπ̸ = ∅ or ¯Q∗ 
+
+> 1
+
+∈ Qdπ ). Case (2): Vπ̸ = ∅
+
+and Mπ = ∅. Case (3): Vπ̸ = ∅ and Mπ̸ = ∅.In Cases (2) and (3), ¯Q∗ 
+
+> 1
+
+may belong to either QI
+
+or Qdπ . Since the arguments for Cases (2) and (3) are identical to those in the leaderless case, only Case (1) requires further consideration. Case (1): Since Vπ = ∅,
+
+˜P ∗ 
+
+> i
+
+∈ {Q I }, for i ∈ V , one has D∗ ≻ 0. Moreover, since 
+
+Mπ̸ = ∅ or ¯Q∗ 
+
+> 1
+
+∈ Q dπ , at least one of B∗ and F ∗ 
+
+> d
+
+has a negative eigenvalue. Therefore, B∗ 
+
+> d
+
+has at least one negative eigenvalue. We next show that C∗ 
+
+> d
+
+is nonsingular. Using C = ( R∗)⊤ ¯H∗ gives C∗ 
+
+> d
+
+= ( R∗)⊤ [ ¯H∗ A⊤] . Since 
+
+R∗ is nonsingular, it suffices to show that [ ¯H∗ A⊤] is nonsingular. Suppose that [ ¯H∗ A⊤] [xy
+
+]
+
+= 0 , where x ∈
+
+R3( N −1) and y ∈ R3. Partition ¯H∗ = [( ¯H∗
+
+> 1
+
+)⊤ ( ¯H∗
+
+> 2
+
+)⊤]⊤ ,
+
+where ¯H∗ 
+
+> 1
+
+∈ R3×3( N −1) and ¯H∗ 
+
+> 2
+
+∈ R3( N −1) ×3( N −1) . It follows that ¯H∗
+
+> 1
+
+x + y = 0 , ¯H∗
+
+> 2
+
+x = 0 . By [21, Lemma 2], 
+
+¯H∗ 
+
+> 2
+
+is nonsingular. Hence, x = 0 , which also gives y = 0 .Therefore, C∗ 
+
+> d
+
+is nonsingular. Since B∗ 
+
+> d
+
+= ( B∗ 
+
+> d
+
+)⊤ and C∗
+
+> d
+
+is nonsingular, Sylvester’s law of inertia implies that 
+
+¯Bd and B∗ 
+
+> d
+
+have the same inertia. Thus, λmin ( ¯Bd) < 0,
+
+and, since Pd(0) = ¯Bd, λmin 
+
+(Pd(0) ) < 0. Furthermore, 
+
+D∗ ≻ 0 implies ¯D ≻ 0. Hence, λI + ¯D is nonsingular for all λ ≥ 0, and Pd(λ) is continuous on [0 , ∞). By the same argument leading to (38), Pd(λ) ≻ 0 for all sufficiently large real λ > 0. Thus, there exists 
+
+λL > 0 such that λmin 
+
+(Pd(λL)) > 0. Since λmin (Pd(λ)) 
+
+is continuous on [0 , λ L], there exists λ∗ ∈ (0 , λ L) such that λmin 
+
+(Pd(λ∗)) = 0 . Therefore, Pd(λ∗) is singular. Moreover, λ∗I + ¯D ≻ 0, and hence, by the preceding eigenvalue relations, λ∗ > 0 is an eigenvalue of J ∗ 
+
+> d
+
+. Thus, every undesired equilibrium in Case (1) is unstable. For Cases (2) and (3), Vπ̸ = ∅, and Lemma 3 implies that D∗, and consequently ¯D, has at least one negative eigenvalue. The same argument used for Cases (2) in the proof of item (ii) of Theorem 1 yields a positive real eigenvalue of J ∗ 
+
+> d
+
+. Consequently, every equilibrium in ¯Γd is unstable, which proves item (ii). Since the Jacobian matrix J ∗ 
+
+> d
+
+has at least one eigenvalue with positive real part, one can conclude, by virtue of the center manifold theorem [20], that the stable manifold Fig. 1. Communication topology of the ten-agent network. 0 2 4 6 8 10 12 14 16 18 20 00.1 0.2 0.3 0.4 0.5 0 2 4 6 8 10 12 14 16 18 20 01234
+
+Fig. 2. Time evolution of the ∥qi∥ and ∥ωi∥ under the velocity-free leaderless controller (16). 
+
+associated with the undesired equilibria in ¯Γd has zero Lebesgue measure. VII. Numerical Simulations A network of N = 10 agents interacting over an undirected graph depicted in Fig. 1 is considered. The inertia matrices are Ji = diag(0 .021 , 0.018 , 0.032) , i ∈ V 
+
+and the inertial reference vectors are a1 = [0 1 0] ⊤ and 
+
+a2 = (1 /√2)[1 0 1] ⊤. The initial attitudes are given by 
+
+Qi(0) = [( ui sin( θi/2)) ⊤; cos( θi/2)] ⊤, and ui = ¯ ui/∥¯ui∥
+
+where [θ1, . . . , θ 10 ] = [35 , 25 , 45 , 30 , 20 , 50 , 28 , 42 , 22 , 38] ◦,
+
+and ¯u1 = [1; 0; 1] , ¯u2 = [0; 1; 1] , ¯u3 = [1; −1; 0] , ¯u4 =[1; 1; 1] , ¯u5 = [0; 1; −1] , ¯u6 = [1; 0; −1] , ¯u7 = [1; 2; 1] , ¯u8 =[2; 0; 1] , ¯u9 = [0; 2; 1] , and ¯u10 = [2; −1; 1] . Moreover, 
+
+Pi(0) = [0 0 0 1] ⊤, and the initial angular velocities are 
+
+ω1(0) = [0 .1; −0.06; 0 .08] , ω2(0) = [ −0.08; 0 .05; 0 .06] ,
+
+ω3(0) = [0 .06; 0 .12; −0.07] , ω4(0) = [ −0.05; −0.08; 0 .1] ,
+
+ω5(0) = [0 .12; −0.04; 0 .05] , ω6(0) = [ −0.1; 0 .09; −0.04] ,
+
+ω7(0) = [0 .04; −0.11; 0 .08] , ω8(0) = [0 .09; 0 .05; −0.06] ,
+
+ω9(0) = [ −0.07; 0 .08; 0 .07] , ω10 (0) = [0 .05; −0.07; −0.09] .For the leaderless controller (16), the parameters are : 
+
+cρ1 = cρ2 = cγ1 = cγ2 = 2 , kQ = 0 .04 , and kP = 0 .1.For leader–follower controller (40) the parameters are: 
+
+cρ1 = cρ2 = cd1 = cd2 = 1 , cγ1 = cγ2 = 2 , kQ = 0 .08 ,
+
+kP = 0 .1, and k1 = 0 .16 . Figs 2 shows synchronization of the agents’ attitudes and angular velocities under the leaderless controller (16). Figs 3 shows that, under the leader–follower controller (40), all agents synchronize to the prescribed constant attitude while their angular velocities converge to zero. 0 5 10 15 20 25 30 35 40 45 50 012340 5 10 15 20 25 30 35 40 45 50 00.2 0.4 0.6 0.8 
+
+Fig. 3. Time evolution of the ∥ωi∥ and the relative attitude between each rigid body system and the leader under the velocity– free leader follower (40) 
+
+VIII. Conclusion In this paper, distributed velocity-free control laws were proposed for leaderless and leader–follower attitude synchronization using local vector measurements over an undirected tree graph. The proposed schemes achieve almost-global asymptotic stability of the desired synchro-nization sets. Future work will consider communication delays, directed and switching topologies, and time-varying reference attitudes. References 
+
+[1] A. Abdessameud and A. Tayebi, Motion coordination for VTOL unmanned aerial vehicles: Attitude synchronisation and formation control. Springer Science & Business Media, 2013. [2] M. D. Shuster et al., “A survey of attitude representations,” Navigation, vol. 8, no. 9, pp. 439–517, 1993. [3] S. P. Bhat and D. S. Bernstein, “A topological obstruction to continuous global stabilization of rotational motion and the unwinding phenomenon,” Systems & control letters, vol. 39, no. 1, pp. 63–70, 2000. [4] A. Tayebi, “Unit quaternion-based output feedback for the attitude tracking problem,” IEEE Transactions on Automatic Control, vol. 53, no. 6, pp. 1516–1520, 2008. [5] A. Abdessameud and A. Tayebi, “Attitude synchronization of a group of spacecraft without velocity measurements,” IEEE Transactions on Automatic Control, vol. 54, no. 11, pp. 2642– 2648, 2009. [6] W. Ren, “Distributed cooperative attitude synchronization and tracking for multiple rigid bodies,” IEEE Transactions on Control Systems Technology, vol. 18, no. 2, pp. 383–392, 2009. [7] A. Abdessameud, A. Tayebi, and I. G. Polushin, “Attitude synchronization of multiple rigid bodies with communication delays,” IEEE Transactions on Automatic Control, vol. 57, no. 9, pp. 2405–2411, 2012. [8] X. Peng, Z. Geng, and J. Sun, “The specified finite-time distributed observers-based velocity-free attitude synchroniza-tion for rigid bodies on so (3),” IEEE Transactions on Systems, Man, and Cybernetics: Systems, vol. 50, no. 4, pp. 1610–1621, 2018. [9] Y. Zou and Z. Meng, “Velocity-free leader–follower cooperative attitude tracking of multiple rigid bodies on so (3),” IEEE Transactions on Cybernetics, vol. 49, no. 12, pp. 4078–4089, 2018. [10] Y. Huang and Z. Meng, “Global finite-time distributed at-titude synchronization and tracking control of multiple rigid bodies without velocity measurements,” Automatica, vol. 132, p. 109796, 2021. [11] Y. Tang, X. Jin, Y. Shi, and W. Du, “Event-triggered attitude synchronization of multiple rigid body systems with velocity-free measurements,” Automatica, vol. 143, p. 110460, 2022. [12] S. Li, X. Jin, Y. Li, F. Li, H. Werner, and Y. Tang, “Dis-tributed event-triggered attitude estimation without angular velocity measurements,” IEEE Transactions on Control of Network Systems, vol. 12, no. 3, pp. 2392–2403, 2025. [13] A. Tayebi, A. Roberts, and A. Benallegue, “Inertial vec-tor measurements based velocity-free attitude stabilization,” IEEE Transactions on Automatic Control, vol. 58, no. 11, pp. 2893–2898, 2013. [14] L. Benziane, A. Benallegue, Y. Chitour, and A. Tayebi, “Inertial vector based attitude stabilization of rigid body without angular velocity measurements,” arXiv preprint arXiv:1501.04767, 2015. [15] S. Berkane and A. Tayebi, “Construction of synergistic po-tential functions on so (3) with application to velocity-free hybrid attitude stabilization,” IEEE Transactions on Auto-matic Control, vol. 62, no. 1, pp. 495–501, 2016. [16] D. Thakur and R. S. Erwin, “Distributed attitude synchro-nization on so (3) using inertial vector measurements,” in 2015 54th IEEE Conference on Decision and Control (CDC). IEEE, 2015, pp. 3639–3644. [17] M. Boughellaba, S. Berkane, and A. Tayebi, “Attitude syn-chronization for multi-agent systems on so(3) using vector measurements,” in 2025 IEEE 64th Conference on Decision and Control (CDC), 2025, pp. 7142–7147. [18] ——, “Attitude synchronization on so (3) for heteroge-neous multi-agent systems using vector measurements,” arXiv preprint arXiv:2503.22870, 2025. [19] H. Bai, M. Arcak, and J. T. Wen, “Rigid body attitude coordination without inertial frame information,” Automatica, vol. 44, no. 12, pp. 3170–3175, 2008. [20] L. Perko, Differential equations and dynamical systems. Springer Science & Business Media, 2013. [21] Y. Li, J.-e. Feng, and A. Tayebi, “A leader-follower approach for the attitude synchronization of multiple rigid body systems on so (3) ,” arXiv preprint arXiv:2601.19086, 2026.

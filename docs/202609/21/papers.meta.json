@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-21",
+  "date": "2026-09-21",
+  "generated_at": "2026-09-21T23:09:21",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/21/2609.21597v1-hat-hypothesis-anchored-tracking-for-video-monocular-spacecraft-pose-estimation",
+      "section": "deep",
+      "title_en": "HAT: Hypothesis-Anchored Tracking for Video Monocular Spacecraft Pose Estimation",
+      "authors": "André Lopo, Atabak Dehban, Rodrigo Ventura",
+      "date": "2026-09-18",
+      "pdf": "https://arxiv.org/pdf/2609.21597v1",
+      "score": "10.0",
+      "evidence": "非合作目标视频单目航天器位姿估计",
+      "tldr": "非合作航天器单目6-DoF位姿估计易受近对称朝向混淆，单图估计与跟踪可能锁定位姿错误。本文提出假设锚定跟踪HAT，用帧间运动在CAD位姿假设间选择并锚定单目SLAM相对轨迹，保留竞争朝向历史，无需目标训练。Mega-HAT/Pico-HAT在SPARK-2024、SwissCube、SHIRT等上，平均位姿误差分别较独立MegaPose/PicoPose降低9.4%/23.9%，FPS提升3.76/2.42倍。为无训练视频航天器位姿估计提供因果、高效方案。",
+      "tags": "query:pe",
+      "abstract_en": "Monocular 6-DoF pose estimation of non-cooperative targets is important for on-orbit servicing and debris removal. A single-image estimator can confuse near-symmetric spacecraft orientations, and tracking can preserve an incorrect pose. We present Hypothesis-Anchored Tracking (HAT), a causal framework that uses inter-frame motion to select among competing CAD-based pose hypotheses before alignment and fusion. Rather than independently choosing the highest-scoring hypothesis in each image, HAT retains competing orientation histories and selects a pose to anchor the relative trajectory estimated by monocular SLAM. Sparse anchors and pose fusion provide per-frame estimates after initialization without revising past outputs. The method requires only a calibrated RGB sequence, a metric CAD model, and target image regions, which can be supplied by detection or segmentation. The pretrained pose and SLAM networks require no target-specific training or fine-tuning. We evaluate two versions, Mega-HAT and Pico-HAT, using MegaPose and PicoPose, on SPARK-2024, SwissCube and SHIRT, with YCB-Video assessing performance outside the space domain. Using one temporal configuration per method, the arithmetic means of the four dataset-wise comparisons show 9.4% lower mean pose error and 3.76 times the sustained input FPS for Mega-HAT relative to independent MegaPose, and 23.9% lower mean pose error and 2.42 times the FPS for Pico-HAT relative to independent PicoPose. Mega-HAT ablations on SPARK and an offline reference examine component contributions and the effect of revising past estimates.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/21/2609.14752v1-velocity-free-attitude-synchronization-using-vector-measurements",
+      "section": "quick",
+      "title_en": "Velocity-free Attitude Synchronization Using Vector Measurements",
+      "authors": "Melika Afshari, Mouaad Boughellaba, Abdelhamid Tayebi",
+      "date": "2026-09-13",
+      "pdf": "https://arxiv.org/pdf/2609.14752v1",
+      "score": "6.0",
+      "evidence": "由惯性矢量测量估计姿态",
+      "tldr": "针对刚体网络在无角速度测量下的分布式姿态同步问题，本文研究无领航者和领航者-跟随者两种场景，仅利用惯性矢量测量并在无向通信拓扑下设计控制方案。所提方法无需重建姿态或角速度，且能避免绕圈（unwinding）现象。理论证明可实现期望同步集的几乎全局渐近稳定，数值仿真验证了有效性。该工作为速度不可测条件下的姿态协同提供了新途径。",
+      "tags": "query:pe",
+      "abstract_en": "This paper addresses the velocity-free leaderless and leader--follower distributed attitude synchronization of a network of rigid body systems, with inertial vector measurements, under an undirected communication graph topology. In the leaderless case all agents achieve consensus on a common constant orientation. In the leader--follower case, all agents synchronize with a prescribed constant orientation available to only one agent. The proposed schemes require neither attitude reconstruction nor angular-velocity, avoid unwinding, and achieve almost-global asymptotic stability of the desired synchronization sets. Numerical simulations illustrate their effectiveness.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

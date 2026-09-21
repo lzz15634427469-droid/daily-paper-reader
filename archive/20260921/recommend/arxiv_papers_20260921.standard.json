@@ -1,0 +1,90 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-21T23:06:39.913648+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2609.21597v1",
+      "source": "arxiv",
+      "title": "HAT: Hypothesis-Anchored Tracking for Video Monocular Spacecraft Pose Estimation",
+      "abstract": "Monocular 6-DoF pose estimation of non-cooperative targets is important for on-orbit servicing and debris removal. A single-image estimator can confuse near-symmetric spacecraft orientations, and tracking can preserve an incorrect pose. We present Hypothesis-Anchored Tracking (HAT), a causal framework that uses inter-frame motion to select among competing CAD-based pose hypotheses before alignment and fusion. Rather than independently choosing the highest-scoring hypothesis in each image, HAT retains competing orientation histories and selects a pose to anchor the relative trajectory estimated by monocular SLAM. Sparse anchors and pose fusion provide per-frame estimates after initialization without revising past outputs. The method requires only a calibrated RGB sequence, a metric CAD model, and target image regions, which can be supplied by detection or segmentation. The pretrained pose and SLAM networks require no target-specific training or fine-tuning. We evaluate two versions, Mega-HAT and Pico-HAT, using MegaPose and PicoPose, on SPARK-2024, SwissCube and SHIRT, with YCB-Video assessing performance outside the space domain. Using one temporal configuration per method, the arithmetic means of the four dataset-wise comparisons show 9.4% lower mean pose error and 3.76 times the sustained input FPS for Mega-HAT relative to independent MegaPose, and 23.9% lower mean pose error and 2.42 times the FPS for Pico-HAT relative to independent PicoPose. Mega-HAT ablations on SPARK and an offline reference examine component contributions and the effect of revising past estimates.",
+      "authors": [
+        "André Lopo",
+        "Atabak Dehban",
+        "Rodrigo Ventura"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-18T10:28:30+00:00",
+      "link": "https://arxiv.org/pdf/2609.21597v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Video monocular spacecraft pose estimation of non-cooperative targets",
+      "llm_evidence_cn": "非合作目标视频单目航天器位姿估计",
+      "llm_evidence": "非合作目标视频单目航天器位姿估计",
+      "canonical_evidence": "非合作目标视频单目航天器位姿估计",
+      "llm_tldr_en": "HAT addresses monocular 6-DoF spacecraft pose estimation where single-image estimators confuse near-symmetric orientations. It uses inter-frame motion to select among CAD-based pose hypotheses, anchoring monocular SLAM trajectories with sparse anchors and pose fusion for robust per-frame estimates.",
+      "llm_tldr_cn": "非合作航天器单目6自由度位姿估计对在轨服务至关重要，但单帧估计器易在近对称姿态上混淆，跟踪又会固化错误位姿。本文提出假设锚定跟踪（HAT），利用帧间运动在多个CAD位姿假设间进行因果选择，保留竞争方向历史并锚定单目SLAM估计的相对轨迹。方法通过稀疏锚点与位姿融合，在初始化后给出逐帧估计且无需修正历史输出。该框架提升了非合作目标视频位姿估计的鲁棒性。",
+      "llm_tldr": "非合作航天器单目6自由度位姿估计对在轨服务至关重要，但单帧估计器易在近对称姿态上混淆，跟踪又会固化错误位姿。本文提出假设锚定跟踪（HAT），利用帧间运动在多个CAD位姿假设间进行因果选择，保留竞争方向历史并锚定单目SLAM估计的相对轨迹。方法通过稀疏锚点与位姿融合，在初始化后给出逐帧估计且无需修正历史输出。该框架提升了非合作目标视频位姿估计的鲁棒性。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "How to perform spacecraft pose estimation from monocular imagery?",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.14752v1",
+      "source": "arxiv",
+      "title": "Velocity-free Attitude Synchronization Using Vector Measurements",
+      "abstract": "This paper addresses the velocity-free leaderless and leader--follower distributed attitude synchronization of a network of rigid body systems, with inertial vector measurements, under an undirected communication graph topology. In the leaderless case all agents achieve consensus on a common constant orientation. In the leader--follower case, all agents synchronize with a prescribed constant orientation available to only one agent. The proposed schemes require neither attitude reconstruction nor angular-velocity, avoid unwinding, and achieve almost-global asymptotic stability of the desired synchronization sets. Numerical simulations illustrate their effectiveness.",
+      "authors": [
+        "Melika Afshari",
+        "Mouaad Boughellaba",
+        "Abdelhamid Tayebi"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-13T19:34:30+00:00",
+      "link": "https://arxiv.org/pdf/2609.14752v1",
+      "tags": [
+        "keyword:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "attitude estimation from inertial vector measurements",
+      "llm_evidence_cn": "由惯性矢量测量估计姿态",
+      "llm_evidence": "由惯性矢量测量估计姿态",
+      "canonical_evidence": "由惯性矢量测量估计姿态",
+      "llm_tldr_en": "This paper achieves velocity-free distributed attitude synchronization of rigid-body networks using only inertial vector measurements, without attitude reconstruction or angular velocity.",
+      "llm_tldr_cn": "针对刚体网络在无角速度测量条件下实现分布式姿态同步的问题，论文提出仅依赖惯性矢量测量的控制方案。方案无需重构姿态或角速度，避免绕转，并在无向通信拓扑下实现几乎全局渐近稳定。数值仿真验证了无领航者与领航者两种情形下姿态趋于一致，为基于矢量测量的姿态确定与协同控制提供新思路。",
+      "llm_tldr": "针对刚体网络在无角速度测量条件下实现分布式姿态同步的问题，论文提出仅依赖惯性矢量测量的控制方案。方案无需重构姿态或角速度，避免绕转，并在无向通信拓扑下实现几乎全局渐近稳定。数值仿真验证了无领航者与领航者两种情形下姿态趋于一致，为基于矢量测量的姿态确定与协同控制提供新思路。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "estimation of spacecraft orientation from sensor measurements",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
