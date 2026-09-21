@@ -1,0 +1,827 @@
+{
+  "top_k": 200,
+  "generated_at": "2026-09-21T10:01:59.683334+00:00",
+  "papers": [
+    {
+      "id": "openreview-icml-2026-bnw8dzree8",
+      "source": "ICML-2026-Rejected-Public",
+      "title": "Self-Supervised Neural Regression for High-Precision Geometric Alignment",
+      "abstract": "We propose a Self-Supervised Machine Learning framework for the high-precision geometric alignment of large-scale physical systems with mechanical misalignment. The system comprises a large-scale high-granularity array of independent sensors, each defined by a six-degree-of-freedom (6-DoF) geometric alignment model. To determine the optimal correction parameters for each sensor, we simultaneously train a substantial number of differentiable lightweight affine transformation modules. Our core contribution is the formulation of a differentiable Physics-Informed $\\chi^2$ cost function, which is derived from the system's physical consistency constraints and real data. This framework operates without data labeling, using the physics principles themselves as a supervisory signal. We applied this approach to the Inner Tracking System of the ALICE experiment at CERN, training the models on a large sample of particle trajectories. Compared with the standard method, our proposed approach leads to a reduced systematic bias and an improved resolution in the Distance of Closest Approach (DCA), which is the primary metric determining the track pointing accuracy to the primary vertex, specifically in critical kinematic regions.",
+      "authors": [
+        "Jaehyun Kim",
+        "Youngil Kwon"
+      ],
+      "primary_category": "Self-Supervised Learning",
+      "categories": [
+        "Self-Supervised Learning",
+        "Neural Regression",
+        "Physics-Informed Machine Learning",
+        "Geometric Alignment",
+        "High Energy Physics",
+        "LHC",
+        "CERN",
+        "ALICE",
+        "Inner Tracking System (ITS2)"
+      ],
+      "published": "2026-01-22T12:11:36.123+00:00",
+      "link": "https://openreview.net/forum?id=BnW8dzrEE8",
+      "pdf_url": "https://openreview.net/pdf/5129ff2f6d5a9f8c646031b69badfcc6c32c77f8.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-icml-2026-nbkyukicxr",
+      "source": "ICML-2026-Accepted",
+      "title": "Dual Quaternion SE(3) Synchronization with Recovery Guarantees",
+      "abstract": "Synchronization over the special Euclidean group $\\mathrm{SE}(3)$ aims to recover absolute poses from noisy pairwise relative transformations and is a core primitive in robotics and 3D vision. Standard approaches often require multi-step heuristic procedures to recover valid poses, which are difficult to analyze and typically lack theoretical guarantees. This paper adopts a dual quaternion representation and formulates $\\mathrm{SE}(3)$ synchronization directly over the unit dual quaternion. A two-stage algorithm is developed: A spectral initializer computed via the power method on a Hermitian dual quaternion measurement matrix, followed by a dual quaternion generalized power method (DQGPM) that enforces feasibility through per-iteration projection. The estimation error bounds are established for spectral estimators, and DQGPM is shown to admits a finite-iteration error bound and achieves linear error contraction up to an explicit noise-dependent threshold. Experiments on synthetic benchmarks and real-world multi-scan point-set registration demonstrate that the proposed pipeline improves both accuracy and efficiency over representative matrix-based methods.",
+      "authors": [
+        "Jianing Zhao",
+        "Linglingzhi Zhu",
+        "Anthony Man-Cho So"
+      ],
+      "primary_category": "SE(3) Synchronization; Dual Quaternions; Spectral Methods",
+      "categories": [
+        "SE(3) Synchronization; Dual Quaternions; Spectral Methods"
+      ],
+      "published": "2026-04-30T19:12:37.145+00:00",
+      "link": "https://openreview.net/forum?id=nbkYuKIcXr",
+      "pdf_url": "https://openreview.net/pdf/f444551f4d4aeda86856ce2bf2444f238ed82bf7.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-icml-2026-l0xgi4e0bf",
+      "source": "ICML-2026-Accepted",
+      "title": "The Lie We Tell: Correcting the Euclidean Fallacy in Vision Language Action Policies via Score Matching on Tangent Space",
+      "abstract": "Diffusion-based Vision-Language-Action policies achieve remarkable success in robotic manipulation, yet commit a fundamental geometric error we term the **Euclidean Fallacy**: representing SE(3) poses as flat $\\mathbb{R}^{12}$ vectors. This approximation induces (1) manifold drift violating SO(3) constraints, (2) broken equivariance under coordinate transformations, and (3) non-geodesic trajectories with excessive kinematic cost. We introduce **Lie Diffuser Actor (LDA)**, a diffusion framework operating intrinsically on SE(3). Our method injects noise through left-invariant SDEs, predicts scores in the tangent space, and retracts samples via the exponential map. This formulation eliminates manifold drift by construction while guaranteeing coordinate-frame equivariance and geodesic optimality. On CALVIN ABC$\\rightarrow$D, LDA improves average task length from  $3.27$ to $3.51$ ($+7.3\\%$). We further validate our method on real robot and the results show that our methodology outperforms the baseline on majority tasks.",
+      "authors": [
+        "Bing-Cheng Chuang",
+        "I-Hsuan Chu",
+        "Bor-Jiun Lin",
+        "YuanFu Yang",
+        "Min Sun",
+        "Chun-Yi Lee"
+      ],
+      "primary_category": "Vision Language Action Model",
+      "categories": [
+        "Vision Language Action Model",
+        "Score Matching",
+        "Lie Group",
+        "Tangent Space",
+        "Generative Models"
+      ],
+      "published": "2026-04-30T19:09:59.715+00:00",
+      "link": "https://openreview.net/forum?id=L0xGI4e0BF",
+      "pdf_url": "https://openreview.net/pdf/22509e96de59cf250907a416e0836565f4c7edcc.pdf",
+      "tags": [
+        "keyword:pe"
+      ]
+    },
+    {
+      "id": "openreview-icml-2026-mmquxqbxlu",
+      "source": "ICML-2026-Accepted",
+      "title": "DecomPose: Disentangling Cross-Category Optimization Contention for Category-Level 6D Object Pose Estimation",
+      "abstract": "Category-level 6D object pose estimation is typically formulated as a multi-category joint learning problem with fully shared model parameters. However, pronounced geometric heterogeneity across categories entangles incompatible optimization signals in shared modules, resulting in gradient conflicts and negative transfer during training. To address this challenge, we first introduce gradient-based diagnostics to quantify module-level cross-category contention. Building on results of diagnostics, we propose DecomPose, a difficulty-aware decomposition framework that mitigates optimization contention via: (1) difficulty-aware gradient decoupling, which groups categories using a data-driven difficulty proxy and routes each instance to a group-specific correspondence branch to isolate incompatible updates; and (2) stability-driven asymmetric branching, which assigns higher-capacity branches to structurally simple categories as stable optimization anchors while constraining complex categories with lightweight branches to suppress noisy updates and alleviate negative transfer. Extensive experiments on REAL275, CAMERA25, and HouseCat6D demonstrate that DecomPose effectively reduces cross-category optimization contention and delivers superior pose estimation performance across multiple benchmarks.",
+      "authors": [
+        "Yifan Gao",
+        "Lu Zou",
+        "Zhangjin Huang",
+        "Guoping Wang"
+      ],
+      "primary_category": "Optimization Contention",
+      "categories": [
+        "Optimization Contention",
+        "Object Pose Estimation",
+        "Multi-Category Gradient Interference"
+      ],
+      "published": "2026-04-30T19:12:58.116+00:00",
+      "link": "https://openreview.net/forum?id=mMQuxqbXlU",
+      "pdf_url": "https://openreview.net/pdf/d0ff03e0aefdeaaa9eadc179f387d5c86789cfce.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-icml-2026-oqujajgqy3",
+      "source": "ICML-2026-Accepted",
+      "title": "STORM: Segment, Track, and Object Re-Localization from a Single Image",
+      "abstract": "Accurate 6D pose estimation and tracking are core capabilities for physical AI systems, yet real-world deployment remains brittle and labor-intensive. \nMany pipelines rely on CAD models, manual masking, or per-object adaptation, and still fail under occlusion or fast motion without a principled way to recognize failure. \nWe propose STORM, a unified framework for reference-conditioned 6D tracking that can operate from a single reference image, with minimal manual input and improved robustness. \nSTORM combines: (i) Hierarchical Spatial Fusion Attention (HSFA), a task-driven reference-query fusion architecture that supports both single-reference and multi-reference conditioning and can optionally use vision-language semantic conditioning to resolve instance ambiguities; and (ii) a BCE-trained tracking verifier whose continuous compatibility logit is used as an energy-like score to detect drift and trigger automatic re-initialization. \nExperiments on LM-O and YCB-Video show that STORM improves annotation-free pose tracking accuracy over strong baselines and recovers reliably from severe occlusions and rapid viewpoint changes with minimal overhead.",
+      "authors": [
+        "Yu Deng",
+        "Teng Cao",
+        "Hikaru Shindo",
+        "Quentin Delfosse",
+        "Jiahong Xue",
+        "Kristian Kersting"
+      ],
+      "primary_category": "6D Pose Estimation",
+      "categories": [
+        "6D Pose Estimation",
+        "Object Tracking",
+        "Annotation-Free Learning"
+      ],
+      "published": "2026-04-30T19:13:32.259+00:00",
+      "link": "https://openreview.net/forum?id=oqUjAjGQY3",
+      "pdf_url": "https://openreview.net/pdf/0b57251c7c1196fb54e8341058884f842426693e.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-icml-2026-zodtlk9uw0",
+      "source": "ICML-2026-Accepted",
+      "title": "Rays as Pixels: Learning A Joint Distribution of Video and Camera Trajectories",
+      "abstract": "Can we bridge the gap between perceiving camera trajectories and rendering novel views within a single generative framework? Recovering camera parameters from images and rendering scenes from novel viewpoints are considered the forward and inverse problems in the field of computer vision and graphics. Previous approaches treat these problems in isolation, often failing when image coverage is sparse or camera poses are ambiguous. In this work, we propose Rays as Pixels, a specialized Video Diffusion Model (VDM) that learns a joint distribution of videos and camera trajectories. We represent cameras as dense ray pixels (raxels) and simultaneously denoise them alongside video frames using a novel Decoupled Self-Cross Attention. This joint formulation enables us to: i) generate a video from multiple input images following a defined camera trajectory, ii) perform novel view synthesis from sparse views (without necessarily requiring camera poses), and iii) predict the camera trajectory from a raw video. We evaluate our model on pose estimation, camera-controlled video generation and validate its self-consistency. Please reference supplementary material for more qualitative results.",
+      "authors": [
+        "Wonbong Jang",
+        "Shikun Liu",
+        "Soubhik Sanyal",
+        "Juan Camilo Perez",
+        "Kam Woh Ng",
+        "Sanskar Agrawal",
+        "Juan-Manuel Perez-Rua",
+        "Yiannis Douratsos",
+        "Tao Xiang"
+      ],
+      "primary_category": "Diffusion Model",
+      "categories": [
+        "Diffusion Model",
+        "Novel View Synthesis",
+        "Camera Pose Prediction",
+        "Camera-Controlled Video Generation"
+      ],
+      "published": "2026-04-30T19:14:21.82+00:00",
+      "link": "https://openreview.net/forum?id=zOdTlk9Uw0",
+      "pdf_url": "https://openreview.net/pdf/c0a4677a69a2b0522f6d321e1f3ee53bad83072c.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    },
+    {
+      "id": "openreview-icml-2026-qx8nriamit",
+      "source": "ICML-2026-Accepted",
+      "title": "Scalable and Differentiable Point-Cloud Registration Using Maximum Mean Discrepancy",
+      "abstract": "We present MMD-Reg, a novel correspondence-free approach to point-cloud registration that is differentiable and has linear computational complexity in the number of points. We model registration as a nonlinear least-squares problem based on the Maximum Mean Discrepancy, approximated using random Fourier features. The resulting objective can be solved efficiently with standard methods such as Levenberg–Marquardt, and the solution is differentiable via the implicit function theorem. This allows MMD-Reg to be used as a differentiable optimization layer within end-to-end trainable models, supporting registration under challenging conditions such as poor initial alignment and partial overlap. We demonstrate this Neural MMD-Reg formulation by integrating the layer with a set transformer, training the resulting model in supervised and unsupervised settings, and comparing its performance against recent learning-based methods. We also evaluate standalone MMD-Reg, comparing its accuracy and scalability against widely used non-learning-based registration methods.",
+      "authors": [
+        "Rixon Crane",
+        "Fahira Afzal Maken",
+        "Nicholas Lawrance",
+        "Stanislav Funiak",
+        "Kasra Khosoussi",
+        "Ming Xu",
+        "Russell Tsuchida"
+      ],
+      "primary_category": "point-cloud registration",
+      "categories": [
+        "point-cloud registration",
+        "maximum mean discrepancy",
+        "random Fourier features",
+        "bilevel optimization",
+        "implicit function theorem",
+        "implicit differentiation",
+        "differentiable optimization layer"
+      ],
+      "published": "2026-04-30T19:17:12.976+00:00",
+      "link": "https://openreview.net/forum?id=Qx8NriaMit",
+      "pdf_url": "https://openreview.net/pdf/db3fbe77df278b027f742dd0b2c2c6c49deb9a02.pdf",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ]
+    }
+  ],
+  "queries": [
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "How to combine lidar and camera data for spacecraft relative pose estimation?",
+      "sim_scores": {
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.010869565217391304,
+          "rank": 32
+        },
+        "openreview-icml-2026-oqujajgqy3": {
+          "score": 0.010752688172043012,
+          "rank": 33
+        },
+        "openreview-icml-2026-mmquxqbxlu": {
+          "score": 0.010416666666666666,
+          "rank": 36
+        },
+        "openreview-icml-2026-qx8nriamit": {
+          "score": 0.009708737864077669,
+          "rank": 43
+        },
+        "openreview-icml-2026-zodtlk9uw0": {
+          "score": 0.009433962264150943,
+          "rank": 46
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-icml-2026-oqujajgqy3",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-nbkyukicxr",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-bnw8dzree8",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-zodtlk9uw0",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-mmquxqbxlu",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-l0xgi4e0bf",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-qx8nriamit",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "How to evaluate deep learning based spacecraft pose estimation accuracy?",
+      "sim_scores": {
+        "openreview-icml-2026-mmquxqbxlu": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2026-oqujajgqy3": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2026-qx8nriamit": {
+          "score": 0.012345679012345678,
+          "rank": 21
+        },
+        "openreview-icml-2026-bnw8dzree8": {
+          "score": 0.011764705882352941,
+          "rank": 25
+        },
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-icml-2026-mmquxqbxlu",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-oqujajgqy3",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-nbkyukicxr",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-bnw8dzree8",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-l0xgi4e0bf",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-zodtlk9uw0",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-qx8nriamit",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "How to perform spacecraft pose estimation from monocular imagery?",
+      "sim_scores": {
+        "openreview-icml-2026-oqujajgqy3": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-icml-2026-mmquxqbxlu": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        },
+        "openreview-icml-2026-zodtlk9uw0": {
+          "score": 0.011111111111111112,
+          "rank": 30
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-icml-2026-oqujajgqy3",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-mmquxqbxlu",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-zodtlk9uw0",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-nbkyukicxr",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-l0xgi4e0bf",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-bnw8dzree8",
+          "score": 0.3668882557771445,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2026-qx8nriamit",
+          "score": 0.29792429792429775,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "pe",
+      "paper_tag": "query:pe",
+      "query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?",
+      "sim_scores": {
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2026-mmquxqbxlu": {
+          "score": 0.013888888888888888,
+          "rank": 12
+        },
+        "openreview-icml-2026-oqujajgqy3": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-icml-2026-qx8nriamit": {
+          "score": 0.010526315789473684,
+          "rank": 35
+        },
+        "openreview-icml-2026-bnw8dzree8": {
+          "score": 0.01,
+          "rank": 40
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-icml-2026-oqujajgqy3",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-mmquxqbxlu",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2026-nbkyukicxr",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-qx8nriamit",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-bnw8dzree8",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2026-l0xgi4e0bf",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2026-zodtlk9uw0",
+          "score": 0.3910256410256411,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "datasets used for training and evaluating spacecraft pose estimation algorithms",
+      "sim_scores": {
+        "openreview-icml-2026-mmquxqbxlu": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2026-oqujajgqy3": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-icml-2026-qx8nriamit": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "openreview-icml-2026-bnw8dzree8": {
+          "score": 0.011764705882352941,
+          "rank": 25
+        },
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.010869565217391304,
+          "rank": 32
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "sim_scores": {
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2026-bnw8dzree8": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "estimation of spacecraft orientation from sensor measurements",
+      "sim_scores": {
+        "openreview-icml-2026-bnw8dzree8": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "methods for determining the position and orientation of a spacecraft relative to a target",
+      "sim_scores": {
+        "openreview-icml-2026-bnw8dzree8": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.013888888888888888,
+          "rank": 12
+        },
+        "openreview-icml-2026-l0xgi4e0bf": {
+          "score": 0.011111111111111112,
+          "rank": 30
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "monocular pose estimation",
+      "sim_scores": {}
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "pose estimation dataset",
+      "sim_scores": {}
+    },
+    {
+      "type": "keyword",
+      "tag": "pe",
+      "paper_tag": "keyword:pe",
+      "query_text": "pose estimation using a single camera image for space applications",
+      "sim_scores": {
+        "openreview-icml-2026-mmquxqbxlu": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-icml-2026-oqujajgqy3": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-icml-2026-zodtlk9uw0": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "openreview-icml-2026-nbkyukicxr": {
+          "score": 0.012048192771084338,
+          "rank": 23
+        }
+      }
+    }
+  ],
+  "global_candidate_ids": [
+    "openreview-icml-2026-ombzhjvuta",
+    "openreview-icml-2026-hzkbj2zdpm",
+    "openreview-icml-2026-yb0ymduqqx",
+    "openreview-icml-2026-2t0kl2qqkb",
+    "openreview-icml-2026-gyrmbsyfig",
+    "openreview-icml-2026-ijqsbcrkmo",
+    "openreview-icml-2026-v6xrfejnqv",
+    "openreview-icml-2026-sdcoyjz34e",
+    "openreview-icml-2026-a359qygvvr",
+    "openreview-icml-2026-3vgsvk8e8m",
+    "openreview-icml-2026-ovk43z9kgc",
+    "openreview-icml-2026-nbkyukicxr",
+    "openreview-icml-2026-s1stjdehjs",
+    "openreview-icml-2026-ojx0cygxhj",
+    "openreview-icml-2026-rbeauiypkb",
+    "openreview-icml-2026-zryma5ujiz",
+    "openreview-icml-2026-jilmairchs",
+    "openreview-icml-2026-azwb7xzt6n",
+    "openreview-icml-2026-gybeaguan5",
+    "openreview-icml-2026-oqujajgqy3",
+    "openreview-icml-2026-lgzkdjvvwp",
+    "openreview-icml-2026-mmquxqbxlu",
+    "openreview-icml-2026-awpkhe1dbc",
+    "openreview-icml-2026-odukwbfued",
+    "openreview-icml-2026-bnw8dzree8",
+    "openreview-icml-2026-f2cgtzhq4e",
+    "openreview-icml-2026-xxifbmze0b",
+    "openreview-icml-2026-eegk2cd7gx",
+    "openreview-icml-2026-hpihfqalwa",
+    "openreview-icml-2026-s7pdlewyyw",
+    "openreview-icml-2026-r2rvwpvpk7",
+    "openreview-icml-2026-cchiqfnzen",
+    "openreview-icml-2026-vpgmyel1rg",
+    "openreview-icml-2026-bwhc4ezzee",
+    "openreview-icml-2026-7xiv7hszi7",
+    "openreview-icml-2026-bqkkvguhza",
+    "openreview-icml-2026-hwygnzjxub",
+    "openreview-icml-2026-3dik7z4zm8",
+    "openreview-icml-2026-mcu8sojpad",
+    "openreview-icml-2026-w9qub62qf5",
+    "openreview-icml-2026-xcfgjhivrt",
+    "anthology-2026.acl-long.1152",
+    "openreview-icml-2026-29m0tw0xb3",
+    "openreview-icml-2026-p8vz7tuykm",
+    "openreview-icml-2026-hly2qyculw",
+    "openreview-icml-2026-bozd8pg5e2",
+    "anthology-2026.findings-acl.83",
+    "anthology-2026.acl-long.256",
+    "openreview-icml-2026-b6oq9cg5sh",
+    "openreview-icml-2026-qx8nriamit",
+    "openreview-icml-2026-yw9unbrgoh",
+    "openreview-icml-2026-fpl30b32rt",
+    "anthology-2026.acl-long.37",
+    "openreview-icml-2026-anoftirxgv",
+    "openreview-icml-2026-rytz3y2mbj",
+    "openreview-icml-2026-afb6yo2rif",
+    "openreview-icml-2026-mcazvj7apl",
+    "anthology-2026.acl-long.1874",
+    "openreview-icml-2026-5jkuqtbpnb",
+    "openreview-icml-2026-ofzlydmmhe",
+    "openreview-icml-2026-aae3hxdkbt",
+    "openreview-icml-2026-zodtlk9uw0",
+    "openreview-icml-2026-nik0jgjc81",
+    "openreview-icml-2026-woiiket6bn",
+    "openreview-icml-2026-d9obyvpqau",
+    "anthology-2026.findings-acl.732",
+    "openreview-icml-2026-kmqzj5wqea",
+    "openreview-icml-2026-rso6nr7noz",
+    "openreview-icml-2026-a5kwfeqwsu",
+    "openreview-icml-2026-zyecwbttvt",
+    "openreview-icml-2026-xgjhmgmmcf",
+    "openreview-icml-2026-rwbtuevv4q",
+    "openreview-icml-2026-nur4lg4gkb",
+    "openreview-icml-2026-dqmt0yd4rc",
+    "openreview-icml-2026-nijotyiqsz",
+    "openreview-icml-2026-t4jzj0v69w",
+    "openreview-icml-2026-lxqijw626c",
+    "openreview-icml-2026-huzqpykebl",
+    "openreview-icml-2026-gczeckhogn",
+    "openreview-icml-2026-cco325ci1w",
+    "anthology-2026.findings-acl.718",
+    "anthology-2026.acl-long.774",
+    "anthology-2026.acl-long.1519",
+    "openreview-icml-2026-sebprrnbux",
+    "openreview-icml-2026-dyqfw9ljgq",
+    "openreview-icml-2026-gikoqkb4fu",
+    "openreview-icml-2026-xmo8lp4i2n",
+    "openreview-icml-2026-o2znfxqcij",
+    "openreview-icml-2026-r8vdduz4s3",
+    "openreview-icml-2026-j2ivokp7vs",
+    "anthology-2026.findings-acl.1402",
+    "openreview-icml-2026-ncrrcg4bfp",
+    "openreview-icml-2026-msvqm8ub2y",
+    "openreview-icml-2026-iae4cvykfu",
+    "openreview-icml-2026-rblvgh2zab",
+    "openreview-icml-2026-asrnpt3so3",
+    "openreview-icml-2026-xlevhy3ojo",
+    "anthology-2026.acl-long.510",
+    "openreview-icml-2026-epqq9kvxua",
+    "openreview-icml-2026-qehq1ntplt",
+    "openreview-icml-2026-cu2vkjdjlh",
+    "openreview-icml-2026-bxiaowdft2",
+    "openreview-icml-2026-27m3buajls",
+    "anthology-2026.findings-acl.55",
+    "openreview-icml-2026-70vztat0or",
+    "openreview-icml-2026-vnfbqrzash",
+    "openreview-icml-2026-rxjgbylft1",
+    "openreview-icml-2026-7sidviywhq",
+    "openreview-icml-2026-hnodd5l2tv",
+    "openreview-icml-2026-pqtwlelwdg",
+    "openreview-icml-2026-b3yorya3vd",
+    "openreview-icml-2026-kjkt2vzkyb",
+    "anthology-2026.findings-acl.1034",
+    "openreview-icml-2026-sbfiuo2ets",
+    "openreview-icml-2026-kbzgufrp1b",
+    "openreview-icml-2026-l0xgi4e0bf",
+    "openreview-icml-2026-mlvsiefywj",
+    "openreview-icml-2026-xivx32c4im",
+    "openreview-icml-2026-asfd58cecj",
+    "anthology-2026.acl-long.1788"
+  ],
+  "global_pool_lane_top_k": 30,
+  "global_pool_limit": 120,
+  "global_pool_guaranteed_per_lane": 2,
+  "global_pool_effective_size": 120,
+  "reranked_at": "2026-09-21T10:03:42.009572+00:00",
+  "llm_ranked": [
+    {
+      "paper_id": "openreview-icml-2026-oqujajgqy3",
+      "score": 6.0,
+      "evidence_en": "6D pose estimation and tracking from a single reference image without CAD models",
+      "evidence_cn": "无需CAD模型、从单张参考图像进行六自由度位姿估计与跟踪",
+      "canonical_evidence": "无需CAD模型、从单张参考图像进行六自由度位姿估计与跟踪",
+      "tldr_en": "STORM is a reference-conditioned 6D pose estimation and tracking framework that works from a single reference image without CAD models, improving robustness under occlusion and fast motion.",
+      "tldr_cn": "针对现有六自由度位姿估计与跟踪依赖CAD模型、人工掩码且遮挡或快速运动下易失败的问题，本文提出STORM统一框架。方法以单张参考图像为条件，结合层次化空间融合注意力实现单或多参考融合，并可选用视觉语言语义条件。该框架在遮挡和快速运动下提升了位姿跟踪的鲁棒性，并能识别失败情形。其单图六自由度位姿估计思路对航天器单目位姿估计具有方法借鉴价值。",
+      "title_zh": "STORM：从单张图像进行分割、跟踪与目标重定位",
+      "motivation_cn": "现有6D位姿估计与跟踪依赖CAD模型与人工标注，在遮挡和快速运动下鲁棒性差且难以识别失败。",
+      "method_cn": "提出参考条件式6D跟踪框架STORM，采用层次化空间融合注意力支持单或多参考与语义条件。",
+      "result_cn": "框架可在单张参考图像下运行，减少人工输入并在遮挡与快速运动下提升鲁棒性。",
+      "conclusion_cn": "该工作为无CAD、单图条件下的鲁棒6D位姿估计与跟踪提供了统一方案。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications"
+    },
+    {
+      "paper_id": "openreview-icml-2026-mmquxqbxlu",
+      "score": 6.0,
+      "evidence_en": "category-level 6D object pose estimation",
+      "evidence_cn": "类别级6D物体位姿估计",
+      "canonical_evidence": "类别级6D物体位姿估计",
+      "tldr_en": "DecomPose addresses cross-category optimization contention in category-level 6D object pose estimation via difficulty-aware gradient decoupling, improving pose accuracy.",
+      "tldr_cn": "针对类别级6D物体位姿估计在多类别联合训练时，类别间几何差异导致梯度冲突与负迁移的问题，提出DecomPose难度感知分解框架。方法先用梯度诊断量化模块级跨类别竞争，再按数据驱动难度代理分组并解耦梯度以缓解优化冲突。实验显示该方法能提升位姿估计精度，为多类别6D位姿估计提供可迁移的优化解耦思路。",
+      "title_zh": "DecomPose：解耦跨类别优化竞争的类别级6D物体位姿估计",
+      "motivation_cn": "类别级6D物体位姿估计多类别联合训练时，类别间几何差异导致梯度冲突与负迁移。",
+      "method_cn": "提出DecomPose，基于梯度诊断的难度感知分解框架，按难度分组并解耦梯度。",
+      "result_cn": "实验显示该方法能缓解跨类别优化竞争，提升位姿估计精度。",
+      "conclusion_cn": "为多类别6D位姿估计提供了可迁移的优化解耦思路。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications"
+    },
+    {
+      "paper_id": "openreview-icml-2026-nbkyukicxr",
+      "score": 5.0,
+      "evidence_en": "SE(3) pose recovery from relative transforms, transferable to relative pose",
+      "evidence_cn": "从相对变换恢复SE(3)绝对位姿，可迁移至相对位姿",
+      "canonical_evidence": "从相对变换恢复SE(3)绝对位姿，可迁移至相对位姿",
+      "tldr_en": "This paper formulates SE(3) synchronization over unit dual quaternions with a two-stage spectral and generalized power method, recovering absolute poses from noisy relative transforms.",
+      "tldr_cn": "该文针对SE(3)同步中标准方法需多步启发式、缺乏理论保证的问题，采用单位对偶四元数表示，将同步直接建立在单位对偶四元数上。方法包含谱初始化与对偶四元数广义幂法（DQGPM），通过逐步投影强制可行性。工作给出恢复保证，可用于由含噪相对位姿重建绝对位姿，对多航天器间相对位姿估计具方法迁移价值。",
+      "title_zh": "带恢复保证的对偶四元数SE(3)同步",
+      "motivation_cn": "SE(3)同步需从含噪成对相对变换恢复绝对位姿，现有方法多为启发式且缺乏理论保证。",
+      "method_cn": "采用单位对偶四元数表示，构建两阶段算法：Hermitian测量矩阵上的谱初始化，再加逐步投影的广义幂法。",
+      "result_cn": "给出恢复保证，能在含噪相对变换下稳健恢复有效绝对位姿。",
+      "conclusion_cn": "为SE(3)同步提供有理论保证的求解框架，可迁移至相对位姿估计问题。",
+      "matched_requirement_id": "req-composite-pe",
+      "matched_query_tag": "query:pe:composite",
+      "matched_query_text": "Papers central to 航天器位姿估计, especially work that connects or combines: methods for determining the position and orientation of a spacecraft relative to a target; estimation of spacecraft orientation from sensor measurements; determination of relative position and orientation between two spacecraft or a spacecraft and target; pose estimation using a single camera image for space applications; datasets used for training and evaluating spacecraft pose estimation algorithms; How to perform spacecraft pose estimation from monocular imagery?; What methods are used for robust pose estimation of uncooperative spacecraft?; How to combine lidar and camera data for spacecraft relative pose estimation?; How to evaluate deep learning based spacecraft pose estimation accuracy?."
+    },
+    {
+      "paper_id": "openreview-icml-2026-qx8nriamit",
+      "score": 5.0,
+      "evidence_en": "differentiable point-cloud registration for relative pose",
+      "evidence_cn": "可微点云配准用于相对位姿",
+      "canonical_evidence": "可微点云配准用于相对位姿",
+      "tldr_en": "MMD-Reg performs correspondence-free, differentiable point-cloud registration via Maximum Mean Discrepancy with linear complexity, supporting relative pose estimation under poor alignment and partial overlap.",
+      "tldr_cn": "针对点云配准在初始对齐差、部分重叠等困难条件下难以兼顾精度与可扩展性的问题，提出MMD-Reg，将配准建模为基于最大均值差异的非线性最小二乘，用随机傅里叶特征近似并借助隐函数定理实现可微。实验表明其具有线性复杂度，可在差初始对齐和部分重叠下有效配准，并能作为端到端模型中的可微优化层支撑相对位姿估计。",
+      "title_zh": "基于最大均值差异的可扩展可微点云配准",
+      "motivation_cn": "点云配准在初始对齐差、部分重叠等困难条件下难以兼顾精度与可扩展性。",
+      "method_cn": "提出MMD-Reg，基于最大均值差异的免对应配准，用随机傅里叶特征近似并可微。",
+      "result_cn": "实验表明其具有线性复杂度，在差初始对齐和部分重叠下仍能有效配准。",
+      "conclusion_cn": "为可微分、可扩展的点云配准提供新思路，可支撑相对位姿估计。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target"
+    },
+    {
+      "paper_id": "openreview-icml-2026-l0xgi4e0bf",
+      "score": 4.0,
+      "evidence_en": "intrinsic SE(3) pose representation via tangent-space score matching",
+      "evidence_cn": "在SE(3)上做切空间分数匹配的位姿表示",
+      "canonical_evidence": "在SE(3)上做切空间分数匹配的位姿表示",
+      "tldr_en": "This work identifies the Euclidean fallacy of representing SE(3) poses as flat vectors and proposes an intrinsic diffusion policy on SE(3) using tangent-space score matching and exponential-map retraction.",
+      "tldr_cn": "该文指出扩散式视觉语言动作策略将SE(3)位姿当作平坦R^12向量表示，导致流形漂移、等变性破坏和非测地轨迹。为此提出Lie Diffuser Actor（LDA），在SE(3)上以内蕴方式注入左不变SDE噪声、在切空间预测分数并用指数映射收缩样本。方法消除了流形漂移并保持几何一致性，对机器人位姿表示有参考价值，但与航天器位姿估计仅为方法层面关联。",
+      "title_zh": "我们所说的谎言：通过切空间分数匹配纠正视觉语言动作策略中的欧氏谬误",
+      "motivation_cn": "扩散式VLA策略将SE(3)位姿当作平坦向量表示，造成流形漂移、等变性破坏和运动学代价过高。",
+      "method_cn": "提出LDA框架，在SE(3)上以内蕴方式通过左不变SDE注入噪声，在切空间预测分数并用指数映射收缩样本。",
+      "result_cn": "消除流形漂移并保持几何一致性，生成更符合测地性的动作轨迹。",
+      "conclusion_cn": "为机器人位姿的几何一致表示提供新思路，可与位姿估计任务间接结合。",
+      "matched_requirement_id": "req-composite-pe",
+      "matched_query_tag": "query:pe:composite",
+      "matched_query_text": "Papers central to 航天器位姿估计, especially work that connects or combines: methods for determining the position and orientation of a spacecraft relative to a target; estimation of spacecraft orientation from sensor measurements; determination of relative position and orientation between two spacecraft or a spacecraft and target; pose estimation using a single camera image for space applications; datasets used for training and evaluating spacecraft pose estimation algorithms; How to perform spacecraft pose estimation from monocular imagery?; What methods are used for robust pose estimation of uncooperative spacecraft?; How to combine lidar and camera data for spacecraft relative pose estimation?; How to evaluate deep learning based spacecraft pose estimation accuracy?."
+    },
+    {
+      "paper_id": "openreview-icml-2026-bnw8dzree8",
+      "score": 4.0,
+      "evidence_en": "6-DoF geometric alignment model estimating optimal correction parameters",
+      "evidence_cn": "六自由度几何对齐模型估计最优校正参数",
+      "canonical_evidence": "六自由度几何对齐模型估计最优校正参数",
+      "tldr_en": "For high-precision geometric alignment of large sensor arrays with mechanical misalignment, a self-supervised framework trains many differentiable affine modules with a physics-informed chi-squared loss, estimating 6-DoF correction parameters without labels.",
+      "tldr_cn": "论文针对大型物理系统在机械失配下难以高精度几何对齐的问题，提出自监督机器学习框架。系统由大规模高粒度独立传感器阵列组成，每个传感器由六自由度几何对齐模型描述，通过同时训练大量可微轻量仿射变换模块求解最优校正参数，并构造源自物理一致性约束的可微物理信息卡方代价函数，无需数据标注。实验表明该框架可高效估计六自由度校正参数，其位姿参数估计与对齐思路可迁移至相对位姿确定任务。",
+      "title_zh": "面向高精度几何对齐的自监督神经回归",
+      "motivation_cn": "大型物理系统存在机械失配，传统方法难以在无标注条件下高精度求解各传感器的几何对齐参数。",
+      "method_cn": "提出自监督框架，为每个传感器建立六自由度几何对齐模型，同时训练大量可微仿射变换模块，并用物理信息卡方代价函数优化。",
+      "result_cn": "实验表明该框架无需数据标注即可估计最优六自由度校正参数，实现大规模传感器阵列的高精度对齐。",
+      "conclusion_cn": "将物理一致性约束引入自监督回归，为位姿与几何对齐参数估计提供了可迁移范式。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target"
+    },
+    {
+      "paper_id": "openreview-icml-2026-zodtlk9uw0",
+      "score": 4.0,
+      "evidence_en": "recovering camera parameters and poses from images via joint video-trajectory distribution",
+      "evidence_cn": "通过视频-轨迹联合分布从图像恢复相机参数与位姿",
+      "canonical_evidence": "通过视频-轨迹联合分布从图像恢复相机参数与位姿",
+      "tldr_en": "Rays as Pixels is a video diffusion model that learns a joint distribution of videos and camera trajectories, representing cameras as dense ray pixels and denoising them with frames, improving camera pose recovery under sparse coverage.",
+      "tldr_cn": "论文针对从图像恢复相机参数与从新视角渲染场景这两个正逆问题长期割裂、在图像覆盖稀疏或相机位姿模糊时失效的问题，提出Rays as Pixels视频扩散模型，将相机表示为稠密射线像素并与视频帧联合去噪，采用解耦自交叉注意力实现联合建模。实验表明该联合框架在稀疏覆盖与位姿模糊情形下改善了相机位姿恢复与视角合成效果。其从图像估计相机位姿的思路可迁移至视觉位姿估计任务。",
+      "title_zh": "射线即像素：学习视频与相机轨迹的联合分布",
+      "motivation_cn": "从图像恢复相机参数与从新视角渲染场景长期被割裂处理，在图像覆盖稀疏或相机位姿模糊时容易失败。",
+      "method_cn": "提出Rays as Pixels视频扩散模型，将相机表示为稠密射线像素，与视频帧一同去噪，并用解耦自交叉注意力实现联合建模。",
+      "result_cn": "实验表明该联合建模在稀疏覆盖与位姿模糊条件下提升了相机位姿恢复与视角渲染效果。",
+      "conclusion_cn": "统一了相机位姿感知与场景渲染两类问题，为基于图像的位姿估计提供了可迁移思路。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications"
+    }
+  ],
+  "llm_ranked_at": "2026-09-21T10:04:36.382251+00:00",
+  "display_min_score": 4.0,
+  "pruned_at": "2026-09-21T10:04:36.412660+00:00"
+}
