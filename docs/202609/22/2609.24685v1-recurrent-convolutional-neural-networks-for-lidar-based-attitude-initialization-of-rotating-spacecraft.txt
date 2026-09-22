@@ -1,0 +1,258 @@
+Title: Recurrent Convolutional Neural Networks for LiDAR-Based Attitude Initialization of Rotating Spacecraft
+
+URL Source: https://arxiv.org/pdf/2609.24685v1
+
+Published Time: Tue, 22 Sep 2026 02:59:12 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# Recurrent Convolutional Neural Networks for LiDAR-Based Attitude Initialization of Rotating Spacecraft 
+
+Luca Bechis a, Jean-Luc Sarvadon a, Petre Ricioppo a, Mauro Mancini a, ∗
+
+> aDepartment of Mechanical and Aerospace Engineering, Politecnico di Torino, Corso Duca degli Abruzzi 24, Torino, 10129, Italy
+
+Abstract 
+
+Accurate attitude estimation is essential for autonomous in-orbit servicing and proximity operations. This work proposes a Re-current Convolutional Neural Network (RCNN) used in coarse attitude initialization of known, possibly tumbling spacecraft using LiDAR-derived depth images. By processing temporal sequences of 2D point-cloud projections, the RCNN e ff ectively handles symmetries, occlusions, and degraded sensing. Simulations across various spacecraft geometries, angular velocities, and ranges show that the RCNN yields lower initialization errors and higher convergence rates than conventional CNN baseline within the adopted experimental framework, with performance varying across angular velocity conditions. 
+
+Keywords: Aerospace, Relative navigation, LiDAR, Attitude estimation, Recurrent Convolutional Neural Network 
+
+©2026. This manuscript version is made available under the CC BY 4.0 license https://creativecommons.org/lice nses/by/4.0/ 
+
+1. Introduction 
+
+In recent years, space agencies, private companies, and the research community have shown a growing interest in In-Orbit Servicing (IOS) missions, including satellite inspection, cap-ture, refueling, repair, and debris removal. These operations play a key role in reducing mission costs and extending space-craft lifetimes, paving the way toward a more sustainable and accessible use of space [1]. Despite its promising potential, IOS missions face several engineering challenges, mainly related to the design of modu-lar and reconfigurable spacecraft, the implementation of high-precision propulsion systems, and the realization of advanced Guidance, Navigation, and Control (GNC) architectures capa-ble of supporting fully autonomous operations in complex or-bital environments. Among them, the GNC subsystem is par-ticularly critical, as it is responsible for precise relative mo-tion estimation, trajectory planning, and control during close-proximity operations. Its performance directly a ff ects the abil-ity of the servicing spacecraft to safely approach, capture, and manipulate client satellites, especially when these are non-cooperative or unprepared for docking [2]. In particular, the       
+
+> ∗Corresponding author
+> Email addresses: s315994@studenti.polito.it (Luca Bechis),
+> jeanluc.sarvadon@polito.it (Jean-Luc Sarvadon),
+> petre.ricioppo@polito.it (Petre Ricioppo),
+> mauro.mancini@polito.it (Mauro Mancini)
+> 1Received 2 November 2025, Revised 20 June 2026, Accepted 20 June 2026 Digital Object Identifier (DOI): 10.1016/j.conengprac.2026.107134
+
+relative navigation function in IOS missions is responsible for relative state estimation between chaser and target, i.e., for de-termining the relative position, velocity, attitude, and angular velocity [3]. The main sensors involved in pose estimation are LiDAR and cameras [4, 5], which o ff er complementary advan-tages: LiDAR provides accurate geometric information and op-erates under any lighting condition, whereas cameras deliver higher-resolution imagery but rely on favorable illumination for e ff ective 3D reconstruction. In LiDAR-based pose estima-tion of known targets, the pose is determined by aligning the scanned point cloud with a reference point cloud representing the target, hereafter referred to as the model, through rotation and translation. The process typically involves two phases: a 
+
+coarse phase , which provides a rough but robust initial pose es-timate, followed by a fine phase , where the estimate is refined through a point cloud registration method. Among the pose refinement techniques proposed in the literature [5], the most widely employed is the Iterative Closest Point (ICP) algorithm [6, 7]. The accuracy of ICP depends on the number of points and measurement noise, and its convergence critically relies on the availability of a su ffi ciently accurate initial guess. In order to provide a reliable approximation of the target pose before the refinement stage, various methods have been proposed in the literature. A comprehensive review of LiDAR-based coarse pose estimation methods can be found in [5], while in the fol-lowing, some of the most representative approaches are briefly described. [8, 9] employ the template matching method, which uses a dataset of templates to optimize a correlation function. This technique allows initial estimates with errors of around 20° for non-symmetrical targets but remains computationally and memory-intensive. A di ff erent approach is proposed by [10], where the initialization estimate is obtained by aligning two congruent tetrahedra constructed on the model and on the arXiv:2609.24685v1 [eess.IV] 21 Sep 2026 scanned point cloud. On that particular shape, the algorithm achieved errors below 9°. Another approach is the Point Pair Feature (PPF) method [11], which estimates the pose by en-coding geometric relationships between pairs of points. These model features are precomputed and stored, while the same features extracted from the scene are used to find correspon-dences. Then, a voting process selects the transformation that best aligns the two point clouds, yielding robust and accurate results with a computational load that depends on the point cloud density. Another feature-based approach is the Ori-ented, Unique, and Repeatable Clustered Viewpoint Feature Histograms (OUR-CVFH). The pipeline of this algorithm con-sists of identifying groups of points with common surface fea-tures. These features are then compared with histograms ob-tained from di ff erent viewpoints to derive the desired initializa-tion. Exploiting this method, [12] achieved convergence with errors below 10° on all axes, while [13] introduced an addi-tional filtering stage that further reduced attitude errors and im-proved pose tracking performance. Although these initial pose estimation approaches o ff er significant potential, they may fail in symmetrical configurations and can be computationally in-tensive. The growing deployment of machine learning has en-abled alternative methods for coarse pose estimation phase. For instance, [14] and [15] achieved encouraging results in satellite pose estimation using Convolutional Neural Networks (CNNs) trained on synthetic images and tested on real camera data. Conversely, [16] employed transformers to provide coarse esti-mates using LiDAR point clouds. Similarly, recent works have explored deep learning approaches for pose estimation directly from LiDAR point clouds. In particular, [17] and [18] proposed strategies targeting short-range scenarios, while [19] developed a neural network specifically designed for operation at a fixed distance of 100 m. As a preliminary step in pose estimation, pose initialization produces two distinct outputs: translation initialization and at-titude initialization. These quantities serve as inputs to the sub-sequent fine estimation phase. Translation initialization can be addressed using established techniques such as centroiding [5] and CNN-based approaches [20]. In contrast, attitude initial-ization remains a more challenging problem, particularly in dy-namic target scenarios involving object symmetries and rota-tional motion. Motivated by prior work on the application of neural networks to pose estimation, this study aims to overcome the challenge of attitude initialization by supplying an initial guess for ICP. The present study is inspired by the findings of [20, 21], who demonstrated that a convolutional neural network trained on a synthetic LiDAR dataset can estimate pose from the projection of a 3D point cloud. However, their approach was limited to a particular target and their network is not able to consider a sequence of measurements. Indeed, CNNs operate on single frames and do not explic-itly account for temporal correlations between successive ob-servations. This limitation may degrade estimation accuracy in scenarios involving spinning, symmetric targets, partial oc-clusions, or ambiguous visual configurations. To address these issues, [22] proposed a Recurrent Convolutional Neural Net-work (RCNN) with monocular camera images, leveraging its temporal modeling capability to incorporate information from previous inputs for pose estimation. In this context, the present study extends the concept by implementing a RCNN architec-ture trained on sequences of LiDAR-derived point clouds, ex-plicitly designed to handle symmetric spinning targets observed at varying ranges. For completeness, a standard CNN with comparable capacity is also developed to enable a direct per-formance comparison. The input data are processed to gener-ate consistent 2D projections across distances from 20 to 100 m, with combined angular velocity norms up to 20° /s. Ex-tensive evaluations are performed on spacecraft with di ff erent geometries and under varying image quality conditions, in-cluding occlusions from appendages. Results show that the proposed RCNN provides improved accuracy compared to the CNN baseline and demonstrates competitive performance with respect to state-of-the-art approaches when considering opera-tional range, target symmetries, and occlusion conditions. This paper is structured as follows: Section 2 describes the procedure implemented to generate the datasets employed for training and testing the neural networks. Section 3 illus-trates the architecture of the two types of networks (CNN and RCNN). Then, Section 4 presents the results and Section 5 draws some concluding remarks while suggesting possible fu-ture developments of the work. 
+
+2. Dataset development for Neural Network training and testing 
+
+This section describes the complete dataset development pipeline for neural network training and testing. It begins with the generation of relative distances and orientations between the chaser and the target, followed by the simulation of LiDAR measurements from the chaser’s perspective. Finally, the point clouds are processed into 2D depth images through projection and voxelization, producing inputs suitable for both CNN and RCNN architectures. The dataset used in this work is publicly available at https: //zenodo.org/records/18477119 .
+
+2.1. Definition of orientations and distances 
+
+In order to train both CNN and RCNN e ff ectively, it is nec-essary to generate a dataset of input images paired with labels describing the true orientation of the Target Reference Frame (TRF) relative to the LiDAR Reference Frame (LRF), in terms of quaternions. The TRF is a body-fixed reference frame at-tached to the target geometry, while the LRF is centered on the LiDAR, with the boresight axis aligned with the y-axis and the 
+
+x − z plane perpendicular to it, as in Figs. 1-2. Thus, each sam-ple consists of an image and its corresponding label, which are used to evaluate the network’s predictions through an appropri-ate loss function. Since the CNN and RCNN architectures oper-ate on di ff erent types of input data (individual images and tem-poral sequences of 24 s, respectively), the dataset generation process was designed accordingly, as explained below. First, target-LiDAR distances expressed in the LRF are generated us-ing a uniform distribution for both datasets, producing random 2values in the range of 20 to 100 meters on the boresight axis of the instrument. For temporal sequence data, however, the tar-get–chaser distance was kept constant across all frames within a sequence, considering a station-keeping phase. Instead, orien-tations were generated by independently sampling each quater-nion component from a zero-mean, unit-variance normal dis-tribution, N(0 , 1). The resulting vectors were then normalized to unit length, yielding quaternions uniformly distributed over SO(3), due to the isotropic symmetry of the multivariate Gaus-sian distribution [23]. For both CNN and RCNN training datasets, the initial space-craft orientation is generated using this same sampling proce-dure, ensuring identical viewpoint distributions. For RCNN training, temporal sequences are then obtained by propagating the initial quaternion according to kinematic evolution rules, as described below. 1. the initial quaternion of each sequence is generated as in the image case; 2. a constant angular velocity, both in magnitude and direc-tion, is assigned to simulate rotational motion; 3. the temporal evolution of the target’s orientation is then computed by propagating the quaternion over time accord-ing to the assigned angular velocity: 
+
+q(t) =
+
+"
+
+cos ∥ωt∥ t
+
+2
+
+!
+
+, ωt
+
+∥ωt∥ sin ∥ωt∥ t
+
+2
+
+!# 
+
+⊗ q0 (1) where ωt is the spinning angular velocity with a norm ranging from 0 to 20 deg /s; t denotes the time instant at which the quaternion is computed, and q0 is the initial quaternion. The angular velocity components were drawn from a uni-form distribution, providing precise control of their amplitude bounds. 
+
+Remark 1. The assumed angular velocity ωt defines a purely kinematic attitude evolution. While this motion does not comply with Euler’s rotational dynamics, it is su ffi cient for training, as the RCNN relies solely on visual information for attitude ini-tialization. A physically consistent tumbling case is considered during testing in Section 4. 
+
+This procedure for generating orientations and distances de-fines the complete relative pose between the chaser and the tar-get at each time instant, as illustrated in Fig. 1. 
+
+2.2. LiDAR simulator 
+
+In this study, the LRF is used to simulate the LiDAR mea-surements from the chaser’s perspective as shown in the sim-ulation scenario in Fig. 1. The obtained point clouds are then projected in the plane perpendicular to the boresight axis of the LiDAR (Fig. 2). The point clouds were generated using the 3D LiDAR simulator included in Matlab’s UAV Toolbox and the CAD models of the target spacecraft, while the models were selected from the resources available on NASA’s website [24]. The main parameters of the considered flash LiDAR are defined in Table 1. In particular, the sensor noise is defined based on the specifications of the GoldenEye 3D Flash LIDAR ™ Space Camera flown onboard the CST-100 Starliner [25]. The cor-responding range uncertainty is modeled as zero-mean Gaus-sian white noise, with a standard deviation ( σ in Table 1) equal to the sensor’s specified accuracy, and is added to the nominal range measurement, consistent with common practice in the lit-erature. [9, 20, 26]. The swath is assumed to be square and large enough to fully encompass the target, while the sensor’s Field of View (FOV) is derived as follows: FOV = 2 · arctan swath 2 · range 
+
+!
+
+. (2) In addition, the spacecraft CAD models were selected to ensure that Eq. (2) gives FOV values between 1° and 40° at the max-imum and minimum ranges considered, consistent with com-mercially available LiDAR sensors. 
+
+Parameter Value 
+
+AzimuthLimits [-FOV /2, FOV /2] ElevationLimits [-FOV /2, FOV /2] AzimuthResolution FOV /128, FOV /100 ElevationResolution FOV /128, FOV /100 MaxRange 500 m RangeAccuracy ( σ) 0.1 m + 0.01 · range HasNoise true Sample Time 2.7 s 
+
+> Table 1: Selected LiDAR parameters
+
+For further details on the parameters listed in Table 1, the reader can refer to the dedicated page on the Mathworks web-site [27]. 
+
+> Figure 1: Simulation scenario example. The chaser is depicted in green, while the target is shown in red and illuminated by the LiDAR beam.
+
+3Figure 2: 3D view from the LiDAR perspective 
+
+2.3. Point cloud projection and voxelization 
+
+In order to generate inputs suitable for the neural network, the LiDAR point cloud (Fig. 2) is converted into a depth image through a voxelization step followed by a normalization step. This preprocessing strategy is adopted to limit computational burden and to promote numerical stability, while improving the consistency of point cloud-derived images across varying dis-tances. Voxelization consists in partitioning the spatial domain of the point cloud into a three-dimensional grid of voxels (Fig. 3a). Each voxel is assigned a distance value, whereas cells with no available depth information are assigned a null value. The depth values are subsequently normalized with respect to the max-imum value in each image and converted to single-precision format. The generated dataset comprises depth images such as the ex-ample shown in Fig. 3b, where the color coding is used solely for visualization purpose. The image size was set to 100 ×100 pixels based on an optimization analysis conducted during the neural network design phase. As described in Section 2.1, single-image and temporal-sequence datasets are produced sep-arately, and each is divided into independent training /validation and testing sets. For network development, 90% of the samples are used for training and 10% for validation. Then, testing is performed on separate data to ensure that all test samples re-main unseen during network development. 
+
+3. Network Architecture and Training 
+
+This section presents the neural network architectures and the training strategy adopted for spacecraft attitude estimation from depth images. A CNN is initially presented for single-frame at-titude regression. The architecture is then extended to a RCNN to exploit temporal information and improve estimation accu-racy in the presence of ambiguous visual configurations due to spacecraft symmetries, degraded sensor resolution and partial occlusions. The subsequent section details the adopted training strategy and the configuration of the dataset. 
+
+> (a) Projected and voxelized point cloud
+> (b) 2D depth image
+> Figure 3: Example of transformation from projected point cloud to depth image
+
+3.1. Convolutional Neural Network architecture 
+
+The architecture of the proposed CNN is provided in Fig. 4. The network is implemented in Matlab and is designed to achieve an e ff ective trade-o ff between estimation accuracy and computational complexity. Compared to standard architectures such as ResNet-18, Shu ffl eNet, and SqueezeNet, the network proposed in this work adopts a relatively shallow structure, re-sulting in reduced inference times, as discussed in Section 4. The adoption of a compact architecture is driven by the char-acteristics of the input and the target task. As discussed in [28], depth images primarily encode geometric information at low to intermediate levels, which reduces the need for deep feature hi-erarchies typically required in RGB-based perception pipelines. Moreover, the limited spatial resolution of the input images constrains the amount of exploitable spatial detail, making a small number of convolutional layers su ffi cient for e ff ective fea-ture extraction. As shown in Fig. 4, feature extraction relies on a sequence of convolutional blocks, while spatial downsampling is explicitly 4Fig. 4. Architecture of the proposed Convolutional Neural Network 
+
+Fig. 5. Architecture of the RCNN. The CNN backbone is the same as in Fig. 4 handled through pooling operations. A global average pooling layer is adopted to obtain a compact feature representation, im-proving robustness to small spatial variations and reducing the number of trainable parameters. The extracted features are pro-cessed by fully connected layers with decreasing dimension-ality, leading to an output layer that estimates the spacecraft attitude in quaternion form. The network is trained using a loss function defined in terms of the angular error θ between the predicted quaternion qpred 
+
+and the ground-truth quaternion qtrue , computed as 
+
+θ = 2 arccos  qtrue · qpred 
+
+ · 180 
+
+π . (3) The absolute value ensures invariance to the sign ambiguity in-herent to quaternion representations, while the training loss is defined as the mean angular error over the batch. Quaternion normalization is enforced both during training and inference to guarantee physically consistent rotation estimates. 
+
+3.2. Recurrent CNN 
+
+The architecture of the proposed RCNN is provided in Fig. 5, which shows the integration of Long Short-Term Memory (LSTM) units to model the temporal evolution of the target atti-tude by exploiting the temporal correlations between successive observations. As shown in Fig. 5, the RCNN extends the CNN by processing short sequences of depth images. Each frame is encoded by the shared CNN backbone described in Section 3.1, and the resulting features are fed to a recurrent module based on LSTM units to capture temporal dependencies in the target mo-tion. The network is trained on fixed-length sequences but can be applied recursively at inference time, providing an attitude estimate at each frame while exploiting temporal information through its internal memory. The estimate associated with the current frame corresponds to the latest LiDAR acquisition. Once trained for a given target, the RCNN estimates the ori-entation of the TRF with respect to the LRF. The complete pro-cessing pipeline for relative pose estimation is schematized in Fig. 6, where the modules addressed in this paper are high-lighted in red. 
+
+3.3. Training parameters and dataset configuration tuning 
+
+The CNN and RCNN models are trained using datasets gen-erated as described in Section 2. Each neural network is trained on data generated from a single spacecraft model, and separate networks are trained for each spacecraft geometry considered in this study. Training is performed over multiple sessions in order to progressively refine the network parameters. The main training settings adopted for CNN pretraining and RCNN train-ing are summarized in Table 2. Following an approach similar to ChiNet [22], the training procedure is divided into two phases. The CNN is first pre-trained on single-frame depth images, after which its weights are transferred to the RCNN. During CNN pretraining, the mini-batch size and learning rate are progressively adjusted across successive training sessions within the ranges reported in Table 2, while remaining constant within each session. All other parameters are kept fixed. During RCNN training, the pretrained CNN layers are assigned a strongly reduced learning rate of 10 −9, e ff ectively freezing their weights, while only the newly introduced LSTM layer and the output layer are trained using a learning rate of 10 −3 as indicated in Table 2. For both networks, after each training session the epoch yielding the best 5Figure 6: End-to-end pipeline for relative pose estimation from 3D point clouds. The steps of the method under study are highlighted in red. 
+
+Parameter CNN RCNN 
+
+MiniBatchSize 64–512 32 LearnRate 10 −3–10 −5 10 −3
+
+Optimizer Adam Adam GradientThreshold 1 1ValidationFrequency 10 10 Epochs per session 200 100 Dataset size per session 10,000 images 3,000 sequences Frames per sequence – 10 Convolution kernel size 3 × 3 3 × 3
+
+> Table 2: Summary of training parameters for CNN pretraining and RCNN train-ing
+
+performance is selected, and the corresponding network learn-able parameters are used to initialize the subsequent training session. Architectural and dataset parameters were selected based on a tuning analysis conducted on the double-symmetry spacecraft shown in Fig. 7a, which represents the most challenging sce-nario in terms of attitude ambiguity. By adopting this target for parameter selection, the resulting configuration is expected to remain robust under visually ambiguous conditions. For CNN pretraining, a fixed dataset size is employed to en-sure consistent feature learning across training sessions. For RCNN training, temporal datasets composed of fixed-length image sequences are adopted to provide su ffi cient temporal context for pose estimation. The final training setup is selected as a compromise between estimation accuracy and model com-plexity, and is applied consistently across all experiments to en-able a fair performance comparison. 
+
+4. Results 
+
+The results presented in this section were obtained by simu-lating, in a Matlab environment, the pipeline highlighted in red in Fig. 6. During simulations, realistic point cloud sequences were generated and projected as described in Section 2. The objective is to assess the accuracy and sensitivity of the pro-posed navigation strategies under varying conditions. All anal-yses discussed below concern the testing phase, performed on previously trained networks to evaluate their performance on the considered scenarios. The simulations aim to examine the influence of target angular velocity, relative distance, spacecraft symmetry, and image quality degradations on the neural net-work’s ability to produce reliable outputs as described below. Angular velocity profiles were generated with random com-ponents along all three body axes, with a total angular rate mag-nitude varying from 0 ◦/s to 20 ◦/s in steps of 2.5 ◦/s. Further-more, the target distance was varied between 20 m and 100 m in increments of 10 m. Then, three spacecraft geometries were considered to span a range of symmetry properties. The mod-els, illustrated in Fig. 7, correspond to a two-axis symmet-ric body (NEAR Shoemaker, Fig. 7a), a single-axis symmet-ric probe (Magellan, Fig. 7b), and an asymmetric spacecraft with no symmetry axes (SAC-D /Aquarius, Fig. 7c). This selec-tion enabled a systematic assessment of the networks’ capabil-ity to handle orientation-induced appearance ambiguities. Fi-nally, the sensitivity to input image quality is evaluated by sub-jecting the simulated sensor images to three degradation condi-tions: (i) nominal, high-quality imagery representative of ideal sensor performance with a resolution of FOV /128 (Fig. 8a); (ii) moderate degradation, including a reduced angular resolu-tion (FOV /100) and the random removal of 10% of the input points to emulate missed LiDAR returns caused by surface ma-terial properties, low reflectivity, or unfavorable incidence an-gles (Fig. 8b); and (iii) severe degradation, where portions of the input image were intentionally obscured to simulate realis-tic visual occlusions arising from spacecraft appendages (e.g., robotic arms, antennas, or solar panels) intermittently enter-ing the LiDAR field of view during on-orbit proximity oper-ations. In this case, the resolution is considered to be equal to FOV /128. An example of the resulting occlusion e ff ect is shown in Fig. 9. All test conditions employ the same LiDAR simulation framework described in Section 2 and the same tar-get CAD models. The adopted simulator also introduces spo-radic range errors exceeding twice the nominal sensor accu-racy, thus implicitly accounting for isolated outliers. More specifically, the networks were trained under nominal resolu-tion conditions (FOV /128) and degraded conditions (FOV /100 and missed returns), whereas occlusions and tumbling motion are introduced exclusively during testing. To summarize the testing methodology, the RCNN described in Section 3.2 was evaluated through 900 Monte Carlo simu-6lations for each combination of spacecraft geometry (Fig. 7) and image-quality condition (Figs. 8 and 9). Within each set, target distance and angular velocity were randomized within the previously defined ranges to capture performance variabil-ity and failure modes. Furthermore, the RCNN was compared to the CNN described in Section 3.1 to assess the performance improvement achieved through the recurrent design. The eval-uation was conducted under the nominal high-quality condition (FOV /128). Finally, an angular error threshold of 20° was de-fined in the numerical simulations to determine convergence success for the proposed attitude initialization methods. This conservative choice was made to ensure reliable convergence of the subsequent ICP-based pose refinement, which can typically converge even from initial errors up to 30°. In the following, the final angular error achieved by the proposed methods is re-ferred to as the initialization error , as it represents the initial misalignment provided to the subsequent ICP stage.          
+
+> (a) NEAR Shoemaker (b) Magellan probe (c) SAC-D /Aquarius
+> Figure 7: Conceptual rendering of the considered spacecraft. Spacecraft (a) exhibits a double quasi-symmetry, spacecraft (b) presents a single approximate symmetry, and spacecraft (c) has no symmetries. Credit: NASA
+> (a) Resolution =FOV /128 (b) Resolution =FOV /100
+> Figure 8: Depth images showing NEAR Shoemaker, generated with two di ff er-ent angular resolutions
+> (a) With partial occlusion (b) Without occlusion
+> Figure 9: Example of an occlusion in a frame showing the Magellan space probe
+
+The attitude initialization accuracies achieved by the RCNN (Fig. 5) and CNN (Fig. 4) architectures under the nomi-nal high-quality condition (FOV /128) are reported in Table 3.                  
+
+> Spacecraft RCNN CNN
+> mean ang. err. ≤20° mean ang. err. ≤20° NEAR Shoemaker 12.69° 88% 40.94° 45% Magellan probe 3.99° 99% 6.36° 94% SAC-D /Aquarius 3.09° 100% 5.31° 95%
+> Table 3: Performance of RCNN in Fig. 5 and CNN in Fig. 4 for sensor resolu-tion of FOV /128
+
+Spacecraft mean ang. err. test with err. ≤ 20° 
+
+NEAR Shoemaker 14.09° 84% Magellan probe 4.57° 100% SAC-D /Aquarius 3.86° 100% 
+
+> Table 4: Performance of the RCNNs on test datasets with degraded resolution
+
+Both models are evaluated under identical dynamic and sens-ing conditions, including the same spacecraft geometries, dis-tance ranges, angular velocity distributions, and LiDAR simu-lation parameters. The table lists, for each spacecraft geome-try, the mean angular error, corresponding to the average ini-tialization error, and the percentage of simulations with a fi-nal angular error below the 20 ◦ convergence threshold. The results show that the RCNN achieves lower attitude errors and higher convergence rates than the CNN under the considered test conditions. For the NEAR Shoemaker spacecraft, which exhibits two symmetry axes, the percentage of successful con-vergences nearly doubles, increasing from 45% to 88%. Sig-nificant improvements are also observed for the Magellan and SAC-D /Aquarius spacecraft, where the mean angular error is almost halved. This improvement is related to the exploitation of temporal information through recurrent processing, although the di ff erent data structures used for training (single-frame im-ages for CNN and temporally correlated sequences for RCNN) may also contribute to the observed performance gap. There-fore, the results should be interpreted as the benefit of the com-plete sequence-based recurrent approach rather than as an iso-lated e ff ect of the recurrent architecture alone. Then, the influence of image quality on the RCNN perfor-mance can be assessed by comparing Tables 3–5. Results show that a moderate degradation of the input resolution (Table 4, FOV /100) does not significantly a ff ect the estimation accuracy or convergence percentage, indicating that the network main-tains stable performance even under reduced visual detail. Con-versely, the presence of occlusions leads to a noticeable per-formance drop, with a reduction of successful convergences of about 20% and an average angular error increase of approxi-mately 10 ◦ across all spacecraft geometries. This degradation can be attributed to the partial loss of key geometric features in the input projections, which limits the network’s ability to estimate the target attitude. The RCNNs, which are trained under constant angular ve-locity conditions, are subsequently evaluated on tumbling target scenarios. The evaluation is conducted on 1,000 test sequences. 7Spacecraft mean ang. err. test with err. ≤ 20° 
+
+NEAR Shoemaker 22.86° 64% Magellan probe 13.89° 83% SAC-D /Aquarius 12.82° 86% 
+
+> Table 5: Performance of the RCNNs in the presence of occlusions
+
+Spacecraft mean ang. err. test with err. ≤ 20° 
+
+NEAR Shoemaker 13.16° 85% Magellan probe 4.86° 99% SAC-D /Aquarius 3.97° 99% 
+
+> Table 6: Performance of the RCNNs in tumbling conditions with sensor reso-lution of FOV /128
+
+The inertia tensors are not available online, as a consequence they are obtained through the CAD files considering a mean density calculated from the nominal mass and volume of each spacecraft. 
+
+INEAR S hoemaker =
+
+
+
+372 .38 −2.86 −2.95 
+
+−2.86 372 .45 −4.42 
+
+−2.95 −4.42 316 .17 
+
+ kg · m2 (4) 
+
+IMagellan =
+
+
+
+3266 .61 2.62 36 .17 2.62 4772 .03 −42 .65 36 .17 −42 .65 2897 .59 
+
+ kg · m2 (5) 
+
+IAquarius =
+
+
+
+2644 .24 972 .97 −2.10 972 .97 1329 .64 11 .49 
+
+−2.10 11 .49 3086 .41 
+
+ kg · m2 (6) The results reported in Table 6 show only limited perfor-mance degradation under the considered tumbling conditions. Compared to Table 3, the mean angular error increases by less than 1 ◦ for all targets, while the success rate remains nearly unchanged. The largest reduction, approximately 3%, is ob-served for the NEAR Shoemaker, which is particularly chal-lenging because of its high degree of symmetry. To further investigate the sensitivity of the RCNN to rotational dynam-ics not represented during training, the NEAR Shoemaker in-ertia tensor was artificially modified by halving Izz . This pro-duces stronger inertia coupling e ff ects and a larger deviation from the constant-angular-velocity assumption. In this non-physical stress test, the mean angular error increases to 17 .21 ◦,while the success rate decreases to 74%. Overall, the proposed RCNN achieves satisfactory results for both spinning targets and tumbling scenarios with nominal inertia properties. How-ever, the modified-inertia test highlights that generalization to arbitrary tumbling dynamics cannot be fully guaranteed. Pro-nounced tumbling motions generate temporal patterns that devi-ate from the constant-angular-velocity sequences used for train-ing, thereby reducing the e ff ectiveness of the recurrent module. The performance of the RCNN as a function of target dis-tance and angular velocity is quantified in Figs. 10 and 11, respectively. For this analysis, the NEAR Shoemaker space-craft was selected, as it represents the most challenging case due to its two symmetry axes, and tests were performed un-der both FOV /128 and FOV /100 conditions. Fig. 10 shows that the RCNN maintains consistent performance across the con-sidered range of distances, highlighting the e ff ectiveness of the voxelization strategy and the representativeness of the training datasets. Specifically, the results were obtained from datasets generated at fixed ranges, allowing an assessment of potential correlations between target distance and performance degrada-tion.  
+
+> Figure 10: Performance variation with range for the RCNN trained on the NEAR Shoemaker space probe
+
+Then, Fig. 11 illustrates the variation of the initialization er-ror with respect to the target’s angular velocity norm, and was obtained using a training dataset in which the angular velocity vectors were generated by sampling their components from uni-form distributions. This procedure results in a non-uniform dis-tribution of angular velocity magnitudes, with a higher concen-tration of samples around intermediate speeds and fewer sam-ples at the boundaries of the considered range. 
+
+> Figure 11: Performance variation with angular speed for the RCNN trained on the NEAR Shoemaker space probe
+
+In order to better interpret the dependence of the trend re-ported in Fig. 11 on the composition of the training dataset, an additional training strategy based on a uniform distribution of angular velocity magnitudes between 0° /s and 20° /s was con-sidered. In this case, the RCNN was trained on a sequential 8dataset of the NEAR Shoemaker, selected due to its high sym-metry, generated using uniformly distributed angular velocity norms. Fig. 12 compares the estimation accuracy obtained us-ing networks trained with non-uniform (blue line) and uniform (orange line) angular velocity distributions, both evaluated un-der nominal sensor conditions. The comparison shows that, for the original non-uniform training strategy, the estimation error exhibits higher values at the boundaries of the considered an-gular velocity range, particularly for angular velocities below 5◦/s and above 15 ◦/s, which are less represented in the train-ing dataset. Conversely, intermediate angular velocities benefit from a denser representation in the training data. However, both training approaches exhibit qualitatively similar trends, charac-terized by improved accuracy at intermediate angular velocities and increased errors towards the boundaries of the considered range. These results indicate that the sampling strategy a ff ects the performance, particularly in regimes that are less repre-sented in the training dataset, while the persistence of similar trends across the two strategies suggests that the estimation ac-curacy is also influenced by the characteristics of the attitude estimation problem at di ff erent angular velocities. 
+
+> Figure 12: Performance vs. angular speed for RCNNs trained on uniform /non-uniform angular speed distributions
+
+4.1. Comparison with State-of-the-Art Approaches 
+
+This subsection compares the proposed RCNN with exist-ing LiDAR-based deep learning approaches for spacecraft pose initialization. The proposed comparison is based on key cri-teria that characterize the problem, such as operational range, target symmetries, presence of occlusions, and management of temporal information. 
+
+4.1.1. Operational Range 
+
+Most existing deep learning-based LiDAR pose estimation approaches, such as [20, 16, 18, 17], report evaluation ranges below 20 m, with most experiments conducted at distances smaller than 5 m. In contrast, [19] evaluates attitude initializa-tion at a fixed relative distance of 100 m. The proposed RCNN is evaluated over a wide range of rela-tive chaser–target distances, from 20 m to 100 m, independently of target shape or rotational motion. The results show that atti-tude estimation accuracy remains nearly constant across the en-tire range, showing limited sensitivity to distance-related point cloud degradation and extending the applicability domain of the proposed approach. 
+
+4.1.2. Target Symmetries 
+
+Several existing works, including [16, 19], consider only asymmetric target geometries. When evaluated on the asym-metric SAC-D /Aquarius satellite, the proposed RCNN achieves an improvement of approximately 28% in attitude estimation accuracy compared to the best results reported in these works. Targets exhibiting multiple symmetries are instead addressed in [18, 20]. In these scenarios, the proposed method shows a higher mean attitude estimation error (approximately 10 ◦), while maintaining a high convergence rate exceeding 88%. This degradation is primarily attributable to the 20 times larger operational range of the proposed approach, which results in noisier and more ambiguous point cloud data. Unlike [20], the proposed method does not rely on satellite-specific geometric assumptions, enabling applicability to arbitrary target geome-tries. 
+
+4.1.3. Occlusions 
+
+The impact of partial occlusions within the LiDAR field of view has received limited attention in the existing literature, which typically evaluates pose estimation performance under ideal visibility conditions. In this work, the proposed RCNN is evaluated under partial occlusion scenarios, showing limited degradation in attitude estimation accuracy and a consistently high convergence rate. 
+
+4.1.4. Temporal Information 
+
+Unlike prior works, the proposed RCNN explicitly accounts for the temporal evolution of the target’s attitude through the in-tegration of LSTM units, enabling the exploitation of temporal correlations across consecutive LiDAR frames and improving estimation consistency in dynamic scenarios. While recurrent architectures have been widely adopted in RGB-based pose es-timation approaches [22, 14, 15], their extension to LiDAR-based spacecraft pose estimation remains largely unexplored. This work extends the RCNN paradigm to LiDAR data, lever-aging its inherent advantages in terms of operational range, re-duced sensitivity to lighting conditions, and direct depth infor-mation. 
+
+4.2. Limitations and Practical Considerations 
+
+Although the proposed framework achieves strong perfor-mance under the considered simulation conditions, some fac-tors should be taken into account when assessing its applicabil-ity to real-world scenarios. First, real-world datasets may introduce additional chal-lenges due to the so-called domain gap , as discussed in [20]. Furthermore, another important practical consideration is the inference runtime of the proposed networks. Since no flight-qualified onboard computer was available, all runtime mea-surements were performed on an 11th Gen Intel ® Core ™ i5-1135G7 CPU operating at 2.40 GHz. Under these conditions, the RCNN required approximately 24 ms per frame, while the CNN processed a single depth image in about 4.8 ms. These measurements should not be interpreted as evidence of real-time capability on space-grade hardware. Rather, they provide 9an indication of the computational cost of the proposed ap-proach and allow a qualitative comparison with previous stud-ies. For example, [20] reported an inference time of approxi-mately 33 ms for a CNN executed on an Intel ® Xeon W-2135 CPU. Direct comparisons, however, remain approximate be-cause of di ff erences in hardware platforms, software implemen-tations, network architectures, and input representations. From the perspective of the simulated sensing pipeline, the measured inference times are substantially shorter than the LiDAR sam-pling period of 2.7 s. Nevertheless, establishing the suitabil-ity of the proposed framework for onboard real-time operation would require dedicated benchmarking on representative flight processors or other space-qualified embedded computing plat-forms. 
+
+5. Conclusion 
+
+This work presented an RCNN-based method for coarse atti-tude estimation of known spacecraft from LiDAR data. By ex-ploiting temporal information from consecutive observations, the proposed approach achieved lower estimation errors than the considered CNN baseline across the tested scenarios. Since the CNN and RCNN were trained using datasets with di ff er-ent temporal structures, the observed performance improve-ments should be interpreted as the e ff ectiveness of the complete sequence-based approach. The proposed framework main-tained consistent performance under variations in spacecraft geometry, relative distance, and image quality, while showing accuracy reduction for low and high angular velocities values. Furthermore, the generalization to arbitrary tumbling motions may be limited by the adopted training conditions, as high-lighted by the tumbling stress-test analysis. From a compu-tational perspective, the measured inference times are lower than the LiDAR acquisition period considered in this study on the tested commercial platform. However, this result does not imply real-time suitability for flight implementation, which requires dedicated evaluation on representative onboard hard-ware. Future work will focus on validating the approach on real datasets, investigating robustness to larger disturbances and outliers, and extending the framework to additional relative navigation scenarios, including asteroid-relative operations. 
+
+6. Acknowledgments 
+
+This publication is part of the project PNRR-NGEU which has received funding from the MUR – DM 117 /2023 and DM 630 /2024. 
+
+References 
+
+[1] R. Opromolla, D. Grishko, J. Auburn, R. Bevilacqua, L. Buinhas, J. Cassady, M. Jäger, M. Jankovic, J. Ro-driguez, M. A. Perino, B. Bastida-Virgili, Future in-orbit servicing operations in the space tra ffi c manage-ment context, Acta Astronautica 220 (2024) 469–477. doi:https: // doi.org /10.1016 /j.actaastro.2024.05.007. [2] B. M. Moghaddam, R. Chhabra, On the guid-ance, navigation and control of in-orbit space robotic missions: A survey and prospective vi-sion, Acta Astronautica 184 (2021) 70–100. doi:https: // doi.org /10.1016 /j.actaastro.2021.03.029. [3] A. Flores-Abad, O. Ma, K. Pham, S. Ulrich, A re-view of space robotics technologies for on-orbit servic-ing, Progress in Aerospace Sciences 68 (2014) 1–26. doi:https: // doi.org /10.1016 /j.paerosci.2014.03.002. [4] W. Fehse, Automated Rendezvous and Docking of Space-craft, Cambridge Aerospace Series, Cambridge Univer-sity Press, 2003. [5] R. Opromolla, G. Fasano, G. Rufino, M. Grassi, A review of cooperative and uncooperative spacecraft pose determination techniques for close-proximity oper-ations, Progress in Aerospace Sciences 93 (2017) 53–72. doi:https: // doi.org /10.1016 /j.paerosci.2017.07.001. [6] P. J. Besl, N. D. McKay, A method of registration for 3-d shapes, IEEE Transactions On Pattern Analysis And Ma-chine Intelligence (1992). [7] J. Yang, H. Li, D. Campbell, Y. Jia, Go-icp: A globally optimal solution to 3d icp point-set registration, IEEE Transactions on Pattern Analysis and Machine Intelligence 38 (11) (2016) 2241–2254. doi:10.1109 /TPAMI.2015.2513405. [8] R. Opromolla, G. Fasano, G. Rufino, M. Grassi, Space-borne lidar-based system for pose determination of unco-operative targets, IEEE Xplore (2014). [9] R. Opromolla, G. Fasano, G. Rufino, M. Grassi, Pose estimation for spacecraft relative navigation us-ing model-based algorithms, IEEE Transactions on Aerospace and Electronic Systems 53 (1) (2017) 431–447. doi:10.1109 /TAES.2017.2650785. [10] F. Yin, W. Chou, Y. Wu, G. Yang, S. Xu, Sparse unorganized point cloud based relative pose estimation for uncooperative space target, Sensors 18 (4) (2018). doi:10.3390 /s18041009. URL https://www.mdpi.com/1424-8220/18/4/10 09 
+
+[11] B.Drost, M. Ulrich, N. Navab, S. Ilic, Model glob-ally, match locally: Effi cient and robust 3d object recognition, in: IEEE Computer Society Conference on Computer Vision and Pattern Recognition, 2010. doi:10.1109 /CVPR.2010.5540108. 10 [12] J. L. Sell, A. Rhodes, J. O. Woods, J. A. Chris-tian, T. Evans, Pose performance of lidar-based nav-igation for satellite servicing, IEEE Explore (2014). doi:10.2514 /6.2014-4360. [13] J. O. Woods, J. A. Christian, Lidar-based relative nav-igation with respect to non-cooperative objects, Acta Astronautica 126 (2016) 298–311, space Flight Safety. doi:https: // doi.org /10.1016 /j.actaastro.2016.05.007. [14] S. Sharma, C. Beierle, S. D’Amico, Pose estimation for non-cooperative spacecraft rendezvous using convolu-tional neural networks, in: 2018 IEEE Aerospace Confer-ence, 2018, pp. 1–12. doi:10.1109 /AERO.2018.8396425. [15] S. Sharma, S. D’Amico, Neural network-based pose es-timation for noncooperative spacecraft rendezvous, IEEE Transactions on Aerospace and Electronic Systems 56 (6) (2020) 4638–4658. doi:10.1109 /TAES.2020.2999148. [16] S. Zhang, W. Hu, W. Guo, 6-dof pose estimation of un-cooperative space object using deep learning with point cloud, in: 2022 IEEE Aerospace Conference (AERO), 2022, pp. 1–7. doi:10.1109 /AERO53065.2022.9843444. [17] S. Hashimoto, Y. Nakajima, N. Ishihama, 6-dof pose es-timation from stereo lidar of actual machine using deep learning, in: 2023 IEEE Aerospace Conference, 2023, pp. 1–11. doi:10.1109 /AERO55745.2023.10115618. [18] M. Piccinin, U. Hillenbrand, Deep learning-based pose re-gression for satellites: Handling orientation ambiguities in lidar data, Journal of Image and Graphics 13 (2) (2025). [19] E. A. Pensado, L. M. G. de Santos, H. G. Jorge, M. Sanjurjo-Rivo, Deep learning-based target pose es-timation using lidar measurements in active debris re-moval operations, IEEE Transactions on Aerospace and Electronic Systems 59 (5) (2023) 5658–5670. doi:10.1109 /TAES.2023.3262505. [20] L. Renaut, H. Frei, A. Nüchter, Cnn-based pose es-timation of a noncooperative spacecraft with symme-tries from lidar point clouds, IEEE Transactions on Aerospace and Electronic Systems 61 (2) (2025) 5002– 5016. doi:10.1109 /TAES.2024.3517574. [21] L. Renaut, H. Frei, A. Nüchter, Deep learning on 3d point clouds for fast pose estimation during satel-lite rendezvous, Acta Astronautica 232 (2025) 231–243. doi:https: // doi.org /10.1016 /j.actaastro.2025.03.009. [22] D. Rondao, N. Aouf, M. A. Richardson, Chinet: Deep recurrent convolutional learning for multimodal spacecraft pose estimation, IEEE Transactions on Aerospace and Electronic Systems 59 (2) (2023) 937–949. doi:10.1109 /TAES.2022.3193085. [23] K. Shoemake, Iii.6 - uniform random rotations, in: D. KIRK (Ed.), Graphics Gems III (IBM Version), Morgan Kaufmann, San Francisco, 1992, pp. 124– 132. doi:https: // doi.org /10.1016 /B978-0-08-050755-2.50036-1. [24] NASA, NASA 3D Resources, https://science.nasa .gov/3d-resources/ , accessed: 10 September 2025 (2025). [25] B. A. Sornsin, B. W. Short, T. N. Bourbeau, M. J. Dahlin, Global shutter solid state flash lidar for space-craft navigation and docking applications, in: M. D. Turner, G. W. Kamerman (Eds.), Laser Radar Technology and Applications XXIV, Vol. 11005, International Soci-ety for Optics and Photonics, SPIE, 2019, p. 110050W. doi:10.1117 /12.2519178. URL https://doi.org/10.1117/12.2519178 
+
+[26] L. M. González-deSantos, H. González-Jorge, M. Sanjurjo-Rivo, H. Michinel, Point cloud simulator for space in-orbit close range autonomous operations, The International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences XLIII-B1-2022 (2022) 23–29. doi:10.5194 /isprs-archives-XLIII-B1-2022-23-2022. URL https://isprs-archives.copernicus.org/ articles/XLIII-B1-2022/23/2022/ 
+
+[27] MathWorks, uavlidarpointcloudgenerator system object, 
+
+https://www.mathworks.com/help/releases/R2 024b/uav/ref/uavlidarpointcloudgenerator-sy stem-object.html , uAV Toolbox, MATLAB R2024b documentation (2024). [28] O. Kechagias-Stamatis, N. Aouf, V. Dubanchet, M. Richardson, Deeplo: Multi-projection deep lidar odometry for space orbital robotics rendezvous relative navigation, Acta Astronautica 177 (2020) 270–285. doi:https: // doi.org /10.1016 /j.actaastro.2020.07.034. URL https://www.sciencedirect.com/science/ article/pii/S0094576520304616 
+
+11

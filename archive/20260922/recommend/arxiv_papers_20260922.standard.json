@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-22T22:01:00.224012+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2609.24685v1",
+      "source": "arxiv",
+      "title": "Recurrent Convolutional Neural Networks for LiDAR-Based Attitude Initialization of Rotating Spacecraft",
+      "abstract": "Accurate attitude estimation is essential for autonomous in-orbit servicing and proximity operations. This work proposes a Recurrent Convolutional Neural Network (RCNN) used in coarse attitude initialization of known, possibly tumbling spacecraft using LiDAR-derived depth images. By processing temporal sequences of 2D point-cloud projections, the RCNN effectively handles symmetries, occlusions, and degraded sensing. Simulations across various spacecraft geometries, angular velocities, and ranges show that the RCNN yields lower initialization errors and higher convergence rates than conventional CNN baseline within the adopted experimental framework, with performance varying across angular velocity conditions.",
+      "authors": [
+        "Luca Bechis",
+        "Jean-Luc Sarvadon",
+        "Petre Ricioppo",
+        "Mauro Mancini"
+      ],
+      "primary_category": "eess.IV",
+      "categories": [
+        "eess.IV"
+      ],
+      "published": "2026-09-21T14:42:00+00:00",
+      "link": "https://arxiv.org/pdf/2609.24685v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "LiDAR-based spacecraft attitude estimation via RCNN",
+      "llm_evidence_cn": "基于LiDAR与循环卷积网络的航天器姿态估计",
+      "llm_evidence": "基于LiDAR与循环卷积网络的航天器姿态估计",
+      "canonical_evidence": "基于LiDAR与循环卷积网络的航天器姿态估计",
+      "llm_tldr_en": "Proposes a recurrent CNN that processes temporal sequences of LiDAR-derived depth images for coarse attitude initialization of known tumbling spacecraft, handling symmetries, occlusions and degraded sensing, outperforming a CNN baseline.",
+      "llm_tldr_cn": "针对自主在轨服务与接近操作中翻滚航天器姿态初始化困难、易受对称性、遮挡与传感退化影响的问题，本文提出循环卷积神经网络RCNN。方法处理LiDAR深度图投影的二维点云时序序列，进行已知航天器的粗姿态初始化。在多种几何、角速度与距离的仿真中，RCNN较传统CNN基线获得更低初始化误差和更高收敛率。该工作直接服务于航天器姿态与位姿估计任务，具有明确的应用价值。",
+      "llm_tldr": "针对自主在轨服务与接近操作中翻滚航天器姿态初始化困难、易受对称性、遮挡与传感退化影响的问题，本文提出循环卷积神经网络RCNN。方法处理LiDAR深度图投影的二维点云时序序列，进行已知航天器的粗姿态初始化。在多种几何、角速度与距离的仿真中，RCNN较传统CNN基线获得更低初始化误差和更高收敛率。该工作直接服务于航天器姿态与位姿估计任务，具有明确的应用价值。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "estimation of spacecraft orientation from sensor measurements",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

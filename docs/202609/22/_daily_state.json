@@ -1,0 +1,25 @@
+{
+  "date": "20260922",
+  "date_label": "",
+  "generated_at": "2026-09-22 22:03:14 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.24685v1",
+      "route": "202609/22/2609.24685v1-recurrent-convolutional-neural-networks-for-lidar-based-attitude-initialization-of-rotating-spacecraft",
+      "title": "Recurrent Convolutional Neural Networks for LiDAR-Based Attitude Initialization of Rotating Spacecraft",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于LiDAR与循环卷积网络的航天器姿态估计",
+      "first_seen_at": "2026-09-22 22:03:14 UTC",
+      "updated_at": "2026-09-22 22:03:14 UTC"
+    }
+  ]
+}
