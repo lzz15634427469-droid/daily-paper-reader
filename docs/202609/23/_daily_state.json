@@ -1,0 +1,41 @@
+{
+  "date": "20260923",
+  "date_label": "",
+  "generated_at": "2026-09-23 22:01:33 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.26561v1",
+      "route": "202609/23/2609.26561v1-vision-foundation-models-with-synthetic-only-training-for-monocular-spacecraft-pose-estimation",
+      "title": "Vision Foundation Models with Synthetic-Only Training for Monocular Spacecraft Pose Estimation",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 9.0,
+      "evidence": "基于视觉基础模型的单目航天器位姿估计",
+      "first_seen_at": "2026-09-23 22:01:33 UTC",
+      "updated_at": "2026-09-23 22:01:33 UTC"
+    },
+    {
+      "paper_id": "2609.26593v1",
+      "route": "202609/23/2609.26593v1-decentralized-guidance-and-control-for-rendezvous-and-docking-with-a-tumbling-target-using-multiple-servicers",
+      "title": "Decentralized Guidance and Control for Rendezvous and Docking with a Tumbling Target using Multiple Servicers",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向翻滚目标交会对接的分散式六自由度控制",
+      "first_seen_at": "2026-09-23 22:01:33 UTC",
+      "updated_at": "2026-09-23 22:01:33 UTC"
+    }
+  ]
+}

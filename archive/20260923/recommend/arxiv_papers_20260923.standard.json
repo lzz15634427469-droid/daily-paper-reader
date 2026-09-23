@@ -1,0 +1,92 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-23T21:58:35.329636+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2609.26561v1",
+      "source": "arxiv",
+      "title": "Vision Foundation Models with Synthetic-Only Training for Monocular Spacecraft Pose Estimation",
+      "abstract": "We present an improvement on previous spacecraft pose estimation architectures that results in the lowest published mean rotation errors we know of on the SPEED+ lightbox and sunlamp test sets for a known, non-cooperative spacecraft. By using a previously established heatmap-based pose estimation architecture and adapting a large self-supervised ViT foundation model (DINOv3) in place of the smaller convolutional and ViT encoders of previous work, we show that pose estimation accuracy improves from 300M to 840M parameters with no saturation yet observed. We also evaluate our 840M model on a Jetson Orin NX 16GB, measuring single-pass network inference at 133.8 ms per crop with a board draw of 32.0 W. These measurements demonstrate embedded inference feasibility on a processor family with orbital flight heritage. Our resulting model outperforms previous models across lightbox and sunlamp domains while training only on synthetic data. Our best model, using DINOv3 840M adapted with LoRA as the encoder (rank 64, three-seed ensemble with four-rotation test-time augmentation), results in $1.56^\\circ$ mean rotation error on sunlamp and $1.17^\\circ$ on lightbox, compared to the previous best mean rotation errors we know of on these test sets, $2.66^\\circ$ and $1.75^\\circ$ by EagerNet.",
+      "authors": [
+        "John Church",
+        "Vazghen Nikolian"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO"
+      ],
+      "published": "2026-09-22T15:13:44+00:00",
+      "link": "https://arxiv.org/pdf/2609.26561v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "monocular spacecraft pose estimation using ViT foundation model",
+      "llm_evidence_cn": "基于视觉基础模型的单目航天器位姿估计",
+      "llm_evidence": "基于视觉基础模型的单目航天器位姿估计",
+      "canonical_evidence": "基于视觉基础模型的单目航天器位姿估计",
+      "llm_tldr_en": "Adapting a large self-supervised DINOv3 ViT foundation model into a heatmap-based spacecraft pose estimator trained on synthetic data achieves the lowest mean rotation errors on SPEED+ and runs on Jetson Orin NX.",
+      "llm_tldr_cn": "针对非合作航天器单目位姿估计在真实标注数据稀缺下精度受限的问题，本文在热力图位姿估计框架中以DINOv3自监督视觉基础模型替代原有小型卷积与ViT编码器，并仅用合成数据训练。在SPEED+的lightbox与sunlamp测试集上取得已知最低的平均旋转误差，模型参数由3亿增至8.4亿仍未见饱和，在Jetson Orin NX上单次推理约133.8毫秒。该结果说明大规模视觉基础模型能显著提升航天器位姿估计精度并具备星载部署可行性。",
+      "llm_tldr": "针对非合作航天器单目位姿估计在真实标注数据稀缺下精度受限的问题，本文在热力图位姿估计框架中以DINOv3自监督视觉基础模型替代原有小型卷积与ViT编码器，并仅用合成数据训练。在SPEED+的lightbox与sunlamp测试集上取得已知最低的平均旋转误差，模型参数由3亿增至8.4亿仍未见饱和，在Jetson Orin NX上单次推理约133.8毫秒。该结果说明大规模视觉基础模型能显著提升航天器位姿估计精度并具备星载部署可行性。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.26593v1",
+      "source": "arxiv",
+      "title": "Decentralized Guidance and Control for Rendezvous and Docking with a Tumbling Target using Multiple Servicers",
+      "abstract": "The growing trend of miniaturization in space, combined with an exponential increase in orbital debris, motivates a new operational paradigm, that is the deployment of multiple small servicers to collectively rendezvous, dock and service large tumbling targets. A single small spacecraft is often limited in thrust or reach for such targets, yet coordinating multiple autonomous spacecraft safely in close proximity remains an open challenge. This paper presents a proof-of-concept decentralized 6-DOF model predictive control (MPC) framework for multiple servicers to safely rendezvous and dock (RVD) to a tumbling target with no knowledge about each others predicted input over the prediction horizon. The proposed framework enforces soft docking conditions, inter-servicer collision avoidance, and obstacle avoidance through embedded constraints, while remaining computationally tractable via a linear time-invariant (LTI) formulation. Validation in MATLAB with three servicers and fixed obstacle arrangements confirms that all constraints are satisfied and successful docking is achieved.",
+      "authors": [
+        "Jonathan Taylor Jönsson",
+        "Sathyanarayanan Seshasayanan",
+        "Sumeet Gajanan Satpute",
+        "George Nikolakopoulos"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-09-22T15:35:08+00:00",
+      "link": "https://arxiv.org/pdf/2609.26593v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decentralized 6-DOF control for rendezvous and docking to a tumbling target",
+      "llm_evidence_cn": "面向翻滚目标交会对接的分散式六自由度控制",
+      "llm_evidence": "面向翻滚目标交会对接的分散式六自由度控制",
+      "canonical_evidence": "面向翻滚目标交会对接的分散式六自由度控制",
+      "llm_tldr_en": "For multiple small servicers rendezvousing and docking a large tumbling target, this paper proposes a decentralized 6-DOF MPC framework without sharing predicted inputs, validated in proof-of-concept simulation.",
+      "llm_tldr_cn": "针对轨道碎片增多与航天器小型化背景下多颗小型服务航天器协同交会对接大型翻滚目标的难题，本文提出一种分散式六自由度模型预测控制框架，使各服务航天器在互不知晓对方预测输入的条件下协同完成交会与对接。概念验证仿真表明该方法能够安全地实现多航天器对翻滚目标的接近与对接，为在轨服务任务提供了可行的自主控制方案。",
+      "llm_tldr": "针对轨道碎片增多与航天器小型化背景下多颗小型服务航天器协同交会对接大型翻滚目标的难题，本文提出一种分散式六自由度模型预测控制框架，使各服务航天器在互不知晓对方预测输入的条件下协同完成交会与对接。概念验证仿真表明该方法能够安全地实现多航天器对翻滚目标的接近与对接，为在轨服务任务提供了可行的自主控制方案。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

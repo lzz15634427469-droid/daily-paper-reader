@@ -1,0 +1,411 @@
+Title: Decentralized Guidance and Control for Rendezvous and Docking with a Tumbling Target using Multiple Servicers
+
+URL Source: https://arxiv.org/pdf/2609.26593v1
+
+Published Time: Wed, 23 Sep 2026 01:47:56 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# Decentralized Guidance and Control for Rendezvous and Docking with a Tumbling Target using Multiple Servicers 
+
+Jonathan Taylor J¨ onsson 1, Sathyanarayanan Seshasayanan 1,Sumeet Gajanan Satpute 1, George Nikolakopoulos 1
+
+Abstract 
+
+The growing trend of miniaturization in space, combined with an exponential increase in orbital debris, motivates a new operational paradigm, that is the deployment of multiple small servicers to collectively rendezvous, dock and service large tumbling targets. A single small spacecraft is often limited in thrust or reach for such targets, yet coordinating multiple au-tonomous spacecraft safely in close proximity remains an open challenge. This paper presents a proof-of-concept decentralized 6-DOF model predictive control (MPC) framework for multiple servicers to safely rendezvous and dock (RVD) to a tumbling target with no knowledge about each others predicted input over the prediction horizon. The proposed framework enforces soft docking conditions, inter-servicer collision avoidance, and obstacle avoidance through embedded constraints, while remaining computationally tractable via a linear time-invariant (LTI) formu-lation. Validation in MATLAB with three servicers and fixed obstacle arrangements confirms that all constraints are satisfied and successful docking is achieved. 
+
+# 1 Introduction 
+
+The trend of miniaturization in space has led to an unprecedented surge in satellite deployments, with both governments and private companies launching increasingly capable small spacecraft at lower cost. At the same time, orbital debris has grown exponentially since the early days of spaceflight, with large defunct satellites and rocket bodies posing a particular problem, especially in Low Earth Orbits (LEO) [1]. Operations such as active debris removal, on-orbit servicing, and satellite recovery all share a common prerequisite, i.e., the ability to safely rendezvous and dock (RVD) with a tumbling uncooperative target. Combined with the growing availability of the small spacecraft further motivates the question of whether multiple such vehicles could be coordinated to collectively perform this task, distributing the efforts across a formation rather than relying on a single large spacecraft. Thus, the fundamental RVD capability forms one of the most important aspects to address. This paper addresses precisely that, the development and validation of the guidance and control framework needed to enable multiple small spacecraft to safely RVD with a tumbling target. The applications for un-manned servicers are not restricted to the issue of space debris. Servicers could also be used to refuel, upgrade, or repair current satellites in orbit [2]. The RemoveDEBRIS mission was the first of its kind to demonstrate Active Debris Removal (ADR) capabilities in-orbit when it comes to rendezvous and capture by using nets, harpoons and  
+
+> 1Robotics and AI Team, Department of Computer Science, Electrical and Space Engineering, Lule˚ a University of Technology, Sweden.
+
+Corresponding author’s email: jonathanjonsson96@hotmail.se 
+
+1arXiv:2609.26593v1 [eess.SY] 22 Sep 2026 drag sails in order to de-orbit debris [3]. Demonstrations of rendezvous and docking with a single spacecraft with cooperative targets include JAXA’s satellite ETS-VII [4], and DARPA’ s Orbital Express [5]. There has not yet been a flight demonstration in-orbit which can achieve rendezvous and docking using a single spacecraft with an uncooperative target due to the complexities of a time-varying docking surface in a tumbling state. Previous theoretical work that has been done involving multiple servicers is limited and tackles the problem using different control architectures and mostly nonlinear control methods. Zhang et al. [6] describes the relative motion and a decentralized control pose strategy in the Lie group SE(3) framework, which allows for a global and coordinate-free approach as well as a practical approach to coupling the translational and rotational dynamics. Fourlas et al. [7] proposes a centralized control scheme using non-linear MPC (NMPC) in conjunction with a vision-based pose estimation framework. The same control architecture is adapted by Wang et al. [8], where they propose a manifold-based trajectory planning method that solves an optimal control problem under boundary values and uses rotated 3D-Dubins curves in order to satisfy convergence of the manifold-based method. In McCamish et al. [9], a distributed control architecture is used with an LQR controller in conjunction with a artificial potential function (APF) for the robust collision avoidance capabilities for both fixed and moving obstacles. An attitude synchronization MPC framework is proposed by Stadler et al. [10] which embeds a stabilizing feedback controller into the system dynamics that results in a linearly time-invariant (LTI) prediction model. Previous work surrounding RVD to a tumbling target using multiple servicers consists in large of nonlinear control approaches, leading to more computationally demanding methods. In order to reduce this demand, an LTI approach is investigated. This paper proposes a framework that is an extension of the dual-loop MPC work in [10]. The main contributions are as follows: 
+
+• A parameter-invariant and LTI 6-DOF MPC framework is proposed for the decentralized rendezvous and docking of multiple servicer spacecraft with a tumbling target without inter-servicer sharing of predicted inputs over the prediction horizon. 
+
+• A stabilizing control force variable for the translational part of the framework that consists of feed-forward and linear feedback terms. 
+
+• Finally, the framework is validated in a MATLAB simulation environment with three servicers and multiple fixed obstacle arrangements, demonstrating successful RVD while satisfying all imposed constraints. 
+
+# 2 Problem formulation and spacecraft dynamics 
+
+This paper addresses the problem of autonomous RVD of multiple servicer spacecraft with a tum-bling target spacecraft. The target is assumed to exhibit uncontrolled rotational motion, while a team of servicer spacecraft simultaneously approaches and docks at separate target docking points under a decentralized control architecture. Let the set of servicer spacecraft be defined as S = {1, ...N s}, where Ns denotes the total number of servicers participating in the mission. The following assumptions are made throughout the formulation of the servicer spacecraft dynamics and the design of the control strategy: 
+
+Assumptions 1. Relative position and velocity information between servicers and the target are available through onboard navigation and estimation algorithms as presented in [11, 12]. 
+
+Assumptions 2. The center of mass of the target spacecraft is assumed to follow a near-circular orbit. 
+
+2Assumptions 3. The relative distance between the servicer and the target is assumed to be much smaller than the distance from the Earth’s center to the target. 
+
+The reference frames used throughout this work are illustrated in Figure 1 and defined as follows: 
+
+• FI = {OI ,ˆiI , ˆjI , ˆkI }: Earth-Centered Inertial (ECI) frame. 
+
+• FO = {OO,ˆiO, ˆjO, ˆkO}: Local-Vertical Local-Horizontal (LVLH) frame attached to the target spacecraft. 
+
+• FBT = {OBT ,ˆiBT , ˆjBT , ˆkBT }: Body-fixed frame of the target spacecraft. 
+
+• FiBC = {OiBC ,ˆiiBC , ˆjiBC , ˆkiBC }, i ∈ S: Body-fixed frame of the ith servicer spacecraft. 
+
+Figure 1: Illustration of the models reference frames 
+
+2.1 Relative motion dynamics 
+
+The dynamics are derived under Assumptions 2–3. The relative translational motion of the ith 
+
+servicer is governed by the Clohessy-Wiltshire (CW) equations [13]: ¨ri = Av ˙ri + Arri + RiOC f i
+
+m , (1) where 
+
+Av =
+
+
+
+0 2n 0
+
+−2n 0 00 0 0
+
+ , Ar =
+
+
+
+3n2 0 00 0 00 0 −n2
+
+ . (2) Here, ri denotes the relative position of the ith servicer in FO, f i = f ix, f iy, f iz
+
+T is the control force vector expressed in FiBC , RiOC denotes the rotation matrix from FiBC → F O, m is the servicer’s mass, and n = pμ/R 3 
+
+> t
+
+is the target orbital rate, where μ is the Earth’s gravitational parameter. 32.2 Attitude dynamics 
+
+The rotational dynamics of the ith servicer spacecraft are described by Euler’s rigid-body equation ˙ωi = J−1  τ i − ωi × L , (3) where ωi ∈ R3 is the angular velocity vector expressed in FiBC , τ i = [ τ ix, τ iy, τ iz ]T is the control torque vector, J is the inertia matrix of the servicer spacecraft, and L is its angular momentum. It is assumed that reaction wheels or other momentum-exchanging devices keep the total angular momentum constant through the law of conservation. The translational and attitude dynamics presented above form the basis for the development of the distributed control strategy described in the following section. The attitude of the ith servicer evolves according to ˙Ri = Ri(wi)× (4) where Ri denotes the attitude of the ith servicer, and ( ·)× denotes the skew-symmetric operator. 
+
+2.3 Control objective 
+
+The objective is to design a control law that enables each servicer spacecraft to rendezvous and dock to its assigned docking port on the tumbling target while avoiding collisions with the target and other servicers. Furthermore, the position, velocity, attitude, and angular velocity errors between each servicer and its assigned docking port are required to asymptotically converge to zero. For the ith servicer, the relative position and velocity errors are defined as ∆ri = ri − rid, (5) ∆ ˙ ri = ˙ ri − ˙rid, (6) where rid = ROT ri 
+
+> dock
+
+denotes the desired docking location in the LVLH frame and ROT denotes the rotation matrix from FBT → F O.The attitude and angular velocity errors are defined as ∆Ri = RiRTd , (7) ∆ωi = Rd(ωi − ωd), (8) where Rd and ωd denote the attitude and angular velocity of the target. Figures 2a-2b illustrates the RVD objective of multiple servicers to the tumbling target in a simplified 2D configuration for visualization purposes. 
+
+2.4 Constraint definition 
+
+Constraints are implemented with the purpose of ensuring soft-docking, collision avoidance, and limiting the control inputs. 4(a) (b) 
+
+Figure 2: (a) illustrates the rendezvous approach of the servicers denoted as S1, S2, and S3 towards the target spacecraft denoted as T with multiple obstacles in between, (b) illustrates the final docking phase in which each servicer’s center of mass matches the position and velocity of its assigned target docking port, while also synchronizing its attitude and angular velocity with the target. 
+
+2.4.1 Control input constraints 
+
+The force and torque acting on the servicer is limited in order to constrain the amount of energy needed for the operation. f max and τ max denote the maximum force and torque respectively that the actuators are constrained to. 
+
+|f in| ≤ f max , n = x, y, z (9) 
+
+|τ in| ≤ τ max , n = x, y, z (10) 
+
+2.4.2 Target collision avoidance constraint 
+
+The dynamic target collision avoidance constraint from [14] uses a dynamic holding radius rihold k
+
+at timestep k which reduces once certain conditions are met. 
+
+ditk = ( rihold k )2 − (rik − rtarget k )T (rik − rtarget k ) ≤ 0 (11) In order to linearize (11), an operating point is chosen on the boundary of the spherical ”keep-out” zone that lies between the target’s center and the position of the ith servicer. The operating point is calculated by using the ith servicers trajectory rik−1 from the previous iteration. Since the targets position lies in the origin of frame FO, rtarget k can be excluded from the final expression. Linearizing (11) around the boundary point results in the following linearized expression. ˜ditk = rihold k − (rik−1)T
+
+|| rik−1|| rik ≤ 0 (12) An initial holding radius rhold, 0 is defined for the start of the rendezvous and decreases based on if the servicers position is within a distance η of the holding radius. If this condition is met, the holding radius at the next sampling instant is reduced by a factor of γ. The holding radius is reduced in this manner until the lower limit is met, i.e. docking distance to the target rhold,min .
+
+2.4.3 Servicer collision avoidance constraint 
+
+In order to avoid collision between the servicers a similar approach as [15] did for the target is defined. A servicer centered sphere with radius rCAS is used to define the ”keep-out” zones of each 5servicer where ri,j sk = rik − rjk = ( xi,j sk , y i,j sk , z i,j sk ) denotes the relative distance between the ith servicer and a neighbouring jth servicer in frame FO at timestep k. 
+
+di,j sk = −(( xi,j sk )2 + ( yi,j sk )2 + ( zi,j sk )2) + r2 
+
+> CAS
+
+≤ 0 (13) Since (13) is quadratic, it is linearized around the relative position between two servicers from the previous iteration which results in the following linearized equation. ˜di,j sk = r2 
+
+> CAS
+
++ ( ri,j sk|k−1 )T (ri,j sk|k−1 ) − 2( ri,j sk|k−1 )T ri,j sk|k ≤ 0 (14) Equation (14) is imposed on the ith servicer for every jth servicer participating in the RVD. 
+
+2.4.4 Angular velocity constraint 
+
+The angular velocity of the chaser is constrained with respect to the maximum accepted angular velocity ωmax i .
+
+|ωin| ≤ ωmax , n = x, y, z (15) 
+
+2.4.5 Velocity constraint 
+
+The velocity of the chaser is constrained in a similar way as the angular velocity in which it is constrained with respect to the maximum velocity accepted vmax i to ensure soft-docking. 
+
+| ˙rin| ≤ vmax , n = x, y, z (16) 
+
+# 3 Decentralized model predictive control design 
+
+The decentralized MPC architecture for the ith servicer can be seen in Figure 3. It consists of an inner loop with an error system that describes the closed-loop error dynamics in which the outer loop MPC operates on the resulting error state. The inner system becomes stable and closed-loop with the use of stabilizing feedback control variables resulting in a parameter- and time-invariant system. Linearizing the closed loop system results in a LTI prediction model. To achieve the control objective in Section 2.3, the control input is composed of two components: a MPC term and a stabilizing feedback term. The MPC component generates collision-free trajectories while satisfying input and safety constraints, whereas the stabilizing controller guarantees exponential convergence of the tracking errors to the desired docking state. The model is kept decentralized by sharing no information about the predicted inputs over the prediction horizon across the servicers. Instead, the servicers operate under Assumption 1, where the current relative position and velocity is available onboard at each timestep and propagated locally over the prediction horizon by each servicer. The model requires that each servicer has knowledge about the neighboring servicers respective docking coordinates. However, these are predetermined and remain constant throughout the RVD. 
+
+3.1 Stabilizing feedback control 
+
+In order to stabilize the inner system of the dual loop MPC, a stabilizing translational control force is chosen as, 
+
+F ic = miRiCO [¨ rid − Arrid − Av ˙rid − (Ar + Kp)∆ ri − (Av + Kv)∆ ˙ ri] (17) where Kp = kpI3 and Kv = kvI3.6Figure 3: Each ith servicer functions independently using the same architecture, which consists of a dual-loop MPC scheme. With the help of the stabilizing control variables, the inner loop becomes a stable closed-loop system. Linearizing the closed-loop dynamics yields an LTI prediction model for the outer loop MPC. The relative position and velocity information of the jth servicer are assumed available on-board. 
+
+Theorem 1. Consider the relative translational dynamics of the ith servicer under the feedback control law (17) . If Kp > 0 and Kv > 0, then the equilibrium point 
+
+(∆ ri, ∆ ˙ ri) = (0 , 0) 
+
+is globally asymptotically stable. Proof. Consider the Lyapunov candidate 
+
+V i = 12 (∆ ri)T Kp∆ri + 12 (∆ ˙ ri)T ∆ ˙ ri, (18) which is positive definite for Kp > 0. Substituting the control law (17) into the translational error dynamics yields ∆¨ ri = −Kp∆ri − Kv∆ ˙ ri. (19) The time derivative of V i along the closed-loop trajectories is ˙V i = −(∆ ˙ ri)T Kv∆ ˙ ri ≤ 0. (20) Since Kv > 0, ˙V i = 0 only when ∆ ˙ ri = 0. From the closed-loop dynamics, this implies Kp∆ri =0, and therefore ∆ ri = 0. By LaSalle’s invariance principle [16], the equilibrium (∆ ri, ∆ ˙ ri) = (0 , 0) is globally asymptotically stable. Similarly for the ith servicer, the stabilizing control torque is derived in [10] as, 
+
+τ ic = ωi × L + J( ˙ ωd − ωd × ωi) − JR Td
+
+ Kc∆ϕi + Kw∆ωi , (21) where ∆ ϕi := log(∆ Ri) is the error rotation vector and Kc = kcI3, Kw = kwI3.73.2 Error dynamics 
+
+The error dynamics of the ith servicer that are used in the prediction model, can be described by ∆ ˙ ri, ∆¨ ri, ∆ ˙ϕ, ∆ ˙ ω, denoting the time derivatives of the relative position and velocity error, as well as the attitude and angular velocity error between the ith servicer and target respectively. The error dynamics are obtained through the stabilizing control variables in Section 3.1. ∆¨ ri = −Kp∆ri − Kv∆ ˙ ri + I3∆αi, ∆ ˙ ri = I3∆ ˙ ri, (22) ∆ ˙ ωi = −Kc∆ϕi − Kw∆ωi + I3∆βi, ∆ ˙ϕi = I3∆ωi, (23) where ∆ αi and ∆ βi are the translational and rotational correction inputs generated by the MPC, For the MPC formulation, (22)-(23) are rewritten as, ˙Xi = AX i + BU i, (24) with 
+
+Xi = ∆ri ∆ ˙ ri ∆ϕi ∆ωiT , U i = ∆αi ∆βiT . (25) The system matrices are given by 
+
+A =
+
+Ap 00 Aa
+
+
+
+, B =
+
+Bp 00 Ba
+
+
+
+, (26) where 
+
+Ap =
+
+ 0 I3
+
+−Kp −Kv
+
+
+
+, Aa =
+
+ 0 I3
+
+−Kc −Kw
+
+
+
+, Bp = Ba =
+
+ 0
+
+I3
+
+
+
+. (27) In order to implement this using MPC, (24) is discretized with a sampling period Ts in which a time-discrete model can be defined as, 
+
+Xik+1 = AdXik + BdU ik (28) where Xik and U ik denote the state and control vectors at timestep k respectively. The continuous matrices A and B in (26) are discretized with a zero-order hold (ZOH) resulting in the discrete-time matrices Ad and Bd.
+
+3.3 MPC formulation 
+
+The MPC has a prediction horizon of Np with a timestep of ∆ t. It consists of a state cost matrix Q
+
+and an input cost matrix R which are both symmetric and positive semi-definite. The terminal cost 
+
+P is calculated by solving the discrete algebraic Riccati equation. Since the MPC uses the error states between target and the ith servicer, the constraints are mapped to constrain the physical parameters of interest seen in Section 2.4 for each of the ith servicer. 
+
+min  
+
+> Uik
+
+|| XiN p || 2 
+
+> P
+
++ X
+
+> k<N p
+
+|| Xik|| 2 
+
+> Q
+
++ || U ik|| 2
+
+> R
+
+, i ∈ S (29) 8s.t. Xik|k = Xik (30) 
+
+Xik+1 = AdXik + BdU ik (31) 
+
+f i ∈ [−f max , f max ], τ i ∈ [−τ max , τ max ], (32) 
+
+ωi ∈ [−ωmax , ω max ], ˙ri ∈ [−vmax , v max ], (33) ˜dit,k ≤ 0, ˜di,j sk ≤ 0, j ∈ S, j ̸ = i, (34) 
+
+# 4 Simulation results 
+
+4.1 Simulation framework 
+
+Simulation parameters are chosen to present a proof-of-concept RVD scenario. The MPC weighting matrices and controller gains correlating to the translational part was chosen empirically to provide stable tracking. The matrices and gains associated with the attitude part were based on the findings in [10]. The input constraints, and the servicer collision avoidance constraints were chosen for the proof-of-concept scenario. The target collision avoidance constraint is based off of the target dimensions in order to accurately simulate RVD to the target. The RVD procedure is simulated using fixed obstacles which are meant to be in the servicers pathway to the target. The ”keep-out zone” radius for obstacle 1-3 (obstacle 1 is closest to the servicers, obstacle 3 is closest to the target) is 1 .6 m, 1.2 m, 0.8 m respectively. The servicer’s angular velocity is initialized as 
+
+wi 
+
+> 0
+
+= [0 , 0, 0] T rad/s for i = 1 , 2, 3. The positive feedback gains are set to kp = 0 .55, kv = p4kp,
+
+kc = 0 .36, and kw = √4kc. The input matrices are defined as Rp = Ra = 100 I3.
+
+R =
+
+ Rp 03×3
+
+03×3 Ra
+
+
+
+(35) The weighting matrices are defined in the following equations. 
+
+Qa = Qp =
+
+10 I3 03×3
+
+03×3 I3
+
+
+
+Q =
+
+ Qp 06×6
+
+06×6 Qa
+
+
+
+(36) The simulation is initialized by the parameters found in Table 1 and Table 2. 
+
+4.2 Results 
+
+As can be seen in Figure 6a, all of the servicers relative position errors converges to zero after about 20-25 seconds into the simulation, and the relative velocities in Figure 6b converges around 25 seconds. In Figures 6c-6d, the servicers attitude and angular velocities error converges faster to zero due to no external disturbances nor coupling effects which allows for fast tracking throughout the procedure. As can be seen in the results of the 1 st servicer, the position tracking in Figure 4a performs well and manages to respect the target collision avoidance constraint as can be seen in Figure 5a. The relative velocity of the servicers are constrained in order to satisfy soft-docking conditions which is also respected and seen in Figure 4b. Servicer 1 is initialized to be aligned with the inertial frame and it can be seen in Figure 4c and Figure 4d that the attitude and angular velocity tracks faster than the translational parts, and the angular velocity limit of the servicers is respected as well. 9Parameter Value 
+
+Simulation time 40 s
+
+Prediction horizon, Np 11 Timestep, ∆ t 0.1 s
+
+Number of servicers, Ns 3Servicer’s safety distance, rCAS 1 m
+
+Max force, f max 120 N
+
+Max torque, τ max 40 N m 
+
+Max velocity, vmax 1 m/s 
+
+Max angular velocity, ωmax 0.5 rad/s 
+
+Initial holding radius, rhold, 0 3 m
+
+Min holding radius, rhold,min 1 m
+
+Scaling factor, γ 0.95 Evaluating distance, η √0.5 m
+
+Servicer’s mass, m 150 kg 
+
+Servicer’s inertia matrix, J J = diag (85 , 94 , 92) kg · m2
+
+Servicer’s angular momentum, L (34 , 28 .2, 0) T kg · m2/s 
+
+Table 1: General simulation parameters 
+
+Parameter Value Target 
+
+Semi-major axis 7178160 m
+
+Eccentricity 0.002 Inclination 60 ◦
+
+RAAN 30 ◦
+
+Argument of pericentre 0◦
+
+True anomaly 0◦
+
+Angular velocity, ωd [0 .4, 0.3, 0.2] T rad/s 
+
+Angular acceleration, ˙ ωd [0 , 0, 0] T rad/s 2
+
+Initial rotation vector, ϕd, 0 [2 .3, −2, 0] T rad 
+
+1st Servicer 
+
+Initial rotation vector, ϕ10 [0 , 0, 0] T rad 
+
+Initial relative position, r10 [−8, 15 , 16] T m
+
+Initial relative velocity, ˙ r10 [0 , 0.01 , 0] T m/s 
+
+Target docking port, r1 
+
+> dock
+
+[0 , 0, 1] T m
+
+2nd Servicer 
+
+Initial rotation vector, ϕ20 [0 .4, 0.6, −0.3] T rad 
+
+Initial relative position, r20 [−8, 17 , 16] T m
+
+Initial relative velocity, ˙ r20 [0 .01 , 0, 0] T m/s 
+
+Target docking port, r2 
+
+> dock
+
+[0 , 0, −1] T m
+
+3rd Servicer 
+
+Initial rotation vector, ϕ30 [1 , −0.8, 0.2] T rad 
+
+Initial relative position, r30 [−10 , 15 , 16] T m
+
+Initial relative velocity, ˙ r30 [0 , 0, 0.01] T m/s 
+
+Target docking port, r3 
+
+> dock
+
+[1 , 0, 0] T m
+
+Table 2: Target and servicer simulation parameters 10 (a) (b) (c) (d) 
+
+Figure 4: Time history of servicer 1’s tracking states throughout the RVD. (a)–(d) show the servicer tracking the desired states of relative position, relative velocity, attitude, and angular velocity respectively. All states are successfully tracked, and in (b) and (d), the velocity constraints are satisfied throughout the RVD.   
+
+> (a) (b) (c)
+
+Figure 5: Time history of servicer 1’s relative distance and inputs throughout the RVD. (a)– (c) shows the relative distance, force, and torque respectively. (a) shows the relative distance respecting the imposed target collision avoidance constraint. (b)–(c) shows the force and torque inputs satisfying the imposed input constraints. The force and torque inputs in the servicers body frames can be seen in Figures 5b–5c respec-tively, where they remain inside of the constrained limits. Also here it can be clearly seen that the torque converges faster whereas the force takes longer before stabilizing around non-zero force components needed to maintain tracking of the relative position and velocity of the targets docking port. In Figure 7 the separation distances between servicer-servicer can be seen in Figure 7a and servicer-obstacle distances can be seen in Figures 7b-7d. None of the separation constraints are 11 (a) (b)  
+
+> (c) (d)
+
+Figure 6: Time history of the servicers tracking state errors. (a)-(d) shows the position, velocity, attitude, and angular velocity errors converging to zero respectively, between the servicers and respective target docking coordinates.   
+
+> (a) (b)
+> (c) (d)
+
+Figure 7: Time history of non-target separation distances. (a) shows the separation distance between servicers during the approach to their respective target docking points. (b)-(d) shows the separation distance between the servicers and obstacle 1-3 during RVD to the target respectively. 12 violated and all of the servicers maintain a safe distance between each other and show the capability to avoid the fixed obstacles throughout the RVD towards the target. For further visualization purposes an animation of the RVD simulation was created, and a full video is provided on https: //youtu.be/C3gmMvoiY-o .
+
+# 5 Conclusions & future work 
+
+A proof-of-concept limited information sharing decentralized control strategy using a 6-DOF MPC for multiple servicers to RVD with a tumbling target has been presented in this paper. The model manages to satisfy all of the constraints presented using an LTI framework which allows for a simple and fast model. The simulation was successful when tested with different arrangements of the fixed obstacles with the same constraint requirements. Future work includes off-setting the servicers docking ports from their center-of-masses, and also coupling it to the servicers attitude. Implementation of conical constraints, such as line-of-sight constraints, should be investigated in order to test if it is applicable to vision-based estimation. A more realistic approach to the safety boundaries such as using ellipsoidal envelopes for solar panels should be implemented. Furthermore, to assess the robustness of the LTI formulation, uncertainty in the servicers inertia matrix J should be investigated. Overall robustness studies, such as Monte Carlo simulations using different initial conditions and disturbances should be analyzed for further validation. 
+
+# References 
+
+[1] B. S. Goshu, “Space debris and its impacts on space exploration and mitigation strategies,” 
+
+Britain International of Exact Sciences (BIoEx) Journal , vol. 7, no. 1, pp. 67–78, 2025. [2] A. Flores-Abad, O. Ma, K. Pham, and S. Ulrich, “A review of space robotics technologies for on-orbit servicing,” Progress in aerospace sciences , vol. 68, pp. 1–26, 2014. [3] G. S. Aglietti, B. Taylor, S. Fellowes, S. Ainley, D. Tye, C. Cox, A. Zarkesh, A. Mafficini, N. Vinkoff, K. Bashford et al. , “Removedebris: An in-orbit demonstration of technologies for the removal of space debris,” The Aeronautical Journal , vol. 124, no. 1271, pp. 1–23, 2020. [4] I. Kawano, M. Mokuno, T. Kasai, and T. Suzuki, “Result of autonomous rendezvous docking experiment of engineering test satellite-vii,” Journal of Spacecraft and Rockets , vol. 38, no. 1, pp. 105–111, 2001. [5] D. A. Whelan, E. A. Adler, S. B. Wilson III, and G. M. Roesler Jr, “Darpa orbital express program: effecting a revolution in space-based systems,” in Small Payloads in Space , vol. 4136. SPIE, 2000, pp. 48–56. [6] X. Zhang, Y. Geng, and B. Wu, “Decentralized specific tracking control on se (3) for con-strained multi-spacecraft systems,” Nonlinear Dynamics , vol. 113, no. 7, pp. 6757–6780, 2025. [7] F. Fourlas, V. K. Viswanathan, S. Satpute, and G. Nikolakopoulos, “Vision based docking of multiple satellites with an uncooperative target,” IFAC-PapersOnLine , vol. 56, no. 2, pp. 4394–4399, 2023. 13 [8] J. Wang, R. Chen, H. Zhou, C. Shan, Y. Zhao, and Y. Bai, “Manifold-based trajectory planning for safe proximity and soft docking to a tumbling target by modular multi-spacecraft system,” 
+
+Aerospace Science and Technology , p. 111518, 2025. [9] S. B. McCamish, M. Romano, and X. Yun, “Autonomous distributed control of simultaneous multiple spacecraft proximity maneuvers,” IEEE Transactions on Automation Science and Engineering , vol. 7, no. 3, pp. 630–644, 2010. [10] P. Stadler, A. Meinert, N. Baldauf, and A. Turnwald, “Lightweight model predictive control for spacecraft rendezvous attitude synchronization,” arXiv preprint arXiv:2603.18921 , 2026. [11] S.-G. Kim, J. L. Crassidis, Y. Cheng, A. M. Fosbury, and J. L. Junkins, “Kalman filtering for relative spacecraft attitude and position estimation,” Journal of Guidance, Control, and Dynamics , vol. 30, no. 1, pp. 133–143, 2007. [12] A. Comellini, E. Zenou, C. Espinosa, and V. Dubanchet, “Vision-based navigation for au-tonomous space rendezvous with non-cooperative targets,” in 2020 11th International Confer-ence on Information, Intelligence, Systems and Applications (IISA . IEEE, 2020, pp. 1–8. [13] W. Clohessy and R. Wiltshire, “Terminal guidance system for satellite rendezvous,” Journal of the aerospace sciences , vol. 27, no. 9, pp. 653–658, 1960. [14] C. Bashnick and S. Ulrich, “Fast model predictive control for spacecraft rendezvous and dock-ing with obstacle avoidance,” Journal of Guidance, Control, and Dynamics , vol. 46, no. 5, pp. 998–1007, 2023. [15] Q. Li, J. Yuan, B. Zhang, and C. Gao, “Model predictive control for autonomous rendezvous and docking with a tumbling target,” Aerospace Science and Technology , vol. 69, pp. 700–711, 2017. [16] J. LaSalle, “Some extensions of liapunov’s second method,” IRE Transactions on circuit theory ,vol. 7, no. 4, pp. 520–527, 1960. 14
