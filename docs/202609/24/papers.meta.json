@@ -1,0 +1,69 @@
+{
+  "label": "2026-09-24",
+  "date": "2026-09-24",
+  "generated_at": "2026-09-24T21:47:24",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202609/24/2609.22716v1-zil-zero-shot-image-to-lidar-registration",
+      "section": "quick",
+      "title_en": "ZIL: Zero-shot Image-to-LiDAR Registration",
+      "authors": "Zijun Li, Xiaotian Sun, Xuelun Shen, Yao Dai, Sheng Ao, Yangyang Shi, Jakob Engel, Zhipeng Cai, Cheng Wang",
+      "date": "2026-09-19",
+      "pdf": "https://arxiv.org/pdf/2609.22716v1",
+      "score": "6.0",
+      "evidence": "图像到LiDAR配准回归相机相对位姿，与相机-LiDAR相对位姿估计技术核心一致",
+      "tldr": "图像到LiDAR配准用于估计图像相机相对LiDAR点云的位姿，但现有方法多假设同帧输入且依赖特定域训练，难以应对非同步与未见场景。ZIL是首个面向零样本非同步图像-LiDAR配准的基础模型，用Vision与Point Transformer编码，并联合回归相对位姿和预测3D坐标。为支持零样本泛化，还引入相机内参与LiDAR垂直轴原点归一化。在7个数据集140万LiDAR帧训练后，单模型在5个域内及零样本基准上显著超越SOTA，平移和旋转误差最高降低87%和76%。",
+      "tags": "query:pe",
+      "abstract_en": "Image-to-LiDAR registration estimates the camera pose of an image with respect to a LiDAR point cloud. It has diverse applications in autonomous driving, robot navigation etc. However, state-of-the-art (SOTA) methods still 1) mostly assume same-frame inputs, struggling with the image and point cloud from distant frames; 2) rely on domain-specific training, failing to generalize to unseen scenarios. We propose ZIL, the first foundation model for zero-shot non-synchronized image-to-LiDAR registration. ZIL encodes the input image and point cloud with the Vision and Point Transformers. In addition to regressing the relative pose, ZIL also learns to predict 3D coordinates, which substantially improves the pose accuracy without additional annotations. Interestingly, naive mix-data training cannot enable zero-shot generalization, which requires normalization on both camera intrinsics and the LiDAR vertical-axis origin. Trained on 7 public datasets with 1.4M LiDAR frames, ZIL consistently and significantly outperforms previous SOTA with a single model across 5 in-domain and zero-shot benchmarks, reducing the translation and rotation errors by up to 87% and 76% (shown in Fig. 1). Code and models are available at https://github.com/ZijunLi7/ZIL.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/24/2609.23566v1-g6d-geometric-learning-free-rgb-d-6d-pose-solver-for-robotic-manipulation",
+      "section": "quick",
+      "title_en": "G6D: Geometric Learning-Free RGB-D 6D Pose Solver for Robotic Manipulation",
+      "authors": "Yixuan Liang, William Chen, Yunan Wang, Jizhou Yan, Zhao Jin, Changling Liu, Chuxiong Hu",
+      "date": "2026-09-20",
+      "pdf": "https://arxiv.org/pdf/2609.23566v1",
+      "score": "6.0",
+      "evidence": "免学习的RGB-D六自由度位姿求解器",
+      "tldr": "6D物体位姿估计对机器人操作至关重要，但现有零样本方法多依赖大规模预训练模型，GPU算力与内存需求高，难以部署且几何可解释性弱。为此，G6D提出无学习、几何驱动的RGB-D 6D位姿求解器，基于实例掩码与CAD模型，通过模板几何匹配生成假设，并用轮廓和深度一致性优化。在LineMOD和五个BOP19数据集上表现先进，真实抓放实验验证了机器人操作适用性，且支持CPU部署与精度-计算权衡。",
+      "tags": "query:pe",
+      "abstract_en": "6D object pose estimation is fundamental to robotic manipulation and automation. Recent zero-shot methods have significantly improved generalization to unseen objects, but most still rely on large-scale pretrained models with substantial GPU computation and memory demands. These requirements complicate deployment on robotic platforms where perception, planning, and control share limited computational resources, while learned intermediate representations offer limited geometric interpretability for task-specific adaptation. To address these limitations, we propose G6D, a learning-free, geometry-driven RGB-D 6D pose solver. Given an RGB-D observation, an object instance mask, camera intrinsics, and a CAD model, G6D generates pose hypotheses through template-based geometric matching and refines them using silhouette and depth consistency, forming a purely geometry-driven pose estimation paradigm. This paradigm requires neither pretrained visual models nor target-specific training and preserves interpretable geometric representations throughout pose estimation. Moreover, adjustable hypothesis counts provide flexible accuracy-computation trade-offs, while a CPU-only configuration supports deployment without GPU resources. Experiments on LineMOD and five BOP19 datasets demonstrate advanced performance. Real-world pick-and-place experiments further demonstrate G6D's applicability to robotic manipulation. The complete project is publicly available at https://ai4control.github.io/G6D-Project-Page .",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/24/2609.25966v1-grip-gaussian-rendering-as-a-cross-modal-bridge-for-image-to-point-cloud-registration",
+      "section": "quick",
+      "title_en": "GRIP: Gaussian Rendering as a Cross-Modal Bridge for Image-to-Point Cloud Registration",
+      "authors": "Karim Slimani, Catherine Achard, Eric Marchand, Brahim Tamadazte",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.25966v1",
+      "score": "6.0",
+      "evidence": "图像到点云配准与位姿细化",
+      "tldr": "针对图像到点云配准中，网格化图像描述子与无序点云描述子存在结构失配的问题，本文提出GRIP。该方法在给定粗位姿下，用高斯特征溅射将3D点特征软渲染到图像网格，再经像素对齐Transformer与图像特征融合。在RGB-D Scenes V2和7-Scenes上取得最高内点率与有竞争力的配准召回，严格阈值下优势更明显。该工作为跨模态2D-3D配准提供了共享2D表示的新思路。",
+      "tags": "query:pe",
+      "abstract_en": "This paper introduces GRIP, a pose-conditioned refinement framework for pixel-to-point matching and 2D to 3D registration. Given an initial coarse pose estimate, GRIP addresses the structural mismatch between grid based image descriptors and unordered point cloud descriptors by softly rendering learned 3D point features onto the image grid through Gaussian feature splatting. The rendered point derived feature map is then fused with image features by a pixel aligned transformer, enabling visual semantic and geometric cues to interact in a shared 2D representation. The refined features are decoded and propagated to finer resolutions for dense correspondence estimation and final pose refinement. Experiments on RGB D Scenes V2 and 7 Scenes demonstrate state of the art inlier ratio and competitive registration recall, with stronger performance under stricter evaluation thresholds.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/24/2609.26612v1-reduced-order-observers-for-monocular-visual-inertial-odometry",
+      "section": "quick",
+      "title_en": "Reduced Order Observers for Monocular Visual Inertial Odometry",
+      "authors": "Amel Abi, Mouaad Boughellaba, Miaomiao Wang, Abdelhamid Tayebi",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.26612v1",
+      "score": "6.0",
+      "evidence": "由单目方位测量恢复机体坐标系姿态与位置",
+      "tldr": "针对单目视觉惯性里程计中依赖路标位置估计、状态维度高的问题，本文提出降阶观测器框架。将机体系重力向量增广为状态，并构造融合单目方位测量及其时间导数的输出，直接关联机体系速度，从而免去路标位置估计。由此得到六维线性时变观测器，可估计机体系速度与重力，并具一致全局指数稳定性；扩展至IMU偏置后为十二维观测器，具局部指数稳定性。仿真验证了有效性。",
+      "tags": "query:pe",
+      "abstract_en": "This work develops a reduced order observer framework of monocular visual-inertial odometry (VIO). The key idea consists in considering the gravity vector in the body-frame as an additional state and constructing an appropriate output that relates the monocular bearing measurements and their time derivatives to the body-frame velocity. This eliminates the need for the estimation of the landmark positions, leading to a six-dimensional linear time-varying (LTV) observer for the body-frame velocity and gravity, endowed with uniform global exponential stability guarantees. These estimates are subsequently used to recover the orientation almost globally, up to an unknown constant yaw offset, and the position up to an unknown constant translation. The mixed-bearing framework is further extended to account for the inertial measurement unit (IMU) biases, yielding a twelve-dimensional LTV observer endowed with local exponential stability guarantees. Numerical simulations are provided to illustrate the effectiveness of the proposed observers.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

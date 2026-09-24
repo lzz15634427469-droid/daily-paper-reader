@@ -1,0 +1,1480 @@
+Title: Reduced Order Observers for Monocular Visual Inertial Odometry
+
+URL Source: https://arxiv.org/pdf/2609.26612v1
+
+Published Time: Wed, 23 Sep 2026 01:34:22 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Reduced Order Observers for Monocular Visual Inertial Odometry 
+
+Amel Abi, Mouaad Boughellaba, Miaomiao Wang and Abdelhamid Tayebi 
+
+Abstract — This work develops a reduced order observer framework of monocular visual-inertial odometry (VIO). The key idea consists in considering the gravity vector in the body-frame as an additional state and constructing an appropriate output that relates the monocular bearing measurements and their time derivatives to the body-frame velocity. This eliminates the need for the estimation of the landmark positions, leading to a six-dimensional linear time-varying (LTV) observer for the body-frame velocity and gravity, endowed with uniform global exponential stability guarantees. These estimates are subsequently used to recover the orientation almost globally, up to an unknown constant yaw offset, and the position up to an unknown constant translation. The mixed-bearing framework is further extended to account for the inertial measurement unit (IMU) biases, yielding a twelve-dimensional LTV observer endowed with local exponential stability guarantees. Numerical simulations are provided to illustrate the effectiveness of the proposed observers. 
+
+I. I NTRODUCTION 
+
+The growing use of autonomous unmanned aerial vehicles (UAVs) in GPS-denied environments has intensified the need for robust onboard localization. Visual-inertial odometry, which fuses camera and IMU data, provides a viable solution to this requirement. Although VIO is widely adopted in applications such as augmented reality and virtual reality, as well as on smartphones, its deployment for aerial navi-gation is constrained by the limited onboard computational resources of UAVs. Current VIO methodologies typically involve a trade-off between computational efficiency and estimation accuracy. Extended Kalman Filter (EKF)-based approaches, such as MSCKF [1], OpenVINS [2], and ROVIO [3], offer the computational efficiency required for real-time onboard operation. However, their reliance on local linearization makes them susceptible to linearization errors. In contrast, optimization-based methods such as OKVIS [4] and VINS-Mono [5] mitigate these errors through iterative nonlinear optimization over a sliding window. This generally yields higher estimation accuracy, at the expense of increased computational cost. A key limitation of EKF-based approaches is filter in-consistency. The VIO problem possesses four unobservable degrees of freedom: the three components of global position                       
+
+> This work was supported by the Natural Sciences and Engineering Research Council of Canada (NSERC), under the grant RGPIN-2026-06037. A. Abi, M. Boughellaba and A. Tayebi are with the Department of Electrical and Computer Engineering, Lakehead University, Thunder Bay, ON P7B 5E1, Canada. (e-mail:
+
+aabi,mboughel,atayebi@lakeheadu.ca ). M. Wang is with the School of Artificial Intelligence and Automation, Huazhong University of Science and Technology, Wuhan 430074, China (e-mail: 
+
+mmwang@hust.edu.cn )
+
+and the rotation about the gravity direction (yaw). Lineariza-tion can introduce spurious information along these unob-servable directions, rendering the filter inconsistent [6]. To address this source of inconsistency, invariant and equivariant observer designs have been proposed. These approaches exploit Lie group symmetries of the VIO problem. The Invariant Extended Kalman Filter (IEKF) [7] utilizes the extended special Euclidean group SE 2(3) for the inertial states. Under this symmetry, the bias-free IMU dynamics are group-affine, yielding a linearization independent of the estimated trajectory. EqVIO [8] extends this principle within the Equivariant Filter (EqF) framework by incorporating the Scaled Orthogonal Transformations group SOT(3) for visual landmarks, enabling a higher-order approximation of the visual measurement function while reducing linearization errors and improving filter consistency. While these methods address the inconsistency problem, their convergence guaran-tees remain local. Furthermore, these estimation frameworks require augmenting the state vector with visual landmark estimates, leading to computational complexity that grows with the number of tracked landmarks. This motivates the need for a reduced-order estimator whose state dimension is independent of the number of tracked landmarks, while achieving strong (non-local) asymptotic stability guarantees. In [9], a reduced-order cascaded observer was developed for monocular VIO. The proposed observer does not incorporate bearing measurements directly in the output equation, but rather uses the direction of the body-frame linear velocity, which is extracted from optical flow data via a constrained minimization on the unit sphere. In this work, we propose a framework for pose and linear velocity estimation of a rigid body using monocular vision and inertial measurements. By augmenting the translational state with the gravity vector expressed in the body frame, the translational dynamics can be recast as a linear time-varying (LTV) system that does not explicitly depend on the attitude dynamics. In contrast to [9], our reduced-order observers employ a mixed-bearing strategy directly within the output equation, eliminating the need for an optimization step to estimate the direction of the body-frame linear velocity. We propose three estimation schemes. The first employs an LTV observer evolving on R6+3 N to jointly estimate the body-frame linear velocity, gravity vector, and positions of N
+
+landmarks, with uniform global exponential stability (UGES) guarantees. The estimated velocity and gravity vector are then used to estimate the rigid body’s position and orienta-tion. In this formulation, the observer dimension grows with the number of tracked landmarks. To address this limita-tion, the second scheme employs a reduced-order observer arXiv:2609.26612v1 [eess.SY] 22 Sep 2026 evolving on R6, which uses mixed-bearing information to estimate the body-frame linear velocity and gravity vector without explicitly estimating landmark positions, while re-taining UGES guarantees. These estimates are subsequently used to estimate the rigid body’s position and orientation. Both schemes recover the orientation almost globally, up to an unknown constant yaw offset, and the position up to an unknown constant translation. Finally, we extend the mixed-bearing formulation to account for gyroscope and accelerometer biases, resulting in an LTV observer on R12 
+
+with local exponential stability guarantees. As in the first two schemes, the estimated biases, body-frame linear velocity, and gravity vector are used to recover the rigid body’s orientation up to an unknown constant yaw offset and its position up to an unknown constant translation. II. N OTATIONS AND PRELIMINARIES 
+
+The notation R represents the set of real numbers. Let In
+
+and 0m×n refer to the n×n identity matrix and the m×n zero matrix, respectively. The column vector of ones is denoted by 1N ∈ RN . Let ∥·∥ represent the Euclidean norm. For 
+
+x ∈ R3, x× ∈ R3×3 denotes the skew-symmetric matrix such that x×y = x × y for all y ∈ R3, where × indicates the cross product. For matrices A and B, A ⊗ B represents their Kronecker product. The special orthogonal group is defined as SO(3) := {R ∈ R3×3 | R⊤R = I3, det( R) = 1 }. The set of three-dimensional unit vectors is given by S2 := {x ∈
+
+R3 | ∥ x∥ = 1 }. For any x ∈ S2, define the orthogonal projection operator π : S2 → R3×3 by 
+
+π(x) = I3 − xx ⊤. (1) The operator π(x) projects any vector in R3 onto the plane orthogonal to x.
+
+A. Riccati equation and uniform observability 
+
+Consider the following Riccati equation: 
+
+˙P = A(t)P + P A (t)⊤ − P C ⊤(t)Q(t)C(t)P + V (t), (2) with P (0) = P ⊤(0) > 0, A(t) and C(t) are continuous and 
+
+qmI ≤ Q(t) ≤ qM I, vmI ≤ V (t) ≤ vM I, 
+
+for some strictly positive constants vm, vM , qm and qM .Let Φ( t, t 0) denotes the state-transition matrix of the system 
+
+˙x = A(t)x. Define the observability Gramian 
+
+W0(t, t + δ) = 
+
+Z t+δt
+
+Φ⊤(τ, t )C⊤(τ )C(τ )Φ( τ, t )dτ, (3) and 
+
+Wc(t, t + σ) = 
+
+Z t+σt
+
+Φ( t, τ )Φ ⊤(t, τ )dτ. (4) A simplified version of the results in [10], in view of the properties imposed on V (t) and Q(t), is stated in the following lemma: 
+
+Lemma 1. If there exist positive constants δ, σ, μo, ¯μo, μc,
+
+¯μc such that 
+
+¯μoI ≥ W0(t, t + δ) ≥ μoI, ∀t ≥ 0, (5) and 
+
+¯μcI ≥ Wc(t, t + σ) ≥ μcI, ∀t ≥ 0. (6) Then the Riccati equation (2) admits a solution P (t) satis-fying 
+
+PmI ≤ P (t) ≤ PM I, ∀t ≥ 0, (7) for some strictly positive scalars Pm and PM .A simplified version of Lemma 1 in view of the uniform boundedness of A(t) and C(t) is given in the following lemma: 
+
+Lemma 2. If A(t) and C(t) are continuous and uniformly bounded and if there exist positive constants δ and μ such that 
+
+W0(t, t + δ) ≥ μI, ∀t ≥ 0. (8) Then the Riccati equation (2) admits a solution P (t) satis-fying (7). Condition (5), which imposes uniform lower and upper bounds on the observability Gramian, is commonly referred to as the uniform complete observability condition [10], [11]. In contrast, the one-sided condition (8), requiring only a uniform positive lower bound on the observability Gramian, is often referred to as uniform observability in more recent literature; see, for instance, [12], [13]. The terminology, however, is not entirely consistent across the literature. In particular, some authors use the term uniform complete observability for the one-sided condition (8), see for instance, [14]. This discrepancy is largely terminological rather than conceptual, since in many commonly considered settings the upper bound on the observability Gramian follows from additional regularity or boundedness assumptions on the system matrices. Nevertheless, when such an upper bound is not guaranteed a priori, the distinction between (8) and (5) becomes mathematically relevant. For clarity, throughout this work we reserve the term uniform observability for (8) and uniform complete observability for (5). III. P ROBLEM FORMULATION 
+
+A. System dynamics 
+
+Let {I} denote an inertial frame and {B} a body frame rigidly attached to the IMU. Let R ∈ SO (3) be the rotation from frame {B} to frame {I} , p ∈ R3 the position of the origin of {B} , expressed in {I} , and v ∈ R3 the linear velocity of the origin of {B} expressed in {B} . The dynamics of a rigid body navigating in 3D space are described by 
+
+˙R = R ω × (9a) 
+
+˙p = Rv (9b) 
+
+˙v = −ω×v + R⊤g + a, (9c) where ω ∈ R3 is the body-frame angular velocity of the rigid body, a ∈ R3 is the apparent acceleration capturing all non-gravitational forces applied to the rigid body expressed in {B} , and g ∈ R3 is the gravity vector in {I} .B. Monocular bearing measurements 
+
+Consider a set of N static landmarks in the environment, denoted by L := {p1, . . . , p N }, where pi ∈ R3 is the constant inertial-frame position of the i-th landmark. The relative position of the i-th landmark with respect to the origin of {B} , expressed in {B} , is given by 
+
+yi(t) = R⊤(pi − p(t)) . (10) Let the pair (Rc, p c) denote the constant pose of the camera frame {C} with respect to the body frame {B} . Then, the relative position of the i-th landmark with respect to the origin of {C} expressed in {C} is given by  
+
+> C
+
+yi(t) = R⊤ 
+
+> c
+
+(yi(t) − pc). (11) The monocular bearing measurements bi ∈ S2, i ∈ I, I := 
+
+{1, 2, . . . , N }, associated with the i-th landmark, are given by 
+
+bi(t) =  
+
+> C
+
+yi(t)
+
+∥C yi(t)∥ (12) 
+
+Remark 1. Let zi = [ui, v i, 1] ⊤ denote the measured homogeneous image coordinates of the i-th landmark. The corresponding bearing vector in the camera frame is com-puted as follows: 
+
+bi = K−1zi
+
+∥K −1zi∥ ∈ S2, (13) where K is the camera intrinsic matrix. IV. M ONOCULAR BEARINGS BASED VIO 
+
+A. Global estimation of the linear velocity, gravity and landmark positions in the body-frame 
+
+In this subsection, we recall the linear time-varying (LTV) observer, proposed in [15], that estimates the body-frame landmark positions yi, i ∈ I, the body-frame linear velocity 
+
+v, and the body-frame gravity vector η := RT g, with uniform global exponential stability guarantees. The observer is driven by inertial and visual measurements provided by the IMU and the camera, respectively. In [15], the rigid body pose is recovered by using the LTV observer estimates along with the positions, in the inertial frame, of at least three measured landmarks in the body frame. In this work, we use this LTV observer in the VIO context where we assume that the positions of the landmarks in the inertial frame are not available. From (9) and differentiating (10) with respect to time, one obtains 
+
+˙v = −ω×v + η + a
+
+˙η = −ω×η
+
+˙yi = −ω×yi − v, 
+
+(14) From (12), we introduce the modified outputs for each bearing measurement bi, i ∈ I as 
+
+di := Π ipc = Π iyi, (15) where Πi := π(Rcbi) and we have made use of π(Rcbi) = 
+
+Rcπ(bi)R⊤ 
+
+> c
+
+and π(Rcbi)( yi − pc) = 0, for all i ∈ I.Let the modified output measurements vector be y := [d⊤ 
+
+> 1
+
+, d ⊤ 
+
+> 2
+
+, . . . , d ⊤ 
+
+> N
+
+]⊤ ∈ R3N where di, i ∈ I is defined in (15). Define the state x = [ v⊤, η ⊤, y ⊤ 
+
+> 1
+
+, . . . , y ⊤ 
+
+> N
+
+]⊤ ∈ R(6+3 N ). The resulting LTV system can then be written as 
+
+( ˙x = Ax + Ba 
+
+y = Cx, (16) with the matrices A(t) ∈ R(6+3 N )×(6+3 N ), B ∈ R(6+3 N )×3
+
+and C ∈ R3N ×(6+3 N ) defined as 
+
+A(t) = 
+
+
+
+−ω× I3 03×3N
+
+03×3 −ω× 03×3N
+
+−1N ⊗ I3 03N ×3 −IN ⊗ ω×
+
+ ,B =
+
+ I3
+
+03( N +1) ×3
+
+
+
+, C (t) = 03N ×6 Πb
+
+ ,
+
+(17) where Πb = blkdiag(Π 1, Π2, . . . , ΠN ) ∈ R3N ×3N . Now we proceed with the observer design for the system in (14) to estimate the body-frame velocity v, the body-frame gravity vector η, and the landmark position yi, i ∈ I.
+
+Remark 2. The body-frame gravity vector η = R⊤g is introduced as an additional state to remove the explicit dependence of the linear velocity and the landmark positions dynamics on the attitude R, yielding a linear time-varying system. Let ˆx := [ˆ v⊤, ˆη⊤, ˆy⊤ 
+
+> 1
+
+, . . . , ˆy⊤ 
+
+> N
+
+]⊤ denote the estimate of the state x. The state observer is given by 
+
+˙ˆx = A(t)ˆx + Ba + K(y − C(t)ˆx), (18) where ˆx(0) ∈ R(6+3 N ). The gain matrix K(t) is defined as 
+
+K(t) = P (t)C(t)⊤Q(t), (19) where P (t) = P ⊤(t) > 0 is the solution of the Riccati equa-tion (2), with P (0) ∈ R(6+3 N )×(6+3 N ), Q(t) ∈ R3N ×3N and 
+
+V (t) ∈ R(6+3 N )×(6+3 N ) satisfying the conditions specified after (2). Let ˜x := x − ˆx = [˜ v⊤, ˜η⊤, ˜y⊤ 
+
+> 1
+
+, . . . , ˜y⊤ 
+
+> N
+
+]⊤ denote the state estimation error, with ˜v := v − ˆv, ˜η := η − ˆη and ˜yi = yi − ˆyi,
+
+i ∈ { 1, 2, . . . , N }.From (14) and (18), the estimation error dynamics are given by ˙˜x = ( A(t) − K(t)C(t)) ˜x (20) As shown in [15, Lemma 1], the pair (A(t), C (t)) defined in (17) is uniformly observable if there exist constants δ, μ > 
+
+0 such that Z t+δt
+
+π(R(τ )Rcbi(τ )) dτ > μI 3 (21) for all t ≥ 0, i ∈ I. Furthermore, assuming that ω(t) is continuous and uniformly bounded, together with the fact that the pair (A(t), C (t)) is uniformly observable, it follows that the conditions in Lemma 2 are satisfied. Consequently, one can show that the equilibrium point ˜x = 0 of (20) is uniformly globally exponentially stable (UGES). The proof relies on the existence of the solution P to the Riccati equation (2) with lower and upper bounds (7). The time-derivative of the Lyapunov function L = ˜ x⊤P −1 ˜x, along the trajectories of (20), in view of the Riccati equation (2), is given by ˙L ≤ − vm 
+
+> pM
+
+L.The LTV observer in (18) takes the following explicit form: 
+
+
+
+˙ˆv = −ω× ˆv + ˆ η + a + Kv (y − Cˆx)˙ˆη = −ω× ˆη + Kη (y − Cˆx)˙ˆyi = −ω× ˆyi − ˆv + Kyi (y − Cˆx), i = 1 , . . . , N 
+
+(22) with K = [ K⊤ 
+
+> v
+
+, K ⊤ 
+
+> η
+
+, K ⊤ 
+
+> y1
+
+, . . . , K ⊤ 
+
+> yN
+
+]⊤ and Kv , K η , K yi ∈
+
+R3×3N .
+
+B. Pose estimation 
+
+We propose the following pose estimation scheme: 
+
+˙ˆR = ˆR(ω + σR)×
+
+˙ˆp = ˆRˆv + ( ˆRσ R)× ˆp, (23) where σR = kR(ˆ η × ˆR⊤g). Differentiating ˜R := R ˆR⊤ with respect to time, and using (23), one obtains the following rotational error dynamics: 
+
+˙˜R = ˜R
+
+
+
+−kR( ˜R⊤g)×g − Λ˜ x
+
+×
+
+(24) where Λ is given by 
+
+Λ = 03×3 kRg× ˆR 03×3N
+
+ . (25) As per the observer design in the previous subsection, ˜x is bounded and converges exponentially to zero when t tends to infinity. Therefore, when t tends to infinity, the rotational error dynamic reduces to 
+
+˙˜R = ˜R(−kR( ˜R⊤g)×g)×. (26) As shown in [16], the equilibrium ˜R⊤g = g is almost globally asymptotically stable 1 for system (26). Note that the fact that ˜R⊤g converges to g implies that the pitch and roll estimation errors converge to zero when t tends to infinity. It is worth pointing out that if an additional vector mea-surement is available, e.g., from a magnetometer, then a full recovery of the orientation is possible. As for the position error dynamics, defining ˜p = p − ˜Rˆp,one has ˙˜p = R˜v, which shows that ˜p(t) tends to a constant as t tends to infinity in view of the exponential convergence of ˜v to zero. V. M ONOCULAR MIXED BEARINGS VIO (MBVIO) 
+
+A. Global reduced-order observer for body-frame linear velocity and gravity estimation 
+
+In this section, a reduced-order observer is developed to estimate the body-frame linear velocity v and the body-frame gravity vector η. In contrast to the framework introduced in 
+
+> 1An equilibrium point is almost globally asymptotically stable if it is stable and attractive from all initial conditions except a set of zero Lebesgue measure.
+
+section IV, the landmark positions are not included in the observer state. Instead, the bearing measurements and their time derivatives are used to construct a measurable output relation that provides information about the body-frame ve-locity. Consequently, the observer state has a fixed dimension that is independent of the number of tracked landmarks. This formulation reduces the computational complexity associated with the landmark position estimation while retaining the visual information required for state correction. The dynamics of the linear velocity and the gravity vector in the body frame are given by 
+
+( ˙v = −ω×v + η + a
+
+˙η = −ω×η. (27) Differentiating (12) with respect to time, one gets 
+
+˙bi = −ωc×bi − π(bi)
+
+li
+
+vc, (28) where 
+
+ωc = R⊤ 
+
+> c
+
+ω, vc = R⊤ 
+
+> c
+
+(v + ω×pc), (29) and li := ∥C yi∥, i ∈ I denotes the distance between the camera and the i-th landmark, C yi defined in (11) and we have made use of ddt 
+
+ x
+
+> ∥x∥
+
+
+
+= π(x) 
+
+> ∥x∥
+
+˙x.For each i ∈ I, define 
+
+qi := b× 
+
+> i
+
+(˙bi + ω× 
+
+> c
+
+bi) (30) It then follows from (28) that 
+
+qi = − 1
+
+li
+
+bi×vc, (31) and consequently q⊤ 
+
+> i
+
+vc = 0 , from which one has M v c = 0 ,with 
+
+M := 
+
+> N
+
+X
+
+> i=1
+
+γiqiq⊤ 
+
+> i
+
+, (32) where γi > 0. Using the expression of vc in (29) yields 
+
+¯M v = − ¯M ω ×pc, (33) where ¯M = RcM R ⊤ 
+
+> c
+
+. Considering the virtual output as 
+
+yr := − ¯M ω ×pc, from (33), one has yr =  ¯M 03×3
+
+ xr ,with xr = [ v⊤, η ⊤]⊤ ∈ R6. The resulting LTV system is given as ( ˙xr = A(t)xr + Ba 
+
+yr = C(t)xr , (34) with the matrices A(t) ∈ R6×6, B ∈ R6×3 and C(t) ∈
+
+R3×6 defined as 
+
+A(t) = 
+
+−ω× I3
+
+03×3 −ω×
+
+
+
+,B =
+
+ I3
+
+03×3
+
+
+
+, C (t) =  ¯M 03×3
+
+ .
+
+(35) 
+
+Remark 3. Note that qi defined in (30) can be computed from bearings and optical flow measurements. The bearing time-derivative ˙bi can be obtained as follows: 
+
+˙bi = π(bi)K−1
+
+∥K −1zi∥
+
+
+
+˙ui
+
+˙vi
+
+0
+
+ , (36) where ( ˙ ui, ˙vi) can be obtained from the optical flow associ-ated with the i-th tracked landmark. The sparse optical flow associated with the i-th landmark is obtained by tracking its pixel coordinates across two consecutive frames. Let 
+
+(uk−1 
+
+> i
+
+, v k−1 
+
+> i
+
+) and (uki , v ki ) denote the pixel coordinates of the same tracked landmark at times tk−1 and tk, respectively. The corresponding sparse optical flow is approximated by 
+
+˙ui(tk) ≈ uki − uk−1
+
+> i
+
+∆tk
+
+, ˙vi(tk) ≈ vki − vk−1
+
+> i
+
+∆tk
+
+, (37) where ∆tk := tk − tk−1.Let ˆxr := [ˆ v⊤, ˆη⊤]⊤ be the state estimate of xr . We propose the following observer: 
+
+˙ˆxr = A(t)ˆ xr + Ba + Kr (t)( yr − C(t)ˆ xr ), (38) where ˆxr (0) ∈ R6. The gain matrix Kr (t) is defined as 
+
+Kr (t) = P (t)C(t)⊤Q(t) (39) where P (t) = P ⊤(t) > 0 is the solution of the Riccati equation (2), with A(t), B, and C(t) defined in (35) and 
+
+P (0) ∈ R6×6 being a symmetric positive definite matrix. The matrices Q(t) ∈ R3×3 and V (t) ∈ R6×6 satisfy the conditions provided after (2). Let ˜xr := xr − ˆxr = [˜ v⊤, ˜η⊤]⊤ be the state estimation error, with ˜v := v − ˆv and ˜η := η − ˆη.From (34) and (38), the estimation error dynamics are given by ˙˜xr = ( A(t) − Kr (t)C(t))˜ xr (40) where (A(t), C (t)) are defined in (35). The following propo-sition provides some sufficient conditions to satisfy the conditions in Lemma 2: 
+
+Proposition 1. Assume that ω(t) and ˙bi(t), i = 1 , . . . , N ,are continuous and uniformly bounded. Assume that there exist constants δM , μ M > 0 such that for all t ≥ 0
+
+> N
+
+X
+
+> i=1
+
+Z t+δM
+
+> t
+
+γi ¯qi(τ )¯ q⊤ 
+
+> i
+
+(τ )dτ ≥ μM I3, (41) where ¯qi(t) := R(t)Rcqi(t), and qi is defined in (31). Then, the conditions of Lemma 2 are satisfied. 
+
+Proof. See Appendix A. It is clear that condition (41) is satisfied as long as there exists at least one vector ¯qi that is persistently exciting over every time window of length δM , i.e., satisfying (41). The following proposition provides a geometric interpretation of persistency of excitation condition (41). 
+
+Proposition 2. Sufficient conditions guaranteeing the satis-faction of (41) are as follows:  
+
+> •
+
+For every time t such that vc(t)̸ = 0 , there is no direc-tion in the plane orthogonal to vc, which is orthogonal to all bearing bi(t), i = 1 , . . . , N , and  
+
+> •
+
+The vector R(t)Rcvc does not remain aligned with a fixed direction throughout an interval of length δM .
+
+Proof. See Appendix B. The following proposition establishes the stability proper-ties of the equilibrium point ˜xr = 0 of (40): 
+
+Proposition 3. Under the conditions of Proposition 1, the equilibrium point ˜xr = 0 of (40) is UGES. 
+
+Proof. The detailed proof is omitted as it is straightforward using Lyapunov function L = ˜ x⊤ 
+
+> r
+
+P −1 ˜xr , under the condi-tions of Proposition 1. The explicit form of the LTV observer in (38) is given as 
+
+( ˙ˆv = −ω× ˆv + ˆ η + a + Krv (yr − C(t)ˆ xr )˙ˆη = −ω× ˆη + Krη (yr − C(t)ˆ xr ), (42) with Kr = [ K⊤ 
+
+> rv
+
+, K ⊤ 
+
+> rη
+
+]⊤ and Krv , K rη ∈ R3×3.The position and orientation are estimated as in section IV-B. VI. M ONOCULAR MIXED BEARINGS VIO WITH 
+
+IMU-BIAS ESTIMATION 
+
+A. Reduced-order observer for body-frame linear velocity, gravity and IMU-bias estimation 
+
+In this section, the reduced mixed-bearings observer pre-sented in the previous section is extended to account for the gyroscope and accelerometer biases. Let ωm and am denote gyroscope and accelerometer measurements and let bg and 
+
+ba denote the constant gyroscope and accelerometer biases such that ωm = ω + bg
+
+am = a + ba, (43) Define the augmented state vector as xb := [v⊤, η ⊤, b ⊤ 
+
+> a
+
+, b ⊤ 
+
+> g
+
+]⊤, the measured input as um = [ ω⊤
+
+> m
+
+, a ⊤
+
+> m
+
+]⊤.System (27) augmented by the constant biases dynamics is given by 
+
+˙xb = fb(xb, u m), (44) where 
+
+fb(xb, u m) = 
+
+
+
+−(ωm − bg )×v + η + am − ba
+
+−(ωm − bg )×η
+
+03×1
+
+03×1
+
+ , (45) Let ˆxb := [ˆ v⊤, ˆη⊤, ˆb⊤ 
+
+> a
+
+, ˆb⊤ 
+
+> g
+
+]⊤ ∈ R12 denote the estimate of xb, and define the bias-compensated angular velocity estimate as ˆω := ωm − ˆbg . One can show that 
+
+fb(xb, u m) − fb(ˆ xb, u m) = A(t)˜xb + ϕ(˜xb), (46) where the matrices A(t) ∈ R12 ×12 and ϕ(˜xb) ∈ R12 are given by 
+
+A(t) = 
+
+
+
+−ˆω× I3 −I3 −ˆv×
+
+03×3 −ˆω× 03×3 −ˆη×
+
+03×3 03×3 03×3 03×3
+
+03×3 03×3 03×3 03×3
+
+ , ϕ (˜ xb) = 
+
+
+
+˜b× 
+
+> g
+
+˜v
+
+˜b× 
+
+> g
+
+˜η
+
+03×1
+
+03×1
+
+
+
+(47) and ˜xb := xb − ˆxb = [˜ v⊤, ˜η⊤, ˜b⊤ 
+
+> a
+
+, ˜b⊤ 
+
+> g
+
+]⊤ denotes the state estimation error, with ˜v := v − ˆv, ˜η := η − ˆη, ˜ba := ba − ˆba,and ˜bg := bg − ˆbg .Let ˆωc := R⊤ 
+
+> c
+
+ˆω and ˆvc := R⊤ 
+
+> c
+
+(ˆ v+ˆ ω×pc). Using qi defined in (30) and vc defined in (29), one has q⊤ 
+
+> i
+
+vc = 0 , and hence, one can show that 
+
+q⊤ 
+
+> i
+
+vc = ˆ q⊤ 
+
+> i
+
+ˆvc + Ci ˜xb + ¯ϕi(˜ xb) = 0 , (48) where, for each i ∈ { 1, 2, . . . , N }, ˆqi = b× 
+
+> i
+
+(˙bi +ˆ ω× 
+
+> c
+
+bi) , Ci =[ˆ q⊤ 
+
+> i
+
+R⊤ 
+
+> c
+
+, 01×3, 01×3, α i], with αi = ˆ q⊤ 
+
+> i
+
+R⊤ 
+
+> c
+
+p× 
+
+> c
+
+− ˆv⊤ 
+
+> c
+
+π(bi)R⊤ 
+
+> c
+
+,and ¯ϕi(˜ xb) = −˜b⊤ 
+
+> g
+
+Rcπ(bi)R⊤ 
+
+> c
+
+˜v − ˜b⊤ 
+
+> g
+
+Rcπ(bi)R⊤ 
+
+> c
+
+p× 
+
+> c
+
+˜bg .Let ¯ϕ(˜ xb) = [ ¯ϕ1(˜ xb) . . . , ¯ϕN (˜ xb)] ⊤ ∈ RN , ˆQ =[ˆ q1, . . . , ˆqN ]⊤ ∈ RN ×3 and C(t) ∈ RN ×12 be defined as 
+
+C(t) := C⊤ 
+
+> 1
+
+· · · C⊤
+
+> N
+
+⊤ . (49) From (48), it follows that 
+
+ˆQˆvc + C ˜xb + ¯ϕ(˜ xb) = 0 . (50) We propose the following state observer: 
+
+˙ˆxb = fb(ˆ xb, u m) − Kb ˆQˆvc, (51) leading to the following estimation error dynamics: 
+
+˙˜xb = ( A(t) − Kb(t)C(t))˜ xb + ϕ(˜ xb) − Kb(t) ¯ϕ(˜ xb), (52) where the gain matrix Kb(t) is defined as Kb(t) =
+
+P (t)C(t)⊤Q(t), the matrix P (t) = P ⊤(t) > 0 is the solution of the continuous Riccati equation (2), with P (0) ∈
+
+R12 ×12 being a symmetric positive definite matrix, and the matrices V (t) ∈ R12 ×12 and Q(t) ∈ RN ×N satisfy the conditions given after (2). The matrices A(t) and C(t) are defined in (47) and (49), respectively. Now, one can conclude that if the conditions of Lemma 1 hold, then the equilibrium point ˜xb = 0 is locally expo-nentially stable for the closed loop system (52). The detailed proof is omitted here as it follows directly from the Lyapunov first method using the Lyapunov function L = ˜ x⊤ 
+
+> b
+
+P −1 ˜xb, the Riccati equation (2) and the fact that lim || ˜xb||→ 0 || ϕ(˜ xb)|| || ˜xb|| = 0 
+
+and lim || ˜xb||→ 0 || ¯ϕ(˜ xb)|| || ˜xb|| = 0 .The explicit form of the observer in (51) is the given by 
+
+
+
+˙ˆv = −ˆω× ˆv + ˆ η + am − ˆba − Kvb ˆQˆvc,
+
+˙ˆη = −ˆω× ˆη − Kηb ˆQˆvc,
+
+˙ˆba = −Kab ˆQˆvc,
+
+˙ˆbg = −Kgb ˆQˆvc,
+
+(53) with Kb = [ Kvb
+
+> ⊤
+
+, K ηb
+
+> ⊤
+
+, K ab
+
+> ⊤
+
+, K gb
+
+> ⊤
+
+]⊤ ∈ R12 ×N .The position and orientation are estimated as in section IV-B using the bias-compensated angular velocity estimate 
+
+ˆω = ωm − ˆbg .VII. S IMULATION RESULTS 
+
+In this section, we evaluate and compare the performance of the three proposed VIO schemes: the monocular bearing-based VIO (MVIO), the monocular mixed-bearing VIO (MBVIO), and the monocular mixed-bearing VIO with IMU bias estimation (MBVIO-B), using a common simulated trajectory. All three estimation schemes are evaluated under identical simulation conditions. The proposed estimation schemes are implemented in Python within a continuous-discrete framework to accommodate the different sampling rates of the IMU and vision measurements. Algorithm 1 illus-trates this implementation for the MBVIO scheme described in Section V. The simulation has a total duration of 100 s. IMU measure-ments are generated at 200 Hz, while camera measurements are generated at 20 Hz. The position of the vehicle is given by p(t) = [3 cos( t), 3 sin( t), sin(2 t)] ⊤ and its orientation is given by R(t) = Rz (ψ(t)) Ry (θ(t)) Rx(ϕ(t)) , where ϕ(t) = 0, θ(t) = − arctan   23 cos(2 t), and ψ(t) = t + π 
+
+> 2
+
+. The environment is a rectangular room of dimension 10 × 10 ×
+
+4 m. A total of 450 landmarks are distributed within the interior of the room. A monocular pinhole camera model is used to generate the visual measurements, with its optical axis aligned with the forward direction of the body, and its center located at the origin of the body. The camera extrinsic parameters are given by Rc = Rz (−π/ 2) Rx(−π/ 2) and 
+
+pc = 0 3×1. We track up to 40 landmarks in each frame. In the next frame, we keep the landmarks that are still visible and add new ones to replace those that are lost, up to a maximum of 40 landmarks per frame. The IMU measurements are modeled with white noise with standard deviations σω = 2.4 × 10 −3 rad /s for the gyroscope and σa = 2 .83 × 10 −2m/s2 for the accelerometer. Image measurements are subject to zero-mean Gaussian noise with a standard deviation σpx = 0 .5 px .For the MBVIO-B simulation, constant accelerometer and gyroscope biases ba = [0 .10 , −0.08 , 0.12] ⊤ and bg =[0 .005 , −0.003 , 0.008] ⊤ are added to the simulated IMU measurements. For the three estimation schemes, we set 
+
+ˆR(0) = Rz (π/ 6) Ry (π/ 6) Rx(π/ 6) , ˆv(0) = ˆ p(0) = 0 3×1,
+
+ˆη(0) = ˆR⊤(0) g. For the mixed-bearing VIO with IMU bias estimation, we set ˆba = ˆbg = 0 3×1. The gain of the attitude correcting term is set to kR = 3 . For the MVIO, we set 
+
+ˆyi(0) = 0 and for the MBVIO, we set γi = 1 , for each landmark i. The matrices Q and V involved in the Riccati equation are selected according to the guidelines provided in the next subsection. The estimated position trajectory ˆp is aligned with the ground-truth position trajectory p using the Umeyama method [17], yielding aligned position ˆpaligned =
+
+Ru ˆp + pu, where (Ru, p u) ∈ SE(3) denotes the optimal alignment transformation. Simulation results are presented in Figs. 1, 2, and 3. One can observe that the velocity, gravity, roll, pitch and IMU-biases estimation errors converge to the vicinity of zero within a few seconds, while the yaw error approaches a constant value due to its inherent unobservability. The aligned estimated position trajectories closely follow the ground-truth trajectory. Over-all, under the same simulation conditions, the three proposed schemes exhibit similar performance. 
+
+Algorithm 1 Monocular Mixed Bearing VIO (MBVIO)  
+
+> 1:
+
+Input: Continuous IMU measurements (ω(t), a (t)) ; in-termittent visual measurements bi,k , i = 1 , . . . , N at times {tk}k∈N>0 . 
+
+> 2:
+
+Output: Estimates ˆR(t), ˆp(t), ˆv(t), ˆη(t), ∀t ≥ 0. 
+
+> 3:
+
+for k ≥ 1 do  
+
+> 4:
+
+while t ∈ [tk−1, t k) do  
+
+> 5:
+
+˙ˆR = ˆR(ω + σR)× 
+
+> 6:
+
+˙ˆp = ˆRˆv + ( ˆRσ R)× ˆp 
+
+> 7:
+
+˙ˆv = −ω× ˆv + ˆ η + a 
+
+> 8:
+
+˙ˆη = −ω× ˆη 
+
+> 9:
+
+˙P = A(t)P + P A ⊤(t) + V (t) (// A(t) is defined in (35) and V (t) being uniformly positive definite.) 10: end while  
+
+> 11:
+
+Read the bearing measurement bi,k , i = 1 , . . . , N  
+
+> 12:
+
+Construct the virtual output yr,k (// yr is defined in (34)) 13: zr,k = yr,k − Ck ˆx− 
+
+> r,k
+> 14:
+
+Kr,k = P − 
+
+> k
+
+C⊤ 
+
+> k
+
+(CkP − 
+
+> k
+
+C⊤ 
+
+> k
+
++ Qk)−1 (// C is defined in (35) and Q(t) being uniformly positive definite.) 15: σr,k = Kr,k zr,k  
+
+> 16:
+
+Extract σv,k , σ η,k from σr,k  
+
+> 17:
+
+ˆR+ 
+
+> k
+
+= ˆR− 
+
+> k
+> 18:
+
+ˆp+ 
+
+> k
+
+= ˆ p− 
+
+> k
+> 19:
+
+ˆv+ 
+
+> k
+
+= ˆ v− 
+
+> k
+
++ σv,k  
+
+> 20:
+
+ˆη+ 
+
+> k
+
+= ˆ η− 
+
+> k
+
++ ση,k  
+
+> 21:
+
+P + 
+
+> k
+
+= ( I6 − KkCk)P − 
+
+> k
+> 22:
+
+end for 
+
+A. Interpretation of Q and V in terms of noise characteris-tics 
+
+Although the proposed observers are designed within a deterministic framework, the matrices V (t) and Q(t) ap-pearing in the Riccati equation can be given a meaningful interpretation in terms of the noise characteristics of an associated stochastic system. Let the noisy gyroscope and accelerometer measurements be modeled as 
+
+ωm = ω + nω , am = a + na (54) where nω , n a ∈ R3 are zero-mean white Gaussian noise signals, and let nx := [ n⊤ 
+
+> ω
+
+n⊤ 
+
+> a
+
+]⊤. Their covariance matrices are given by 
+
+Cov( nω ) = σ2 
+
+> ω
+
+I3, Cov( na) = σ2
+
+> a
+
+I3
+
+such that Cov( nx) = diag (σ2 
+
+> ω
+
+I3, σ 2
+
+> a
+
+I3), where σω and 
+
+σa denote the standard deviations of the gyroscope and accelerometer noise, respectively. For each estimation scheme, the state estimation error dynamics can be written in the form 
+
+˙˜x = A(t)˜ x + G⋆(t)nx, (55) where A(t) is defined in (17) for MVIO, in (35) for MBVIO, and in (47) for MBVIO-B. The process noise covariance matrix is accordingly selected as 
+
+V (t) = G⋆(t) Cov( nx)G⊤ 
+
+> ⋆
+
+(t), (56) where the matrix G⋆(t) is given, for the MVIO, MBVIO, and MBVIO-B, respectively, as follows: 
+
+G(t) = 
+
+
+
+−ˆv× −I3
+
+−ˆη× 03
+
+− ˆY 03N ×3
+
+
+
+Gr (t) = 
+
+−ˆv× −I3
+
+−ˆη× 03
+
+
+
+, Gb(t) = 
+
+
+
+−ˆv× −I3
+
+−ˆη× 03
+
+06×3 06×3
+
+
+
+where ˆY = (ˆ y× 
+
+> 1
+
+)⊤ . . . (ˆ y× 
+
+> N
+
+)⊤⊤.To determine the Q matrix, only the contribution of the gyroscope noise to the output is considered, while the noise affecting the bearing measurements is neglected. Since in the MVIO observer, the output is not affected by the gyro noise, we pick Q = 10 −4I. For the MBVIO and MBVIO-B, we determine Q(t) as follows. For the MBVIO, define ωc,m := R⊤ 
+
+> c
+
+ωm, and 
+
+qi,m := bi × (˙bi + ω×
+
+> c,m
+
+bi), Mm := 
+
+> N
+
+X
+
+> i=1
+
+γiqi,m q⊤
+
+> i,m
+
+,
+
+¯Mm = RcMmR⊤ 
+
+> c
+
+, ˆvc,m := R⊤ 
+
+> c
+
+(ˆ v + ω×
+
+> m
+
+pc).
+
+(57) The measurement residual can therefore be written as 
+
+r = ym − C(t)ˆ x ≈ C(t)˜ x + H(t)nω , (58) 
+
+H(t) = ¯Mmp× 
+
+> c
+
+− Rc
+
+  NX
+
+> i=1
+
+γiqi,m ˆv⊤
+
+> c,m
+
+π(bi)R⊤ 
+
+> c
+
+. (59) For the MBVIO-B estimation scheme, define ˆωc,m := 
+
+R⊤ 
+
+> c
+
+(ωm − ˆbg ) and 
+
+ˆqi,m := bi × (˙bi + ˆ ω×
+
+> c,m
+
+bi), ˆvc,m := R⊤ 
+
+> c
+
+(ˆ v + ˆ ω×
+
+> m
+
+pc).
+
+(60) Then, 
+
+H(t) = 
+
+
+
+ˆq⊤
+
+> 1,m
+
+R⊤ 
+
+> c
+
+p× 
+
+> c
+
+− ˆv⊤
+
+> c,m
+
+π(b1)R⊤
+
+> c
+
+...
+
+ˆq⊤
+
+> N,m
+
+R⊤ 
+
+> c
+
+p× 
+
+> c
+
+− ˆv⊤
+
+> c,m
+
+π(bN )R⊤ 
+
+> c
+
+,
+
+ (61) The measurement noise covariance matrices for the MBVIO and MBVIO-B estimation schemes are taken as follows: 
+
+Qy (t) = H(t) Cov( nω )H⊤(t), Q(t) = Q−1 
+
+> y
+
+(t). (62) VIII. C ONCLUSION 
+
+In this paper, we proposed three Riccati-based state observers, relying on IMU and monocular bearing measurements. The first observer estimates the body-0 20 40 60 80 100  
+
+> Time (s)
+> 036
+> ‖p −̂  paligned ‖ (m)
+> 0508
+
+(a) 0 20 40 60 80 100   
+
+> Time (s)
+> 036
+> ‖v −̂  v‖ (m/s)
+> 0508.2
+
+(b) 0 20 40 60 80 100   
+
+> Time (s)
+> 0510
+> ‖η −̂  η‖ (m/s 2)
+> 05013
+
+(c) 0 20 40 60 80 100  
+
+> Time (s)
+> 025 50
+> |̂ ϕ − ϕ| (deg)
+> 05073
+
+(d) 0 20 40 60 80 100   
+
+> Time (s)
+> 40 50 60
+> |̂ ψ − ψ| (deg)
+> 010 35 63
+
+(e) 0 20 40 60 80 100   
+
+> Time (s)
+> 025 50
+> |̂ θ − θ| (deg)
+> 05069
+
+(f) Fig. 1. Estimation errors of MVIO, MBVIO, and MBVIO-B: (a) aligned position, (b) body-frame velocity, (c) body-frame gravity, (d) roll (e) yaw, and (f) pitch errors. Green, blue, and magenta denote MVIO, MBVIO, and MBVIO-B, respectively. −3 −2 −1 0 1 2 3
+
+X (m) −2 024
+
+Y (m) 
+
+> -2.6 -0.7 1.1
+> Z (m)
+
+Fig. 2. Ground-truth (red) and aligned trajectories for MVIO (green), MBVIO (blue), and MBVIO-B (magenta) 0 20 40 60 80 100  
+
+> Time (s)
+> 048
+> ‖̂ ba − ba‖ (m/s 2)
+> 0509.5
+
+(a) 0 20 40 60 80 100   
+
+> Time (s)
+> 0.00 0.15 0.30
+> ‖̂ bg − bg‖ (rad/s)
+> 0500.39
+
+(b) Fig. 3. Accelerometer and gyroscope bias estimation errors for MVIO-B 
+
+frame linear velocity, gravity vector and landmarks with UGES guarantees. The second reduced observer estimates the body-frame linear velocity and gravity vector with UGES guarantees. The third observer estimates the IMU biases as well as the body-frame linear velocity and gravity vector, with local exponential stability guarantees. These estimates are subsequently used to recover the orientation almost globally, up to an unknown constant yaw offset, and the position up to an unknown constant translation. The key ingredients in the design of the reduced-order observers MBVIO and MBVIO-B are the introduction of the body-frame gravity vector as a new state to decouple the body-frame velocity from rotational dynamics, and the derivation of an appropriate output equation that relates the angular velocity, bearing measurements and their time derivatives to the body-frame linear velocity. The price to pay for the derivation of the reduced-order observers (MBVIO and MBVIO-B) is the use of the bearings time-derivatives in the output equation. In practice, these quantities must be obtained from optical flow measurements, and are therefore subject to image noise and tracking errors. Future work will focus on evaluating the proposed observers on visual-inertial datasets, and on addressing the practical limitations by investigating strategies to overcome the per-sistency of excitation issues. APPENDIX 
+
+A. Proof of Proposition 1 
+
+This proof is motivated by the proof of [15, Lemma 1]. First, note that A(t) and C(t) given in (35) are continuous and uniformly bounded as long as ω(t) and ˙bi(t), i =1, . . . , N , are continuous and uniformly bounded. Now we proceed to show that (8) is satisfied as long as (41) is satisfied. We rewrite the matrix A(t) as A(t) = ¯A − Ω( t)
+
+with 
+
+¯A := 
+
+03×3 I3
+
+03×3 03×3
+
+
+
+, Ω( t) := blkdiag( ω×(t), ω ×(t)) .
+
+(63) First, we show that the explicit form of the state-transition matrix associated with A(t) is given by 
+
+Φ( t, τ ) = R(t) ¯Φ( t, τ )R⊤(τ ), (64) where ¯Φ( t, τ ) := exp ( ¯A(t − τ )) is the state-transition matrix associated with ¯A, and the block diagonal matrix 
+
+R(t) := blkdiag( R⊤, R ⊤).Taking the time derivative of (64), one obtains 
+
+ddt Φ( t, τ ) = ˙R(t) ¯Φ( t, τ )R⊤(τ ) + R(t) ¯A ¯Φ( t, τ )R⊤(τ ).
+
+(65) Using the facts ˙R(t) = −Ω( t)R(t) and R(t) ¯A = ¯AR(t),one gets ddt Φ( t, τ ) = A(t)Φ( t, τ ). (66) Moreover, Φ( t, τ ) satisfies Φ( t, t ) = I6, Φ( t3, t 2) Φ( t2, t 1) = Φ( t3, t 1) for all t1, t 2, t 3 ≥ 0, and Φ( τ, t ) = Φ( t, τ )−1.Consequently, Φ( t, τ ) defined in (64) is the state-transition matrix associated with A(t).Substituting (64) in (3), one has 
+
+W0(t, t + δ) = R(t) ¯W0(t, t + δ)R⊤(t), (67) where ¯W0(t, t + δ) := R t+δt ¯Φ⊤(τ, t ) ¯C⊤(τ ) ¯C(τ ) ¯Φ( τ, t )dτ ,and ¯C(t) := R(t)C(t)R(t). Notice that ¯W0 is the observ-ability Gramian associated with the pair ( ¯A, ¯C(t)) .It is clear that if the pair ( ¯A, ¯C(t)) is uniformly observable, 
+
+i.e. , there exist ¯δ, ¯μ > 0, such that for all t ≥ 0, ¯W0(t, t +¯δ) ≥ ¯μI 6, then for any δ ≥ ¯δ, and μ ∈ (0 , ¯μ], one has 
+
+W0(t, t + δ) ≥ ¯μR(t)R⊤(t) ≥ μI 6. (68) Consequently, the uniform observability of the pair 
+
+( ¯A, ¯C(t)) implies the uniform observability of the pair 
+
+(A(t), C (t)) . Hence, it is sufficient to show that the pair 
+
+( ¯A, ¯C(t)) is uniformly observable. Now, we prove the uniform observability of the pair 
+
+( ¯A, ¯C(t)) . We now establish the uniform observability of the pair ( ¯A, ¯C(t)) using lemma [18, Lemma 1]. Under the assumptions of Proposition 1, ¯C(t) is continuous and bounded. Moreover, ¯A is constant and satisfies ¯A2 = 0 ,hence ¯A is nilpotent of index two, and all its eigenvalues are zero. Therefore, the conditions required to apply lemma [18, Lemma 1] are satisfied. It is then sufficient to show that there exist strictly positive constants ¯μ, ¯δ such that, for all 
+
+t ≥ 0 Z t+¯δt
+
+O⊤(τ )O(τ )dτ ≥ ¯μI 6, (69) where 
+
+O(t) := [ ¯C⊤(t), ( ¯C(t) ¯A)⊤]⊤.
+
+Using (35), ¯C(t) can be expressed as ¯C(t) =[ ˜M (t), 03×3], where ˜M (t) = R(t)RcM (t)R⊤ 
+
+> c
+
+R⊤(t) =PNi=1 γi ¯qi ¯q⊤ 
+
+> i
+
+. It follows that 
+
+O⊤(t)O(t) = 
+
+ ˜M ⊤(t) ˜M (t) 03×3
+
+03×3 ˜M ⊤(t) ˜M (t)
+
+
+
+(70) Integrating on both sides with respect to time over [t, t +¯δ],one obtains 
+
+Z t+¯δt
+
+O⊤(τ )O(τ )dτ 
+
+=
+
+"R t+¯δt ˜M (τ )⊤ ˜M (τ )dτ 03×3
+
+03×3
+
+R t+¯δt ˜M (τ )⊤ ˜M (τ )dτ 
+
+# (71) Assuming that condition (41) holds, and using Cauchy-Schwarz inequality, one has 
+
+Z t+δM
+
+> t
+
+˜M ⊤(τ ) ˜M (τ )dτ ≥ μ2
+
+> M
+
+δM
+
+I3. (72) Therefore, (69) holds with ¯δ = δM and ¯μ = μ2 
+
+> M
+> δM
+
+.Consequently, the pair ( ¯A, ¯C(t)) is uniformly observable. Hence, the uniform observability of the pair (A(t), C (t)) 
+
+follows. 
+
+B. Proof of Proposition 2 
+
+In view of (31) and the fact that ¯qi(t) := R(t)Rcqi(t),one has ¯qi = − 1 
+
+> li
+
+( ¯Rb i × ¯Rv c), with ¯R(t) = R(t)Rc. Then, condition (41) can be rewritten as 
+
+Z t+δM
+
+> t
+
+( ¯Rv × 
+
+> c
+
+)
+
+> N
+
+X
+
+> i=1
+
+γi
+
+l2
+
+> i
+
+bib⊤
+
+> i
+
+!
+
+( ¯Rv × 
+
+> c
+
+)⊤dτ ≥ μM I3. (73) Assume that there exists β > 0 such that 
+
+π(uv )
+
+> N
+
+X
+
+> i=1
+
+γi
+
+l2
+
+> i
+
+bi(t)b⊤ 
+
+> i
+
+(t)
+
+!
+
+π(uv ) ≥ βπ (uv ), ∀t ≥ 0, (74) where uv = vc 
+
+> ∥vc∥
+
+whenever vc̸ = 0 . Since v× 
+
+> c
+
+uv = 0 , one has v× 
+
+> c
+
+π(uv ) = v× 
+
+> c
+
+and hence, 
+
+Z t+δM
+
+> t
+
+( ¯Rv × 
+
+> c
+
+)
+
+> N
+
+X
+
+> i=1
+
+γi
+
+l2
+
+> i
+
+bib⊤
+
+> i
+
+!
+
+( ¯Rv × 
+
+> c
+
+)⊤dτ 
+
+=
+
+Z t+δM
+
+> t
+
+( ¯Rv × 
+
+> c
+
+)π(uv )
+
+> N
+
+X
+
+> i=1
+
+γi
+
+l2
+
+> i
+
+bib⊤
+
+> i
+
+!
+
+π(uv )( ¯Rv × 
+
+> c
+
+)⊤dτ 
+
+≥ − β
+
+Z t+δM
+
+> t
+
+¯R(v× 
+
+> c
+
+)2 ¯R⊤dτ = β
+
+Z t+δM
+
+> t
+
+(∥¯vc∥2I − ¯vc ¯v⊤ 
+
+> c
+
+)dτ 
+
+(75) with ¯vc = ¯Rv c. Assume that there exists ζ > 0 such that 
+
+Z t+δM
+
+> t
+
+(∥¯vc∥2I − ¯vc ¯v⊤ 
+
+> c
+
+)dτ ≥ ζI, ∀t ≥ 0, (76) is satisfied as well as (74), then condition (41) is satisfied with μM = βζ .Now, let us look at condition (76). For any unit-vector z,one has 
+
+z⊤
+
+Z t+δM
+
+> t
+
+(∥¯vc∥2I − ¯vc ¯v⊤ 
+
+> c
+
+)dτ 
+
+!
+
+z
+
+=
+
+Z t+δM
+
+> t
+
+(∥¯vc∥2 − (z⊤ ¯vc)2)dτ =
+
+Z t+δM
+
+> t
+
+∥z × ¯vc(τ )∥2dτ. 
+
+(77) Consequently, condition (76) is satisfied as long as ¯vc does not remain aligned with a fixed direction throughout an interval of length δM .Now let us look at condition (74). Let ¯z be a unit vector orthogonal to uv , that is π(uv )¯ z = ¯ z and consequently, for every t such that vc(t)̸ = 0 , condition (74) becomes 
+
+> N
+
+X
+
+> i=1
+
+γi
+
+l2
+
+> i
+
+(b⊤ 
+
+> i
+
+¯z(t)) 2 ≥ β, ∀t ≥ 0, (78) which is satisfied as long as no direction in the plane orthogonal to uv (consequently orthogonal to vc) can be orthogonal to all bearings bi, i = 1 , . . . , N .REFERENCES [1] A. I. Mourikis and S. I. Roumeliotis, “A multi-state constraint kalman filter for vision-aided inertial navigation,” in Proceedings 2007 IEEE International Conference on Robotics and Automation , 2007, pp. 3565–3572. [2] P. Geneva, K. Eckenhoff, W. Lee, Y. Yang, and G. Huang, “Openvins: A research platform for visual-inertial estimation,” in 2020 IEEE International Conference on Robotics and Automation (ICRA) , 2020, pp. 4666–4672. [3] M. Bloesch, S. Omari, M. Hutter, and R. Siegwart, “Robust visual in-ertial odometry using a direct ekf-based approach,” in 2015 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) ,2015, pp. 298–304. [4] A. Kasyanov, F. Engelmann, J. St¨ uckler, and B. Leibe, “Keyframe-based visual-inertial online slam with relocalization,” in 2017 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , 2017, pp. 6662–6669. [5] T. Qin, P. Li, and S. Shen, “Vins-mono: A robust and versatile monoc-ular visual-inertial state estimator,” IEEE Transactions on Robotics ,vol. 34, no. 4, pp. 1004–1020, 2018. [6] D. Scaramuzza and Z. Zhang, Aerial Robots, Visual-Inertial Odometry of . Berlin, Heidelberg: Springer Berlin Heidelberg, 2020, pp. 1–9. [7] A. Barrau and S. Bonnabel, “Invariant kalman filtering,” Annual Review of Control, Robotics, and Autonomous Systems , vol. 1, no. Volume 1, 2018, pp. 237–257, 2018. [8] P. van Goor and R. Mahony, “Eqvio: An equivariant filter for visual-inertial odometry,” IEEE Transactions on Robotics , vol. 39, no. 5, pp. 3567–3585, 2023. [9] T. Bouazza, S. Berkane, M.-D. Hua, and T. Hamel, “Observer design for optical flow-based visual-inertial odometry with almost-global convergence,” in 2025 IEEE 64th Conference on Decision and Control (CDC) , 2025, pp. 7419–7424. [10] R. S. Bucy, “The riccati equation and its bounds,” Journal of Computer and System Sciences , vol. 6, p. 343–353, 1972. [11] R. E. Kalman, “Contributions to the theory of optimal control,” Bolet´ ın de la Sociedad Matem´ atica Mexicana , vol. 5, pp. 102–119, 1960. [12] P. Morin, A. Eudes, and G. Scandaroli, “Uniform observability of linear time-varying systems and application to robotics problems,” in 
+
+Geometric Science of Information , F. Nielsen and F. Barbaresco, Eds. Springer International Publishing, 2017, pp. 336–344. [13] T. Hamel and C. Samson, “Position estimation from direction or range measurements,” Automatica , vol. 82, pp. 137–144, 2017. [14] P. Batista, N. Petit, C. Silvestre, and P. Oliveira, “Relaxed conditions for uniform complete observability and controllability of ltv systems with bounded realizations,” pp. 3598–3605, 2017. [15] M. Wang and A. Tayebi, “Pose, velocity and landmark position estimation using imu and bearing measurements,” in 2025 American Control Conference (ACC) , 2025, pp. 1192–1197. [16] M. Boughellaba, S. Berkane, and A. Tayebi, “Nonlinear observer design for landmark-inertial simultaneous localization and mapping,” in 2025 European Control Conference (ECC) , 2025, pp. 1967–1972. [17] S. Umeyama, “Least-squares estimation of transformation parameters between two point patterns,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 13, no. 4, pp. 376–380, 1991. [18] M. Wang, S. Berkane, and A. Tayebi, “Nonlinear observers design for vision-aided inertial navigation systems,” IEEE Transactions on Automatic Control , vol. 67, no. 4, pp. 1853–1868, 2022.
