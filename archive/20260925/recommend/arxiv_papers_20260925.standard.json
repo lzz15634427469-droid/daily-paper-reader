@@ -1,0 +1,59 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-25T22:27:11.573446+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.28312v1",
+      "source": "arxiv",
+      "title": "VGM-VS: Rethinking Visual Geometry Model for High-Precision Visual Servoing",
+      "abstract": "We present VGM-VS, a visual servoing method built on a pretrained feed-forward visual geometry model. Given the current view and a reference image captured at the target configuration, we estimate the relative camera pose with a visual geometry model and apply it iteratively as the pose increment of a closed-loop pose-based visual servoing (PBVS) scheme. The geometry-aware representation acquired from large-scale pretraining keeps this estimate reliable when the target is occluded, weakly textured, or covers only a small part of the image. However, the scale ambiguity inherent to these models leaves the predicted translation defined up to an unknown scale, while the pose increment must be metric for robot control. We close this gap with a scene-specific metric adaptation: the robot autonomously records image--pose pairs along a predefined motion starting from the target pose, and we fine-tune the camera head on these data, jointly learning the hand--eye transform and thus removing the need for a dedicated calibration process. We evaluate our method on three real-world assembly tasks with demanding tolerances: USB-C cable picking, cable insertion, and RAM insertion. Running in real time at 30Hz, VGM-VS converges to submillimeter terminal accuracy on the cable tasks, and reaches success rates of 90--100\\% when the target is moved during servoing. It converges in all trials under initial displacements of up to 30cm from the reference pose and with 50\\% of the target object occluded, outperforming the compared visual servoing baselines.",
+      "authors": [
+        "Yimin Pan",
+        "Sen Wang",
+        "You Zhou",
+        "Jianfeng Gao",
+        "Pengbo Sun",
+        "Ahmed M. Naguib",
+        "Zoltan-Csaba Marton"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.CV"
+      ],
+      "published": "2026-09-23T15:56:19+00:00",
+      "link": "https://arxiv.org/pdf/2609.28312v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "relative camera pose estimation between current view and reference image",
+      "llm_evidence_cn": "当前视图与参考图之间的相对相机位姿估计",
+      "llm_evidence": "当前视图与参考图之间的相对相机位姿估计",
+      "canonical_evidence": "当前视图与参考图之间的相对相机位姿估计",
+      "llm_tldr_en": "VGM-VS estimates the relative camera pose between the current view and a reference image with a pretrained visual geometry model, using it iteratively as the pose increment of a closed-loop visual servoing scheme and resolving scale ambiguity for metric control.",
+      "llm_tldr_cn": "针对视觉伺服中目标被遮挡、弱纹理或成像占比小时位姿估计不可靠的问题，本文提出基于预训练前馈视觉几何模型的VGM-VS方法。它用几何模型估计当前视图与参考图之间的相对相机位姿，并作为闭环位姿视觉伺服的位姿增量迭代应用，同时用场景尺度恢复缓解尺度歧义。该工作把几何基础模型的相对位姿估计能力迁移到机器人视觉伺服控制中。",
+      "llm_tldr": "针对视觉伺服中目标被遮挡、弱纹理或成像占比小时位姿估计不可靠的问题，本文提出基于预训练前馈视觉几何模型的VGM-VS方法。它用几何模型估计当前视图与参考图之间的相对相机位姿，并作为闭环位姿视觉伺服的位姿增量迭代应用，同时用场景尺度恢复缓解尺度歧义。该工作把几何基础模型的相对位姿估计能力迁移到机器人视觉伺服控制中。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

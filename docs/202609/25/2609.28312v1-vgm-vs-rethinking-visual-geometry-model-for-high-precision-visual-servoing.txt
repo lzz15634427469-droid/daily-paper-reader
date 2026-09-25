@@ -1,0 +1,396 @@
+Title: VGM-VS: Rethinking Visual Geometry Model for High-Precision Visual Servoing
+
+URL Source: https://arxiv.org/pdf/2609.28312v1
+
+Published Time: Thu, 24 Sep 2026 01:26:22 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# VGM-VS: Rethinking Visual Geometry Model for High-Precision Visual Servoing 
+
+Yimin Pan 1 Sen Wang 1,2 You Zhou 1 Jianfeng Gao 1 Pengbo Sun 1
+
+Ahmed M. Naguib 1 Zoltan-Csaba Marton 1VGM-VS   
+
+> Motion Controller
+> Converged
+> Robot at
+> initial position
+> Misalignment Camera image at time i Reference image
+> No
+> Predicted Pose
+> Increment
+> Feedback
+> Command
+> Accurate alignment
+> Robot after VGM-VS converges
+> Simple linear motion for insertion task
+
+(a) Initial Pose 
+
+(Misaligned) 
+
+> Yes
+
+(b) VGM-VS Alignment Feedback Loop 
+
+(c) Robot Aligned 
+
+with Insertion Task 
+
+(d) Insertion Task Completion 
+
+Fig. 1. Overview of VGM-VS, shown on the RAM insertion task. (a) The robot starts from an arbitrary viewpoint, misaligned with the target. (b) VGM-VS predicts the relative pose between the current and the reference image, which a motion controller applies in a closed loop until convergence. (c) The loop ends at a high-precision alignment, (d) from which a short linear motion completes the task. 
+
+Abstract — We present VGM-VS, a visual servoing method built on a pretrained feed-forward visual geometry model. Given the current view and a reference image captured at the target configuration, we estimate the relative camera pose with a visual geometry model and apply it iteratively as the pose increment of a closed-loop pose-based visual servoing (PBVS) scheme. The geometry-aware representation acquired from large-scale pretraining keeps this estimate reliable when the target is occluded, weakly textured, or covers only a small part of the image. However, the scale ambiguity inherent to these models leaves the predicted translation defined up to an unknown scale, while the pose increment must be metric for robot control. We close this gap with a scene-specific metric adaptation: the robot autonomously records image–pose pairs along a predefined motion starting from the target pose, and we fine-tune the camera head on these data, jointly learning the hand–eye transform and thus removing the need for a dedicated calibration process. We evaluate our method on three real-world assembly tasks with demanding tolerances: USB-C cable picking, cable insertion, and RAM insertion. Running in real time at 30Hz, VGM-VS converges to submillimeter terminal accuracy on the cable tasks, and reaches success rates of 90– 100% when the target is moved during servoing. It converges in all trials under initial displacements of up to 30cm from the reference pose and with 50% of the target object occluded, outperforming the compared visual servoing baselines. 
+
+I. I NTRODUCTION 
+
+High-precision assembly remains one of the most de-manding problems in industrial robotics, as it requires align- 
+
+> 1
+
+All authors are with Agile Robots SE, Munich, Germany.  
+
+> 2
+
+Technical University of Munich 
+
+ing parts within submillimeter tolerances. Achieving such an alignment from vision is difficult: the gripper partially occludes the assembly interface, the surfaces are weakly textured and specular, and the interface itself covers only a few pixels of the image. A pose estimate acquired before the approach may be insufficient to complete the alignment. Visual feedback can correct the remaining displacement, but obtaining reliable feedback becomes challenging when the target itself is poorly observed. Visual servoing controls robot motion by regulating image features or estimated poses relative to a desired configu-ration [1], [2]. Object pose estimation instead aligns the robot with an explicit estimate of the target pose [3], a paradigm that still inherits the visibility limits described above. In contrast, scene-feature [4], [5] and direct [6], [7] methods regress motion from whatever the image contains. This broader visual context is useful in structured assembly cells: when a target remains fixed relative to its surroundings, the visible workspace structure can anchor a reference even when the target is partially occluded. Existing scene-based methods, however, reach only millimeter- to centimeter-level accuracy or suffer from a small convergence basin, leaving open whether scene structure can support the submillimeter accuracy that precise assembly demands. Feed-forward visual geometry models offer a promising basis for this task. DUSt3R [8] and Mast3R [9] regress pointmaps from image pairs, and VGGT [10] and VGGT-
+
+Ω [11] extend this to many views and additionally predict arXiv:2609.28312v1 [cs.RO] 23 Sep 2026 camera poses, in a single forward pass without per-scene optimization. These models regress camera motion from the whole image rather than from the target alone, featuring scene anchoring in exactly the sense required above. Their accuracy, however, is characterized only up to scale: recon-struction is evaluated after alignment to the ground truth, and relative-pose benchmarks score translation by direction, so neither establishes whether a predicted translation is millimeter-level accurate. Visual servoing instead requires both the direction of the remaining motion and its magnitude in physical units, and a scale that varies between frames makes a small stopping threshold impossible to apply. Clos-ing this gap requires adapting the pretrained representation so that its translations become metric within the deployment workspace. We present VGM-VS, a visual servoing framework that combines scene-anchored relative localization with scene-specific metric adaptation, as illustrated in Fig. 1. Given a current image and a reference image captured at the desired task configuration, VGM-VS estimates the relative camera pose from the surrounding scene structure, without an explicit estimate of the object pose. With the camera rigidly mounted on the robot end-effector, this estimate becomes the increment of a closed-loop controller, in which each new observation refines the previous command. To make the predicted translation metric, we fine-tune the camera head on data that the robot records autonomously in the scene. We evaluate VGM-VS on three real-world assembly tasks requiring precise positioning: USB-C cable picking, cable insertion, and RAM insertion, where it reaches submillimeter terminal accuracy on the cable tasks and tolerates large ini-tial displacements, partial occlusions, and objects displaced during servoing. Our contributions are summarized as follows:  
+
+> •
+
+Scene-anchored visual servoing. A closed-loop frame-work that uses static workspace geometry rather than object models to servo to a reference image. Relative poses from a feed-forward visual geometry model guide iterative corrections, reducing the reliance on single-shot pose accuracy.  
+
+> •
+
+Scene-specific metric adaptation. A procedure that fine-tunes the camera head on autonomously collected data while freezing the pretrained backbone, recovering metric pose predictions and the hand–eye transform without a dedicated calibration.  
+
+> •
+
+Real-robot validation. An evaluation on three high-precision assembly tasks under large initial displace-ments, partial occlusions, and dynamic scene changes, showing lower terminal pose error and higher success rates than classical and learning-based baselines. II. R ELATED WORK 
+
+A. Visual Servoing 
+
+Classical visual servoing is divided into image-based vi-sual servoing (IBVS), which minimizes feature errors in the image plane, and position-based visual servoing (PBVS), which minimizes a reconstructed pose error [12], [1], [2]; hybrid 2 1/2-D schemes [13] trade off between the local stability of IBVS and the dependence of PBVS on accurate pose estimation, calibration, and object models. Both fam-ilies typically rely on sparse hand-crafted features such as SIFT [14], ORB [15], or AKAZE [16], so precision degrades under weak texture, illumination changes, and occlusion, while direct photometric servoing [6], [7] avoids feature extraction altogether at the cost of a small convergence basin. Learning-based methods relax these assumptions. Early works regress the relative camera pose with CNNs inside a PBVS loop [17], [18], reaching submillimeter accuracy with Siamese networks in scene-specific settings [19], while others servo on learned representations such as optical flow [20], [21], keypoints [22], [23], or autoencoder and SE(3)-equivariant latent spaces [24], [25]. CNS [26] encodes keypoint correspondences into a graph and trains a GNN con-troller purely in simulation, attaining submillimeter precision with a large convergence basin, and CNSv2 [27] extends it to textureless scenes via probabilistic matching. ViT-VS [4] and ART-VS [5] instead exploit pretrained Vision Transformer features within a classical IBVS loop, thereby generalizing without task-specific training. Still, existing pipelines either inherit the local stability and Jacobian conditioning issues of IBVS, or rely on pose estimators that lack a metric, geometry-grounded scene representation, limiting the achiev-able precision and robustness trade-off. 
+
+B. Visual Geometry Models 
+
+Feed-forward visual geometry models replace multi-stage reconstruction pipelines with a single network. DUSt3R [8] regresses dense pointmaps from uncalibrated image pairs, jointly encoding geometry, correspondence, and relative pose; MASt3R [9] adds metric-scale outputs and dense descriptors, and follow-ups extend the paradigm to multi-view, streaming, and dynamic settings [28], [29]. VGGT [10] unifies this family in one transformer that predicts cameras, depth, pointmaps, and point tracks for hundreds of views, 
+
+π3 [30] removes reference-view bias through permutation equivariance, and MapAnything [31] handles heterogeneous input–output modalities at the metric scale. Most recently, VGGT-Ω [11] shows that reconstruction quality scales pre-dictably with model and data size, achieving state-of-the-art accuracy on static and dynamic scenes. In robotics, these models serve as geometry-aware encoders for imitation policies [32], [33], spatial-token providers for Vision Language Action (VLA) models [34], and front-ends for SLAM and relocalization [35], [36]. Yet they are evaluated almost exclusively on reconstruction and localization benchmarks where centimeter errors are tolerable. Whether such models can deliver the submillime-ter, sub-degree accuracy demanded by closed-loop servoing remains open. VGM-VS addresses this gap by revisiting their geometric outputs as a metric feedback signal for high-precision servoing, benchmarked against classical IBVS [1] and feature-driven ART-VS [5]. a) Data Collection        
+
+> Conical Spiral
+> Motion
+> b) Scene Specific Fine-tuning
+> c) PBVS Loop
+> VGM-VS
+> Cartesian Motion
+> Controller
+> Yes
+> No
+> Predefined task
+> motion
+> Closed-Loop
+> Servoing
+> Read Current
+> Image and Pose
+> Command
+> new target
+> Forward Pass Gradient Flow
+> Frozon weights Trainable weights
+> Side View
+> x
+> y
+> z
+> Top View
+> y
+> zx
+> xFig. 2. Overview of VGM-VS. (a) Data collection: the end-effector follows a conical spiral with its apex at the target pose, yielding synchronized image–pose pairs for the target workspace. (b) Fine-tuning: the aggregator is kept frozen, while the camera head and the hand–eye transform are trainable and optimized using the ground-truth relative pose (12). (c) Pose-based visual servoing (PBVS) loop: the predicted increment (5) is composed with the current robot pose (6) and sent to a Cartesian motion controller. When its translational and rotational magnitudes fall below τtand τR, the predefined task motion is executed; otherwise, the loop continues with the new observation.
+
+III. M ETHOD 
+
+In this section, we present VGM-VS, a scene-anchored visual servoing framework built on VGGT-Ω [11] and sum-marized in Fig. 2. VGM-VS positions the end-effector based on the current image I and a reference image I0, captured once at the desired end-effector pose with respect to a target object. We first describe how the camera predictions of VGGT-Ω are converted into a pose increment and used for closed-loop pose-based servoing control. We then address the scale ambiguity of these predictions in two ways. Sec. III-C fits a global similarity calibration, which serves as a simple baseline, while Sec. III-D instead fine-tunes the model for metric-scale pose predictions, as adopted in VGM-VS. Finally, we introduce the automated procedure used to collect the scene-specific data on which both adaptations rely. 
+
+A. Relative Pose Estimation with VGGT-Ω
+
+Given an input sequence of (Ii)Ni=1 RGB images, where Ii ∈
+
+RH×W ×3, VGGT-Ω jointly predicts the camera parameters and depth maps corresponding to each image in one forward pass [11]: 
+
+f (I1, . . . , IN ) =  (g1, D1), . . . , (gN , DN ) (1) where Di ∈ RH×W is the depth map of image Ii, and gi =(qi, ti, fi) ∈ R9 contains the rotation quaternion qi ∈ R4, the translation vector ti ∈ R3, and the field of view fi ∈ R2 of the corresponding camera. As in VGGT [10], all cameras are expressed in the frame of the first view, which is designated as the reference view using dedicated camera and register tokens. We take the reference image as the first view, so that the frame of the model coincides with the camera frame c0 at the target pose, and the prediction for the current view I is directly the relative pose of the target with respect to the current camera, which the servoing loop of Sec. III-B drives to the identity. Internally, the aggregator fagg maps the reference image I0
+
+and the current image I to patch, camera, and scene tokens through DINOv3 [37] tokenization and alternating-attention with registers: 
+
+fagg (I0, I) =  (zF′ 
+
+> 0
+
+, zcam ′ 
+
+> 0
+
+, zscene ′ 
+
+> 0
+
+), (zF′
+
+, zcam ′
+
+, zscene ′
+
+). (2) Since depth prediction is not required for servoing settings, we drop the entire depth branch, evaluating only the camera head fcam , which jointly predicts the camera parameters for both views: 
+
+fcam 
+
+ (zcam ′ 
+
+> 0
+
+, zscene ′ 
+
+> 0
+
+), (zcam ′, zscene ′) =  (q0, t0, f0), (q, t, f).
+
+(3) Here and below, bTa ∈ SE (3) denotes the transformation of frame a to frame b, and T(q, t) the rigid transform assembled from a quaternion and a translation, and a hat denotes a quantity predicted by the model. As c0 is the reference frame of the model, g0 is the identity up to regression error and is discarded, while g = ( q, t, f) yields the relative pose 
+
+> c
+
+Tc0 = T(q, t), (4) which denotes the pose of the reference camera expressed in the current one. The scale ambiguity of the model affects only the norm of the predicted translation; its direction and the rotation remain valid. The reference view thus serves as the visual anchor: the relative pose is estimated from the full field of view, so static workspace structure, such as fixtures, panels, and the table, provides localization cues when the target is small, textureless, or partially occluded. We refer to this formulation as scene-anchored servoing, as it requires no object model, detector, or hand-crafted features. 
+
+B. Closed-Loop Pose-Based Visual Servoing 
+
+In principle, the predicted relative pose can be used directly to guide the robot’s motion towards the target. However the precision is the limiting factor, as it is bounded by that of a single prediction, made at an arbitrary, possibly large, distance from the target, where the object occupies only a few pixels in the image and the prediction is con-sequently noisier. Such a command also inherits the error of the hand–eye transform used to express it in the robot frame, and assumes a static scene throughout the motion. We therefore propose to apply this pose increment iteratively in a closed loop. Each successive iteration then moves the robot closer to the target, where predictions become gradually more accurate, analogously to a coarse-to-fine refinement, and small errors from the hand–eye calibration can also be compensated over the loop, as in IBVS [1]. Another property of VGGT-Ω is that it is explicitly trained on dynamic scenes, which further improves the robustness to disturbances such as an occlusion or a displacement of part of the scene during servoing. To express the predicted relative pose in the end-effector frame, we use the transformation eTc, obtained through a conventional hand–eye calibration procedure: 
+
+> e
+
+Te0 = eTc cTc0
+
+ eTc
+
+−1, (5) and compose it with the current robot pose to obtain the pose commanded to a Cartesian motion controller: 
+
+> w
+
+Te0 = wTe eTe0 . (6) In the loop, we acquire the next image without waiting for the motion to complete, so that each prediction overrides the previous command. Since the predicted direction is correct even at large distances, this sequence leads to a smooth, direct motion towards the target pose, along which the predicted increments decay monotonically to zero. The convergence is then determined by the translational and rotational magnitudes of eTe0 that fall below the thresholds τt
+
+and τR, which are selected according to the tolerance required by the task. In manipulation tasks, the reference image is usually captured at a pre-grasp or pre-insertion pose, so that after convergence, the task is completed by a short predefined motion in task space. The whole process is illustrated in Fig. 2(c). 
+
+C. Global Similarity Calibration 
+
+VGGT-Ω [11] is trained with normalized scene super-vision. Its predictions are thus recovered only up to an unknown global scale and cannot be used directly for robot control. To resolve this scale ambiguity, we first consider a scene-specific Sim (3) correction, fitted with the ground-truth rela-tive poses (12) of the scene-specific data as later described in Sec. III-E, which we express in the camera frame with the calibrated eTc. Since the predicted and the ground-truth translations are relative to the same reference view, the correction preserves the origin and involves no translation term, so the transformation reduces to a scale s > 0 and a rotation R ∈ SO (3). We estimate both by formulating a least-squares problem over the K collected samples, denoting by 
+
+(ˆtk, ˆqk) and (tk, qk) the translation and the unit quaternion part of the predicted and ground-truth relative pose of the 
+
+k-th sample: 
+
+s⋆, R⋆ = arg min  
+
+> s>0,R∈SO (3)
+> K
+
+# ∑
+
+> k=1
+
+s R ˆtk − tk 2, (7) which can be solved in closed form with Umeyama align-ment [38]. With ∑k ˆtkt⊤ 
+
+> k
+
+= UΣV⊤ the singular value decom-position (SVD) and ε > 0 a small constant for numerical stability, the solution is as follows: 
+
+R⋆ = V diag  1, 1, det (VU ⊤) U⊤,
+
+s⋆ = ∑k R⋆ˆtk, tk
+
+∑k ∥ˆtk∥2 + ε , (8) The fitted parameters are then applied to every prediction of (4) before it enters the control loop: the translation is mapped to s⋆R⋆ˆt, while the predicted rotation is expressed in the corrected frame as R⋆ ˆRR ⋆⊤, so that the scale only affects the translation. We refer to this variant as VGM-VS w/o FT (without fine-tuning). 
+
+D. Camera Head Fine-Tuning 
+
+VGGT-Ω was not trained for the level of accuracy required by high-precision tasks, and its residual error varies with the viewpoint and the distance to the target. A single global similarity transformation thus cannot compensate for such an error, as later seen in Sec. IV. Rather than correcting the model’s output, we therefore let the model adapt to the scene itself. Starting from the pretrained weights, we keep the aggre-gator (2) frozen and fine-tune the camera head (3), which can then learn the non-linear mapping from the aggregated tokens to metric poses. Freezing the aggregator preserves the general geometric representation learned during large-scale pretraining, which a few thousand images of a single scene could otherwise degrade. The training samples share the structure described in Sec. III-E, in which the reference image I0 is paired with a recorded image Ii. With probability pid , the latter is instead paired with itself, with the relative pose (12) set to identity. Such samples emphasize the predictions near the target pose, where noise leads to oscillations, slow convergence and a larger terminal error. Otherwise, with probability prand , the reference is replaced with a randomly drawn pair (Ij, wTe j ),
+
+j̸ = i. This increases the variance of the viewpoints seen during training and avoids a drop in performance when a different reference image is used at inference, as is common in practice. To increase the generalizability of the camera head predictions, we further augment the images with ran-dom brightness, contrast, saturation, and gamma changes, followed by Gaussian blur, for robustness to the illumination changes and motion blur which are commonly encountered at deployment. The predicted end-effector increment (5) is supervised against its ground-truth counterpart (12) by a combination of translational and rotational loss terms: 
+
+L = λt Lt + λR LR, (9) both evaluated over a minibatch of B samples. The translation is penalized by the standard mean squared error: 
+
+Lt = 1
+
+B
+
+> B
+
+# ∑
+
+> k=1
+
+ˆtk − tk 2
+
+d2max 
+
+, (10) where dmax > 0 is a reference distance that renders the term dimensionless. The rotation is penalized by the geodesic angle between the ground-truth and the predicted unit quater-nion: 
+
+LR = 1
+
+B
+
+> B
+
+# ∑
+
+> k=1
+
+arccos  2⟨ ˆqk, qk⟩2 − 1
+
+θmax 
+
+, (11) where the inner product is squared to make the loss invariant to the sign ambiguity of the quaternion double cover, and 
+
+θmax > 0 normalizes the angle in the same way. Translation and rotation are expressed in different units; balancing their loss terms is a known challenge in pose regression [39]. We handle it with a simple set of hyper-parameters: the normalization by dmax and θmax makes both terms dimensionless and comparable, while λt and λR set their relative contribution. Notably, the hand–eye transform no longer requires a dedicated calibration procedure: initialized at the identity, a learned transform e ˆTc replaces eTc in (5) and is optimized directly from the loss supervision, using the data collected in the scene. 
+
+E. Data Collection 
+
+Both approaches presented in Secs. III-C and III-D rely on real-world data of the scene, which are collected automati-cally: starting from the target pose, the end-effector follows a precomputed trajectory that sweeps the free space region around it, in practice, along the direction opposite to the predefined task motion of Sec. III-B. The objective of this motion is to capture as much visual variance as possible, i.e. a wide range of viewpoints and translational distances, in a short recording time, while concentrating the samples near the target pose, where the prediction accuracy matters most. For that, we use a conical spiral with its apex at the target pose, parameterized by its maximum radius rmax , its length 
+
+ℓ along the approach axis, and its number of turns n, as illustrated in Fig. 2(a); other sweeping patterns, such as a pyramidal one, would be equally valid. At each waypoint the camera is oriented towards the target object to guarantee its visibility, and a slight random perturbation is added to the resulting rotation. Since the trajectory is executed without stopping at the waypoints, the robot is still moving when an image is acquired, and any temporal misalignment between the image and robot-state streams translates directly into label noise. To alleviate this, we timestamp each image at the midpoint of its exposure interval and pair it with the pose obtained by interpolating between the two closest robot states, with both streams sharing a common clock. This yields a set of synchronized pairs (Ii, wTei ) of images and end-effector poses. In practice, the recording process completes within a few minutes, producing a dataset of several thousand pairs, which we empirically find sufficient to adapt the model to a new scene, as shown in Sec. IV. Each training sample is then formed by pairing the ref-erence image I0, recorded at the target pose, with another image Ii, i̸ = 0, and labeled with the relative transform in end-effector frame  
+
+> ei
+
+Te0 =  wTei
+
+−1 wTe0 , (12) which is the ground-truth counterpart of (5). IV. E XPERIMENTS 
+
+A. Compared Methods 
+
+We compare VGM-VS with ORB-IBVS, a classical base-line using ORB keypoints and descriptors, and ART-VS, a state-of-the-art learned-feature visual servoing method, for which we use the official implementation. Both baselines compute a camera-frame twist with the point-feature IBVS control law. To use the same downstream Cartesian motion controller for all methods, we integrate each twist over the control period ∆t = 1/ f on SE (3) and express the resulting pose increment in the end-effector frame using eTc.As an ablation, we evaluate VGM-VS w/o FT, the globally calibrated variant of Sec. III-C, to isolate the contribution of scene-specific fine-tuning. Its Sim (3) correction is fitted on a subset of the same data used for fine-tuning. 
+
+B. Experimental Setup a) Tasks: We evaluate the methods on three high-precision industrial manipulation tasks: USB-C cable pick-ing, USB-C cable insertion, and RAM insertion. The cable tasks use a Franka Emika Panda robot equipped with a Franka Hand and a wrist-mounted RealSense D405 camera. The robot grasps a cable from a holder and inserts it into a laptop USB-C port. The smooth, untextured surfaces of this scene provide too few distinctive features for ORB-IBVS and ART-VS to establish the four correspondences required by the IBVS control law, so only VGM-VS and VGM-VS w/o FT are evaluated on these two tasks. RAM insertion uses an Agile Robots Thor 3 robot equipped with a Robotiq gripper and the same wrist-mounted camera. The motherboard’s dense arrangement of electronic components provides sufficient visual features, allowing all four methods to be evaluated. 
+
+b) Implementation details: For each scene, we collect approximately 10 ,000 image–pose pairs as described in Sec. III-E, over a two-minute trajectory with the camera running at 90 Hz. The conical spiral is parameterized by a maximum radius rmax = 10 cm, a length ℓ = 30 cm along the approach axis, and n = 8 turns, and the look-at orientation TABLE I QUANTITATIVE COMPARISON ON THREE REAL -WORLD TASKS . ↑/↓ INDICATE THAT HIGHER /LOWER IS BETTER ; THE BEST RESULT WITHIN EACH SETTING IS SHOWN IN BOLD , AND A DASH DENOTES A METRIC THAT IS NOT MEASURED .Task Eval. type Setting Method Conv. (%) ↑ et (mm) ↓ eR (◦) ↓ Iter. ↓ Success (%) ↑                                                                                                                                                  
+
+> RAM insertion Init. pose pert. Small ORB-IBVS 100 3.45 0.8 777.34 –ART-VS 46 32.97 6.47 140.11 –VGM-VS w/o FT 100 6.6 1.04 23 –VGM-VS 100 0.95 0.45 26.64 –Large ORB-IBVS 66 3.69 0.78 926.33 –ART-VS 27 65.34 15.11 110.35 –VGM-VS w/o FT 96 6.95 1.11 29.75 –VGM-VS 100 1.15 0.55 26.79 –Scene dist. 25% occ. ORB-IBVS 40 5.43 1.15 1101 –ART-VS 65 30.12 6.20 79 –VGM-VS w/o FT 100 5.55 1.25 21 –VGM-VS 100 3.37 0.87 17.65 –50% occ. ORB-IBVS 15 7.32 1.66 1297 –ART-VS 55 29.82 5.84 41.18 –VGM-VS w/o FT 85 14.8 2.85 43.29 –VGM-VS 100 4.21 1.07 19.4 –Dynamic ORB-IBVS 55 ––1951 30 ART-VS 20 ––39.5 10 VGM-VS w/o FT 90 ––27 60 VGM-VS 100 ––20.2 95
+> Cable picking Init. pose pert. Large VGM-VS w/o FT 100 4.61 0.32 36 –VGM-VS 100 0.58 0.20 26.56 –Scene dist. Dynamic VGM-VS w/o FT 90 ––17.38 10 VGM-VS 100 ––12.29 100
+> Cable insertion Init. pose pert. Large VGM-VS w/o FT 100 1.98 0.33 26.62 –VGM-VS 100 0.67 0.08 33.06 –Scene dist. Dynamic VGM-VS w/o FT 95 ––11.6 0VGM-VS 100 ––15 90
+
+of each waypoint is perturbed by up to 1 ◦. Starting from the pretrained VGGT-Ω checkpoint, we fine-tune VGM-VS for 200 epochs with a batch size of 64, using AdamW with a linear warm-up over the first 20 epochs followed by a cosine decay, and sampling the training pairs with pid = 0.01 and prand = 0.5. Fine-tuning takes approximately two hours on eight NVIDIA RTX 6000 Pro GPUs. During evaluation, all methods run on the workstation equipped with an AMD Ryzen 9 9950X CPU and a NVIDIA RTX 5090 GPU, and the loop is considered converged once the commanded increment falls below τt = 0.3 mm and τR = 0.3◦. VGM-VS runs at 30 Hz with 480 × 640 images. ART-VS and ORB-IBVS achieve raw inference rates of 132 Hz and 110 Hz, respectively, using 720 ×1280 images; however, their closed-loop control frequency is capped at 30 Hz by the RealSense D405 camera’s maximum frame rate at this resolution. 
+
+C. Evaluation a) Test conditions: We evaluate robustness to initial-pose perturbations and scene disturbances. Initial-pose per-turbations are generated relative to the camera pose at which the reference image was captured. We first apply a translational offset and orient the camera toward the target object to ensure visibility; the rotational perturbation is then applied relative to this look-at orientation. A perturbation is classified as small when its translational and rotational magnitudes do not exceed 15 cm and 15 ◦, respectively, and as large otherwise, reaching up to 30 cm and 30 ◦. Scene disturbances include occluding 25% or 50% of the target object and a dynamic setting in which the object is moved several centimeters after the reference image is captured. We conduct 100 trials for each initial-pose perturbation setting and 20 trials for each scene-disturbance setting, using the same reference image within each scene. Convergence and task-success rates are computed over all trials, while pose errors and iteration counts are averaged over converged trials. 
+
+b) Metrics: For static settings, we report the conver-gence rate, final translation error et , final rotation error 
+
+eR, and the number of inference iterations required for convergence. Pose errors are measured relative to the ground-truth pose at which the reference image was captured. In the dynamic setting, where the target pose is unavailable, we report convergence rate, iteration count, and task-success rate. A trial is classified as non-convergent if a collision occurs, an unreachable pose is commanded, or convergence is not achieved within one minute. 
+
+D. Quantitative Results 
+
+Table I shows that VGM-VS converges in every setting of every task. The cable tasks separate the methods most sharply: the keypoint-based baselines are inapplicable there, whereas VGM-VS converges by anchoring on the target’s surroundings. On RAM insertion, where all four methods can be compared, the baselines degrade as the conditions get 0 20 40 60 80 100       
+
+> Normalized iteration (%)
+> −60
+> −40
+> −20 020 40 60
+> Translation delta (mm) VGM-VS ∆tx
+> VGM-VS ∆ty
+> VGM-VS ∆tz
+> VGM-VS w/o FT ∆tx
+> VGM-VS w/o FT ∆ty
+> VGM-VS w/o FT ∆tz
+
+(a) 0 20 40 60 80 100        
+
+> Normalized iteration (%)
+> −15
+> −10
+> −50510 15
+> Rotation delta (deg) VGM-VS ∆rx
+> VGM-VS ∆ry
+> VGM-VS ∆rz
+> VGM-VS w/o FT ∆rx
+> VGM-VS w/o FT ∆ry
+> VGM-VS w/o FT ∆rz
+
+(b) 0 20 40 60 80 100              
+
+> Normalized iteration (%)
+> −30
+> −20
+> −10 010 20 30
+> Translation error (mm)
+> VGM-VS etx
+> VGM-VS ety
+> VGM-VS etz
+> VGM-VS w/o FT etx
+> VGM-VS w/o FT ety
+> VGM-VS w/o FT etz
+> ART-VS etx
+> ART-VS ety
+> ART-VS etz
+> ORB-IBVS etx
+> ORB-IBVS ety
+> ORB-IBVS etz
+
+(c) 0 20 40 60 80 100       
+
+> Normalized iteration (%)
+> −0.04
+> −0.02 0.00 0.02 0.04
+> Translation velocity (m/s) ORB-IBVS vx
+> ORB-IBVS vy
+> ORB-IBVS vz
+> ART-VS vx
+> ART-VS vy
+> ART-VS vz
+
+(d) 0 20 40 60 80 100        
+
+> Normalized iteration (%)
+> −0.3
+> −0.2
+> −0.10.00.10.20.3
+> Angular velocity (rad/s) ORB-IBVS ωx
+> ORB-IBVS ωy
+> ORB-IBVS ωz
+> ART-VS ωx
+> ART-VS ωy
+> ART-VS ωz
+
+(e) 0 20 40 60 80 100              
+
+> Normalized iteration (%)
+> −15
+> −10
+> −50510 15
+> Rotation error (deg)
+> VGM-VS erx
+> VGM-VS ery
+> VGM-VS erz
+> VGM-VS w/o FT erx
+> VGM-VS w/o FT ery
+> VGM-VS w/o FT erz
+> ART-VS erx
+> ART-VS ery
+> ART-VS erz
+> ORB-IBVS erx
+> ORB-IBVS ery
+> ORB-IBVS erz
+
+(f) 
+
+Fig. 3. RAM insertion under large initial pose perturbation. The x axis represents the number of inference steps (%); the y axis is (a) predicted translation increment ∆t (mm); (b) predicted rotation increment ∆r (deg); (c) translation error et (mm); (d) camera linear velocity v (m/s); (e) camera angular velocity 
+
+ω (rad/s); (f) rotation error eR (deg). VGM-VS variants are shown in (a), (b); the keypoint-based baselines in (d), (e); all four methods in (c), (f). 
+
+harder: under 50% occlusion, the convergence rates of ORB-IBVS, ART-VS, and VGM-VS w/o FT fall to 15%, 55%, and 85%. ORB-IBVS establishes more correspondences than ART-VS, which likely explains its higher convergence rate under pose perturbations, but its less distinctive features produce more outliers and a slow, oscillatory behavior cost-ing an order of magnitude more iterations than VGM-VS: in Fig. 3(d) and (e), the velocities of both baselines keep fluctuating along the trajectory, whereas those of VGM-VS decay smoothly to zero. ART-VS instead matches fewer points, so a few wrong ones bias the feature error and drive the camera to a wrong pose reported as converged, explaining its low iteration count and the large terminal errors in Fig. 3(c) and (f). Scene-specific fine-tuning turns coarse alignment into task-level precision. VGM-VS w/o FT aligns the camera reliably in most trials, but its predictions remain inaccurate: in Fig. 3(a) and (b) its increments overshoot and change sign before settling, unlike those of the fine-tuned model, which decay monotonically to zero. Since the loop terminates once the increment falls below τt and τR, such noise causes prema-ture convergence several millimeters away from the target: in dynamic cable insertion, it stops after 11 .6 iterations yet succeeds in none of the trials. Fine-tuning instead yields the best accuracy in every setting, with submillimeter translation and sub-degree rotation errors on both cable tasks, and drives both errors close to zero in Fig. 3(c) and (f). Such precision is what the tasks require, as each ends with a predefined linear motion along a single axis: VGM-VS reaches task-success rates of 95%, 100%, and 90% for dynamic RAM insertion, cable picking, and cable insertion, against 60%, 10%, and 0% for VGM-VS w/o FT. V. C ONCLUSION 
+
+In this work we have introduced VGM-VS, a scene-anchored visual servoing framework that uses a pretrained visual geometry model to estimate the relative pose between the current and the reference image, and applies it as the pose increment for a closed-loop controller. No object model, detector, or feature correspondences are needed: a single reference image defines the goal, and the surrounding workspace provides the cues when the target itself is barely visible. A short, autonomously collected robot dataset is used to fine-tune the camera head and jointly refine the hand– eye transformation, recovering metric scale and reducing the viewpoint-dependent errors that a global similarity transfor-mation cannot correct. Adapting a new scene thus costs two minutes of recording and about two hours of training, without human intervention. Across experiments on cable picking, cable insertion, and RAM insertion, VGM-VS converged in all evaluated settings while running at 30 Hz, reaching submillimeter terminal error and sub-degree rotations on the two cable tasks, and 90–100% task success when the object is displaced during servoing, while remaining robust to texture-poor scenes, large initial displacements, and partial occlusions. The main limitation is that the adaptation remains scene specific, as a new workspace requires another recording and training session; generalizing a single adapted model to unseen scenes is therefore an important direction for future work. Longer-horizon tasks would also require an automatic selection of the intermediate reference views, since specifying one per alignment stage by hand would intro-duce substantial task-specific engineering. Finally, the short contact-rich motion that completes each task is executed open loop, and integrating force feedback during this phase could further improve the task success rate. ACKNOWLEDGMENT The authors thank Xuming Meng for reviewing the manuscript, Zewen Yang for helpful discussions, and Swap-nil Mule and his team for the fixture design and 3D printing used in the experiments. This work was carried out at Agile Robots SE. REFERENCES [1] F. Chaumette and S. Hutchinson, “Visual servo control. I. Basic approaches,” IEEE Robotics & Automation Magazine , vol. 13, no. 4, pp. 82–90, 2006. [2] F. Chaumette and S. Hutchinson, “Visual servo control. II. Advanced approaches,” IEEE Robotics & Automation Magazine , vol. 14, no. 1, pp. 109–118, 2007. [3] B. Wen, W. Yang, J. Kautz, and S. Birchfield, “Foundationpose: Unified 6d pose estimation and tracking of novel objects,” 2024. [Online]. Available: https://arxiv.org/abs/2312.08344 [4] A. Scherl, S. Thalhammer, B. Neuberger, W. W¨ ober, and J. Garc´ ıa-Rodr´ ıguez, “ViT-VS: On the applicability of pretrained vision trans-former features for generalizable visual servoing,” arXiv preprint arXiv:2503.04545 , 2025. [5] A. Scherl, B. Neuberger, S. Schwaiger, D. Mulero-P´ erez, L. Muster, and J. Garcia-Rodriguez, “Art-vs: Adaptive resolution tiling for vision transformer visual servoing,” 2026. [Online]. Available: https://arxiv.org/abs/2606.19089 [6] C. Collewet, E. Marchand, and F. Chaumette, “Visual servoing set free from image processing,” in 2008 IEEE International Conference on Robotics and Automation (ICRA) . IEEE, 2008, pp. 21–26. [7] C. Collewet and E. Marchand, “Photometric visual servoing,” IEEE Transactions on Robotics , vol. 27, no. 4, pp. 828–834, 2011. [8] S. Wang, V. Leroy, Y. Cabon, B. Chidlovskii, and J. Revaud, “DUSt3R: Geometric 3D vision made easy,” in IEEE/CVF Conference on Com-puter Vision and Pattern Recognition (CVPR) , 2024, pp. 20 697– 20 709. [9] V. Leroy, Y. Cabon, and J. Revaud, “Grounding image matching in 3D with MASt3R,” in European Conference on Computer Vision (ECCV) ,2024, pp. 71–91. [10] J. Wang, M. Chen, N. Karaev, A. Vedaldi, C. Rupprecht, and D. Novotny, “VGGT: Visual geometry grounded transformer,” in 
+
+IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2025, pp. 5294–5306. [11] J. Wang, M. Chen, S. Zhang, N. Karaev, J. Sch¨ onberger, P. Labatut, P. Bojanowski, D. Novotny, A. Vedaldi, and C. Rupprecht, “VGGT-
+
+Ω,” arXiv preprint arXiv:2605.15195 , 2026. [12] S. Hutchinson, G. D. Hager, and P. I. Corke, “A tutorial on visual servo control,” IEEE Transactions on Robotics and Automation , vol. 12, no. 5, pp. 651–670, 1996. [13] E. Malis, F. Chaumette, and S. Boudet, “2 1/2 D visual servoing,” 
+
+IEEE Transactions on Robotics and Automation , vol. 15, no. 2, pp. 238–250, 1999. [14] D. G. Lowe, “Distinctive image features from scale-invariant key-points,” International Journal of Computer Vision , vol. 60, no. 2, pp. 91–110, 2004. [15] E. Rublee, V. Rabaud, K. Konolige, and G. Bradski, “ORB: An effi-cient alternative to SIFT or SURF,” in IEEE International Conference on Computer Vision (ICCV) , 2011, pp. 2564–2571. [16] P. F. Alcantarilla, J. Nuevo, and A. Bartoli, “Fast explicit diffusion for accelerated features in nonlinear scale spaces,” in British Machine Vision Conference (BMVC) , 2013. [17] A. Saxena, H. Pandya, G. Kumar, A. Gaud, and K. M. Krishna, “Exploring convolutional networks for end-to-end visual servoing,” in 
+
+IEEE International Conference on Robotics and Automation (ICRA) ,2017, pp. 3817–3823. [18] Q. Bateux, E. Marchand, J. Leitner, F. Chaumette, and P. Corke, “Training deep neural networks for visual servoing,” in IEEE Inter-national Conference on Robotics and Automation (ICRA) , 2018, pp. 3307–3314. [19] C. Yu, Z. Cai, H. Pham, and Q.-C. Pham, “Siamese convolutional neural network for sub-millimeter-accurate camera pose estimation and visual servoing,” in IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , 2019, pp. 935–941. [20] Y. V. S. Harish, H. Pandya, A. Gaud, S. Terupally, S. Shankar, and K. M. Krishna, “DFVS: Deep flow guided scene agnostic image based visual servoing,” in IEEE International Conference on Robotics and Automation (ICRA) , 2020, pp. 9000–9006. [21] P. Katara, Y. V. S. Harish, H. Pandya, A. Gupta, A. Sanchawala, G. Kumar, B. Bhowmick, and K. M. Krishna, “DeepMPCVS: Deep model predictive control for visual servoing,” in Conference on Robot Learning (CoRL) , 2021, pp. 2006–2015. [22] E. Y. Puang, K. P. Tee, and W. Jing, “KOVIS: Keypoint-based visual servoing with zero-shot sim-to-real transfer for robotics manipulation,” in IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , 2020, pp. 7527–7533. [23] N. Adrian, V.-T. Do, and Q.-C. Pham, “DFBVS: Deep feature-based visual servo,” arXiv preprint arXiv:2201.08046 , 2022. [24] S. Felton, P. Brault, ´ E. Fromont, and ´ E. Marchand, “Visual servoing in autoencoder latent space,” IEEE Robotics Automation Lett. , vol. 7, no. 2, pp. 3234–3241, 2022. [25] S. Felton, E. Fromont, and E. Marchand, “Deep metric learning for visual servoing: when pose and image meet in latent space,” in IEEE Int. Conf. on Robotics and Automation, ICRA’23 , London, UK, May 2023, pp. 741–747. [26] A. Chen, H. Yu, Y. Wang, and R. Xiong, “CNS: Correspondence encoded neural image servo policy,” in IEEE International Conference on Robotics and Automation (ICRA) , 2024, pp. 17 410–17 416. [27] A. Chen, H. Yu, S. Li, Y. Chen, Z. Zhou, W. Sun, R. Xiong, and Y. Wang, “CNSv2: Probabilistic correspondence encoded neural image servo,” arXiv preprint arXiv:2503.00132 , 2025. [28] H. Wang and L. Agapito, “3D reconstruction with spatial memory,” in International Conference on 3D Vision (3DV) , 2025, pp. 78–89. [29] Q. Wang, Y. Zhang, A. Holynski, A. A. Efros, and A. Kanazawa, “Continuous 3D perception model with persistent state,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,2025, pp. 10 510–10 522. [30] Y. Wang, J. Zhou, H. Zhu, W. Chang, Y. Zhou, Z. Li, J. Chen, J. Pang, C. Shen, and T. He, “ π3: Permutation-equivariant visual geometry learning,” in International Conference on Learning Representations (ICLR) , 2026. [31] N. Keetha, N. M¨ uller, J. Sch¨ onberger, L. Porzi, Y. Zhang, T. Fischer, A. Knapitsch, D. Zauss, E. Weber, N. Antunes, J. Luiten, M. Lopez-Antequera, S. Rota Bul` o, C. Richardt, D. Ramanan, S. Scherer, and P. Kontschieder, “MapAnything: Universal feed-forward metric 3D reconstruction,” in International Conference on 3D Vision (3DV) ,2026. [32] S. Ge, Y. Liu, Y. Zhang, S. Xie, W. Zhang, M. Zhou, and Z. Wang, “VGGT-DP: Generalizable robot control via vision foundation mod-els,” arXiv preprint arXiv:2509.18778 , 2026. [33] Q. Qian, G. Zhao, G. Zhang, J. Wang, R. Xu, J. Gao, and D. Zhao, “GP3: A 3D geometry-aware policy with multi-view images for robotic manipulation,” arXiv preprint arXiv:2509.15733 , 2025. [34] H. Peng, H. Li, Y. Dai, Y. Lan, Y. Luo, T. Qi, Z. Zhang, Y. Zhan, J. Zhang, W. Xu, and Z. Liu, “OmniVGGT: Omni-modality driven visual geometry grounded transformer,” arXiv preprint arXiv:2511.10560 , 2025. [35] R. Murai, E. Dexheimer, and A. J. Davison, “MASt3R-SLAM: Real-time dense SLAM with 3D reconstruction priors,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,2025, pp. 16 695–16 705. [36] T. Deng, W. Wu, K. Wu, G. Wang, S. Zhu, S. Yuan, X. Chen, G. Shen, Z. Liu, and H. Wang, “Reloc-VGGT: Visual re-localization with geometry grounded transformer,” arXiv preprint arXiv:2512.21883 ,2025. [37] O. Sim´ eoni, H. V. Vo, M. Seitzer, F. Baldassarre, M. Oquab, C. Jose, V. Khalidov, M. Szafraniec, S. Yi, M. Ramamonjisoa, F. Massa, D. Haziza, L. Wehrstedt, J. Wang, T. Darcet, T. Moutakanni, L. Sen-tana, C. Roberts, A. Vedaldi, J. Tolan, J. Brandt, C. Couprie, J. Mairal, H. J´ egou, P. Labatut, and P. Bojanowski, “Dinov3,” arXiv preprint arXiv:2508.10104 , 2025. [38] S. Umeyama, “Least-squares estimation of transformation parameters between two point patterns,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 13, no. 4, pp. 376–380, 1991. [39] A. Kendall and R. Cipolla, “Geometric loss functions for camera pose regression with deep learning,” in 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , 2017, pp. 6555–6564.

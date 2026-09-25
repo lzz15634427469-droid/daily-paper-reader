@@ -1,0 +1,25 @@
+{
+  "date": "20260925",
+  "date_label": "",
+  "generated_at": "2026-09-25 22:27:44 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.28312v1",
+      "route": "202609/25/2609.28312v1-vgm-vs-rethinking-visual-geometry-model-for-high-precision-visual-servoing",
+      "title": "VGM-VS: Rethinking Visual Geometry Model for High-Precision Visual Servoing",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "当前视图与参考图之间的相对相机位姿估计",
+      "first_seen_at": "2026-09-25 22:27:44 UTC",
+      "updated_at": "2026-09-25 22:27:44 UTC"
+    }
+  ]
+}

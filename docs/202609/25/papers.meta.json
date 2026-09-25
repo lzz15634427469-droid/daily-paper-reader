@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-25",
+  "date": "2026-09-25",
+  "generated_at": "2026-09-25T22:27:45",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/25/2609.28312v1-vgm-vs-rethinking-visual-geometry-model-for-high-precision-visual-servoing",
+      "section": "quick",
+      "title_en": "VGM-VS: Rethinking Visual Geometry Model for High-Precision Visual Servoing",
+      "authors": "Yimin Pan, Sen Wang, You Zhou, Jianfeng Gao, Pengbo Sun, Ahmed M. Naguib, Zoltan-Csaba Marton",
+      "date": "2026-09-23",
+      "pdf": "https://arxiv.org/pdf/2609.28312v1",
+      "score": "6.0",
+      "evidence": "当前视图与参考图之间的相对相机位姿估计",
+      "tldr": "视觉伺服在遮挡、弱纹理、小目标时易失效，且预训练视觉几何模型存在尺度模糊，无法直接用于机器人度量控制。VGM-VS用预训练前馈视觉几何模型估计当前视图与参考图的相对位姿，并迭代作为闭环PBVS位姿增量；再通过场景特定度量适配，让机器人自主采集图像-位姿对微调相机头，同时学习手眼变换。在USB-C抓取、线缆插入、内存插入任务中30Hz实时运行，线缆任务达亚毫米精度，目标移动成功率90-100%。",
+      "tags": "query:pe",
+      "abstract_en": "We present VGM-VS, a visual servoing method built on a pretrained feed-forward visual geometry model. Given the current view and a reference image captured at the target configuration, we estimate the relative camera pose with a visual geometry model and apply it iteratively as the pose increment of a closed-loop pose-based visual servoing (PBVS) scheme. The geometry-aware representation acquired from large-scale pretraining keeps this estimate reliable when the target is occluded, weakly textured, or covers only a small part of the image. However, the scale ambiguity inherent to these models leaves the predicted translation defined up to an unknown scale, while the pose increment must be metric for robot control. We close this gap with a scene-specific metric adaptation: the robot autonomously records image--pose pairs along a predefined motion starting from the target pose, and we fine-tune the camera head on these data, jointly learning the hand--eye transform and thus removing the need for a dedicated calibration process. We evaluate our method on three real-world assembly tasks with demanding tolerances: USB-C cable picking, cable insertion, and RAM insertion. Running in real time at 30Hz, VGM-VS converges to submillimeter terminal accuracy on the cable tasks, and reaches success rates of 90--100\\% when the target is moved during servoing. It converges in all trials under initial displacements of up to 30cm from the reference pose and with 50\\% of the target object occluded, outperforming the compared visual servoing baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

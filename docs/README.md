@@ -48,17 +48,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-09-24</span>
+      <span class="dpr-home-dashboard-kicker">2026-09-25</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 4 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 1 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>0</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>4</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>1</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-09-24 21:47:21 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-09-25 22:27:44 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,9 +69,7 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日速读4篇、精读0篇，焦点集中在图像/点云配准与机器人6D位姿，已记录篇目评分均为6.0。</p>
-<p>最值得看的是《ZIL》的零样本图像到LiDAR配准与《G6D》的免几何学习RGB-D 6D位姿求解，另有《GRIP》用高斯渲染做跨模态桥接。</p>
-<p>普通读者可先抓“零样本”“跨模态”“6D位姿”关键词，再按兴趣选一篇速读即可。</p>
+<p>今日完成 1 篇速读、0 篇精读，聚焦 VGM-VS 如何重塑高精度视觉伺服中的视觉几何模型。这篇 6.0 分工作最值得看的是：把视觉几何模型与视觉伺服结合来提升精度，但分数中等，说明结论仍需验证。普通读者可先了解其思路，暂不必深挖细节。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -93,12 +91,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">4 篇</strong>
+    <strong class="dpr-home-dashboard-count">1 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="ZIL: Zero-shot Image-to-LiDAR Registration">ZIL: Zero-shot Image-to-LiDAR Registration</span></li><li><span class="dpr-home-dashboard-paper-title" title="G6D: Geometric Learning-Free RGB-D 6D Pose Solver for Robotic Manipulation">G6D: Geometric Learning-Free RGB-D 6D Pose Solver for Robotic Manipulation</span></li><li><span class="dpr-home-dashboard-paper-title" title="GRIP: Gaussian Rendering as a Cross-Modal Bridge for Image-to-Point Cloud Registration">GRIP: Gaussian Rendering as a Cross-Modal Bridge for Image-to-Point Cloud Registration</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="VGM-VS: Rethinking Visual Geometry Model for High-Precision Visual Servoing">VGM-VS: Rethinking Visual Geometry Model for High-Precision Visual Servoing</span></li></ul>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>4</strong></span></div>
+  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>1</strong></span></div>
 </section>
 </div>
 
