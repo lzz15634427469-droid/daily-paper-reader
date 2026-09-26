@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-26",
+  "date": "2026-09-26",
+  "generated_at": "2026-09-26T21:52:22",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/26/2609.29644v1-markerless-multi-modal-autonomous-robotic-inspection-of-large-space-structures",
+      "section": "quick",
+      "title_en": "Markerless Multi-Modal Autonomous Robotic Inspection of Large Space Structures",
+      "authors": "Juan De Dios Alfaro, Arturo Ríos, David Rodríguez-Martínez, Carlos Pérez-del-Pulgar",
+      "date": "2026-09-24",
+      "pdf": "https://arxiv.org/pdf/2609.29644v1",
+      "score": "7.0",
+      "evidence": "利用RGB-D、热成像与激光雷达对大型空间结构进行无标记自主巡检",
+      "tldr": "针对大型空间结构在轨巡检依赖预定义轨迹、合作标志或精确模型的问题，本文提出无标志多模态自主巡检流程，以三维重建作为巡检支撑表示。系统用Kinova Gen2机械臂搭载RGB-D、热成像与2D LiDAR，估计巡检体积、生成视点并用MoveIt规划无碰撞运动。候选重建方法评估后选用Nerfacto做几何重建，Thermal-Nerfacto实现热感知渲染。Gazebo仿真与初步实验表明可自主获取空间一致数据并生成适用于视觉和几何评估的重建，迈向非合作大型空间结构巡检。",
+      "tags": "query:pe",
+      "abstract_en": "Future orbital infrastructures, such as deployable antennas, solar farms, and large orbital platforms will require autonomous inspection systems able to operate with limited prior knowledge and without cooperative markers. Current on-orbit servicing approaches often rely on predefined trajectories, standard interfaces, fiducial markers or accurate target models, which limits scalability for large, heterogeneous or partially unknown structures. This paper presents a markerless autonomous robotic inspection pipeline in which 3D reconstruction is used as an inspection-support representation. The system integrates a Kinova Gen2 manipulator with an end-effector-mounted multimodal sensor head composed of an RGB-D camera, a thermal camera and a 2D LiDAR. The pipeline estimates an approximate inspection volume, generates viewpoints, plans collision-free motions with MoveIt, and synchronously records RGB-D images, thermal data, and robot poses in ROS2. Candidate reconstruction methods were evaluated to select a practical method for this pipeline, with Nerfacto used for geometric reconstruction and Thermal-Nerfacto used to demonstrate thermal-aware rendering for inspection. Validation in a Gazebo-based simulator and preliminary laboratory tests reveal that the proposed system can autonomously acquire spatially coherent inspection data and produce reconstructions suitable for visual and geometric assessment, representing a step towards inspection of large non-cooperative space structures.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/26/2609.25898v1-robust-active-perception-control-for-global-state-free-aerial-ground-cooperation",
+      "section": "quick",
+      "title_en": "Robust Active-Perception Control for Global-State-Free Aerial-Ground Cooperation",
+      "authors": "Mingxuan Zhang, Jiajun Yu, Baozhe Zhang, Pengxiang Zhou, Wentao Liu, Fei Gao, Chao Xu, Yanjun Cao",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.25898v1",
+      "score": "6.0",
+      "evidence": "两运动平台间视觉相对位姿估计",
+      "tldr": "空地协同需实时获取无人机与无人车相对状态，但全局定位依赖会限制鲁棒性。COPA在无人车附着的非惯性系中直接控制，无需全局状态估计，并用单轴云台解耦相机光轴与无人机俯仰，构建主动感知模型。TCN仅凭运动历史预测无人车短时加速度与角速度，MPC据此联合优化无人机与云台控制。仿真与实车验证表明其可持续保持目标可见，并在高动态机动下稳定跟踪。",
+      "tags": "query:pe",
+      "abstract_en": "Aerial-ground cooperation requires real-time UAV--UGV relative-state information. Instead of maintaining global estimates for both robots, direct control in a UGV-attached non-inertial frame avoids reliance on global localization. Vision-based relative pose estimation with a passive marker offers a low-cost and effective solution. However, a fixed camera may lose sight of the moving UGV when the required UAV attitude conflicts with the field-of-view (FOV) constraint. To address this, we propose COPA, a robust active-perception framework for global-state-free aerial-ground cooperation. We use a single-axis gimbal to decouple the camera optical axis from the UAV pitch attitude. We derive an active-perception model that relates UAV motion, gimbal angle, and UGV motion to the target image-plane state.A Temporal Convolutional Network (TCN) predicts short-horizon UGV acceleration and angular velocity from recent motion history without global-state measurements. The model predictive control (MPC) uses these predictions to jointly optimize UAV and gimbal control. Simulations show that COPA maintains continuous target visibility, while ablation studies confirm that the TCN reduces peak errors during UGV motion transitions. Real-world experiments with UGV accelerations up to 3m/s^2 and yaw rates up to 1.0rad/s demonstrate robust tracking.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,97 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-26T21:51:16.278031+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.29644v1",
+      "source": "arxiv",
+      "title": "Markerless Multi-Modal Autonomous Robotic Inspection of Large Space Structures",
+      "abstract": "Future orbital infrastructures, such as deployable antennas, solar farms, and large orbital platforms will require autonomous inspection systems able to operate with limited prior knowledge and without cooperative markers. Current on-orbit servicing approaches often rely on predefined trajectories, standard interfaces, fiducial markers or accurate target models, which limits scalability for large, heterogeneous or partially unknown structures. This paper presents a markerless autonomous robotic inspection pipeline in which 3D reconstruction is used as an inspection-support representation. The system integrates a Kinova Gen2 manipulator with an end-effector-mounted multimodal sensor head composed of an RGB-D camera, a thermal camera and a 2D LiDAR. The pipeline estimates an approximate inspection volume, generates viewpoints, plans collision-free motions with MoveIt, and synchronously records RGB-D images, thermal data, and robot poses in ROS2. Candidate reconstruction methods were evaluated to select a practical method for this pipeline, with Nerfacto used for geometric reconstruction and Thermal-Nerfacto used to demonstrate thermal-aware rendering for inspection. Validation in a Gazebo-based simulator and preliminary laboratory tests reveal that the proposed system can autonomously acquire spatially coherent inspection data and produce reconstructions suitable for visual and geometric assessment, representing a step towards inspection of large non-cooperative space structures.",
+      "authors": [
+        "Juan De Dios Alfaro",
+        "Arturo Ríos",
+        "David Rodríguez-Martínez",
+        "Carlos Pérez-del-Pulgar"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-24T12:37:21+00:00",
+      "link": "https://arxiv.org/pdf/2609.29644v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "markerless autonomous inspection of large space structures using multimodal RGB-D, thermal and LiDAR sensing",
+      "llm_evidence_cn": "利用RGB-D、热成像与激光雷达对大型空间结构进行无标记自主巡检",
+      "llm_evidence": "利用RGB-D、热成像与激光雷达对大型空间结构进行无标记自主巡检",
+      "canonical_evidence": "利用RGB-D、热成像与激光雷达对大型空间结构进行无标记自主巡检",
+      "llm_tldr_en": "Current on-orbit servicing relies on fiducial markers, predefined trajectories or accurate target models, limiting scalability. This paper presents a markerless autonomous robotic inspection pipeline using 3D reconstruction, integrating a manipulator with an RGB-D, thermal and 2D LiDAR sensor head to inspect large, heterogeneous or partially unknown space structures.",
+      "llm_tldr_cn": "针对在轨服务依赖合作标志、预设轨迹或精确目标模型、难以扩展至大型异质结构的问题，本文提出无标记自主机器人巡检流程。系统将机械臂与集成了RGB-D相机、热成像相机和二维激光雷达的多模态传感头结合，以三维重建作为巡检支撑表示。该流程可在先验知识有限且无合作标志条件下工作，提升了大型空间结构巡检的可扩展性与自主性，为空间相对感知与多模态融合提供了思路。",
+      "llm_tldr": "针对在轨服务依赖合作标志、预设轨迹或精确目标模型、难以扩展至大型异质结构的问题，本文提出无标记自主机器人巡检流程。系统将机械臂与集成了RGB-D相机、热成像相机和二维激光雷达的多模态传感头结合，以三维重建作为巡检支撑表示。该流程可在先验知识有限且无合作标志条件下工作，提升了大型空间结构巡检的可扩展性与自主性，为空间相对感知与多模态融合提供了思路。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.25898v1",
+      "source": "arxiv",
+      "title": "Robust Active-Perception Control for Global-State-Free Aerial-Ground Cooperation",
+      "abstract": "Aerial-ground cooperation requires real-time UAV--UGV relative-state information. Instead of maintaining global estimates for both robots, direct control in a UGV-attached non-inertial frame avoids reliance on global localization. Vision-based relative pose estimation with a passive marker offers a low-cost and effective solution. However, a fixed camera may lose sight of the moving UGV when the required UAV attitude conflicts with the field-of-view (FOV) constraint. To address this, we propose COPA, a robust active-perception framework for global-state-free aerial-ground cooperation. We use a single-axis gimbal to decouple the camera optical axis from the UAV pitch attitude. We derive an active-perception model that relates UAV motion, gimbal angle, and UGV motion to the target image-plane state.A Temporal Convolutional Network (TCN) predicts short-horizon UGV acceleration and angular velocity from recent motion history without global-state measurements. The model predictive control (MPC) uses these predictions to jointly optimize UAV and gimbal control. Simulations show that COPA maintains continuous target visibility, while ablation studies confirm that the TCN reduces peak errors during UGV motion transitions. Real-world experiments with UGV accelerations up to 3m/s^2 and yaw rates up to 1.0rad/s demonstrate robust tracking.",
+      "authors": [
+        "Mingxuan Zhang",
+        "Jiajun Yu",
+        "Baozhe Zhang",
+        "Pengxiang Zhou",
+        "Wentao Liu",
+        "Fei Gao",
+        "Chao Xu",
+        "Yanjun Cao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-09-22T09:02:46+00:00",
+      "link": "https://arxiv.org/pdf/2609.25898v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "vision-based relative pose estimation between two moving platforms",
+      "llm_evidence_cn": "两运动平台间视觉相对位姿估计",
+      "llm_evidence": "两运动平台间视觉相对位姿估计",
+      "canonical_evidence": "两运动平台间视觉相对位姿估计",
+      "llm_tldr_en": "COPA is a robust active-perception framework using a single-axis gimbal and passive marker to maintain vision-based relative pose estimation for global-state-free aerial-ground cooperation.",
+      "llm_tldr_cn": "空地协同需要实时的无人机与无人车相对状态信息，而固定相机在无人机姿态与视场约束冲突时会丢失目标。本文提出COPA主动感知框架，用单轴云台解耦相机光轴与无人机俯仰，建立关联无人机运动、云台与相对位姿的感知模型。该方法在不依赖全局定位的情况下保持视觉相对位姿估计的鲁棒性，为运动平台间相对位姿估计提供可迁移方案。",
+      "llm_tldr": "空地协同需要实时的无人机与无人车相对状态信息，而固定相机在无人机姿态与视场约束冲突时会丢失目标。本文提出COPA主动感知框架，用单轴云台解耦相机光轴与无人机俯仰，建立关联无人机运动、云台与相对位姿的感知模型。该方法在不依赖全局定位的情况下保持视觉相对位姿估计的鲁棒性，为运动平台间相对位姿估计提供可迁移方案。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "date": "20260926",
+  "date_label": "",
+  "generated_at": "2026-09-26 21:52:19 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.29644v1",
+      "route": "202609/26/2609.29644v1-markerless-multi-modal-autonomous-robotic-inspection-of-large-space-structures",
+      "title": "Markerless Multi-Modal Autonomous Robotic Inspection of Large Space Structures",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 7.0,
+      "evidence": "利用RGB-D、热成像与激光雷达对大型空间结构进行无标记自主巡检",
+      "first_seen_at": "2026-09-26 21:52:19 UTC",
+      "updated_at": "2026-09-26 21:52:19 UTC"
+    },
+    {
+      "paper_id": "2609.25898v1",
+      "route": "202609/26/2609.25898v1-robust-active-perception-control-for-global-state-free-aerial-ground-cooperation",
+      "title": "Robust Active-Perception Control for Global-State-Free Aerial-Ground Cooperation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "两运动平台间视觉相对位姿估计",
+      "first_seen_at": "2026-09-26 21:52:19 UTC",
+      "updated_at": "2026-09-26 21:52:19 UTC"
+    }
+  ]
+}
