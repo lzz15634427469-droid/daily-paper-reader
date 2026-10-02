@@ -1,0 +1,25 @@
+{
+  "date": "20261002",
+  "date_label": "",
+  "generated_at": "2026-10-02 22:36:25 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.38755v1",
+      "route": "202610/02/2609.38755v1-agentic-relative-camera-pose-estimation-via-learned-ranking-and-verification",
+      "title": "Agentic Relative Camera Pose Estimation via Learned Ranking and Verification",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "智能体式相对相机位姿估计框架",
+      "first_seen_at": "2026-10-02 22:36:25 UTC",
+      "updated_at": "2026-10-02 22:36:25 UTC"
+    }
+  ]
+}

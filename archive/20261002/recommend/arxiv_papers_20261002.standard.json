@@ -1,0 +1,57 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-10-02T22:35:21.172707+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.38755v1",
+      "source": "arxiv",
+      "title": "Agentic Relative Camera Pose Estimation via Learned Ranking and Verification",
+      "abstract": "A wide range of approaches have been developed for camera pose estimation, including correspondence-based methods, end-to-end pose regression, and recent 3D geometric foundation models. Our key observation is that no single estimator is optimal for diverse challenges, such as wide baselines, lack of texture, appearance changes, and occlusions. Further analysis reveals substantial performance variation across both benchmarks and individual image pairs, with different estimators exhibiting complementary strengths. We introduce PoseAgent, an agentic framework for relative camera pose estimation that dynamically orchestrates pose estimators through learnable ranking and verification. Given an image pair, a profiling agent first extracts appearance, semantic, and geometric features relevant to pose estimation, e.g., scene type. A learned ranking agent then predicts the relative competence of multiple pose estimators given the image-pair profile. The top-ranked estimator is executed, and its predicted pose is assessed by a learned verification agent that estimates the corresponding pose error. When verification fails, PoseAgent adaptively invokes lower-ranked estimators until a candidate is accepted or the execution budget is reached. For pose verification, our verification network predicts pose errors more accurately than prior models. For pose estimation, PoseAgent improves AUC@5 degree up to 4.2% over the strongest standalone estimator on each of ARKitScenes, MegaDepth, ScanNet++, and RealEstate10K. On ARKitScenes, PoseAgent also outperforms VLM-based agents, which include a VLM ranker with the same verifier and fallback policy. These results demonstrate the effectiveness of our learned ranking and verification.",
+      "authors": [
+        "Zhining Gu",
+        "Shangjie Du",
+        "Weimin Qiu",
+        "Carl Olsson",
+        "Ping Liu",
+        "Meng Tang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-30T01:42:00+00:00",
+      "link": "https://arxiv.org/pdf/2609.38755v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "agentic framework for relative camera pose estimation",
+      "llm_evidence_cn": "智能体式相对相机位姿估计框架",
+      "llm_evidence": "智能体式相对相机位姿估计框架",
+      "canonical_evidence": "智能体式相对相机位姿估计框架",
+      "llm_tldr_en": "Relative camera pose estimation is hard because no single estimator is best across wide baselines, weak texture, appearance change and occlusion, and estimators vary across image pairs. PoseAgent profiles an image pair and dynamically selects and verifies pose estimators via learned ranking, improving robustness and accuracy and offering a transferable strategy for relative pose estimation.",
+      "llm_tldr_cn": "该文针对相对相机位姿估计展开研究，指出在宽基线、弱纹理、外观变化与遮挡等多样挑战下，没有单一估计器能始终最优，且不同估计器在基准与单对图像上表现差异显著、优势互补。为此提出PoseAgent智能体框架，先对图像对进行特征画像，再通过学习排序与验证动态调度多个位姿估计器。方法在多样场景下提升了相对位姿估计的鲁棒性与精度，其组合调度思路对困难条件下的位姿估计具有借鉴意义。",
+      "llm_tldr": "该文针对相对相机位姿估计展开研究，指出在宽基线、弱纹理、外观变化与遮挡等多样挑战下，没有单一估计器能始终最优，且不同估计器在基准与单对图像上表现差异显著、优势互补。为此提出PoseAgent智能体框架，先对图像对进行特征画像，再通过学习排序与验证动态调度多个位姿估计器。方法在多样场景下提升了相对位姿估计的鲁棒性与精度，其组合调度思路对困难条件下的位姿估计具有借鉴意义。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "determination of relative position and orientation between two spacecraft or a spacecraft and target",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

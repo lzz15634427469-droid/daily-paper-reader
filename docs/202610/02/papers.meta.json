@@ -1,0 +1,24 @@
+{
+  "label": "2026-10-02",
+  "date": "2026-10-02",
+  "generated_at": "2026-10-02T22:36:30",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202610/02/2609.38755v1-agentic-relative-camera-pose-estimation-via-learned-ranking-and-verification",
+      "section": "quick",
+      "title_en": "Agentic Relative Camera Pose Estimation via Learned Ranking and Verification",
+      "authors": "Zhining Gu, Shangjie Du, Weimin Qiu, Carl Olsson, Ping Liu, Meng Tang",
+      "date": "2026-09-30",
+      "pdf": "https://arxiv.org/pdf/2609.38755v1",
+      "score": "6.0",
+      "evidence": "智能体式相对相机位姿估计框架",
+      "tldr": "相对相机位姿估计中，单一估计器难以应对宽基线、弱纹理、外观变化和遮挡等多样挑战，且不同估计器在基准和图像对上表现互补。PoseAgent 通过画像智能体提取外观、语义与几何特征，用学习排序预测各估计器相对能力，并由学习验证智能体评估位姿误差，失败时按排名回退。在 ARKitScenes、MegaDepth、ScanNet++ 和 RealEstate10K 上，AUC@5° 较最强单模型最高提升 4.2%，ARKitScenes 上还优于 VLM 智能体。该工作表明学习排序与验证可动态编排估计器，提升鲁棒性与精度。",
+      "tags": "query:pe",
+      "abstract_en": "A wide range of approaches have been developed for camera pose estimation, including correspondence-based methods, end-to-end pose regression, and recent 3D geometric foundation models. Our key observation is that no single estimator is optimal for diverse challenges, such as wide baselines, lack of texture, appearance changes, and occlusions. Further analysis reveals substantial performance variation across both benchmarks and individual image pairs, with different estimators exhibiting complementary strengths. We introduce PoseAgent, an agentic framework for relative camera pose estimation that dynamically orchestrates pose estimators through learnable ranking and verification. Given an image pair, a profiling agent first extracts appearance, semantic, and geometric features relevant to pose estimation, e.g., scene type. A learned ranking agent then predicts the relative competence of multiple pose estimators given the image-pair profile. The top-ranked estimator is executed, and its predicted pose is assessed by a learned verification agent that estimates the corresponding pose error. When verification fails, PoseAgent adaptively invokes lower-ranked estimators until a candidate is accepted or the execution budget is reached. For pose verification, our verification network predicts pose errors more accurately than prior models. For pose estimation, PoseAgent improves AUC@5 degree up to 4.2% over the strongest standalone estimator on each of ARKitScenes, MegaDepth, ScanNet++, and RealEstate10K. On ARKitScenes, PoseAgent also outperforms VLM-based agents, which include a VLM ranker with the same verifier and fallback policy. These results demonstrate the effectiveness of our learned ranking and verification.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
