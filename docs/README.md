@@ -48,7 +48,7 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-10-02</span>
+      <span class="dpr-home-dashboard-kicker">2026-10-03</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
     <strong class="dpr-home-dashboard-count">共 1 篇</strong>
@@ -58,7 +58,7 @@
     <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>0</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>1</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-10-02 22:36:25 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-10-03 21:53:17 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,9 +69,7 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>今日共生成 1 篇推荐（精读 0 篇，速读 1 篇）</p>
-<p>速读：《Agentic Relative Camera Pose Estimation via Learned Ranking and Verification》（6.0/10）</p>
-<p>这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。</p>
+<p>今日速读 1 篇 6D 物体位姿跟踪论文，主推无需先验的 GRC-Pose 方法。它通过生成-重建对应关系实现无先验位姿跟踪，适合关注机器人抓取、AR/VR 中物体实时跟踪的读者。若想跟进，可先读摘要和实验部分，重点看它在遮挡与快速运动下的表现。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -96,7 +94,7 @@
     <strong class="dpr-home-dashboard-count">1 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="Agentic Relative Camera Pose Estimation via Learned Ranking and Verification">Agentic Relative Camera Pose Estimation via Learned Ranking and Verification</span></li></ul>
+<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="GRC-Pose: Generation-Reconstruction Correspondence for Prior-Free 6D Object Pose Tracking">GRC-Pose: Generation-Reconstruction Correspondence for Prior-Free 6D Object Pose Tracking</span></li></ul>
   </div>
   <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>1</strong></span></div>
 </section>

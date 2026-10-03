@@ -1,0 +1,25 @@
+{
+  "date": "20261003",
+  "date_label": "",
+  "generated_at": "2026-10-03 21:53:17 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.39116v1",
+      "route": "202610/03/2609.39116v1-grc-pose-generation-reconstruction-correspondence-for-prior-free-6d-object-pose-tracking",
+      "title": "GRC-Pose: Generation-Reconstruction Correspondence for Prior-Free 6D Object Pose Tracking",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "单目RGB视频下的无先验6D位姿跟踪与鲁棒位姿估计",
+      "first_seen_at": "2026-10-03 21:53:17 UTC",
+      "updated_at": "2026-10-03 21:53:17 UTC"
+    }
+  ]
+}

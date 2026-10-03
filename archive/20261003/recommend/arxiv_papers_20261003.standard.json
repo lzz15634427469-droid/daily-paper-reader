@@ -1,0 +1,58 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-10-03T21:51:52.766805+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.39116v1",
+      "source": "arxiv",
+      "title": "GRC-Pose: Generation-Reconstruction Correspondence for Prior-Free 6D Object Pose Tracking",
+      "abstract": "Prior-free 6D object pose tracking seeks to recover the trajectory of an unseen object from a single RGB video without object-specific CAD models, posed reference images, or pose annotations. Geometric foundation models provide complementary object-centric and scene-centric cues, yet SAM3D CAD is indexed by an arbitrary object-local surface parameterization, whereas reconstructed evidence is expressed in a sequence-specific world frame with partial surface coverage. To exploit this complementarity, we formulate tracking as generation-reconstruction correspondence and introduce GRC-Pose, a correspondence-based framework that combines learned correspondence prediction with robust pose estimation. Concretely, GeoCorr-Matcher estimates weighted object-scene correspondences and per-match uncertainty for each pose candidate. FGH-Solver integrates these matches through multiple robust geometric estimators and sequence-level posterior inference, while a posterior-gated memory retains only inlier-supported observations through occlusion and viewpoint change. Extensive evaluation shows that with SAM3D CAD, GRC-Pose achieves state-of-the-art Average Recall and motion retention on HOT3D, improving the latter by 58% over prior art. On classical benchmarks including YCBInEOAT and LINEMOD, it remains highly competitive.",
+      "authors": [
+        "Shiyang Liu",
+        "Weiquan Lin",
+        "Luping Xiao",
+        "Jiadong Tang",
+        "Yi Yang",
+        "Yu Gao",
+        "Xingyu Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-30T06:53:31+00:00",
+      "link": "https://arxiv.org/pdf/2609.39116v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "prior-free 6D pose tracking from a single RGB video with robust pose estimation",
+      "llm_evidence_cn": "单目RGB视频下的无先验6D位姿跟踪与鲁棒位姿估计",
+      "llm_evidence": "单目RGB视频下的无先验6D位姿跟踪与鲁棒位姿估计",
+      "canonical_evidence": "单目RGB视频下的无先验6D位姿跟踪与鲁棒位姿估计",
+      "llm_tldr_en": "GRC-Pose tackles prior-free 6D object pose tracking from a single RGB video without CAD models or pose annotations, formulating tracking as generation-reconstruction correspondence with learned matching and robust pose estimation.",
+      "llm_tldr_cn": "该文针对在无CAD模型、无参考位姿图像与位姿标注条件下，从单目RGB视频恢复未见物体6D位姿轨迹的难题，提出了GRC-Pose框架。方法将跟踪建模为生成与重建的对应关系，用GeoCorr-Matcher学习对应预测，并结合鲁棒位姿估计整合物体中心与场景中心线索。实验表明该框架在无先验设定下实现了稳健的6D位姿跟踪。其单目、无先验、鲁棒位姿估计思路对航天器单目位姿估计具有可迁移的方法价值。",
+      "llm_tldr": "该文针对在无CAD模型、无参考位姿图像与位姿标注条件下，从单目RGB视频恢复未见物体6D位姿轨迹的难题，提出了GRC-Pose框架。方法将跟踪建模为生成与重建的对应关系，用GeoCorr-Matcher学习对应预测，并结合鲁棒位姿估计整合物体中心与场景中心线索。实验表明该框架在无先验设定下实现了稳健的6D位姿跟踪。其单目、无先验、鲁棒位姿估计思路对航天器单目位姿估计具有可迁移的方法价值。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
