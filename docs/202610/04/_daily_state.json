@@ -1,0 +1,25 @@
+{
+  "date": "20261004",
+  "date_label": "",
+  "generated_at": "2026-10-04 22:24:41 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2609.35046v1",
+      "route": "202610/04/2609.35046v1-legau-learning-semantic-gaussian-priors-for-scalable-category-level-pose-estimation",
+      "title": "LEGAU: Learning Semantic Gaussian Priors for Scalable Category-level Pose Estimation",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "单次观测的类别级6D位姿估计",
+      "first_seen_at": "2026-10-04 22:24:41 UTC",
+      "updated_at": "2026-10-04 22:24:41 UTC"
+    }
+  ]
+}
