@@ -1,16 +1,93 @@
 {
   "mode": "standard",
-  "generated_at": "2026-10-06T00:37:13.543480+00:00",
+  "generated_at": "2026-10-06T23:02:34.158831+00:00",
   "stats": {
     "mode": "standard",
     "tag_count": 1,
-    "deep_divecandidates": 0,
+    "deep_divecandidates": 1,
     "deep_cap": 6,
-    "deep_selected": 0,
-    "quick_candidates": 0,
+    "deep_selected": 1,
+    "quick_candidates": 1,
     "quick_skim_target": 11,
-    "quick_selected": 0
+    "quick_selected": 1
   },
-  "deep_dive": [],
-  "quick_skim": []
+  "deep_dive": [
+    {
+      "id": "2610.04335v1",
+      "source": "arxiv",
+      "title": "Synthetic-to-Real ViT-Based Pose Estimation of a Noncooperative UAV",
+      "abstract": "Remote pose estimation of noncooperative Unmanned Aerial Vehicles (UAVs) from imagery is critical, as they cannot be influenced or instrumented in advance. Deep-learning-based approaches offer a promising solution; however, their development is constrained by the cost and difficulty of acquiring large-scale real-world datasets with accurate pose labels. Synthetic imagery provides an alternative, but models trained on synthetic data must overcome the synthetic-to-real domain gap to generalize to real-world imagery. This work investigates the inherent synthetic-to-real generalization capability of a Vision Transformer (ViT)-based model for monocular UAV pose estimation. The proposed approach employs a self-supervised DINOv2 backbone and is trained exclusively on labeled synthetic imagery while being evaluated on labeled real-world imagery. Pose ambiguity-aware strategies are incorporated during training and inference to address ambiguities arising from the projection of a three-dimensional target onto a two-dimensional image plane and from target symmetries. An $α$-$β$ filter is further integrated during inference to improve pose estimations. To assess the model under operational requirements, it is evaluated in terms of Mean Angular Error (MAE) and inference time, both before and after filtering, using a real-world dataset containing 77,077 labeled UAV images. Before filtering, the model achieves an MAE of $19.18^{\\circ}$ and an inference time of $13.25$ ms, whereas after filtering, these values are $8.74^{\\circ}$ and $13.42$ ms, respectively.",
+      "authors": [
+        "Krishnanujam Srinivas",
+        "Hanish Acharla",
+        "Brij Agrawal",
+        "Leonardo Herrera"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-10-03T06:59:23+00:00",
+      "link": "https://arxiv.org/pdf/2610.04335v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "monocular pose estimation of a noncooperative target with synthetic-to-real generalization",
+      "llm_evidence_cn": "非合作目标单目位姿估计与合成到真实泛化",
+      "llm_evidence": "非合作目标单目位姿估计与合成到真实泛化",
+      "canonical_evidence": "非合作目标单目位姿估计与合成到真实泛化",
+      "llm_tldr_en": "A ViT-based model with a self-supervised DINOv2 backbone is trained only on synthetic imagery to study synthetic-to-real generalization for monocular noncooperative UAV pose estimation.",
+      "llm_tldr_cn": "非合作目标无法预先布置或操控，其单目位姿估计依赖大规模带精确位姿标签的真实数据，采集成本高。本文研究基于Vision Transformer的模型在仅用合成图像训练时的合成到真实泛化能力，采用自监督DINOv2骨干提取特征进行单目位姿估计。实验考察模型在真实图像上的泛化表现，为无人机等非合作目标的单目位姿估计提供无需真实标注数据的可行路径，其思路可迁移到航天器非合作位姿估计。",
+      "llm_tldr": "非合作目标无法预先布置或操控，其单目位姿估计依赖大规模带精确位姿标签的真实数据，采集成本高。本文研究基于Vision Transformer的模型在仅用合成图像训练时的合成到真实泛化能力，采用自监督DINOv2骨干提取特征进行单目位姿估计。实验考察模型在真实图像上的泛化表现，为无人机等非合作目标的单目位姿估计提供无需真实标注数据的可行路径，其思路可迁移到航天器非合作位姿估计。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2610.03013v1",
+      "source": "arxiv",
+      "title": "RYOPO: Bringing End-to-End Category-Level Object Pose Estimation into Real Time",
+      "abstract": "Category-level object pose estimation predicts the rotation, translation, and metric size of unseen instances within known categories. Many accurate RGB-D methods rely on external instance segmentation and crop-based pose estimation, introducing separate stages and object-dependent processing costs that hinder real-time inference. To bring accurate pose estimation into real time, we present \\ours{}, an end-to-end trainable query-based RGB-D set predictor. It jointly detects and segments objects and estimates their \\mbox{9-DoF} poses without explicit CAD-derived shape priors or a separately trained instance segmentor. Shared image and scene encoding avoids repeated per-object crop encoding. A query-conditioned geometry pathway associates observed 3D points and RGB features with object queries and incorporates shared scene context. Object-centric refinement uses the resulting point descriptors to update an explicit pose state through pose-conditioned cross-attention and recurrent residual corrections. On NOCS, \\ours{} substantially improves on published RGB-D joint detection and pose estimation results. It achieves competitive performance compared with two-stage methods under all-object evaluation on REAL275 and HouseCat6D, while enabling real-time full-frame pose estimation at $31.8$ FPS on an RTX~A6000. Project page: https://yopo-series.github.io/RYOPO-project-page/.",
+      "authors": [
+        "Hakjin Lee",
+        "Junghoon Seo",
+        "Jaehoon Sim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO"
+      ],
+      "published": "2026-10-02T08:47:45+00:00",
+      "link": "https://arxiv.org/pdf/2610.03013v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "object rotation and translation pose estimation",
+      "llm_evidence_cn": "物体旋转平移位姿估计",
+      "llm_evidence": "物体旋转平移位姿估计",
+      "canonical_evidence": "物体旋转平移位姿估计",
+      "llm_tldr_en": "RYOPO is an end-to-end query-based RGB-D set predictor that jointly detects, segments and estimates 9-DoF category-level object poses in real time, avoiding external instance segmentation and CAD shape priors.",
+      "llm_tldr_cn": "类别级物体位姿估计需预测未见实例的旋转、平移与尺寸，但许多精确的RGB-D方法依赖外部实例分割和逐物体裁剪，难以实时。本文提出RYOPO，一种端到端可训练的查询式RGB-D集合预测器，联合检测、分割物体并估计9自由度位姿，无需CAD形状先验或独立分割器。通过共享图像与场景编码避免重复裁剪编码，方法将准确的类别级位姿估计推向实时，兼顾精度与效率。",
+      "llm_tldr": "类别级物体位姿估计需预测未见实例的旋转、平移与尺寸，但许多精确的RGB-D方法依赖外部实例分割和逐物体裁剪，难以实时。本文提出RYOPO，一种端到端可训练的查询式RGB-D集合预测器，联合检测、分割物体并估计9自由度位姿，无需CAD形状先验或独立分割器。通过共享图像与场景编码避免重复裁剪编码，方法将准确的类别级位姿估计推向实时，兼顾精度与效率。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "methods for determining the position and orientation of a spacecraft relative to a target",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
 }

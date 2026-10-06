@@ -1,0 +1,480 @@
+Title: Synthetic-to-Real ViT-Based Pose Estimation of a Noncooperative UAV
+
+URL Source: https://arxiv.org/pdf/2610.04335v1
+
+Published Time: Tue, 06 Oct 2026 00:46:18 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# Synthetic-to-Real ViT-Based Pose Estimation of a Noncooperative UAV 
+
+# Krishnanujam Srinivas * Hanish Acharla * Brij Agrawal Leonardo Herrera 
+
+NAVAL POSTGRADUATE SCHOOL 
+
+krishnanujam.srinivas@nps.edu, haniacharla@gmail.com, agrawal@nps.edu, leonardo.herrera@nps.edu 
+
+# Abstract 
+
+Remote pose estimation of noncooperative Unmanned Aerial Vehicles (UAVs) from imagery is critical, as they cannot be influenced or instrumented in advance. Deep-learning-based approaches offer a promising solution; however, their development is constrained by the cost and difficulty of acquiring large-scale real-world datasets with accurate pose labels. Synthetic imagery provides an alter-native, but models trained on synthetic data must overcome the synthetic-to-real domain gap to generalize to real-world imagery. This work investigates the inherent synthetic-to-real generalization capability of a Vision Transformer (ViT)-based model for monocular UAV pose estimation. The proposed approach employs a self-supervised DINOv2 backbone and is trained exclusively on labeled synthetic imagery while being evaluated on labeled real-world im-agery. Pose ambiguity-aware strategies are incorporated during training and inference to address ambiguities aris-ing from the projection of a three-dimensional target onto a two-dimensional image plane and from target symmetries. An α–β filter is further integrated during inference to im-prove pose estimations. To assess the model under opera-tional requirements, it is evaluated in terms of Mean Angu-lar Error (MAE) and inference time, both before and after filtering, using a real-world dataset containing 77,077 la-beled UAV images. Before filtering, the model achieves an MAE of 19 .18 o and an inference time of 13 .25 ms, whereas after filtering, these values are 8.74 o and 13 .42 ms, respec-tively. 
+
+# 1. Introduction 
+
+Remote pose estimation of Unmanned Aerial Vehicles (UAVs) from imagery is essential for applications such as autonomous navigation [14], aerial refueling [4], and directed-energy systems [9]. The latter application moti-
+
+> 1Work performed as an intern at the Spacecraft Research and De-sign Center, Department of Mechanical and Aerospace Engineering, Naval Postgraduate School, Monterey.
+
+vates this work, where accurate pose estimation of non-cooperative UAVs is critical to automate operational sce-narios that are difficult or impractical for human operators. Since noncooperative targets cannot be instrumented or in-fluenced in advance, camera-based remote sensing provides an attractive approach for estimating UAV pose from im-agery. To estimate pose from this imagery, deep learning-based methods have emerged as a powerful solution due to their ability to learn visual representations directly from image data. Deep-learning-based pose estimation models have shown significant promise in recent years [5, 10, 12]. How-ever, their performance is often limited by the availability of labeled training data. Collecting and annotating large-scale real-world data, especially in the noncooperative UAV context is costly and time-consuming, particularly when ac-curate pose labels are required. Synthetic data generation provides an attractive alternative by producing large quanti-ties of labeled imagery under controlled variations such as pose, lighting, and viewing conditions. Nevertheless, mod-els trained on synthetic data must overcome the synthetic-to-real domain gap to generalize effectively to real-world imagery. Similar domain gap challenges have been observed in satellite pose estimation. The second international Satel-lite Pose Estimation Competition (SPEC2021), co-hosted by the European Space Agency (ESA) and Stanford Univer-sity’s Space Rendezvous Laboratory (SLAB), highlighted the challenge of generalizing models trained on synthetic imagery to realistic imagery [13], motivating research into methods for bridging the synthetic-to-real domain gap. Al-though focused primarily on satellite pose estimation, the underlying problem is also relevant to noncooperative UAV pose estimation, where acquiring large quantities of accu-rately labeled real-world pose data is costly and often im-practical. This work investigates whether a Vision Transformer (ViT)-based model can generalize from synthetic to real UAV imagery for pose estimation. The proposed model is based on the self-supervised DINOv2 [11] and is trained arXiv:2610.04335v1 [cs.CV] 3 Oct 2026 exclusively on synthetic imagery and evaluated on real-world imagery for direct pose estimation. This experimen-tal setting is intentionally adopted to assess the inherent synthetic-to-real generalization capability of the ViT-based model. Techniques such as adversarial training [3] and do-main randomization [16] could be employed to reduce the synthetic-to-real domain gap. However, the primary interest of this study is the inherent synthetic-to-real performance of the ViT-based model without incorporating explicit domain-gap reduction techniques. ViT leverages self-attention mechanisms to capture global contextual information [1]. ViT has demonstrated strong performance across a wide range of computer vi-sion tasks. However, its effectiveness for synthetic-to-real UAV pose estimation remains insufficiently explored. In this work, the proposed ViT-based model is designed to ac-count for pose ambiguity, a significant challenge in monoc-ular pose estimation arising from the projection of a three-dimensional target onto a two-dimensional image plane and from target symmetries. As illustrated in Figure 1, distinct target poses may produce nearly identical image appear-ances, potentially leading to large pose prediction errors. To mitigate this issue, ambiguity-aware strategies are incor-porated during both training and inference. The proposed model is evaluated using two criteria that are critical for practical deployment: prediction accuracy, quantified by mean angular error, and inference time. In addition, an α − β filter is integrated during inference to smooth the estimations. Accuracy and inference time are evaluated before and after filtering to quantify its effect. The UAV imagery used in this research consists of la-beled synthetic and real-world datasets. The synthetic dataset was generated in simulation using a 3D UAV virtual model, whereas the labeled real-world dataset was acquired using a laboratory testbed with 3D printed UAV model, as detailed in [7]. A total of 77,077 labeled real-world images were used in this study. 
+
+# 2. Preliminaries 
+
+This section fixes notation and introduces the four ingre-dients the method builds on: the rotation representation and error metric (Sec. 2.1), the continuous six-dimensional parametrization the network regresses (Sec. 2.2), the four-branch symmetry group that formalizes the pose ambiguity (Sec. 2.3), and the radar-cue signal used to resolve it. 
+
+2.1. Rotation representation and error metric 
+
+A three-dimensional orientation is an element of the spe-cial orthogonal group SO(3) = {R ∈ R3×3 : R⊤R =
+
+I, det R = +1 }, the group of proper rotations. SO(3) 
+
+is a three-dimensional curved manifold rather than a Eu-clidean space, and this curvature is the source of both the parametrization difficulties (Sec. 2.2) and the need for a manifold-aware error metric. Orientations are represented by an axis-angle (Ro-drigues) vector r = θˆn, where ˆn is the unit rotation axis and θ = ∥r∥ is the rotation angle; this is the parametrization in which ground-truth labels are supplied. The correspond-ing rotation matrix is recovered by the matrix exponential, which for SO(3) takes the closed form known as the Ro-drigues formula, 
+
+R = cos θ I + (1 − cos θ) ˆ nˆn⊤ + sin θ [ˆ n]×, (1) where [ˆ n]× is the skew-symmetric matrix such that 
+
+[ˆ n]×v = ˆ n × v for all v. Labels are converted to matri-ces via Eq. (1) before any loss is computed. The discrepancy between a predicted and a ground-truth orientation is measured by the geodesic distance on 
+
+SO(3) , the length of the shortest rotation carrying one onto the other, equivalently the angle of the residual rotation 
+
+R⊤
+
+> pred
+
+Rgt :
+
+e(Rpred , Rgt ) = arccos 
+
+ tr 
+
+
+
+R⊤
+
+> pred
+
+Rgt 
+
+
+
+− 12
+
+ . (2) Unlike a Euclidean distance between rotation matrices or quaternions, it reflects true angular displacement and does not saturate or double-count near large rotations. All errors are reported in degrees. 
+
+2.2. Continuous six-dimensional rotation represen-tation 
+
+The continuous six-dimensional representation of Zhou et al . [17] is used. The network emits two raw vectors a1, a2 ∈
+
+R3, mapped to a valid rotation matrix by Gram–Schmidt orthonormalization, 
+
+b1 = a1
+
+∥a1∥ ,
+
+b2 = a2 − (b⊤ 
+
+> 1
+
+a2) b1
+
+a2 − (b⊤ 
+
+> 1
+
+a2) b1
+
+, (3) 
+
+b3 = b1 × b2, R = [ b1 b2 b3 ].
+
+The resulting R is orthonormal with determinant +1 by construction, so no post-hoc projection onto SO(3) is re-quired, and the map is continuous and surjective. This re-moves the discontinuities that afflict Euler-angle and quater-nion outputs and degrade accuracy near their seams. 
+
+2.3. Pose ambiguity and the four-branch symmetry group 
+
+The defining challenge of this task is that the silhouette of a fixed-wing UAV is approximately invariant under two in-dependent reflections: one exchanging nose and tail, one (a) R(1) true, (+ , −) (b) R(2) N–T, (−, +)            
+
+> (c) R(3) T–B, (+ ,+) (d) R(4) both, (−,−)
+> Figure 1. Four orientations of the same aircraft that produce nearly the same silhouette. (a) Tail and top facing the camera; (b) nose and bottom facing the camera; (c) tail and bottom facing the cam-era; and (d) nose and top facing the camera. The radar-cue bits
+> (nts ,tbs) beneath each panel differ across all four.
+
+exchanging top and bottom. As a consequence, a single image is geometrically consistent with four distinct orienta-tions, illustrated in Fig. 1. Given a true rotation R(1) = R,these are 
+
+R(2) = diag(1 , 1, −1) R diag(1 , −1, 1) ,
+
+R(3) = R diag(1 , −1, −1) , (4) 
+
+R(4) = R(2) diag(1 , −1, −1) ,
+
+where R(2) is the nose–tail flip, R(3) the top–bottom flip, and R(4) their composition. Every R(i) is itself a proper rotation and hence a legitimate regression target: 
+
+diag(1 , −1, −1) = exp( π[e1]×) is a rotation by π about the body x-axis, and the two-sided action in R(2) composes two reflections of determinant −1, one on each side, so each product has determinant +1 .The four transforms form a Klein four-group Z2 ×Z2 un-der composition: the identity together with the two reflec-tions and their product, in which each nontrivial element is its own inverse and composing any two distinct flips yields the third. The set {R(i)}4 
+
+> i=1
+
+is thus the orbit of R under this group, the complete collection of poses the image can-not distinguish, and a pose in general position has exactly four such preimages. Two properties of this structure are what make the ambiguity tractable rather than merely trou-blesome. First, the orbit is small and of fixed size: there are precisely four candidates, not an open-ended confusable set, so disambiguation is a two-bit decision. Second, the group acts faithfully on a pair of physically measurable sign bits: no nontrivial group element leaves both bits unchanged, so the four orbit members carry four distinct bit patterns and two bits suffice to identify the correct pose, as formalized next. 
+
+Radar cues. To resolve the ambiguity at inference with-out access to the ground-truth pose, the two radar-cue sign bits of [8] are adopted, computed from a rotation matrix as 
+
+nts = sign  (R e 1)z
+
+, tbs = sign  (R e 3)z
+
+, (5) with e1 = [1 , 0, 0] ⊤, e3 = [0 , 0, 1] ⊤, and the convention 
+
+sign(0) 7 → +1 . The nose–tail sign nts is the sign of the 
+
+z-component of the rotated body x-axis and encodes which end of the fuselage points toward the sensor. Physically this is the sign of the radar range rate, positive when the nose ap-proaches and negative when the tail does. The top–bottom sign tbs is the sign of the z-component of the rotated body 
+
+z-axis and encodes whether the target is upright or inverted. Each of the three reflections in Eq. (4) flips a different com-bination of the two bits, so the four orbit members carry four distinct bit patterns (Fig. 1) and two physically measurable bits identify the correct pose among the four. 
+
+# 3. Method 
+
+3.1. Model Architecture 
+
+Figure 2 presents the model pipeline from left to right. An image crop containing the UAV is first passed through a Vi-sion Transformer backbone, which divides the image into a grid of small patches and produces one feature vector for each patch. These patch features are then used by the rest of the network. The first decoder stage predicts three key-points that are relatively easy to identify: the nose, the tail, and the small fin beneath the tail. These three points are used to compute a geometric cue that captures the direc-tion of the fuselage in the image and indicates which side of the aircraft the fin lies on. The second decoder stage takes this cue, together with the same patch features, and predicts the four remaining keypoints: the two wingtips and the two horizontal tail surfaces. It also estimates the air-craft’s orientation. During training, the full model is super-vised by the objective shown on the right side of the fig-ure in dashed red. At inference time, the predicted orienta-tion is passed through the radar-cue correction described in Sec. 3.3, shown in orange. This step resolves the remaining nose to tail and top to bottom ambiguities before the final orientation is produced. Figure 3 shows all seven keypoints on a sample image. Input image              
+
+> DINOv2-L
+> 24 blocks
+> D=1024
+> Tokens
+> Z∈RB×576 ×1024
+> +LayerNorm
+> Stage 1 decoder
+> 3 reliable queries
+> Predicted keypoints
+> nose, tail, fin
+> Geometric cue
+> c∈R6(Eq. 6)
+> deterministic, no parameters
+> Stage 2 decoder
+> cue-injected queries
+> keypoint chirality 6D rotation
+> (Eq. 3)
+> Training objective
+> (Eq. 8) 4-branch geodesic
+> + 2 .0×keypoint
+> + 0 .1×chirality BCE
+> GT-cue teacher forcing
+> ρ: 1 .0→0.25 Radar-cue branch select
+> (Eq. 12)
+> Rpred
+> shared patch-token memory prediction heads
+> training only inference only
+
+Figure 2. The cascaded pose decoder. Dashed red paths are active only during training, orange only at inference; everything else runs in both. The per-frame pipeline ends at Rpred , which is then passed to the sequence-level filter of Fig. 8. 
+
+Figure 3. The seven keypoints, shown on a synthetic training sam-ple with its ground-truth labels. Stage 1 (green circles) localizes the three points that are easy to find and stable under a mirror flip: nose, tail, and the fin under the tail. Stage 2 (orange squares) lo-calizes the four left/right-sensitive points: both wingtips and both horizontal tail surfaces. The dashed line is the body axis u from nose to tail, and the red segment is the fin’s perpendicular offset 
+
+p from that axis, whose sign tells which side of the body the fin is on; these are the quantities that make up the geometric cue of Eq. (6). 
+
+Backbone. The feature extractor is DINOv2-Large [11], a ViT-L/14 [2] with 24 blocks, hidden width 1024 , 16 heads, and ∼ 304 M parameters, pretrained by self-supervised dis-tillation on LVD-142M, a curated collection of 142 million unlabeled images [11]. It was selected for three reasons: its features transfer across visual domains without target-domain labels, which matches the synthetic-to-real setting of this work; it outputs features as a sequence that a query-based decoder can attend to directly; and self-attention lets every patch see the whole aircraft, so that the relationship between, for example, the nose and a far wingtip is available in a single layer. Every input crop, whatever its original size (200 ×200 in the reported experiments; Sec. 4.2), is resized to 336 ×336 before entering the backbone, which divides it into 576 patch features of width 1024 ; after a LayerNorm these form the memory Z that both decoder stages attend to. All 24 blocks are fine-tuned, because a frozen encoder’s features are nearly identical for an image and its mirror im-age, and telling those apart is precisely what the model must learn. 
+
+Why keypoints, and why in two stages. Telling the left wing from the right wing in the image is the specific job the keypoints exist to do, and it is worth stating why the network cannot do it directly. DINOv2 is pretrained with augmentations that include horizontal flips, which teach the encoder that an image and its mirror should map to the same representation. Its patch features are therefore close to mirror-invariant by construction, and a single-pass decoder reading them is being asked to name the left wing from ev-idence that does not distinguish left from right. Fine-tuning pushes the encoder away from that invariance (Sec. 4.3), but slowly and incompletely. Keypoints provide a way around this, because the seven keypoints are not equally affected by a mirror flip. The nose, the tail, and the fin each have no mirror counterpart: each is a single part lying on the aircraft’s plane of symme-try, so a mirror flip cannot confuse it with another keypoint. Consistent with this, these three were observed during de-velopment to be localized accurately even on images whose orientation output was completely wrong. The wingtips and horizontal tail surfaces, in contrast, come in left/right pairs, and a mirror swaps each with its partner; identifying the left wing is therefore exactly the question the mirror makes ambiguous. Stage 1 accordingly predicts only the three un-paired keypoints. Together they define the body axis, run-ning from nose to tail, and the side of that axis on which the fin appears in the image. That side does flip under a mirror, so it carries the left/right information the backbone features lack. Stage 2 receives it as input and uses it to assign the four paired keypoints consistently with the fin side. This settles which wingtip is which in the image. It does not de-termine which of the four candidate orientations of Sec. 2.3 is the true one, because all four present the fin on the same side of the body axis; that choice is left to the radar cue at inference (Sec. 3.3). Figure 3 shows the two groups on a sample image. Each stage is four transformer decoder layers with eight heads and a small set of learned queries, one per keypoint it must locate, plus a rotation query in stage 2; each query attends to the other queries and to Z, and a small head reads out its image coordinate, or, for the rotation query, the six-dimensional rotation of Eq. (3) and a left/right (chirality) logit. The keypoint loss supervises all seven keypoints, so stage 1 is trained through the same objective rather than by a separate detector. 
+
+The geometric cue (Eq. (6)). Between the stages, a six-number summary with no learned parameters is computed from the three stage-1 keypoints: 
+
+c =  ux, u y , p, a, ℓ, tanh(25 p)  ∈ R6. (6) All six entries are variables computed per image; none is a fixed constant. Keypoints are expressed in normalized crop coordinates, so each position lies in [0 , 1] 2 and all lengths below are fractions of the crop side rather than pixels. Writ-ing n, t, and f for the predicted nose, tail, and fin positions, the entries are 
+
+ℓ = ∥t − n∥, u = ( t − n)/ℓ, p = ux(fy − ny ) − uy (fx − nx), a = u⊤(f − n). (7) Here u is the unit vector pointing from nose to tail, which defines the body axis in the image, and ℓ is the axis’s pro-jected length. The remaining two entries locate the fin rela-tive to that axis, taking the nose as the origin: a is the fin’s distance along the axis, and p, the fin offset , is its signed perpendicular distance from the axis, positive on one side and negative on the other (Fig. 3). The only constant any-where in Eq. (6) is the gain 25 inside the hyperbolic tan-gent, which is a fixed scaling chosen once and not learned. The sixth entry of c is a saturated function of the variable p
+
+rather than an independent quantity. The vector is defined this way because it captures, in the fewest numbers, three things stage 2 needs and cannot easily get from the features alone. First, u and ℓ give the body’s direction and apparent length, so the rotation query starts from a coarse orienta-tion and a foreshortening estimate rather than from nothing. Second, and most important, the sign of p, whether the fin is to the left or right of the body line, is the one quantity in the image that flips under a mirror while u does not. It is there-fore the single piece of evidence that separates an aircraft from its mirror image, and it is computable from three key-points the network finds reliably. Because the fin sits very close to the body line, p is a small number; the saturated copy tanh(25 p) passes its sign through at full strength so that stage 2 receives a clear left-or-right signal regardless of how small the offset is. The cue is concatenated onto every stage-2 query through a learned projection, so each query begins its attention already knowing the body axis and the fin side. The benefit is that an ambiguity the backbone fea-tures cannot resolve becomes an explicit input: stage 2 can assign the wings conditioned on the fin side rather than hav-ing to infer the image’s handedness from features that are nearly mirror-invariant. Because the cue is a deterministic function of stage-1 output, it adds no parameters and can-not overfit; it only routes information already in the image to the queries that need it. The separate chirality head gives the network a direct, low-dimensional target for the same left/right decision, which stabilizes training of the mirror-sensitive queries. 
+
+Teacher forcing. Early in training the stage-1 keypoints are inaccurate, so a cue computed from them is mostly noise, and stage 2 can learn to ignore it entirely. To pre-vent this, the cue is computed during training from either the ground-truth keypoints or the stage-1 predictions, cho-sen independently for each sample: with probability ρ the ground truth is used, and otherwise the prediction. The quantity ρ is a sampling probability, not an error measure. It is decayed linearly from 1.0 to 0.25 over the first 60% 
+
+of epochs and held at 0.25 thereafter, so stage 2 first learns to use a clean cue and then adapts to the noise of the real stage-1 output. At inference the cue always comes from the stage-1 predictions. 
+
+Training objective. Because four different orientations produce nearly the same image (Sec. 2.3), a label is really a set of four equally correct answers, and penalizing the net-work for predicting any one of them would inject error it cannot avoid. The prediction is therefore scored against all four mirror-related candidates of the label and penalize only the distance to the nearest one, 
+
+Lpose = min  
+
+> i∈{ 1,2,3,4}
+
+e
+
+
+
+Rpred , R(i)
+
+> gt
+
+
+
+, (8) with e(·) the geodesic of Eq. (2) and R(i) 
+
+> gt
+
+the four candi-dates of Eq. (4). This lets the network commit to whichever candidate it is closest to and be supervised only there. The complete loss adds two auxiliary terms, 
+
+L = Lpose + λkp Lkp + λch Lch , (9) where Lkp is a smooth-L1 keypoint loss and Lch a binary cross-entropy chirality loss, with λkp = 2 .0 and λch = 0 .1.The terms are kept consistent: the candidate i⋆ selected by Eq. (8) also swaps the left/right keypoint targets when that candidate contains the left–right mirror, so keypoint super-vision always refers to the same candidate the pose loss is pulling toward. 
+
+Role of the chirality term. The chirality head predicts a single bit, which side of the body axis the fin lies on, and 
+
+Lch is its binary cross-entropy against the ground-truth side. It is worth being precise about what this term contributes, because the model never uses the predicted bit at infer-ence: the output pose comes from the rotation head, and the branch is fixed by the radar cue of Sec. 3.3. The chiral-ity term is a training device, and it helps in two ways. First, it supplies a gradient that the pose loss cannot. By construc-tion Eq. (8) is indifferent to which of the four mirror-related candidates the network converges to, so it exerts no pressure on the encoder to become mirror-sensitive at all; the chiral-ity loss is the only term in Eq. (9) that is minimized solely by distinguishing an image from its mirror, and it is there-fore what drives the backbone away from the flip-invariance it inherits from pretraining. Second, it is a far easier target than the pose itself: one bit, read from the same query that produces the rotation, so the shared query representation is pushed toward encoding fin side explicitly rather than im-plicitly. The term does not make the network select the true candidate orientation; as Tab. 3 shows, that remains the role of the radar cue. Because the bit is unlearnable while the backbone is frozen, the term is disabled in phase 1 and en-abled in phase 2 (Sec. 4.3). The two-phase schedule under which the model is trained is given in Sec. 4.3. 
+
+3.2. Dataset Augmentation 
+
+The model is trained on synthetic images and evaluated on real SWIR imagery, so its real-world accuracy depends on how closely the synthetic appearance matches the sensor. Each synthetic training image is a binary silhouette mask: a uniform white aircraft on a black background. A real SWIR image of the same aircraft is far from binary, so the gap to be closed is one of intra-silhouette appearance , meaning how the sensor fills in and blurs a shape, rather than of texture or lighting. Closing it therefore does not require a photore-alistic renderer, only a statistical model of what the sensor does to a silhouette. Three such models are compared in this work; they are described below and summarized in Tab. 1, and Fig. 4 shows the effect of the one adopted. 
+
+Measured target statistics. The target appearance is characterized by pixel statistics measured on a single real image, using only raw intensities and never its pose label (the standard unsupervised-adaptation setting). On a [0 , 1] 
+
+intensity scale, the aircraft’s interior has mean 0.537 and standard deviation 0.172 , a wide and non-uniform distribu-tion rather than a uniform plate. About 44% of the pixels that a loose threshold assigns to the aircraft in fact belong to a dim halo of intensity 0.10 –0.20 just outside its true boundary. The background is low but nonzero, with mean 
+
+0.0008 . Finally, the silhouette edge is blurred with an ef-fective Gaussian scale of σ ≈ 1–3 px, estimated from the 
+
+10 –90% rise width of the edge profile. 
+
+Three appearance models. The three models differ only in how the binary mask is turned into a training image; the rest of training is identical. Each is sampled inde-pendently for every training image. Models (ii) and (iii) both begin with the same small perturbation of the silhou-ette boundary: with probability 0.1 the mask is dilated or eroded, with equal chance, by one pixel using a 2×2
+
+kernel. Global contrast c and brightness b are applied as 
+
+I 7 → (I − 0.5) c + 0 .5 + b, pivoting about mid-grey. 
+
+(i) None. The binary mask is used directly, so the aircraft is a uniform plate of intensity 1 on a background of 0.
+
+(ii) Flat-plate-plus-blur. This is a conventional pho-tometric augmentation [15], of the form previously used in this pipeline. After the boundary perturbation, the mask is blurred with a Gaussian of σ ∈ [0 .30 , 0.85] px, given a global contrast c ∈ [0 .88 , 1.08] and brightness 
+
+b ∈ [−0.010 , 0.020] , and corrupted with independent per-pixel Gaussian noise of standard deviation drawn from 
+
+[0 .002 , 0.018] . The aircraft remains a uniform plate whose interior is changed only by the global contrast and the noise. Compared with the measured statistics, this leaves the air-craft about 3× too bright (interior mean ≈ 0.93 against 
+
+0.54 ), uses a blur σ 4–10 × smaller than the measured edge scale, and adds background noise about 6.5× the real level. More fundamentally, it cannot reproduce the real interior’s large, spatially correlated variation, because noise drawn in-dependently at each pixel is averaged away by any blur. 
+
+(iii) Calibrated (adopted). Rather than perturbing a uni-form plate, this model rebuilds the aircraft’s intensity from three components, each with parameters drawn from a range centred on the measured values. The first is a core intensity field ,
+
+Icore (x) = λlo +( λhi −λlo ) N (x) min  1, τ D (x), (10) defined on the aircraft’s interior. Here N is Gaussian noise drawn on a grid s times coarser than the image, with s ∈{8, 10 , 12 , 14 }, then cubically upsampled and rescaled to 
+
+[0 , 1] ; drawing it coarsely keeps neighbouring pixels cor-related, which is what reproduces the wide interior varia-tion. D is each interior pixel’s distance to the silhouette boundary, divided by its maximum over the silhouette, so that D = 0 at the edge and D = 1 at the innermost point. The factor min(1 , τ D ) therefore ramps the intensity up from zero at the edge, reaching its full value at a frac-tion 1/τ of the way in. The ranges are λlo ∈ [0 .05 , 0.15] ,
+
+λhi ∈ [0 .95 , 1.10] , and τ ∈ [1 .2, 1.8] . The second compo-nent is an edge halo ,
+
+Ihalo (x) = η max  0, 1 − d(x)/h , (11) applied to the band of pixels outside the silhouette and within h pixels of it, where d is a pixel’s distance to the silhouette, h ∈ { 2, 3, 4}, and η ∈ [0 .08 , 0.14] ; it repro-duces the measured dim halo. The third component is blur and background gating . The combined image is blurred with a Gaussian of σ ∈ [0 .4, 0.7] px, and every pixel more than h pixels from the silhouette is set to zero. Global con-trast c ∈ [0 .90 , 1.08] and brightness b ∈ [−0.01 , 0.01] are then applied; because they pivot about mid-grey, they would lift the zeroed background off the floor, so those back-ground pixels are scaled back down by a factor of 0.02 after-wards. Finally, per-pixel Gaussian noise of standard devi-ation drawn from [5 ×10 −4, 2.5×10 −3] is added, matching the low real background level. The calibrated model’s Gaussian blur is no wider than that of model (ii). The measured edge softness is repro-duced instead by the interior taper of Eq. (10) and the ex-terior halo of Eq. (11), which together spread the transition from aircraft to background over several pixels; the final blur only smooths the boundaries between the components. This is the essential difference from model (ii), which can soften an edge only by blurring and cannot change the uni-form interior at all. The contribution of the calibrated model to accuracy is isolated by ablation in Sec. 5.1.                                         
+
+> Table 1. The three synthetic appearance models compared in this work, applied to the binary silhouette mask at training time. Ranges are sampled uniformly and independently for each image. Model (iii) is used for all reported results; the three are compared in Tab. 2.
+> Step (i) None (ii) Flat-plate (iii) Calibrated Boundary perturb. –✓✓
+> Interior uniform uniform Eq. (10) Edge halo ––Eq. (11) Blur σ(px) –[0 .30 ,0.85] [0 .4,0.7]
+> Contrast c–[0 .88 ,1.08] [0 .90 ,1.08]
+> Brightness b–[−0.01 ,0.02] [−0.01 ,0.01]
+> Bkg. gating ––✓
+> Noise std –[0 .002 ,0.018] [0 .0005 ,0.0025]
+
+3.3. Inference-Time Radar-Cue Branch Correction 
+
+At inference the network produces a raw prediction Rpred 
+
+lying on some member of the orbit. Its cue bits ( cnts , ctbs) 
+
+are computed from Eq. (5) and, given the reference bits 
+
+(nts ⋆, tbs ⋆) supplied by the radar signal, the correction emits the unique orbit member whose cues match: 
+
+Rout = R(i⋆) 
+
+> pred
+
+, i⋆ s.t. (nts , tbs)  R(i⋆)
+
+> pred
+
+ = (nts ⋆, tbs ⋆).
+
+(12) Because the two bits label the four orbit members distinctly (Sec. 2.3), i⋆ is unique for nondegenerate poses; at the zero-crossing configurations discussed in (Sec. 5.3), the cue may not uniquely distinguish the branches. Lacking a physi-cal radar on the testbed, the reference bits are simulated by evaluating Eq. (5), exactly the range-rate and elevation signs a radar reports, and expose only those two bits to the correction, following [8]. This is not an oracle that selects the lowest-error branch: it cannot recover the pose when the raw prediction is wrong on all four branches, and those failures populate the residual tail analyzed in Sec. 5. 
+
+# 4. Experimental Setup 
+
+4.1. Dataset 
+
+The real dataset contains 77 ,077 labeled SWIR images col-lected using the testbed described in [6]. A 3D-printed fixed-wing UAV model is mounted on a three-axis gimbal and imaged with a SWIR tracking camera. The gimbal mo-tors are stepped through a dense grid of angular positions, and each image is assigned an orientation from the com-manded motor positions. This provides hardware-captured images with precise ground truth. Further details on the testbed, motor position grid, and labeling procedure are given in [6]. Figure 5 shows an example real image along-side a synthetic sample. 
+
+4.2. Synthetic data and the synthetic-to-real proto-col 
+
+The task is intrinsically a synthetic-to-real transfer problem: labels are cheap and exact in simulation but costly to ob-tain at scale on hardware, so the model is trained purely on synthetic renderings and evaluated purely on real sensor imagery. Training uses 100 ,000 synthetic images (binary silhouette masks rendered from the target geometry over a dense grid of orientations), randomly partitioned into train-ing, validation, and test sets in the proportions 80 /10 /10 .Ground-truth orientations are provided as axis-angle vec-tors (Sec. 2.1), and the images are made sensor-realistic by the calibrated appearance model of Sec. 3.2. Evalua-tion uses the 77 ,077 real SWIR images of Sec. 4.1. No real image is ever seen in training; every reported real-image number is a measurement of sim-to-real generalization. 
+
+Image size. Two image sizes are used in this work. The first is the size of the region cropped around the UAV, which determines how much background is included. Each (a) Raw syn-thetic image       
+
+> binary silhouette
+> (b) Augmented image
+> Sec. 3.2, applied to (a)
+> (c) Real SWIR image
+> quasi-matched pose
+> Run Augmentation compare to real
+> Figure 4. Qualitative effect of the calibrated appearance model. (a) A raw synthetic silhouette mask, before any appearance augmentation. (b) The same mask after the calibrated model of Sec. 3.2 is applied, reproducing the soft, non-uniform interior, edge halo, and low but nonzero background of a real sensor image. (c) A real SWIR image at a quasi-matched pose, shown for comparison.
+> (a) real SWIR image (b) synthetic sample
+> Figure 5. A real SWIR sensor image (a) versus a synthetic sample (b), both from [8]. The gap the calibrated appearance model of Sec. 3.2 must close is visible directly: the real target has a dim, non-uniform, softly blurred interior over a low but nonzero back-ground, rather than the bright, flat, hard-edged silhouette a naive render produces. The measured statistics driving the calibration (foreground mean 0.537 , a dim edge halo, 1–3px edge blur) are read from images of this type.
+
+real evaluation image is a 200 ×200 -pixel crop from the 
+
+640 ×513 camera frame. Each synthetic image is cropped individually according to the size of the UAV in that im-age: the crop is a square centred on the UAV’s bounding box, with a side length equal to 2.4 times the longer side of the box. Because the bounding box changes with the UAV’s orientation, the crop size in pixels varies from image to image, but the UAV always occupies the same fraction of the crop, its longer dimension spanning about 42% (1/2.4)of the crop side. To guard against degenerate bounding boxes, the crop side is limited to between 12% and 100% 
+
+of the longer side of the rendered image, and any part of the crop extending beyond the image border is filled with zeros. The second image size is the network input, which is fixed at 336 ×336 pixels because DINOv2 uses 14 ×14 -pixel patches (Sec. 3.1). All real and synthetic crops are therefore resized to 336 ×336 using area-based interpola-tion before being passed to the network. For the 200 ×200 
+
+real images, this corresponds to an enlargement factor of 
+
+1.68 and does not add new image detail; it simply matches the input resolution required by the backbone. 
+
+4.3. Implementation details 
+
+We use AdamW with a batch size of 32 and train the model in two phases. In phase 1, the backbone is frozen and only the decoder and heads are trained for two epochs with a learning rate of 10 −3. The chirality term is disabled dur-ing this phase because the frozen self-supervised features are nearly identical for an image and its mirror, making the chirality bit difficult to learn. In phase 2, all 24 back-bone blocks are unfrozen and the chirality term is enabled. The backbone and decoder use separate learning rates of 
+
+3×10 −6 and 2×10 −4, respectively. The smaller learning rate for the backbone allows it to adapt toward mirror-sensitive features while preserving the pretrained represen-tation. Both learning rates follow the same schedule: they increase linearly to their full values over the first three epochs, remain constant through epoch 110 , and then decay according to a cosine schedule toward 10% of their initial values, reached at epoch 150 .Training runs for up to 150 epochs, with early stopping if the synthetic validation loss does not improve for 20 con-secutive epochs. The reported model is the checkpoint with the lowest synthetic validation loss, which occurs at epoch 
+
+102 . Real images are not used either for training or for checkpoint selection. The resulting model has 441 .4M pa-rameters and is trained on a single NVIDIA L40S GPU. During evaluation, the 77 ,077 real images are distributed across eight GPUs and processed in parallel, reducing eval-uation time without changing the results. Table 2. Augmentation ablation ( 200 ×200 , 77 ,077 real images). The three runs differ only in how the synthetic silhouette is ren-dered during training. Synthetic appearance model Mean ◦ Med. ◦ RMSE ◦         
+
+> None (raw binary mask) 34.27 19.62 59.89 Flat-plate-plus-blur 28.44 14.81 47.52
+> Calibrated (ours) 19.18 10.58 38.42
+
+4.4. Evaluation protocol 
+
+For each real image, we compute the pose prediction and the radar-cue-corrected prediction described in Sec. 3.3. The geodesic error of each prediction relative to the ground-truth orientation is then computed using Eq. (2). We report the mean and median geodesic error, along with the fraction of predictions with errors greater than 90 ◦. The mean and me-dian describe the overall and typical prediction errors, re-spectively, while the 90 ◦ threshold captures severe failures in which the estimated orientation is far from the ground truth. The evaluation is performed on all 77 ,077 real SWIR images using 200 ×200 crops. 
+
+# 5. Results and Discussion 
+
+5.1. Dataset augmentation ablation 
+
+Table 2 isolates the augmentation of Sec. 3.2: three train-ing runs at 200 ×200 that differ only in how the synthetic silhouette is rendered (raw binary mask, generic flat-plate-plus-blur, and the calibrated model), with everything else fixed. Generic augmentation cuts mean error from 34 .3◦ to 
+
+28 .4◦; the calibration removes a further 9.3◦, a larger step than adding augmentation at all, for a 44% total reduction. The benefit comes from matching the synthetic appearance to measured sensor statistics, not from augmentation in the abstract. 
+
+5.2. Ambiguity resolution 
+
+Table 3 compares the raw prediction against the radar-cue-corrected prediction on the same model and images. The raw median error is 167 .6◦ because the network lands on the correct one of the four mirror-related candidates only 
+
+18 .1% of the time. This measures the objective’s indiffer-ence rather than any limit on what a frame could reveal: Eq. (8) exerts no pressure toward the true candidate by con-struction. That 18 .1% falls below the 25% of a random as-signment indicates a systematic preference among candi-dates, whose source is left to future work. This shows how the two stages divide the work: the radar cue picks which of the four candidates is correct, and the network’s own accu-racy determines how close the prediction lands within that candidate, reflected in the 10 .58 ◦ median. The correction isn’t perfect: 4.1% of predictions still end up on the wrong                                  
+
+> Table 3. Effect of radar-cue branch selection ( 200 ×200 ,77 ,077
+> real images). “Flipped” is the fraction of predictions on a mirror-related candidate other than the true one; the 4.1% that survive the correction are the near-180 ◦tail of Fig. 6a, explained in Sec. 5.3. Prediction Mean ◦Med. ◦Flipped Raw (no correction) 130.51 167.57 81.9%
+> Radar-cue corrected 19.18 10.58 4.1% Table 4. Geodesic error on 77 ,077 real images (DINOv2-Large, epoch 102 ,200 ×200 crops), from a single frame and after the sequential α-βfilter of Sec. 5.4. Estimate ( 200 ×200 )Mean ◦Med. ◦>90 ◦
+> Single frame, radar-cue corrected 19.18 10.58 4.1%
+> +sequential α-βrefinement 8.74 7.94 0.0%
+
+candidate. 
+
+5.3. Single-frame pose estimation 
+
+Table 4 reports the model on the 77 ,077 real images at the 
+
+200 ×200 condition, both as a single-frame estimate after radar-cue correction and after the sequential α-β refinement of Sec. 5.4. From a single frame the model attains 19 .18 ◦
+
+mean and 10 .58 ◦ median geodesic error ( 38 .42 ◦ RMSE), with 45 .4% of predictions inside 10 ◦ and 4.1% beyond 90 ◦.Figure 6 plots the error distribution before and after tempo-ral refinement. Before refinement (Fig. 6a) a single well-resolved mode near the median sits beside a small, isolated tail at ∼ 180 ◦, with almost no predictions falling in between, as the histogram shows. 
+
+What remains at 180 ◦. If the two bits resolve the nose– tail and top–bottom ambiguities, why does any error near 
+
+180 ◦ survive? The bits are never undefined: by Eq. (5), nts and tbs always take a value in {+1 , −1}. What fails is relia-bility, not definition. Since (R(3) e3)z = −(Re 3)z , the true pose and its top–bottom flip carry opposite tbs bits every-where except the single point (Re 3)z = 0 ; near that point the separation is small enough that ordinary prediction er-ror flips it, and picking wrong gives exactly 180 ◦, since the two candidates differ by a rotation of π about the body axis. This is physical rather than numerical: (Re 1)z ≈ 0 is the broadside geometry where a radar measures zero range rate and genuinely cannot say whether the nose approaches, and 
+
+(Re 3)z ≈ 0 is the edge-on geometry where upright and in-verted are indistinguishable. The cue is unreliable there for the same reason the image is. Consistent with this, the two failures in Fig. 7 have errors of 179 .98 ◦ and 180 .00 ◦, the signature of a wrong candidate rather than a poor regres-sion, and one sits at (Re 3)z ≈ 0.03 .(a) Single frame (mean 19 .18 ◦, median 10 .58 ◦). (b) After α-β refinement (mean 8.74 ◦, median 7.94 ◦). 
+
+Figure 6. Error distribution at 200 ×200 . (a) A single well-resolved mode near the median sits beside an isolated tail near 180 ◦ from cases the radar cue cannot fix. (b) After the sequential α-β filter, the 180 ◦ tail is gone and the main mode tightens around its median.        
+
+> Angle Error = 0 .24 ◦Angle Error = 0 .53 ◦Angle Error = 179 .98 ◦Angle Error = 180 .00 ◦
+
+Figure 7. Representative accurate and catastrophic radar-cue-corrected predictions from the ViT 200 × 200 condition. Accurate cases (left, green) are viewed near broadside, where illumination strikes the airframe close to perpendicular and produces uniform, well-resolved reflectance. Catastrophic cases (right, red) are viewed at high tilt, near the edge-on geometry, where oblique illumination produces nonuni-form reflectance across the airframe and the geodesic cue becomes least reliable at exactly the geometry where it is most needed. 
+
+5.4. Sequential α-β refinement 
+
+The 4.1% of single-frame predictions beyond 90 ◦ are the residual mirror flips the radar cue cannot fix. Because the real images are captured as a raster scan of the gimbal mo-tors in 3◦ steps, consecutive frames are close in orientation, which a constant-rate temporal filter can exploit to suppress isolated errors; this is also representative of deployment, where a maneuvering target traces a continuous attitude tra-jectory. The α-β filter of [8] is adopted and applied as a post-hoc smoother with an outlier gate on the radar-cue-corrected Rout of Eq. (12). 
+
+Filter formulation. Writing Rk for the radar-cue-corrected prediction at sample k and ( ˆRuk , ˆωuk ) for the fil-ter’s updated pose and angular-velocity estimate, the filter predicts, computes a residual, and conditionally updates: 
+
+ˆRpk = exp  ∆T ˆωuk−1
+
+ ˆRuk−1, ˆωpk = ˆ ωuk−1 (13) 
+
+yk = log 
+
+
+
+Rk
+
+ ˆRpk
+
+T 
+
+(14) 
+
+ ˆRuk , ˆωuk
+
+
+
+=
+
+
+
+exp( αy k) ˆRpk, ˆωpk + β 
+
+> ∆T
+
+yk
+
+
+
+∥yk∥ < τ 
+
+ ˆRpk, ˆωpk
+
+
+
+otherwise (15) where α, β are the filter gains and τ is an outlier-rejection threshold: a measurement updates the estimate only if its residual falls below τ ; otherwise the filter coasts on kine-matics alone. Values used were α = 0 .0356 , β = 0 .00132 ,
+
+τ = 137 .3◦, and ∆T = 1 . Figure 8 illustrates this predict-gate-update cycle. 
+
+5.5. Inference latency 
+
+Because frames are processed sequentially in the UAV ap-plication, single-image latency is reported on one L40S at 
+
+200 ×200 (Tab. 5), as mean ± std over five independent job Model prediction Rk
+
+> radar-cue corrected, Eq. (12)
+
+Kinematics pred. ˆRpk 
+
+> propagated from k−1
+
+Residual yk
+
+> Eq. (14)
+
+∥yk ∥ < τ ?Coast on kinematics 
+
+> reject measurement
+
+Update pose and rate 
+
+> accept measurement
+
+Filtered estimate ˆRuk  
+
+> output for sample k
+> no yes
+> propagate to sample
+> k+1
+
+Figure 8. The predict-gate-update cycle of the α-β filter (Eqs. (13) to (15)), with equations adopted from [8]. A radar-cue-corrected prediction updates a running pose/rate estimate only when its residual falls below threshold τ ; otherwise the estimate coasts on kinematics alone. Table 5. Single-image inference latency at 200 ×200 on one L40S, forward pass alone and with the α-β filter. Precision Model (ms) +Filter (ms) fp32 18 .02 ± 0.21 18.19 fp16, compiled 13 .25 ± 0.12 13.42 
+
+submissions of 200 timed forward passes each. The forward pass takes 18 .02 ± 0.21 ms in fp32 and 13 .25 ± 0.12 ms un-der fp16 with torch.compile , roughly 75 frames per second; the α-β filter adds under 0.17 ms. 
+
+5.6. Qualitative failure analysis 
+
+Figure 7 shows four representative frames: two accurate predictions (sub-degree error) and two catastrophic failures (∼ 180 ◦). Two factors distinguish them. First, the failures sit near the degenerate viewing configuration where (Re 1)z
+
+or (Re 3)z approaches zero: the fuselage is heavily fore-shortened, the wings and tail collapse toward the same sil-houette under the reflections of Eq. (4), and the geometric cue of Eq. (6) becomes noise-dominated because the fin off-set p approaches zero. The accurate cases are viewed near broadside or at moderate angles where all parts are sepa-rately resolvable. Second, the failures are viewed at higher tilt, where illumination strikes the airframe obliquely rather than perpendicular to its surface, producing nonuniform re-flectance across the fuselage; the accurate cases, viewed closer to broadside, receive more uniform illumination and present cleaner features to the network. 
+
+# 6. Conclusion 
+
+This work investigated the synthetic-to-real generalization capability of a ViT-based model for monocular pose esti-mation of a noncooperative UAV. Using a self-supervised DINOv2 backbone, the model was trained exclusively on labeled synthetic imagery and evaluated on 77,077 labeled real-world UAV images. Pose ambiguity-aware strategies were incorporated during training and inference, and an α–
+
+β filter was used to further improve pose estimates. The model achieved a mean angular error of 19 .18 o with an in-ference time of 13 .25 ms before filtering, and 8.74 o and 
+
+13 .42 ms, respectively, after filtering. The mean angular error of 8.74 o is considered accept-able given three identified factors that contribute to this er-ror: the synthetic-to-real domain gap, pose misalignment in the real-world dataset resulting from experimental imper-fections, and the inherent prediction error of deep-learning models. Considering these factors, the results demonstrate the potential of the proposed model for real-world pose es-timation of noncooperative UAVs. Future work will investigate further domain-gap reduc-tion techniques, including the use of photogrammetry to re-construct a 3D virtual model directly from a real UAV. This approach could enable the generation of virtually unlimited labeled training imagery that retains the visual characteris-tics of the real UAV, thereby useful to reduce the synthetic-to-real domain gap. 
+
+# References 
+
+[1] Alexey Dosovitskiy. An image is worth 16x16 words: Transformers for image recognition at scale. arXiv preprint arXiv:2010.11929 , 2020. 2 [2] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Syl-vain Gelly, Jakob Uszkoreit, and Neil Houlsby. An image is worth 16x16 words: Transformers for image recognition at scale. In International Conference on Learning Representa-tions (ICLR) , 2021. 4 [3] Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pas-cal Germain, Hugo Larochelle, Franc ¸ois Laviolette, Mario March, and Victor Lempitsky. Domain-adversarial training of neural networks. Journal of machine learning research ,17(59):1–35, 2016. 2 [4] Kun Gong, Bo Liu, Xin Xu, Yuelei Xu, Yakun He, Zhaoxi-ang Zhang, and Jarhinbek Rasol. Research of an unmanned aerial vehicle autonomous aerial refueling docking method based on binocular vision. Drones , 7(7):433, 2023. 1 [5] Jian Guan, Yingming Hao, Qingxiao Wu, Sicong Li, and Yingjian Fang. A survey of 6dof object pose estimation methods for different application scenarios. Sensors , 24(4): 1076, 2024. 1 [6] Leonardo Herrera, Jae Jun Kim, J. Baker, and Brij N. Agrawal. Deep learning based object attitude estimation for a laser beam control research testbed. Applied Artificial In-telligence , 37(1):2151191, 2022. 7 [7] Leonardo Herrera, Kim Jae Jun, Jeffrey Baker, and Brij N Agrawal. Deep learning based object attitude estimation for a laser beam control research testbed. Applied Artificial In-telligence , 37(1):2151191, 2023. 2 [8] Leonardo Herrera, Jae Jun Kim, and Brij N. Agrawal. Deep learning for unambiguous pose estimation of a non-cooperative fixed-wing uav. Machine Vision and Applica-tions , 36(5), 2025. 3, 7, 8, 10, 11 [9] Leonardo Herrera, Jae Jun Kim, and Brij N Agrawal. Deep learning for unambiguous pose estimation of a non-cooperative fixed-wing uav: L. herrera et al. Machine Vision and Applications , 36(1):5, 2025. 1 [10] Jian Liu, Wei Sun, Hui Yang, Zhiwen Zeng, Chongpei Liu, Jin Zheng, Xingyu Liu, Hossein Rahmani, Nicu Sebe, and Ajmal Mian. Deep learning-based object pose estimation: A comprehensive survey: J. liu et al. International Journal of Computer Vision , 134(2):81, 2026. 1 [11] Maxime Oquab, Timoth´ ee Darcet, Th´ eo Moutakanni, et al. Dinov2: Learning robust visual features without supervision. 
+
+Transactions on Machine Learning Research (TMLR) , 2024. 1, 4 [12] Kostas Ordoumpozanis and George A Papakostas. Review-ing 6d pose estimation: model strengths, limitations, and ap-plication fields. Applied Sciences , 15(6):3284, 2025. 1 [13] Tae Ha Park, Marcus M¨ artens, Mohsi Jawaid, Zi Wang, Bo Chen, Tat-Jun Chin, Dario Izzo, and Simone D’Amico. Satellite pose estimation competition 2021: Results and analyses. Acta Astronautica , 204:640–665, 2023. 1 [14] Nuno Pessanha Santos. Fixed-wing uav pose estimation us-ing a self-organizing map and deep learning. Robotics , 13 (8):114, 2024. 1 [15] Connor Shorten and Taghi M. Khoshgoftaar. A survey on image data augmentation for deep learning. Journal of Big Data , 6(1):60, 2019. 6 [16] Josh Tobin, Rachel Fong, Alex Ray, Jonas Schneider, Woj-ciech Zaremba, and Pieter Abbeel. Domain randomization for transferring deep neural networks from simulation to the real world. In IEEE/RSJ International Conference on Intel-ligent Robots and Systems (IROS) , pages 23–30, 2017. 2 [17] Yi Zhou, Connelly Barnes, Jingwan Lu, Jimei Yang, and Hao Li. On the continuity of rotation representations in neu-ral networks. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 5745–5753, 2019. 2

@@ -1,8 +1,41 @@
 {
   "date": "20261006",
   "date_label": "",
-  "generated_at": "2026-10-06 00:37:13 UTC",
+  "generated_at": "2026-10-06 23:06:00 UTC",
   "recommend_exists": true,
-  "run_count": 1,
-  "papers": []
+  "run_count": 2,
+  "papers": [
+    {
+      "paper_id": "2610.04335v1",
+      "route": "202610/06/2610.04335v1-synthetic-to-real-vit-based-pose-estimation-of-a-noncooperative-uav",
+      "title": "Synthetic-to-Real ViT-Based Pose Estimation of a Noncooperative UAV",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 8.0,
+      "evidence": "非合作目标单目位姿估计与合成到真实泛化",
+      "first_seen_at": "2026-10-06 23:06:00 UTC",
+      "updated_at": "2026-10-06 23:06:00 UTC"
+    },
+    {
+      "paper_id": "2610.03013v1",
+      "route": "202610/06/2610.03013v1-ryopo-bringing-end-to-end-category-level-object-pose-estimation-into-real-time",
+      "title": "RYOPO: Bringing End-to-End Category-Level Object Pose Estimation into Real Time",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "物体旋转平移位姿估计",
+      "first_seen_at": "2026-10-06 23:06:00 UTC",
+      "updated_at": "2026-10-06 23:06:00 UTC"
+    }
+  ]
 }
