@@ -1,0 +1,24 @@
+{
+  "label": "2026-10-08",
+  "date": "2026-10-08",
+  "generated_at": "2026-10-08T00:09:51",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202610/08/2610.07231v1-monocular-navigation-relative-to-unknown-spacecraft-using-a-transformer-aided-kalman-filter",
+      "section": "deep",
+      "title_en": "Monocular Navigation Relative to Unknown Spacecraft Using a Transformer-Aided Kalman Filter",
+      "authors": "Pol Francesch Huc, Simone D'Amico",
+      "date": "2026-10-05",
+      "pdf": "https://arxiv.org/pdf/2610.07231v1",
+      "score": "10.0",
+      "evidence": "单目图像结合Transformer与MSCKF估计未知航天器位姿",
+      "tldr": "针对交会逼近中未知航天器位姿估计难题，现有视觉方法依赖目标形状先验、额外深度/激光/双目，或仅恢复尺度模糊平移。本文提出Transformer辅助卡尔曼滤波的单目管线：用SuperPoint与LightGlue匹配特征，Transformer估计尺度模糊里程计，MSCKF结合轨道与姿态动力学，直接估计相对轨道根数、目标姿态及角速度。在SPE3R重渲染数据集上，对11个未见目标做蒙特卡洛测试，姿态中位误差3.7°、ROE距离误差2.2%。证明学习视觉前端可泛化到未知目标并恢复单目尺度。",
+      "tags": "query:pe",
+      "abstract_en": "This work presents a novel learning-based pipeline for pose estimation of unknown spacecraft using only monocular images from a single servicer. The approach combines a transformer-based neural network with a Multi-State Constraint Kalman Filter (MSCKF) to estimate the pose (i.e., position and orientation of the target spacecraft relative to the camera) throughout rendezvous and proximity operations. Unlike existing vision-based methods that require prior knowledge of the target shape or inertia properties, rely on additional sensing modalities such as depth, lidar, or stereo, or only recover translation up to scale, the proposed pipeline generalizes to previously unseen spacecraft using a single monocular camera. The transformer network estimates the odometry, the change in pose between images up to scale, from SuperPoint features matched by LightGlue. The MSCKF uses these pseudo-measurements along with an orbit and attitude kinematics model to estimate the pose of the target. In particular, the relative orbit elements, the target's attitude with respect to the servicer's camera, and the associated angular velocity are estimated directly by the filter. Given the monocular approach and short distance to the target, the full observability of the range to the target is recovered via attitude maneuvers by the servicer. The method is trained and evaluated on a re-rendered high-resolution version of the SPE3R dataset, which includes synthetic images of 103 spacecraft. Eleven of these spacecraft are held out during training to evaluate the generalization to unseen targets. Monte Carlo simulations are then used to evaluate the navigation pipeline on rendered trajectories of the held out spacecraft. The results demonstrate that learned vision pipelines as a front-end for Kalman filters provide median errors of 3.7° in attitude and 2.2% of range in ROE when navigating about unknown targets.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

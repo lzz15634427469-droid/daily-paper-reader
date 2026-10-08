@@ -1,0 +1,25 @@
+{
+  "date": "20261008",
+  "date_label": "",
+  "generated_at": "2026-10-08 00:09:50 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2610.07231v1",
+      "route": "202610/08/2610.07231v1-monocular-navigation-relative-to-unknown-spacecraft-using-a-transformer-aided-kalman-filter",
+      "title": "Monocular Navigation Relative to Unknown Spacecraft Using a Transformer-Aided Kalman Filter",
+      "section": "deep",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 10.0,
+      "evidence": "单目图像结合Transformer与MSCKF估计未知航天器位姿",
+      "first_seen_at": "2026-10-08 00:09:50 UTC",
+      "updated_at": "2026-10-08 00:09:50 UTC"
+    }
+  ]
+}

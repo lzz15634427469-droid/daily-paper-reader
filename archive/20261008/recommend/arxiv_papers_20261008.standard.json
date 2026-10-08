@@ -1,0 +1,53 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-10-08T00:08:03.654008+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2610.07231v1",
+      "source": "arxiv",
+      "title": "Monocular Navigation Relative to Unknown Spacecraft Using a Transformer-Aided Kalman Filter",
+      "abstract": "This work presents a novel learning-based pipeline for pose estimation of unknown spacecraft using only monocular images from a single servicer. The approach combines a transformer-based neural network with a Multi-State Constraint Kalman Filter (MSCKF) to estimate the pose (i.e., position and orientation of the target spacecraft relative to the camera) throughout rendezvous and proximity operations. Unlike existing vision-based methods that require prior knowledge of the target shape or inertia properties, rely on additional sensing modalities such as depth, lidar, or stereo, or only recover translation up to scale, the proposed pipeline generalizes to previously unseen spacecraft using a single monocular camera. The transformer network estimates the odometry, the change in pose between images up to scale, from SuperPoint features matched by LightGlue. The MSCKF uses these pseudo-measurements along with an orbit and attitude kinematics model to estimate the pose of the target. In particular, the relative orbit elements, the target's attitude with respect to the servicer's camera, and the associated angular velocity are estimated directly by the filter. Given the monocular approach and short distance to the target, the full observability of the range to the target is recovered via attitude maneuvers by the servicer. The method is trained and evaluated on a re-rendered high-resolution version of the SPE3R dataset, which includes synthetic images of 103 spacecraft. Eleven of these spacecraft are held out during training to evaluate the generalization to unseen targets. Monte Carlo simulations are then used to evaluate the navigation pipeline on rendered trajectories of the held out spacecraft. The results demonstrate that learned vision pipelines as a front-end for Kalman filters provide median errors of 3.7° in attitude and 2.2% of range in ROE when navigating about unknown targets.",
+      "authors": [
+        "Pol Francesch Huc",
+        "Simone D'Amico"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.CV"
+      ],
+      "published": "2026-10-05T18:37:01+00:00",
+      "link": "https://arxiv.org/pdf/2610.07231v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "monocular pose of unknown spacecraft via transformer and MSCKF",
+      "llm_evidence_cn": "单目图像结合Transformer与MSCKF估计未知航天器位姿",
+      "llm_evidence": "单目图像结合Transformer与MSCKF估计未知航天器位姿",
+      "canonical_evidence": "单目图像结合Transformer与MSCKF估计未知航天器位姿",
+      "llm_tldr_en": "Vision-based spacecraft pose estimation usually needs shape priors, extra sensors such as lidar or stereo, or only recovers translation up to scale. This work couples a transformer network with a Multi-State Constraint Kalman Filter to estimate the target pose from a single monocular camera, generalizing to previously unseen spacecraft.",
+      "llm_tldr_cn": "针对交会接近阶段未知航天器的位姿估计，现有视觉方法往往依赖目标形状或惯量先验、额外深度或激光雷达传感，且只能恢复尺度未知的平移。本文提出结合Transformer神经网络与多状态约束卡尔曼滤波的学习式管线，仅用服务星单目相机图像估计目标相对相机的位姿。该方法可泛化到此前未见的航天器，无需目标模型或额外传感器。其意义在于为单目非合作目标位姿估计提供了无需先验的实用方案，直接服务航天器相对位姿估计任务。",
+      "llm_tldr": "针对交会接近阶段未知航天器的位姿估计，现有视觉方法往往依赖目标形状或惯量先验、额外深度或激光雷达传感，且只能恢复尺度未知的平移。本文提出结合Transformer神经网络与多状态约束卡尔曼滤波的学习式管线，仅用服务星单目相机图像估计目标相对相机的位姿。该方法可泛化到此前未见的航天器，无需目标模型或额外传感器。其意义在于为单目非合作目标位姿估计提供了无需先验的实用方案，直接服务航天器相对位姿估计任务。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "pose estimation using a single camera image for space applications",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
