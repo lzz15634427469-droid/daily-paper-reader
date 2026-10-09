@@ -1,0 +1,139 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-10-09T00:33:15.501771+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2610.01758v1",
+      "source": "arxiv",
+      "title": "GenCOPE: Syn2Real Generalized Category-Level Object Pose Estimation for Robotic Picking",
+      "abstract": "Category-level object pose estimation (COPE), capable of generalizing to intra-class unknown objects, has become a core technique for robotic 3D scene understanding. However, existing COPE methods still require labor-intensive recollection of real-world training data for novel object categories, which limits their scalability in practical applications. This paper aims to achieve synthetic-to-real (Syn2Real) generalized COPE, where a model is trained solely on rendered synthetic data and directly generalized to real-world deployments. The central challenge lies in the significant domain gap between synthetic and real-world data, particularly in texture appearance. To address this, we aim to enhance domain generalization by learning domain-invariant representations that capture semantic commonalities among objects within the same category. We introduce 2D and 3D semantic consistency constraints to reduce the sensitivity of feature encoders to domain-specific features. In addition, we propose an end-to-end pose regression framework that performs 2D-3D cross consistency learning, leveraging dense cross-modality fusion to further refine pose estimation. Since simplicity and effectiveness are essential for real-world robotic deployment, our model operates exclusively on global features, yielding a highly lightweight and efficient architecture. Extensive experiments on the REAL275 and Wild6D benchmarks, as well as real-world robotic manipulation scenes, show superior Syn2Real generalization performance of our paradigm. Code and demos are released at https://paperreview99.github.io/GenCOPE/.",
+      "authors": [
+        "Jian Liu",
+        "Wei Sun",
+        "Zhenqi Dai",
+        "Hui Yang",
+        "Jian Xiao",
+        "Nicu Sebe",
+        "Na Zhao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-10-01T14:20:38+00:00",
+      "link": "https://arxiv.org/pdf/2610.01758v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "synthetic-to-real generalized object pose estimation for unknown objects",
+      "llm_evidence_cn": "面向未知物体的合成到真实泛化位姿估计",
+      "llm_evidence": "面向未知物体的合成到真实泛化位姿估计",
+      "canonical_evidence": "面向未知物体的合成到真实泛化位姿估计",
+      "llm_tldr_en": "GenCOPE tackles Syn2Real category-level object pose estimation, training only on synthetic data to generalize to real objects, relevant to uncooperative target pose estimation.",
+      "llm_tldr_cn": "现有类别级物体位姿估计需为每个新类别重新采集真实训练数据，可扩展性差。论文提出GenCOPE，仅用渲染的合成数据训练，通过增强域泛化来缩小纹理等域间差异，实现合成到真实的泛化位姿估计。该思路可迁移到非合作航天器位姿估计中难以获取真实标注的难题，具有方法学参考意义。",
+      "llm_tldr": "现有类别级物体位姿估计需为每个新类别重新采集真实训练数据，可扩展性差。论文提出GenCOPE，仅用渲染的合成数据训练，通过增强域泛化来缩小纹理等域间差异，实现合成到真实的泛化位姿估计。该思路可迁移到非合作航天器位姿估计中难以获取真实标注的难题，具有方法学参考意义。",
+      "llm_tags": [
+        "query:pe"
+      ],
+      "matched_query_tag": "query:pe",
+      "matched_query_text": "What methods are used for robust pose estimation of uncooperative spacecraft?",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2610.03716v1",
+      "source": "arxiv",
+      "title": "MoSE3: Learning World-Space SE(3) at Every Pixel",
+      "abstract": "Dense 3D point tracking has been a prominent paradigm for modeling motion in dynamic scenes, but a point track is just a 3-DoF translation curve per pixel: it captures where pixels go, not the rotation of the underlying part, nor which pixels move together as one body. We propose MoSE3, the first feed-forward model that predicts dense SE(3) motion from monocular RGB video, producing full 6-DoF rigid transforms at every pixel in world space. Per-pixel SE(3) motion offers a richer view of how a scene moves: rotation, translation, and grouping all at once. Directly predicting SE(3) is challenging: rotations lie on a curved manifold that is ill-suited to Euclidean regression, and annotations for SE(3) are particularly difficult to acquire. To address these challenges, MoSE3 predicts per-pixel SE(3) through two jointly learned intermediates, 3D point tracks and rigidity embeddings, and recovers SE(3) by differentiably fitting transforms within each soft rigid cluster, enabling end-to-end prediction and supervision. To close the data gap, we introduce Art-Kubric, a large-scale synthetic dataset with dense SE(3) and rigidity labels for articulated objects with rich physical interactions. MoSE3 achieves state-of-the-art SE(3) estimation at pixel, part, and object levels on both rigid and articulated benchmarks, and state-of-the-art average 3D point tracking accuracy across three datasets, while showing strong generalization to real-world videos despite being trained solely on synthetic motion data.",
+      "authors": [
+        "Jiahuan Cheng",
+        "Zhiyi Li",
+        "Tian Xia",
+        "Ruojin Cai",
+        "Yilun Du",
+        "Qianqian Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-10-02T17:58:52+00:00",
+      "link": "https://arxiv.org/pdf/2610.03716v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "dense per-pixel SE(3) 6-DoF pose from monocular RGB video",
+      "llm_evidence_cn": "从单目RGB视频预测逐像素SE(3)六自由度位姿",
+      "llm_evidence": "从单目RGB视频预测逐像素SE(3)六自由度位姿",
+      "canonical_evidence": "从单目RGB视频预测逐像素SE(3)六自由度位姿",
+      "llm_tldr_en": "A feed-forward model predicts dense per-pixel SE(3) rigid transforms from monocular RGB video; monocular 6-DoF pose estimation, transferable to spacecraft pose.",
+      "llm_tldr_cn": "针对现有点跟踪只能给出每像素3自由度平移、无法表达旋转与刚体分组的问题，本文提出MoSE3前馈模型，从单目RGB视频预测世界空间中逐像素的完整SE(3)六自由度刚体变换，并处理旋转流形回归难题。实验表明其能同时恢复旋转、平移与运动分组，为单目位姿估计提供可迁移方法，但未针对航天器场景。",
+      "llm_tldr": "针对现有点跟踪只能给出每像素3自由度平移、无法表达旋转与刚体分组的问题，本文提出MoSE3前馈模型，从单目RGB视频预测世界空间中逐像素的完整SE(3)六自由度刚体变换，并处理旋转流形回归难题。实验表明其能同时恢复旋转、平移与运动分组，为单目位姿估计提供可迁移方法，但未针对航天器场景。",
+      "llm_tags": [
+        "query:pe:composite"
+      ],
+      "matched_query_tag": "query:pe:composite",
+      "matched_query_text": "Papers central to 航天器位姿估计, especially work that connects or combines: methods for determining the position and orientation of a spacecraft relative to a target; estimation of spacecraft orientation from sensor measurements; determination of relative position and orientation between two spacecraft or a spacecraft and target; pose estimation using a single camera image for space applications; datasets used for training and evaluating spacecraft pose estimation algorithms; How to perform spacecraft pose estimation from monocular imagery?; What methods are used for robust pose estimation of uncooperative spacecraft?; How to combine lidar and camera data for spacecraft relative pose estimation?; How to evaluate deep learning based spacecraft pose estimation accuracy?.",
+      "matched_requirement_id": "req-composite-pe",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2610.09534v1",
+      "source": "arxiv",
+      "title": "KASALv2: Fully Automatic 3D Rotational Symmetry Classification and Axis Localization",
+      "abstract": "Rotational symmetry is an important prior in 6D pose estimation, improving pose accuracy and supporting symmetry-aware evaluation. However, current symmetry annotations for 3D objects remain largely manual or semi-automatic, often requiring predefined types or orders, which limits scalability. This work introduces a fully automatic, reference-free framework for symmetry-type classification, rotational-order identification, and full-axis localization across all eight canonical 3D rotational symmetry types. The method localizes a dominant high-order axis, infers its rotational order through self-consistency analysis, and reconstructs the complete symmetry structure under a hierarchy-guided formulation. A texture-aware extension further models appearance-induced reductions in rotational order while preserving axis orientations. Experiments on idealized and real-world datasets demonstrate strong accuracy and generalization, achieving 94.75% accuracy on 438 symmetric objects in GSO. Training FoundationPose with these priors improves accuracy by up to 0.9% across five BOP datasets, showing that automatically estimated rotational priors improve downstream 6D pose estimation. Code is available at https://github.com/WangYuLin-SEU/KASAL.",
+      "authors": [
+        "Mengxin Zhang",
+        "Yulin Wang",
+        "Chen Luo",
+        "Yongzhe Li",
+        "Yijun Zhou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.GR"
+      ],
+      "published": "2026-10-07T06:37:29+00:00",
+      "link": "https://arxiv.org/pdf/2610.09534v1",
+      "tags": [
+        "keyword:pe",
+        "query:pe"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "automatic 3D rotational symmetry axis localization as prior for 6D pose estimation",
+      "llm_evidence_cn": "作为6D位姿先验的三维旋转对称轴自动定位",
+      "llm_evidence": "作为6D位姿先验的三维旋转对称轴自动定位",
+      "canonical_evidence": "作为6D位姿先验的三维旋转对称轴自动定位",
+      "llm_tldr_en": "A fully automatic, reference-free framework classifies 3D rotational symmetry and localizes axes to support 6D pose estimation, a prior useful for spacecraft pose.",
+      "llm_tldr_cn": "针对三维物体旋转对称标注依赖人工、难以扩展的问题，本文提出全自动、无参考的对称性框架，可完成对称类型分类、旋转阶数识别与完整轴定位，并引入纹理感知扩展。实验覆盖八类标准旋转对称，提升对称感知的6D位姿评估能力，其对称先验对航天器位姿估计具有方法借鉴意义。",
+      "llm_tldr": "针对三维物体旋转对称标注依赖人工、难以扩展的问题，本文提出全自动、无参考的对称性框架，可完成对称类型分类、旋转阶数识别与完整轴定位，并引入纹理感知扩展。实验覆盖八类标准旋转对称，提升对称感知的6D位姿评估能力，其对称先验对航天器位姿估计具有方法借鉴意义。",
+      "llm_tags": [
+        "query:pe:composite"
+      ],
+      "matched_query_tag": "query:pe:composite",
+      "matched_query_text": "Papers central to 航天器位姿估计, especially work that connects or combines: methods for determining the position and orientation of a spacecraft relative to a target; estimation of spacecraft orientation from sensor measurements; determination of relative position and orientation between two spacecraft or a spacecraft and target; pose estimation using a single camera image for space applications; datasets used for training and evaluating spacecraft pose estimation algorithms; How to perform spacecraft pose estimation from monocular imagery?; What methods are used for robust pose estimation of uncooperative spacecraft?; How to combine lidar and camera data for spacecraft relative pose estimation?; How to evaluate deep learning based spacecraft pose estimation accuracy?.",
+      "matched_requirement_id": "req-composite-pe",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "date": "20261009",
+  "date_label": "",
+  "generated_at": "2026-10-09 00:34:21 UTC",
+  "recommend_exists": true,
+  "run_count": 1,
+  "papers": [
+    {
+      "paper_id": "2610.01758v1",
+      "route": "202610/09/2610.01758v1-gencope-syn2real-generalized-category-level-object-pose-estimation-for-robotic-picking",
+      "title": "GenCOPE: Syn2Real Generalized Category-Level Object Pose Estimation for Robotic Picking",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "面向未知物体的合成到真实泛化位姿估计",
+      "first_seen_at": "2026-10-09 00:34:21 UTC",
+      "updated_at": "2026-10-09 00:34:21 UTC"
+    },
+    {
+      "paper_id": "2610.03716v1",
+      "route": "202610/09/2610.03716v1-mose3-learning-world-space-se3-at-every-pixel",
+      "title": "MoSE3: Learning World-Space SE(3) at Every Pixel",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "从单目RGB视频预测逐像素SE(3)六自由度位姿",
+      "first_seen_at": "2026-10-09 00:34:21 UTC",
+      "updated_at": "2026-10-09 00:34:21 UTC"
+    },
+    {
+      "paper_id": "2610.09534v1",
+      "route": "202610/09/2610.09534v1-kasalv2-fully-automatic-3d-rotational-symmetry-classification-and-axis-localization",
+      "title": "KASALv2: Fully Automatic 3D Rotational Symmetry Classification and Axis Localization",
+      "section": "quick",
+      "tags": [
+        {
+          "kind": "query",
+          "label": "pe"
+        }
+      ],
+      "score": 6.0,
+      "evidence": "作为6D位姿先验的三维旋转对称轴自动定位",
+      "first_seen_at": "2026-10-09 00:34:21 UTC",
+      "updated_at": "2026-10-09 00:34:21 UTC"
+    }
+  ]
+}
