@@ -48,17 +48,17 @@
 <section class="dpr-home-dashboard-card dpr-home-report-card">
   <div class="dpr-home-dashboard-header">
     <div>
-      <span class="dpr-home-dashboard-kicker">2026-10-09</span>
+      <span class="dpr-home-dashboard-kicker">2026-10-18 ~ 2026-11-16</span>
       <h3 class="dpr-home-dashboard-title">今日汇总</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">共 3 篇</strong>
+    <strong class="dpr-home-dashboard-count">共 0 篇</strong>
   </div>
   <dl class="dpr-home-dashboard-stats">
     <div class="dpr-home-dashboard-stat"><dt>累计更新</dt><dd>1 次</dd></div>
     <div class="dpr-home-dashboard-stat"><dt>精读</dt><dd>0</dd></div>
-    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>3</dd></div>
+    <div class="dpr-home-dashboard-stat"><dt>速读</dt><dd>0</dd></div>
   </dl>
-  <p class="dpr-home-dashboard-body">最近更新：2026-10-09 00:34:21 UTC<br>状态：成功</p>
+  <p class="dpr-home-dashboard-body">最近更新：2026-11-16 07:52:02 UTC<br>状态：成功</p>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-brief-card">
   <div class="dpr-home-dashboard-header">
@@ -69,9 +69,7 @@
     <strong class="dpr-home-dashboard-count">AI</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<p>2026-10-09 日报速览：3 篇论文全部速读，聚焦机器人抓取与三维视觉。</p>
-<p>其中 GenCOPE 用合成到真实的泛化思路做类别级物体位姿估计，MoSE3 则逐像素学习世界空间 SE(3)，两篇都与机器人抓取和空间感知直接相关，值得优先看。</p>
-<p>普通读者可先读这两篇的摘要与方法图，理解“合成数据训练、真实场景落地”这条主线，再按兴趣深入 KASALv2 的对称轴自动定位。</p>
+<p>今日无新推荐，系统未产出可展示论文。</p>
   </div>
 </section>
 <section class="dpr-home-dashboard-card dpr-home-deep-card">
@@ -93,12 +91,12 @@
       <span class="dpr-home-dashboard-kicker">今日累计</span>
       <h3 class="dpr-home-dashboard-title">速读推荐</h3>
     </div>
-    <strong class="dpr-home-dashboard-count">3 篇</strong>
+    <strong class="dpr-home-dashboard-count">0 篇</strong>
   </div>
   <div class="dpr-home-dashboard-body">
-<ul class="dpr-home-dashboard-paper-list"><li><span class="dpr-home-dashboard-paper-title" title="GenCOPE: Syn2Real Generalized Category-Level Object Pose Estimation for Robotic Picking">GenCOPE: Syn2Real Generalized Category-Level Object Pose Estimation for Robotic Picking</span></li><li><span class="dpr-home-dashboard-paper-title" title="MoSE3: Learning World-Space SE(3) at Every Pixel">MoSE3: Learning World-Space SE(3) at Every Pixel</span></li><li><span class="dpr-home-dashboard-paper-title" title="KASALv2: Fully Automatic 3D Rotational Symmetry Classification and Axis Localization">KASALv2: Fully Automatic 3D Rotational Symmetry Classification and Axis Localization</span></li></ul>
+<p class="dpr-home-dashboard-empty">今日暂无推荐。</p>
   </div>
-  <div class="dpr-home-dashboard-tags"><span class="dpr-home-dashboard-tag">pe <strong>3</strong></span></div>
+
 </section>
 </div>
 
